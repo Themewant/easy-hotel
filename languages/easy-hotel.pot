@@ -1,0 +1,1396 @@
+# Copyright (C) 2024 ReacThemes
+# This file is distributed under the GNU General Public License v2 or later.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-29 06:56+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#. %1$s%2$s / %3$s is replaced with "values of $currency_symbol $service_price & $service_charge_type"
+#: public/includes/classes/class.view.php:321
+#, php-format
+msgid "%1$s%2$s / %3$s"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:160
+#: public/includes/widgets/room-slider/room-slider-widget.php:242
+#: public/includes/widgets/room-slider/room-slider-widget.php:262
+#: public/includes/widgets/room-slider/room-slider-widget.php:282
+#: public/includes/widgets/room-slider/room-slider-widget.php:302
+msgid "1 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:322
+msgid "1 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:537
+#: public/includes/widgets/room-slider/room-slider-widget.php:561
+msgid "1 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:161
+#: public/includes/widgets/room-slider/room-slider-widget.php:243
+#: public/includes/widgets/room-slider/room-slider-widget.php:263
+#: public/includes/widgets/room-slider/room-slider-widget.php:283
+#: public/includes/widgets/room-slider/room-slider-widget.php:303
+msgid "2 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:323
+msgid "2 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:538
+#: public/includes/widgets/room-slider/room-slider-widget.php:560
+msgid "2 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:162
+#: public/includes/widgets/room-slider/room-slider-widget.php:244
+#: public/includes/widgets/room-slider/room-slider-widget.php:264
+#: public/includes/widgets/room-slider/room-slider-widget.php:284
+#: public/includes/widgets/room-slider/room-slider-widget.php:304
+msgid "3 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:324
+msgid "3 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:539
+#: public/includes/widgets/room-slider/room-slider-widget.php:559
+msgid "3 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:163
+#: public/includes/widgets/room-slider/room-slider-widget.php:245
+#: public/includes/widgets/room-slider/room-slider-widget.php:265
+#: public/includes/widgets/room-slider/room-slider-widget.php:285
+#: public/includes/widgets/room-slider/room-slider-widget.php:305
+msgid "4 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:325
+msgid "4 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:540
+#: public/includes/widgets/room-slider/room-slider-widget.php:558
+msgid "4 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:246
+#: public/includes/widgets/room-slider/room-slider-widget.php:266
+#: public/includes/widgets/room-slider/room-slider-widget.php:286
+#: public/includes/widgets/room-slider/room-slider-widget.php:306
+msgid "5 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:541
+#: public/includes/widgets/room-slider/room-slider-widget.php:557
+msgid "5 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:164
+#: public/includes/widgets/room-slider/room-slider-widget.php:247
+#: public/includes/widgets/room-slider/room-slider-widget.php:267
+#: public/includes/widgets/room-slider/room-slider-widget.php:287
+#: public/includes/widgets/room-slider/room-slider-widget.php:307
+msgid "6 Column"
+msgstr ""
+
+#: admin/includes/admin-settings.php:433
+msgid "[eshb_accomodation_grid]"
+msgstr ""
+
+#: admin/includes/admin-settings.php:434
+msgid "[eshb_search_form]"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:74
+#: admin/includes/post-types/booking/metaboxes.php:106
+msgid "Accommodation ID"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:9
+msgid "Add Accomodation"
+msgstr ""
+
+#: admin/includes/classes/class.metabox-settings.php:90
+msgid "Full up all required field!"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:9
+#: admin/includes/post-types/service/service.php:9
+#: admin/includes/post-types/session/session.php:9
+msgid "Add New"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:10
+msgid "Add New Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:10
+msgid "Add New Booking"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:8
+msgctxt "Add New on Toolbar"
+msgid "Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:8
+msgctxt "Add New on Toolbar"
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:8
+msgctxt "Add New on Toolbar"
+msgid "Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:8
+msgctxt "Add New on Toolbar"
+msgid "Service"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:10
+msgid "Add New Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:10
+msgid "Add New Service"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:176
+msgid "Address One"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:180
+msgid "Address Two"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:7
+msgctxt "Admin Menu text"
+msgid "Bookings"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:7
+msgctxt "Admin Menu text"
+msgid "Easy Hotel"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:7
+msgctxt "Admin Menu text"
+msgid "Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:7
+msgctxt "Admin Menu text"
+msgid "Services"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:201
+#: admin/includes/post-types/accomodation/metaboxes.php:235
+msgid "Adult Capacity"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:114
+msgid "Adults"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:14
+msgid "All Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:14
+msgid "All Bookings"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:858
+msgid "All Features"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:14
+msgid "All Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:14
+msgid "All Services"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:43
+msgid "Apply"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:519
+msgid "Autoplay"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:553
+msgid "Autoplay Interval"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:533
+msgid "Autoplay Slide Speed"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:222
+msgid "Back to Booking List"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:204
+#: public/includes/widgets/room-grid/room-grid-widget.php:213
+#: public/includes/widgets/room-grid/room-grid-widget.php:533
+#: public/includes/widgets/room-grid/room-grid-widget.php:597
+#: public/includes/widgets/room-grid/room-grid-widget.php:643
+msgid "Background"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:204
+msgid "Base Price"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:616
+msgid "Best Seller"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:90
+msgid "Booking Date"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:78
+msgid "Booking Details"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:98
+msgid "Booking End Date"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:94
+msgid "Booking Start Date"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:259
+#: public/includes/widgets/room-grid/room-grid-widget.php:559
+#: public/includes/widgets/room-slider/room-slider-widget.php:721
+msgid "Border Radius"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:177
+#: public/includes/widgets/room-grid/room-grid-widget.php:500
+#: public/includes/widgets/room-slider/room-slider-widget.php:188
+msgid "Button"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:44
+msgid "Cancel"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:423
+msgid "Capacity Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:434
+msgid "Capacity Hover Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:445
+msgid "Capacity Typography"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:120
+#: public/includes/widgets/room-slider/room-slider-widget.php:110
+msgid "Category"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:623
+msgid "Center Mode"
+msgstr ""
+
+#: admin/includes/framework/fields/checkbox/checkbox.php:23
+msgid "Check/Uncheck All"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:202
+#: admin/includes/post-types/accomodation/metaboxes.php:236
+msgid "Children Capacity"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:118
+msgid "Childrens"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:160
+msgid "City"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:624
+#: public/includes/widgets/room-slider/room-slider-widget.php:743
+#: public/includes/widgets/room-slider/room-slider-widget.php:776
+#: public/includes/widgets/room-slider/room-slider-widget.php:837
+#: public/includes/widgets/room-slider/room-slider-widget.php:909
+msgid "Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:157
+msgid "Columns"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:156
+msgid "Company"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:96
+#: public/includes/widgets/room-slider/room-slider-widget.php:87
+msgid "Content"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:172
+msgid "Country"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:47
+msgid "Custom Range"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:134
+msgid "Customer & Billings"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:474
+msgid "Date"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Save"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Night"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Nights"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:395
+#: public/includes/widgets/room-slider/room-slider-widget.php:829
+msgid "Description"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:402
+msgid "Description Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:415
+msgid "Description Typography"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:238
+msgid "Desktops > 1199px"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:258
+msgid "Desktops > 991px"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:484
+msgid "Details"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:358
+#: public/includes/widgets/room-slider/room-slider-widget.php:419
+#: public/includes/widgets/room-slider/room-slider-widget.php:524
+#: public/includes/widgets/room-slider/room-slider-widget.php:578
+#: public/includes/widgets/room-slider/room-slider-widget.php:596
+#: public/includes/widgets/room-slider/room-slider-widget.php:614
+#: public/includes/widgets/room-slider/room-slider-widget.php:628
+msgid "Disable"
+msgstr ""
+
+#: public/templates/single/single-eshb_accomodation-style-two.php:152
+msgid "DISCOVER"
+msgstr ""
+
+#: admin/includes/admin-settings.php:440
+msgid "documentation "
+msgstr ""
+
+#. Name of the plugin
+#: admin/includes/admin-settings.php:439
+msgid "Easy Hotel"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Easy Hotel Plugin, A complete hotel booking solution for WordPress website."
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:40
+msgid "Easy Hotel Room Grid"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:46
+msgid "Easy Hotel Room Slider"
+msgstr ""
+
+#: class.easy-hotel.php:96
+msgid "Easy Hotel Thumbnail"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:12
+msgid "Edit Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:12
+msgid "Edit Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:12
+msgid "Edit Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:12
+msgid "Edit Service"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:148
+msgid "Email Address"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:357
+#: public/includes/widgets/room-slider/room-slider-widget.php:418
+#: public/includes/widgets/room-slider/room-slider-widget.php:523
+#: public/includes/widgets/room-slider/room-slider-widget.php:577
+#: public/includes/widgets/room-slider/room-slider-widget.php:595
+#: public/includes/widgets/room-slider/room-slider-widget.php:613
+#: public/includes/widgets/room-slider/room-slider-widget.php:627
+msgid "Enable"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:76
+#: admin/includes/post-types/booking/metaboxes.php:108
+#: admin/includes/post-types/session/metaboxes.php:72
+#: admin/includes/post-types/session/metaboxes.php:105
+msgid "End Date"
+msgstr ""
+
+#: admin/includes/shortcodes.php:13
+msgid "ESHB_View class not found."
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:137
+msgid "Excerpt Length"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1102
+msgid "Selected room is not available. Available room:"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:494
+#: public/includes/classes/class.view.php:372
+#: admin/includes/post-types/booking/hooks.php:125
+msgid "Extra Services"
+msgstr ""
+
+#: public/includes/classes/class.view.php:448
+msgid "Free"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Hour"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Hours"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:84
+#: admin/includes/post-types/booking/hooks.php:138
+#: admin/includes/post-types/booking/hooks.php:190
+msgid "Field"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:45
+#: public/templates/template-parts/grid-style-one.php:37
+#: public/includes/widgets/room-grid/style2.php:7
+#: public/includes/widgets/room-grid/styledefault.php:7
+#: public/includes/widgets/room-slider/style1.php:9
+#: public/includes/widgets/room-slider/style3.php:10
+#: public/includes/widgets/room-slider/style4.php:11
+msgctxt "Feer"
+msgid "From"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:125
+#: public/includes/widgets/room-slider/room-slider-widget.php:152
+msgid "Hide"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:579
+msgid "Hover"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://themewant.com/"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://themewant.com/downloads/hotel-booking/"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:867
+msgid "Icon"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:875
+msgid "Icon Color"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:886
+msgid "Icon Size"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:196
+msgid "Item"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:317
+msgid "Item Bottom Gap"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:292
+#: public/includes/widgets/room-slider/room-slider-widget.php:639
+msgid "Item Gap"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:460
+msgid "Label Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:471
+msgid "Label Typography"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:609
+msgid "Loop"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:281
+#: public/includes/widgets/room-slider/room-slider-widget.php:811
+#: public/includes/widgets/room-slider/room-slider-widget.php:940
+msgid "Margin"
+msgstr ""
+
+#: public/templates/single/single-eshb_accomodation-style-two.php:153
+msgid "More Rooms"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:144
+msgid "Name"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:353
+msgid "Navigation Dots"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:414
+msgid "Navigation Nav"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:477
+msgid "Navigation Top Gap"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:11
+msgid "New Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:11
+msgid "New Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:11
+msgid "New Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:11
+msgid "New Service"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:18
+msgid "No accomodations found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:17
+msgid "No accomodations found."
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:18
+msgid "No bookings found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:17
+msgid "No bookings found."
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:18
+msgid "No Seasons found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:17
+msgid "No Seasons found."
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:18
+msgid "No services found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:17
+msgid "No services found."
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:509
+msgid "Normal"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:110
+msgid "Number of Extra Beds"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:106
+msgid "Number of Rooms"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:378
+msgid "Opacity"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:221
+msgid "Overlay BG Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:237
+msgid "Overlay BG Hover Color"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Accomodation Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Booking Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Season Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Service Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into service"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:21
+#: admin/includes/post-types/booking/booking.php:21
+#: admin/includes/post-types/service/service.php:21
+#: admin/includes/post-types/session/session.php:21
+msgctxt ""
+"Overrides the “Remove featured image” phrase for this post type. Added in 4.3"
+msgid "Remove cover image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:20
+#: admin/includes/post-types/booking/booking.php:20
+#: admin/includes/post-types/service/service.php:20
+#: admin/includes/post-types/session/session.php:20
+msgctxt ""
+"Overrides the “Set featured image” phrase for this post type. Added in 4.3"
+msgid "Set cover image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this service"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:22
+#: admin/includes/post-types/booking/booking.php:22
+#: admin/includes/post-types/service/service.php:22
+#: admin/includes/post-types/session/session.php:22
+msgctxt ""
+"Overrides the “Use as featured image” phrase for this post type. Added in 4.3"
+msgid "Use as cover image"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:270
+#: public/includes/widgets/room-grid/room-grid-widget.php:548
+#: public/includes/widgets/room-grid/room-grid-widget.php:651
+#: public/includes/widgets/room-slider/room-slider-widget.php:796
+#: public/includes/widgets/room-slider/room-slider-widget.php:928
+msgid "Padding"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:16
+msgid "Parent Accomodations:"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:16
+msgid "Parent Bookings:"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:16
+msgid "Parent Seasons:"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:16
+msgid "Parent Services:"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:186
+msgid "Payment"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:200
+msgid "Payment Method"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:196
+msgid "Payment Status"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:152
+msgid "Phone Number"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:168
+msgid "Post Code"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:5
+msgctxt "Post type general name"
+msgid "Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:5
+msgctxt "Post type general name"
+msgid "Bookings"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:5
+msgctxt "Post type general name"
+msgid "Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:5
+msgctxt "Post type general name"
+msgid "Services"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:6
+msgctxt "Post type singular name"
+msgid "Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:6
+msgctxt "Post type singular name"
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:6
+msgctxt "Post type singular name"
+msgid "Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:6
+msgctxt "Post type singular name"
+msgid "Service"
+msgstr ""
+
+#: admin/includes/post-types/session/metaboxes.php:70
+#: admin/includes/post-types/session/metaboxes.php:103
+msgid "Price"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:478
+msgid "Price Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:453
+msgid "Pricing"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:490
+msgid "Pricing Typography"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:147
+#: public/includes/widgets/room-slider/room-slider-widget.php:178
+msgid "Project Show Per Page"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:102
+msgid "Room"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:80
+msgid "Rooms & Services"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter accomodations list"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter bookings list"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter Seasons list"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter services list"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Accomodations list"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Bookings list"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Seasons list"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Services list"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Accomodations list navigation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Bookings list navigation"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Seasons list navigation"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Services list navigation"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:15
+msgid "Search Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:15
+msgid "Search Bookings"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:15
+msgid "Search Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:15
+msgid "Search Services"
+msgstr ""
+
+#. Invalid nonce, handle the error
+#: public/templates/template-parts/search-results-contents.php:41
+msgid "No available accommodations found for the selected dates."
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:105
+#: public/includes/widgets/room-slider/room-slider-widget.php:95
+msgid "Select Style"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:208
+msgid "Service Charge"
+msgstr ""
+
+#: admin/includes/admin-settings.php:431
+msgid "Shortcode:"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:124
+#: public/includes/widgets/room-slider/room-slider-widget.php:151
+msgid "Show"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:149
+msgid "Show all feature icons"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:122
+msgid "Show Excerpt"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:318
+msgid "Slide To Scroll"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:209
+msgid "Slider Settings"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:75
+#: admin/includes/post-types/booking/metaboxes.php:107
+#: admin/includes/post-types/session/metaboxes.php:71
+#: admin/includes/post-types/session/metaboxes.php:104
+msgid "Start Date"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:164
+msgid "State"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:591
+msgid "Stop on Hover"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:573
+msgid "Stop On Interaction"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:348
+msgid "Style"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:99
+msgid "Style 1"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:100
+msgid "Style 2"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:101
+msgid "Style 3"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:102
+msgid "Style 4"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:768
+msgid "Sub Title"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:212
+msgid "Subtotal"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:298
+msgid "Tablets < 768px"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:278
+msgid "Tablets > 767px"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:185
+#: public/includes/widgets/room-slider/room-slider-widget.php:196
+msgid "Text"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:515
+#: public/includes/widgets/room-grid/room-grid-widget.php:586
+msgid "Text Color"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Accomodation archives"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Booking archives"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Season archives"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Service archives"
+msgstr ""
+
+#. Author of the plugin
+msgid "Themewant"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:356
+#: public/includes/widgets/room-slider/room-slider-widget.php:735
+msgid "Title"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:363
+msgid "Title Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:374
+msgid "Title Hover Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:387
+msgid "Title Typography"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:46
+msgid "To"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:55
+msgid "Allowed min time for this slot is"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:56
+msgid "Allowed max time for this slot is"
+msgstr ""
+
+#: public/includes/class.view.php:372
+msgid "All slots are Booked!"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:98
+msgid "Time Slots!"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Ops! This Reservation has been failed. Requried Minimum"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Ops! This Reservation has been failed. Requried Maximum"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Requried Minimum Nights:"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Requried Maximum Nights:"
+msgstr ""
+
+#: admin/includes/admin-settings.php:440
+msgid "to learn more in details."
+msgstr ""
+
+#: public/includes/classes/class.view.php:376
+msgid "Total"
+msgstr ""
+
+#: public/includes/classes/class.view.php
+msgid "Some previous dates are not allowed for booking today. We set buffer for today + "
+msgstr ""
+
+#: public/includes/classes/class.view.php:414
+msgid "Discounted Price"
+msgstr ""
+
+#: public/includes/classes/class.view.php:367
+msgid "Total Base Price"
+msgstr ""
+
+#: public/includes/classes/class.view.php:463
+msgid "Enter Your Detais"
+msgstr ""
+
+#: public/includes/classes/class.view.php:466
+msgid "Your name"
+msgstr ""
+
+#: public/includes/classes/class.view.php:467
+msgid "Your email"
+msgstr ""
+
+#: public/includes/classes/class.view.php:468
+msgid "Your phone"
+msgstr ""
+
+#: public/includes/classes/class.view.php:471
+msgid "Your message"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1691
+msgid "Maximum Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1699
+msgid "Available Room"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Adult and Children Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Adult Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Children Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Extra Bed Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Monday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Tuesday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Wednesday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Thursday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Friday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Saturday"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Sunday"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:200
+#: admin/includes/post-types/accomodation/metaboxes.php:234
+msgid "Total Capacity"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:188
+#: public/includes/widgets/room-slider/room-slider-widget.php:199
+msgid "Type your text here"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:635
+msgid "Typography"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:85
+#: admin/includes/post-types/booking/hooks.php:139
+#: admin/includes/post-types/booking/hooks.php:191
+msgid "Value"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:13
+msgid "View Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:13
+msgid "View Booking"
+msgstr ""
+
+#: public/templates/template-parts/grid-style-one.php:40
+#: public/includes/widgets/room-grid/room-grid-widget.php:187
+#: public/includes/widgets/room-slider/room-slider-widget.php:198
+#: public/includes/widgets/room-slider/style1.php:12
+#: public/includes/widgets/room-slider/style3.php:13
+#: public/includes/widgets/room-slider/style4.php:14
+msgid "View Details"
+msgstr ""
+
+#: public/includes/widgets/room-grid/style1.php:34
+#: public/includes/widgets/room-grid/styledefault.php:10
+msgid "view details"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:13
+msgid "View Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:13
+msgid "View Service"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:48
+msgid "W"
+msgstr ""
+
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Accomodations"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "All Accomodations"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "All Statuses"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Pending"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Confirmed"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Blocked"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Custom"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Month"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Quarter"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Year"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Apply Filter"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Ical Confirmed"
+msgstr ""
+
+#: admin/includes/plugin-scripts.php
+msgid "Billing email not found!"
+msgstr ""
