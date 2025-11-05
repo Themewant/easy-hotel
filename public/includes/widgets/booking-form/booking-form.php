@@ -61,6 +61,29 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
         return [ 'easy_hotel_category' ];
     }
 
+    public function get_accomodations() {
+        $args = array(
+            'post_type' => 'eshb_accomodation',
+            'posts_per_page' => -1,
+            'post_status'  => 'publish'
+        );
+
+        $accomodations = [
+            '0' => 'Default',
+        ];
+        $query = new WP_Query($args);
+        if($query->have_posts()) {
+            while($query->have_posts()) {
+                $query->the_post();
+                $id = get_the_ID();
+                $accomodations[$id] = get_the_title($id);
+            }
+        }
+
+        wp_reset_postdata();
+        return $accomodations;
+    }
+
     protected function register_controls() {
 
         $this->start_controls_section(
@@ -70,6 +93,18 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
                 'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
+
+        $this->add_control(
+            'accomodation_id',
+            [
+                'label'       => esc_html__( 'Accomodation', 'easy-hotel' ),
+                'type'        => Controls_Manager::SELECT,
+                'label_block' => false,                    
+                'separator'   => 'before', 
+                'default'     => '0',
+                'options'     => $this->get_accomodations()
+            ]   
+        );   
    
         $this->add_control(
             'form_style',
@@ -738,6 +773,14 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
     protected function render() {
         $settings = $this->get_settings_for_display();       
         $form_style = $settings['form_style'];
-        echo do_shortcode( '[eshb_booking_form style="'. $form_style .'"]' );
+        $accomodation_id = !empty($settings['accomodation_id']) ? $settings['accomodation_id'] : 0;
+
+        if(!empty($accomodation_id)) {
+            echo do_shortcode( '[eshb_booking_form accomodation_id='.$accomodation_id.' style="'. $form_style .'"]' );
+        }else {
+            if(is_singular( 'eshb_accomodation' )){
+                echo do_shortcode( '[eshb_booking_form style="'. $form_style .'"]' );
+            }   
+        }
     }
 }

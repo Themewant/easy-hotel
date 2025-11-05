@@ -157,6 +157,14 @@ class ESHB_View extends ESHB_MAIN{
 
     public function eshb_get_booking_form_html($accomodation_id = null, $style = 'style-one'){
 
+        if(is_singular( 'eshb_accomodation' ) && ($accomodation_id == null || empty($accomodation_id))){
+            $accomodation_id = get_the_ID();
+        }
+        
+        if($accomodation_id == null || empty($accomodation_id)){
+            return 'invalid accomodation';
+        }
+
         $eshb_settings = get_option( 'eshb_settings' );
         $booking_type = isset($eshb_settings['booking-type']) && !empty($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
         $booking_form_type = isset($eshb_settings['booking-form-type']) && !empty($eshb_settings['booking-form-type']) ? $eshb_settings['booking-form-type'] : 'default';
@@ -168,13 +176,6 @@ class ESHB_View extends ESHB_MAIN{
         global  $woocommerce;
 
         $style_class = $style;
-
-
-        if( $accomodation_id == null || empty($accomodation_id)){
-            global $post;
-            $accomodation_id = $post->ID;
-        }
-
         
         $hotel_core = new ESHB_Core();
 
@@ -205,7 +206,7 @@ class ESHB_View extends ESHB_MAIN{
         // Get the new date in 'Y-m-d' format
         $tomorrow = $date->format('Y-m-d');
         
-        $adult_capacity = $accomodation_metaboxes['adult_capacity']; 
+        $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 1; 
         $children_capacity = $accomodation_metaboxes['children_capacity']; 
         $room_visibility = in_array('rooms', $eshb_settings['booking-form-fields']) ? true : false;
         
@@ -576,11 +577,11 @@ class ESHB_View extends ESHB_MAIN{
                         <div class="eshb-form-group submition-wrapper"> 
                             <?php 
                                 if($booking_type == 'woocommerce'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
                                 <?php }else if($booking_type == 'surecart'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </button>
                                 <?php }else if($booking_type == 'booking_request'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
                                 <?php }else{ ?>
                                     <a class="eshb-form-submit-btn" href="<?php echo esc_url( $external_booking_link ); ?>" target="_blank" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </a>
                                 <?php }

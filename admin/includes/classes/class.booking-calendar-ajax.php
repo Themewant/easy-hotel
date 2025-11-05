@@ -423,7 +423,7 @@ class ESHB_Booking_Calendar_Ajax {
 
             $eshb_min_max_settings = get_option( 'eshb_min_max_settings', []);
             $required_min_nights = !empty($eshb_min_max_settings['required_min_nights']) ? $eshb_min_max_settings['required_min_nights'] : 1;
-            $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : '';
+            $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : 999;
 
             $eshb_week_settings = get_option( 'eshb_week_settings', [] );
             $string_check_in_day_error_msg = !empty($eshb_week_settings['string_check_in_day_error_msg']) ? $eshb_week_settings['string_check_in_day_error_msg'] : '';

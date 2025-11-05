@@ -743,4 +743,92 @@ class ESHB_Helper {
         $timestamp = strtotime( $time_string );
         return date_i18n( get_option('time_format'), $timestamp );
     }
+
+    public static function eshb_set_accomodation_localize($accomodation_id = null) {
+        $cart_url = site_url('/cart');
+        if(class_exists('woocommerce')) $cart_url = wc_get_cart_url();
+        
+        $min_max_settings = [
+            'calendar_start_date_buffer' => 0,
+            'required_min_nights' => 1,
+            'required_max_nights' => 999,
+        ];
+        $eshb_min_max_settings = apply_filters( 'eshb_min_max_global_settings_localize', $min_max_settings);
+        $calendar_start_date_buffer = !empty($eshb_min_max_settings['calendar_start_date_buffer']) ? $eshb_min_max_settings['calendar_start_date_buffer'] : 0;
+        $required_min_nights = !empty($eshb_min_max_settings['required_min_nights']) ? $eshb_min_max_settings['required_min_nights'] : 1;
+        $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : 999;
+    
+        $eshb_week_settings = apply_filters( 'eshb_week_settings', [] );
+        $string_check_in_day_error_msg = !empty($eshb_week_settings['string_check_in_day_error_msg']) ? $eshb_week_settings['string_check_in_day_error_msg'] : '';
+
+
+        // accomodation details metadata
+        $eshb_accomodation_metaboxes = false;
+        $is_it_single_day_booking_accomodation = false;
+
+        if(is_singular( 'eshb_accomodation' ) && ($accomodation_id == null || empty($accomodation_id))){
+            $accomodation_id = get_the_ID();
+        }
+
+        
+        $eshb_booking = new ESHB_Booking();
+        $start_date = '';
+        $end_date = '';
+        
+        if (isset($_GET['nonce']) && wp_verify_nonce( sanitize_text_field(wp_unslash($_GET['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
+            $start_date = !empty($_POST['start_date']) ? sanitize_text_field( wp_unslash($_POST['start_date']) ) : '';
+            $end_date = !empty($_POST['end_date']) ? sanitize_text_field( wp_unslash($_POST['end_date']) ) : '';
+        }
+
+        if($accomodation_id) {
+            $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
+            $available_rooms = $eshb_booking->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
+            $available_rooms = $available_rooms > 0 ? $available_rooms : 0;
+            $eshb_accomodation_metaboxes['available_rooms'] = $available_rooms;
+
+
+            $is_global_source_for_min_max = !empty($eshb_accomodation_metaboxes['is_global_source_for_min_max']) ? true : false;
+            if($is_global_source_for_min_max != true) {
+                $required_min_nights = !empty($eshb_accomodation_metaboxes['required_min_nights']) ? $eshb_accomodation_metaboxes['required_min_nights'] : 1;
+                $required_max_nights = !empty($eshb_accomodation_metaboxes['required_max_nights']) ? $eshb_accomodation_metaboxes['required_max_nights'] : 999;
+            }
+        }
+        
+        $eshb_translations = [
+            'maximumCapacity' => __('Maximum Capacity', 'easy-hotel'),
+            'availableCapacity' => __('Available Capacity', 'easy-hotel'),
+            'availableRoom' => __('Available Room', 'easy-hotel'),
+            'maximumAdultAndChildrenCapacity' => __('Maximum Adult and Children Capacity', 'easy-hotel'),
+            'maximumTimeSlot' => __('Allowed max time for this slot is', 'easy-hotel'),
+            'minimumTimeSlot' => __('Allowed min time for this slot is', 'easy-hotel'),
+            'minNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Minimum', 'easy-hotel'),
+            'maxNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel'),
+            'minNightsErrorMsgAvCal' => __('Requried Minimum Nights:', 'easy-hotel'),
+            'maxNightsErrorMsgAvCal' => __('Requried Maximum Nights:', 'easy-hotel'),
+        ];
+
+        $nonce_action = ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action');
+        wp_localize_script(
+            'eshb-public-script', 
+            'eshb_ajax',
+                [
+                    'ajaxurl'          => admin_url( 'admin-ajax.php' ),
+                    'adminURL'         => admin_url(),
+                    'wooCartUrl'       => $cart_url,
+                    'is_admin'         => is_admin(),
+                    'nonce'            => wp_create_nonce($nonce_action),
+                    'add_to_cart_reservation_nonce' => wp_create_nonce('eshb_add_to_cart_reservation_nonce'),
+                    'reservation_request_nonce' => wp_create_nonce('eshb_reservation_request_nonce'),
+                    'version'          => ESHB_VERSION,
+                    'pluginURL'        => ESHB_DIR_URL,
+                    'dateFormat'       => get_option( 'date_format' ),
+                    'requiredMinNights' => $required_min_nights,
+                    'requiredMaxNights' => $required_max_nights,
+                    'calendar_start_date_buffer' => $calendar_start_date_buffer,
+                    'checkInDayErrorMsg' => $string_check_in_day_error_msg,
+                    'currentAccomodationMeta' => $eshb_accomodation_metaboxes,
+                    'translations' => $eshb_translations
+                ]
+        );
+    }
 }

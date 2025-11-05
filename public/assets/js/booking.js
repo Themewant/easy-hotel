@@ -1904,7 +1904,7 @@
         let currentAccomodationMeta = eshb_ajax.currentAccomodationMeta;
         let translations = eshb_ajax.translations;
 
-        if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
+        if (currentAccomodationMeta == '' || (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin)) {
           let data = await ESHBPUBLICBOOKING.fetchAccomodationMeta(
             accomodationId,
             startDate,
@@ -1912,6 +1912,10 @@
           );
           currentAccomodationMeta = data.currentAccomodationMeta;
           translations = data.translations;
+
+          eshb_ajax.currentAccomodationMeta = currentAccomodationMeta;
+          eshb_ajax.requiredMinNights = data.requiredMinNights;
+          eshb_ajax.requiredMaxNights = data.requiredMaxNights;
         }
 
         // get current accomodation meta
