@@ -80,7 +80,7 @@ add_shortcode('eshb_accomodation_info', 'eshb_accomodation_info_shortcode');
 function eshb_booking_form_shortcode($atts) {
     // Create a new instance of the ESHB_View class
     $defaults = array(
-        'accomodation_id' => get_the_ID(),
+        'accomodation_id' => '',
         'style' => 'style-one',
     );
 
