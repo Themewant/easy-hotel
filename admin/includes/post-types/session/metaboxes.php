@@ -143,7 +143,7 @@ add_filter('manage_eshb_session_posts_columns', 'eshb_reorder_columns__session_p
 
 
 // remove unnecessary third party metaboxes
-add_action( 'add_meta_boxes', 'remove_my_custom_metabox', 99 );
-function remove_my_custom_metabox() {
+add_action( 'add_meta_boxes', 'eshb_remove_my_custom_metabox', 99 );
+function eshb_remove_my_custom_metabox() {
     remove_meta_box( 'slider_revolution_metabox', 'eshb_session', 'side' );
 }

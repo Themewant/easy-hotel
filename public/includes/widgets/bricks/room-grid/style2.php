@@ -1,3 +1,6 @@
+<?php 
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
 <div class="grid-item  wow fadeInUp animated" data-wow-delay="<?php echo esc_attr( $animation_delay )?>s">
     <div class="item-inner">
         

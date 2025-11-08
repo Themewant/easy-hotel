@@ -1,6 +1,6 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 use SureCart\Support\Currency;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Core {
 
     private static $_instance = null;
@@ -25,8 +25,12 @@ class ESHB_Core {
             return false;
         }
 
+        function eshb_html_email_filter_calback(){
+            return 'text/html';
+        }
+
         // Set content type to HTML
-        add_filter('wp_mail_content_type', function() { return 'text/html'; });
+        add_filter('wp_mail_content_type', 'eshb_html_email_filter_calback');
     
         // Set email headers
         $headers = array();
@@ -37,7 +41,8 @@ class ESHB_Core {
         $sent = wp_mail($to, $subject, $message, $headers);
     
         // Remove filter to avoid conflicts
-        remove_filter('wp_mail_content_type', function() { return 'text/html'; });
+        remove_filter('wp_mail_content_type', 'eshb_html_email_filter_calback');
+        
 
         if (!$sent) {
             //error_log('Email sending failed: ' . print_r(error_get_last(), true));

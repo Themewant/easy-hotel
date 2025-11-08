@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 class ESHB_Admin_Booking {
     public function __construct() {
         add_action( 'wp_after_insert_post', [$this, 'create_order_after_save_booking_post'], 10, 3 );

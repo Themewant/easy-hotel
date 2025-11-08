@@ -224,46 +224,46 @@
   margin-top: 10px;
 }
 
-.easy_hotel_usage_callback {
+.eshb_easy_hotel_usage_callback {
   border: 1px solid #ededed;
   border-radius: 10px;
   margin-bottom: 50px;
   padding: 30px;
 }
 
-.easy_hotel_help_support_callback {
+.eshb_easy_hotel_help_support_callback {
   border: 1px solid #ededed;
   border-radius: 10px;
   margin-bottom: 50px;
   padding: 30px;
 }
-.easy_hotel_help_support_callback .help-col-container {
+.eshb_easy_hotel_help_support_callback .help-col-container {
   display: flex;
   gap: 30px;
 }
-.easy_hotel_help_support_callback .help-col-container .help-col {
+.eshb_easy_hotel_help_support_callback .help-col-container .help-col {
   width: 44%;
   border: 1px solid #ededed;
   padding: 30px;
   border-radius: 20px;
   box-shadow: 2px 2px 30px #ededed;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist {
   display: flex;
   max-width: 100%;
   flex-wrap: wrap;
   gap: 20px;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-video-player {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-video-player {
   flex: 2 1 590px;
   min-width: 500px;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-video-player iframe {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-video-player iframe {
   width: 100%;
   height: 450px;
   border: none;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar {
   flex: 1 1 300px;
   min-width: 250px;
   max-height: 450px;
@@ -271,14 +271,14 @@
   background: #f9f9f9;
   border: 1px solid #ddd;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar h3 {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar h3 {
   margin: 0;
   padding: 10px;
   background: #eee;
   font-size: 16px;
   font-weight: bold;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -289,15 +289,15 @@
   box-shadow: 3px 3px 3px rgba(119, 119, 119, 0.1607843137);
   transition: background 0.2s ease;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item:hover {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item:hover {
   background: #f0f0f0;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item img {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item img {
   width: 120px !important;
   height: 68px;
   object-fit: cover;
 }
-.easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item .eshb-video-title {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist .eshb-playlist-sidebar .eshb-playlist-item .eshb-video-title {
   flex: 1;
   font-size: 14px;
   font-weight: 500;
@@ -1145,22 +1145,22 @@ body.post-type-eshb_payment .input-error {
   color: #555;
 }
 
-.easy_hotel_help_support_callback .eshb-help-support {
+.eshb_easy_hotel_help_support_callback .eshb-help-support {
   padding: 24px 0 0 0;
 }
 
-.easy_hotel_help_support_callback .eshb-help-support h2 {
+.eshb_easy_hotel_help_support_callback .eshb-help-support h2 {
   font-size: 32px;
 }
 
-.easy_hotel_help_support_callback .help-col-container {
+.eshb_easy_hotel_help_support_callback .help-col-container {
   display: flex;
   flex-wrap: wrap;
   gap: 22px;
   margin-bottom: 32px;
 }
 
-.easy_hotel_help_support_callback .help-col {
+.eshb_easy_hotel_help_support_callback .help-col {
   background-color: #fff;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -1168,7 +1168,7 @@ body.post-type-eshb_payment .input-error {
   padding: 24px;
 }
 
-.easy_hotel_help_support_callback .help-col h3 {
+.eshb_easy_hotel_help_support_callback .help-col h3 {
   margin-top: 0;
   margin-bottom: 16px;
   font-size: 20px;
@@ -1177,24 +1177,24 @@ body.post-type-eshb_payment .input-error {
   letter-spacing: 0.01em;
 }
 
-.easy_hotel_help_support_callback .help-col .fa-facebook,
-.easy_hotel_help_support_callback .help-col .fa-youtube,
-.easy_hotel_help_support_callback .help-col .fa-linkedin {
+.eshb_easy_hotel_help_support_callback .help-col .fa-facebook,
+.eshb_easy_hotel_help_support_callback .help-col .fa-youtube,
+.eshb_easy_hotel_help_support_callback .help-col .fa-linkedin {
   padding: 3px 5px;
   font-size: 20px;
   margin-right: 4px;
 }
 
-.easy_hotel_help_support_callback .help-col p,
-.easy_hotel_help_support_callback .help-col ul {
+.eshb_easy_hotel_help_support_callback .help-col p,
+.eshb_easy_hotel_help_support_callback .help-col ul {
   margin-bottom: 0.7em;
 }
 
-.easy_hotel_help_support_callback .help-col ul {
+.eshb_easy_hotel_help_support_callback .help-col ul {
   padding-left: 18px;
 }
 
-.easy_hotel_help_support_callback .help-col a {
+.eshb_easy_hotel_help_support_callback .help-col a {
   display: inline-block;
   background: linear-gradient(90deg, #ab8965 0%, #70533a 100%);
   text-decoration: none;
@@ -1207,36 +1207,36 @@ body.post-type-eshb_payment .input-error {
   font-size: 1em;
 }
 
-.easy_hotel_help_support_callback .help-col a:hover {
+.eshb_easy_hotel_help_support_callback .help-col a:hover {
   background: linear-gradient(90deg, #70533a 0%, #ab8965 100%);
   box-shadow: 0 4px 16px rgba(171, 137, 101, 0.18);
   transform: translateY(-2px) scale(1.04);
   text-decoration: none;
 }
 
-.easy_hotel_help_support_callback .eshb-youtube-playlist {
+.eshb_easy_hotel_help_support_callback .eshb-youtube-playlist {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
 }
 
-.easy_hotel_help_support_callback .eshb-video-player {
+.eshb_easy_hotel_help_support_callback .eshb-video-player {
   flex: 2 1 320px;
   min-width: 320px;
 }
 
-.easy_hotel_help_support_callback .eshb-video-player iframe {
+.eshb_easy_hotel_help_support_callback .eshb-video-player iframe {
   width: 100%;
   min-height: 220px;
   border-radius: 8px;
 }
 
-.easy_hotel_help_support_callback .eshb-playlist-sidebar {
+.eshb_easy_hotel_help_support_callback .eshb-playlist-sidebar {
   flex: 1 1 180px;
   min-width: 180px;
 }
 
-.easy_hotel_help_support_callback .eshb-playlist-item {
+.eshb_easy_hotel_help_support_callback .eshb-playlist-item {
   background: #f8f6f3;
   border: none;
   border-radius: 8px;
@@ -1248,23 +1248,23 @@ body.post-type-eshb_payment .input-error {
   transition: background 0.15s;
 }
 
-.easy_hotel_help_support_callback .eshb-playlist-item:hover {
+.eshb_easy_hotel_help_support_callback .eshb-playlist-item:hover {
   background: #f0e8df;
 }
 
 @media (max-width: 900px) {
-  .easy_hotel_help_support_callback .help-col-container {
+  .eshb_easy_hotel_help_support_callback .help-col-container {
     grid-template-columns: 1fr;
     gap: 18px;
   }
-  .easy_hotel_help_support_callback .help-col {
+  .eshb_easy_hotel_help_support_callback .help-col {
     min-width: 0;
   }
-  .easy_hotel_help_support_callback .eshb-youtube-playlist {
+  .eshb_easy_hotel_help_support_callback .eshb-youtube-playlist {
     flex-direction: column;
   }
 }
-.easy_hotel_help_support_callback .eshb-social-icons a {
+.eshb_easy_hotel_help_support_callback .eshb-social-icons a {
   display: inline-block;
   padding: 4px 7px;
   border-radius: 5px;
@@ -1276,45 +1276,45 @@ body.post-type-eshb_payment .input-error {
   color: #fff !important;
 }
 
-.easy_hotel_help_support_callback .eshb-social-icons a:hover {
+.eshb_easy_hotel_help_support_callback .eshb-social-icons a:hover {
   background: #e6e6e6;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-docs {
+.eshb_easy_hotel_help_support_callback .help-col .btn-docs {
   background: #e8f0fe;
   color: #4360ee;
   font-weight: 600;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-docs:hover {
+.eshb_easy_hotel_help_support_callback .help-col .btn-docs:hover {
   background: #4360ee;
   color: #fff;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-support {
+.eshb_easy_hotel_help_support_callback .help-col .btn-support {
   background: #eafaf1;
   color: #00bfae;
   font-weight: 600;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-support:hover {
+.eshb_easy_hotel_help_support_callback .help-col .btn-support:hover {
   background: #00bfae;
   color: #fff;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-community {
+.eshb_easy_hotel_help_support_callback .help-col .btn-community {
   background: #fff3e0;
   color: #ff9800;
   font-weight: 600;
 }
 
-.easy_hotel_help_support_callback .help-col .btn-community:hover {
+.eshb_easy_hotel_help_support_callback .help-col .btn-community:hover {
   background: #ff9800;
   color: #fff;
 }
 
 /* Dashicon backgrounds for Help & Support boxes */
-.easy_hotel_help_support_callback .eshb-dashicon-bg {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1328,39 +1328,39 @@ body.post-type-eshb_payment .input-error {
   box-shadow: 0 1px 4px rgba(171, 137, 101, 0.06);
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg.docs {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg.docs {
   background: #e8f0fe;
   color: #4360ee;
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg.support {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg.support {
   background: #eafaf1;
   color: #00bfae;
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg.community {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg.community {
   background: #fff3e0;
   color: #ff9800;
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg .dashicons {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg .dashicons {
   font-size: 22px;
   width: 22px;
   height: 22px;
   line-height: 1;
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg.follow {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg.follow {
   background: #f3e8fd;
   color: #8e24aa;
 }
 
-.easy_hotel_help_support_callback .eshb-dashicon-bg.video {
+.eshb_easy_hotel_help_support_callback .eshb-dashicon-bg.video {
   background: #fdeaea;
   color: #ff0000;
 }
 
-.easy_hotel_help_support_callback .help-col-video {
+.eshb_easy_hotel_help_support_callback .help-col-video {
   width: 100%;
   max-width: -webkit-fill-available;
   background: #fff;
@@ -1373,7 +1373,7 @@ body.post-type-eshb_payment .input-error {
 }
 
 @media (max-width: 900px) {
-  .easy_hotel_help_support_callback .help-col-video {
+  .eshb_easy_hotel_help_support_callback .help-col-video {
     padding: 22px 10px 18px 10px;
   }
 }

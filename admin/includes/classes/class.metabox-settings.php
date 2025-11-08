@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Metabox_Settings {
 
     protected $title_actions = array();

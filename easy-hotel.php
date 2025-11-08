@@ -29,7 +29,7 @@
     include 'class.easy-hotel.php';
 
     add_action( 'plugins_loaded', function(){
-        register_activation_hook(__FILE__, 'create_easy_hotel_pages');
+        register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
             ESHB_MAIN::instance();
     }, 12 );
     

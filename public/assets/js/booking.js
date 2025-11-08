@@ -419,13 +419,13 @@
       locale: {
         format: "YYYY-MM-DD",
         separator: " - ",
-        applyLabel: daterangepicker_i18n.applyLabel,
-        cancelLabel: daterangepicker_i18n.cancelLabel,
-        holidayTooltip: daterangepicker_i18n.holidayTooltip,
-        BookedTooltip: daterangepicker_i18n.BookedTooltip,
-        fromLabel: daterangepicker_i18n.fromLabel,
-        toLabel: daterangepicker_i18n.toLabel,
-        customRangeLabel: daterangepicker_i18n.customRangeLabel,
+        applyLabel: eshb_daterangepicker_i18n.applyLabel,
+        cancelLabel: eshb_daterangepicker_i18n.cancelLabel,
+        holidayTooltip: eshb_daterangepicker_i18n.holidayTooltip,
+        BookedTooltip: eshb_daterangepicker_i18n.BookedTooltip,
+        fromLabel: eshb_daterangepicker_i18n.fromLabel,
+        toLabel: eshb_daterangepicker_i18n.toLabel,
+        customRangeLabel: eshb_daterangepicker_i18n.customRangeLabel,
         daysOfWeek: moment.weekdaysShort(),
         firstDay: 1,
       },
@@ -1330,7 +1330,7 @@
       $.post(
         eshb_ajax.ajaxurl,
         {
-          action: "get_disabled_dates_by_accomodation_id",
+          action: "eshb_get_disabled_dates_by_accomodation_id",
           accomodation_id: accomodationId,
           nonce: eshb_ajax.nonce,
         },
@@ -1762,7 +1762,7 @@
       $.post(
         eshb_ajax.ajaxurl,
         {
-          action: "get_available_rooms_counts_data",
+          action: "eshb_get_available_rooms_counts_data",
           accomodationId,
           startDate,
           endDate,
@@ -2156,7 +2156,7 @@
       $.post(
         eshb_ajax.ajaxurl,
         {
-          action: "get_booking_prices",
+          action: "eshb_get_booking_prices",
           selectedServices: JSON.stringify(selectedServices),
           roomQuantity,
           adultQuantity,
@@ -2359,7 +2359,7 @@
         endTime = $(form)
           .find('.eshb-time-slot.selected input[name="end_time"]')
           .val(),
-        action = "add_to_cart_reservation";
+        action = "eshb_add_to_cart_reservation";
 
       if ($(form).find('input[name="adult_quantity"]').length) {
         adultQuantity = $(form).find('input[name="adult_quantity"]').val();
@@ -2383,7 +2383,7 @@
       let customer = {};
 
       if (bookingType == "booking_request") {
-        action = "send_reservation_request";
+        action = "eshb_send_reservation_request";
        
 
         let customerName = $(form).find('input[name="customer_name"]').val();
@@ -2526,15 +2526,25 @@
       // return if elements not existing
       if (!document.querySelector("select.eshb-customer-country")) return;
 
-      let countriesData = await fetch(
-        "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/refs/heads/master/json/countries%2Bstates%2Bcities.json"
-      )
+      let currienciesData = await fetch(eshb_ajax.pluginURL + "public/assets/lib/currency.json")
         .then((data) => {
           return data.json();
         })
         .catch((err) => {
           console.log("country fetch error " + err);
         });
+
+      let countriesData = await fetch(eshb_ajax.pluginURL + "public/assets/lib/countries.json")
+        .then((data) => {
+          return data.json();
+        })
+        .catch((err) => {
+          console.log("country fetch error " + err);
+        });
+
+      console.log('currienciesData', currienciesData);
+      console.log('countriesData', countriesData);
+      
 
       const currencySelect = document.querySelector(
         "select.eshb-payment-currency"
@@ -2543,7 +2553,6 @@
         "select.eshb-customer-country"
       );
       const stateSelect = document.querySelector("select.eshb-customer-state");
-      const citySelect = document.querySelector("select.eshb-customer-city");
       const savedCurrencyValue = currencySelect
         ? currencySelect.getAttribute("data-saved-value")
         : "default";
@@ -2557,7 +2566,7 @@
         // mount country
         countriesData.forEach((country) => {
           const opt = document.createElement("option");
-          opt.value = country.iso2.trim();
+          opt.value = country.code2.trim();
           opt.text = country.name;
           if (savedCountryValue !== "") {
             if (opt.value == savedCountryValue) {
@@ -2569,10 +2578,10 @@
 
         // mount currency
         if (currencySelect) {
-          countriesData.forEach((country) => {
+          Object.entries(currienciesData).forEach(([code, data]) => {
             const opt = document.createElement("option");
-            opt.value = country.currency.trim();
-            opt.text = country.currency;
+            opt.value = code.trim();
+            opt.text = data.name;
             if (savedCurrencyValue !== "") {
               if (opt.value == savedCurrencyValue) {
                 opt.selected = true;
@@ -2581,6 +2590,7 @@
             currencySelect.appendChild(opt);
           });
         }
+        
       }
 
       countrySelect.addEventListener("change", function () {
@@ -2590,8 +2600,9 @@
         //citySelect.innerHTML = '<option value="">Select City</option>';
 
         const country = countriesData.find(
-          (c) => c.iso2 === selectedCountryCode
+          (c) => c.code2 === selectedCountryCode
         );
+        
         if (country && country.states) {
           country.states.forEach((state) => {
             const opt = document.createElement("option");

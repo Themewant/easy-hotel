@@ -1101,7 +1101,7 @@ class Eshb_Room_Slider_Widget_Bricks  extends \Bricks\Element {
         ?>
 
         <div <?php echo esc_attr($this->render_attributes('_root')) ?>
-            data-swiper='<?php echo json_encode([
+            data-swiper='<?php echo esc_attr(wp_json_encode([
                 "slidesPerView"   => !empty($col_xl) ? (int) $col_xl : 4,
                 "speed"           => !empty($autoplaySpeed) ? (int) $autoplaySpeed : 1000,
                 "slidesPerGroup"  => !empty($slidesToScroll) ? (int) $slidesToScroll : 1,
@@ -1121,7 +1121,7 @@ class Eshb_Room_Slider_Widget_Bricks  extends \Bricks\Element {
                     1199 => !empty($col_lg) ? ["slidesPerView" => (int) $col_lg] : null,
                     1399 => ["slidesPerView" => (int) $col_xl, "spaceBetween" => (int) $item_gap],
                 ]
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>'>
+            ])); ?>'>
 
             <div class="room_slider-inner-wrapper room_slider-inner-wrapper-<?php echo esc_attr($unique); ?> section-dark text-light no-top no-bottom position-relative overflow-hidden z-1000">            
                 <div class="swiper rt_room_slider-<?php echo esc_attr($unique); ?> rt_room_slider <?php echo esc_attr($sstyle)?> eshb-item-grid">

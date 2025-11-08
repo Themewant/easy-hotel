@@ -664,7 +664,7 @@ if ( ! class_exists( 'ESHB_Setup' ) ) {
 
           $query['display'] = 'swap';
 
-          wp_enqueue_style( 'csf-google-web-fonts', esc_url( add_query_arg( $query, '//fonts.googleapis.com/css' ) ), array(), ESHB_VERSION );
+          wp_enqueue_style( 'eshb-google-web-fonts', esc_url( add_query_arg( $query, '//fonts.googleapis.com/css' ) ), array(), ESHB_VERSION );
 
         }
 
@@ -676,9 +676,9 @@ if ( ! class_exists( 'ESHB_Setup' ) ) {
             $fonts[] = $family . ( ( ! empty( $styles ) ) ? ':'. implode( ',', $styles ) : '' );
           }
 
-          wp_enqueue_script( 'csf-google-web-fonts', self::include_plugin_url( 'assets/js/webfont.js'), array(), ESHB_VERSION, true );
+          wp_enqueue_script( 'eshb-google-web-fonts', self::include_plugin_url( 'assets/js/webfont.js'), array(), ESHB_VERSION, true );
 
-          wp_localize_script( 'csf-google-web-fonts', 'WebFontConfig', array( 'google' => array( 'families' => $fonts ) ) );
+          wp_localize_script( 'eshb-google-web-fonts', 'eshb_webFontConfig', array( 'google' => array( 'families' => $fonts ) ) );
 
         }
 
@@ -712,7 +712,7 @@ if ( ! class_exists( 'ESHB_Setup' ) ) {
 
           wp_add_inline_style(
               'eshb-custom-style',
-              wp_strip_all_tags( self::$css )
+              sanitize_textarea_field( self::$css )
           );
 
       }

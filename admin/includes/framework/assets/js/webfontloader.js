@@ -684,5 +684,5 @@
           })
         : "undefined" !== typeof module && module.exports
         ? (module.exports = Z)
-        : ((window.WebFont = Z), window.WebFontConfig && Y.load(window.WebFontConfig));
+        : ((window.WebFont = Z), window.eshb_webFontConfig && Y.load(window.eshb_webFontConfig));
 })();

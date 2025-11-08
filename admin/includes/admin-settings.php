@@ -598,7 +598,7 @@ add_action( 'plugins_loaded', function(){
         'fields' => array(
               array(
                 'type'     => 'callback',
-                'function' => 'easy_hotel_usage_callback',
+                'function' => 'eshb_easy_hotel_usage_callback',
               ),
             )
           )
@@ -823,7 +823,7 @@ add_action( 'plugins_loaded', function(){
         'fields' => array(
               array(
                 'type'     => 'callback',
-                'function' => 'easy_hotel_help_support_callback',
+                'function' => 'eshb_easy_hotel_help_support_callback',
               ),
             )
           )
@@ -833,10 +833,10 @@ add_action( 'plugins_loaded', function(){
     
       
   }
-  function easy_hotel_usage_callback() {
+  function eshb_easy_hotel_usage_callback() {
     ?>
 
-      <div class="easy_hotel_usage_callback">
+      <div class="eshb_easy_hotel_usage_callback">
         <h3> <?php echo esc_html__('Shortcode:', 'easy-hotel')?></h3>
         <div>
           <p><strong>Archive Grid: </strong><?php echo esc_html__('[eshb_accomodation_grid]', 'easy-hotel')?></p>
@@ -859,10 +859,10 @@ add_action( 'plugins_loaded', function(){
 
   }
 
-  function easy_hotel_help_support_callback() {
+  function eshb_easy_hotel_help_support_callback() {
       ?>
 
-      <div class="easy_hotel_help_support_callback">
+      <div class="eshb_easy_hotel_help_support_callback">
         <div class="eshb-help-support">
       
           <h2><?php echo esc_html__( 'Welcome to Easy Hotel Booking – Help & Support', 'easy-hotel' )?></h2>

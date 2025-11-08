@@ -62,5 +62,5 @@ function eshb_admin_enqueue_scripts (){
 
     
     // Pass translations to JavaScript
-    wp_localize_script('eshb-date-range-picker-js', 'daterangepicker_i18n', $calendar_translations);
+    wp_localize_script('eshb-date-range-picker-js', 'eshb_daterangepicker_i18n', $calendar_translations);
 }

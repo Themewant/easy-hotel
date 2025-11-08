@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 $settings = [];
 $thumbnail_size = 'eshb_thumbnail';
 $excerpt_length = 25;

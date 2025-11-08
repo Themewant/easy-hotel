@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 class ESHB_Session_Manager {
 
     protected $cookie_name = 'eshb_session';

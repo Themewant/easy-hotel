@@ -2,6 +2,7 @@
 use SureCart\Models\Order;
 use SureCart\Models\Checkout;
 use SureCart\Models\Customer;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 
 class ESHB_Booking_Calendar {
     public $plugin_settings = array();
@@ -25,15 +26,15 @@ class ESHB_Booking_Calendar {
         $today_date = gmdate("Y-m-d");
         $default_end_date = gmdate('Y-m-d', strtotime('+14 days'));
 
+        // use defaults
+        $start_date = $today_date;
+        $end_date = $default_end_date;
+        $current_status = $this->calendar_settings['current_status'];
+        $current_accomodation = $this->calendar_settings['current_accomodation'];
+        $booking_period = $this->calendar_settings['booking_period'];
+
         // Verify nonce for form processing
-        if (!empty($_POST['nonce']) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('booking_calendar_nonce'))) {
-            // Nonce verification failed, use defaults
-            $start_date = $today_date;
-            $end_date = $default_end_date;
-            $current_status = $this->calendar_settings['current_status'];
-            $current_accomodation = $this->calendar_settings['current_accomodation'];
-            $booking_period = $this->calendar_settings['booking_period'];
-        } else {
+        if (isset($_POST['nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('booking_calendar_nonce'))) {
             // Sanitize and validate GET parameters
             $start_date = !empty($_POST['start-date']) ? sanitize_text_field(wp_unslash($_POST['start-date'])) : $today_date;
             $end_date = !empty($_POST['end-date']) ? sanitize_text_field(wp_unslash($_POST['end-date'])) : $default_end_date;

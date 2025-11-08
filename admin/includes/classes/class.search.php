@@ -16,18 +16,18 @@ class ESHB_Search {
     public function __construct() {
 
 		add_action( 'plugins_loaded', [ $this, 'init' ] );
-        add_action( "wp_ajax_nopriv_get_disabled_dates_by_accomodation_id", array ( $this, 'get_disabled_dates_by_accomodation_id' ) );
-        add_action( "wp_ajax_get_disabled_dates_by_accomodation_id",        array ( $this, 'get_disabled_dates_by_accomodation_id' ) );
+        add_action( "wp_ajax_nopriv_eshb_get_disabled_dates_by_accomodation_id", array ( $this, 'eshb_get_disabled_dates_by_accomodation_id' ) );
+        add_action( "wp_ajax_eshb_get_disabled_dates_by_accomodation_id",        array ( $this, 'eshb_get_disabled_dates_by_accomodation_id' ) );
 
 	}
 
     public function init() {
 		// Add Plugin actions
-		add_filter('theme_page_templates', [$this, 'register_eshb_page_template']);
-        add_filter('template_include', [$this, 'load_eshb_template']);
+		add_filter('theme_page_templates', [$this, 'eshb_register_page_template']);
+        add_filter('template_include', [$this, 'eshb_load_template']);
 	}
 
-    public function search_page_by_title( $page_title, $post_type = 'page' ) {
+    public function eshb_search_page_by_title( $page_title, $post_type = 'page' ) {
         // Set up the arguments for WP_Query
         $args = array(
             'post_type'      => $post_type,
@@ -48,7 +48,7 @@ class ESHB_Search {
         return false;
     }
 
-    public function get_disabled_dates_by_accomodation_id($accomodation_id, $start_date = '', $end_date = '') {
+    public function eshb_get_disabled_dates_by_accomodation_id($accomodation_id, $start_date = '', $end_date = '') {
 
         // Verify nonce for security
         if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
@@ -253,7 +253,7 @@ class ESHB_Search {
         $all_dates = apply_filters('eshb_get_disabled_dates_in_search', $all_dates, $accomodation_id, $accomodation_metas);
 
 
-        if(isset($_POST['action']) && $_POST['action'] == 'get_disabled_dates_by_accomodation_id'){
+        if(isset($_POST['action']) && $_POST['action'] == 'eshb_get_disabled_dates_by_accomodation_id'){
             wp_send_json_success($all_dates);
             wp_die();
         }else{
@@ -381,13 +381,13 @@ class ESHB_Search {
         return $available_accomodation_ids;
     }
     
-    public function register_eshb_page_template($templates) {
+    public function eshb_register_page_template($templates) {
         $templates['easy-hotel-search.php'] = 'Easy Hotel Search';
         $templates['easy-hotel-search-result.php'] = 'Easy Hotel Search Result';
         return $templates;
     }
 
-    public function load_eshb_template($template) {
+    public function eshb_load_template($template) {
         
         global $post;
     

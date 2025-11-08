@@ -1,5 +1,6 @@
 <?php
 use SureCart\Models\Coupon;
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Coupon {
 
     public function __construct() {
@@ -172,6 +173,5 @@ class ESHB_Coupon {
 	}
 
 }
-
 // Initialize the class
 $eshb_coupon = new ESHB_Coupon();
