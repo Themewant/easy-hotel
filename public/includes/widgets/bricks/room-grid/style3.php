@@ -1,3 +1,6 @@
+<?php 
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+?>
 <div class="grid-item relative text-center wow fadeInUp animated" data-wow-delay="<?php echo esc_attr( $animation_delay )?>s">
     <div class="relative overflow-hidden">
         <div class="p-0 px-3 abs fw-600 ms-3 mt-3 best-seller">

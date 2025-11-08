@@ -1,3 +1,6 @@
+<?php 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
+?>
 <div class="easy-hotel">
     <div class="eshb-archive-wrapper eshb-container">
         <?php

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 // change product permalink to accomodation permalink at shop page
 add_filter('woocommerce_product_get_permalink', function($url, $product) {
     if (!$product || !is_object($product)) {
@@ -15,9 +16,9 @@ add_filter('woocommerce_product_get_permalink', function($url, $product) {
     return $url;
 }, 10, 2);
 
-add_filter('post_type_link', 'custom_product_permalink', 10, 2);
+add_filter('post_type_link', 'eshb_custom_product_permalink', 10, 2);
 
-function custom_product_permalink($url, $post) {
+function eshb_custom_product_permalink($url, $post) {
     if (!$post || !is_object($post) || $post->post_type !== 'product') {
         return $url;
     }
@@ -26,12 +27,12 @@ function custom_product_permalink($url, $post) {
 
     if (!empty($accomodation_id)) {
         // Temporarily remove the filter to prevent infinite loop
-        remove_filter('post_type_link', 'custom_product_permalink', 10);
+        remove_filter('post_type_link', 'eshb_custom_product_permalink', 10);
         
         $accomodation_permalink = get_permalink($accomodation_id);
         
         // Add the filter back
-        add_filter('post_type_link', 'custom_product_permalink', 10, 2);
+        add_filter('post_type_link', 'eshb_custom_product_permalink', 10, 2);
 
         if ($accomodation_permalink) {
             return $accomodation_permalink;
@@ -101,8 +102,8 @@ add_filter('woocommerce_order_item_permalink', function($url, $item, $order) {
 
 
 // hide from woocommece product query
-add_action('woocommerce_product_query', 'hide_products_with_accommodation_id');
-function hide_products_with_accommodation_id($q) {
+add_action('woocommerce_product_query', 'eshb_hide_products_with_accommodation_id');
+function eshb_hide_products_with_accommodation_id($q) {
     $meta_query = $q->get('meta_query');
 
     $meta_query[] = array(
@@ -113,9 +114,9 @@ function hide_products_with_accommodation_id($q) {
     $q->set('meta_query', $meta_query);
 }
 
-add_filter('woocommerce_related_products', 'remove_related_products_with_accommodation_id', 10, 3);
+add_filter('woocommerce_related_products', 'eshb_remove_related_products_with_accommodation_id', 10, 3);
 
-function remove_related_products_with_accommodation_id($related_posts, $product_id, $args) {
+function eshb_remove_related_products_with_accommodation_id($related_posts, $product_id, $args) {
     $filtered = [];
 
     foreach ($related_posts as $related_product_id) {

@@ -6,6 +6,8 @@ use SureCart\Models\ManualPaymentMethod;
 use SureCart\Models\Customer;
 use SureCart\Models\ShippingMethod;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 class ESHB_Booking_Calendar_Ajax {
     public function __construct() {
         add_action( "wp_ajax_eshb_get_booking_data_tables", [$this, 'eshb_get_booking_data']  );

@@ -357,7 +357,7 @@ if ( ! class_exists( 'ESHB_Options' ) ) {
     public function save_options( $data ) {
 
       if ( $this->args['database'] === 'transient' ) {
-        set_transient( $this->unique, $data, $this->args['transient_time'] );
+        set_transient( "eshb_{$this->unique}", $data, $this->args['transient_time'] );
       } else if ( $this->args['database'] === 'theme_mod' ) {
         set_theme_mod( $this->unique, $data );
       } else if ( $this->args['database'] === 'network' ) {
@@ -376,7 +376,7 @@ if ( ! class_exists( 'ESHB_Options' ) ) {
     public function get_options() {
 
       if ( $this->args['database'] === 'transient' ) {
-        $this->options = get_transient( $this->unique );
+        $this->options = get_transient( "eshb_{$this->unique}" );
       } else if ( $this->args['database'] === 'theme_mod' ) {
         $this->options = get_theme_mod( $this->unique );
       } else if ( $this->args['database'] === 'network' ) {

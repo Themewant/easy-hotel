@@ -1,5 +1,4 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 use SureCart\Support\Currency;
 use SureCart\Models\Product;
 use SureCart\Models\Price;
@@ -9,6 +8,8 @@ use SureCart\Models\Order;
 use SureCart\Models\Checkout;
 use SureCart\Models\Customer;
 use SureCart\Models\Coupon;
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class ESHB_Booking {
 
@@ -43,18 +44,18 @@ class ESHB_Booking {
 		add_action(	'save_post_eshb_booking', [$this, 'send_booking_email_notification_for_booking_status'], 20, 3 );
 		add_filter('woocommerce_payment_complete_order_status', [$this, 'filter_status_based_on_booking_meta'], 10, 2);
 		
-		add_action( "wp_ajax_nopriv_get_extra_services_charge", [$this, 'get_extra_services_charge'] );
-        add_action( "wp_ajax_get_extra_services_charge", [$this, 'get_extra_services_charge'] );
-        add_action( "wp_ajax_nopriv_get_booking_prices", [$this, 'get_booking_prices'] );
-        add_action( "wp_ajax_get_booking_prices", [$this, 'get_booking_prices'] );
-		add_action( "wp_ajax_nopriv_add_to_cart_reservation", [$this, 'add_to_cart_reservation'] );
-		add_action( "wp_ajax_add_to_cart_reservation", [$this, 'add_to_cart_reservation'] );
-		add_action( "wp_ajax_nopriv_send_reservation_request", [$this, 'send_reservation_request'] );
-		add_action( "wp_ajax_send_reservation_request", [$this, 'send_reservation_request'] );
-		add_action( 'wp_ajax_nopriv_get_accomodation_available_capacity_counts', [ $this, 'get_accomodation_available_capacity_counts' ] );
-        add_action( 'wp_ajax_get_accomodation_available_capacity_counts', [ $this, 'get_accomodation_available_capacity_counts' ] );
-		add_action( 'wp_ajax_nopriv_get_available_rooms_counts_data', [ $this, 'get_available_rooms_counts_data' ] );
-        add_action( 'wp_ajax_get_available_rooms_counts_data', [ $this, 'get_available_rooms_counts_data' ] );
+		add_action( "wp_ajax_nopriv_eshb_get_extra_services_charge", [$this, 'eshb_get_extra_services_charge'] );
+        add_action( "wp_ajax_eshb_get_extra_services_charge", [$this, 'eshb_get_extra_services_charge'] );
+        add_action( "wp_ajax_nopriv_eshb_get_booking_prices", [$this, 'eshb_get_booking_prices'] );
+        add_action( "wp_ajax_eshb_get_booking_prices", [$this, 'eshb_get_booking_prices'] );
+		add_action( "wp_ajax_nopriv_eshb_add_to_cart_reservation", [$this, 'eshb_add_to_cart_reservation'] );
+		add_action( "wp_ajax_eshb_add_to_cart_reservation", [$this, 'eshb_add_to_cart_reservation'] );
+		add_action( "wp_ajax_nopriv_eshb_send_reservation_request", [$this, 'eshb_send_reservation_request'] );
+		add_action( "wp_ajax_eshb_send_reservation_request", [$this, 'eshb_send_reservation_request'] );
+		add_action( 'wp_ajax_nopriv_eshb_get_accomodation_available_capacity_counts', [ $this, 'eshb_get_accomodation_available_capacity_counts' ] );
+        add_action( 'wp_ajax_eshb_get_accomodation_available_capacity_counts', [ $this, 'eshb_get_accomodation_available_capacity_counts' ] );
+		add_action( 'wp_ajax_nopriv_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
+        add_action( 'wp_ajax_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
 		
 	}
 
@@ -351,7 +352,7 @@ class ESHB_Booking {
 		
 	}
 	
-	public function send_reservation_request(){
+	public function eshb_send_reservation_request(){
 
 		// Verify nonce for security
 		if (!isset($_POST['nonce']) || !wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
@@ -1300,7 +1301,7 @@ class ESHB_Booking {
 		];
 	}
 
-	public function add_to_cart_reservation(){
+	public function eshb_add_to_cart_reservation(){
 
 		// Verify nonce for security
 		if (!isset($_POST['nonce']) || !wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
@@ -1762,7 +1763,7 @@ class ESHB_Booking {
 	
 	}
 
-	public function get_booking_prices() {
+	public function eshb_get_booking_prices() {
 		// Ensure external filters are loaded during AJAX requests
 		do_action('eshb_before_calculate_pricing');
 		
@@ -1803,7 +1804,7 @@ class ESHB_Booking {
 		wp_die();
 	}
 	
-    public function get_extra_services_charge(){
+    public function eshb_get_extra_services_charge(){
 
 		// Verify nonce for security
 		if (!isset($_POST['nonce']) || !wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
@@ -1957,7 +1958,7 @@ class ESHB_Booking {
 	}
 
 
-	public function get_available_rooms_counts_data(){
+	public function eshb_get_available_rooms_counts_data(){
 
 		// Verify nonce for security
 		if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
@@ -1997,7 +1998,7 @@ class ESHB_Booking {
 
 	}
 
-	public function get_accomodation_available_capacity_counts(){
+	public function eshb_get_accomodation_available_capacity_counts(){
 
 		if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
 			wp_send_json_error(['message' => 'Invalid nonce']);

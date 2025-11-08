@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 class ESHB_Admin_View {
     
     public static function eshb_show_payment_history_in_admin( $booking_id ) {

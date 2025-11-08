@@ -1,5 +1,6 @@
 <?php
-function create_easy_hotel_pages() {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+function eshb_create_easy_hotel_pages() {
 
     // Define pages and templates
     $pages = [

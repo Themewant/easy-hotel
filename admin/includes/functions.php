@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
   function eshb_settings_fallback ($plugin_name, $plugin_slug, $plugin_url, $display = ''){
     $plugin_main_file = $plugin_slug . '/' . $plugin_slug . '.php';
   

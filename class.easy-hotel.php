@@ -1,6 +1,5 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
-
 class ESHB_MAIN {
 
     private static $_instance = null;

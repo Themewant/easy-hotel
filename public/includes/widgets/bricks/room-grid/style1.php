@@ -1,15 +1,13 @@
 <?php 
+	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	$i++; 
 	$class = ($i %2 == 0) ? 'left-half' : 'right-half';
 	
-
 	if(has_post_thumbnail($accomodation_id)) {
 		$thumbnail_url = get_the_post_thumbnail_url( $accomodation_id, 'full');
 	} else {
 		$thumbnail_url = ESHB_DIR_URL . 'public/assets/img/placeholder.png';
 	}
-			
-			
 	?>
 	<div class="grid-item container-fluid position-relative half-fluid" style="background-size: cover; background-repeat: no-repeat;">
 		<div class="container" style="background-size: cover; background-repeat: no-repeat;">
@@ -46,5 +44,3 @@
 		</div>
 		</div>
 	</div>
-	
-		

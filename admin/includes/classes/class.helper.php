@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Helper {
 
     public static function eshb_nonce_field( $action = 'eshb_action', $field = 'eshb_nonce', $echo = true ) {
@@ -817,7 +818,7 @@ class ESHB_Helper {
                     'wooCartUrl'       => $cart_url,
                     'is_admin'         => is_admin(),
                     'nonce'            => wp_create_nonce($nonce_action),
-                    'add_to_cart_reservation_nonce' => wp_create_nonce('eshb_add_to_cart_reservation_nonce'),
+                    'eshb_add_to_cart_reservation_nonce' => wp_create_nonce('eshb_eshb_add_to_cart_reservation_nonce'),
                     'reservation_request_nonce' => wp_create_nonce('eshb_reservation_request_nonce'),
                     'version'          => ESHB_VERSION,
                     'pluginURL'        => ESHB_DIR_URL,
