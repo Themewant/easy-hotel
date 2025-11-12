@@ -4369,7 +4369,7 @@
 ;/**
 *
 * jQuery Interdependencies library
-* http://miohtama.github.com/jquery-interdependencies/
+* https://github.com/miohtama/jquery-interdependencies
 * Copyright 2012-2013 Mikko Ohtamaa, others
 *
 * Customized by Codestar

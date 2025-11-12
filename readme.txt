@@ -4,7 +4,7 @@ Tags: Easy hotel, hotel booking, hotel, booking
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -242,6 +242,9 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 1.7.2 =
+* Added descriptions about third-party services are using in this plugin;
 
 = 1.7.1 =
 * Made changes coding standard as  WordPress rules;
@@ -506,3 +509,28 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 = 1.0.2 =
 Added seasonal pricing and multi-room booking options. Please update to enjoy the new features.
+
+
+== External Services ==
+
+This plugin makes use of the following third-party open-source libraries to provide enhanced functionality. None of these libraries collect or transmit personal data outside your WordPress installation.
+
+Flatpickr
+Flatpickr is an open-source, lightweight JavaScript library for selecting dates and times. It provides a clean, accessible, and dependency-free interface for date and time inputs.
+Source: https://github.com/flatpickr/flatpickr
+
+jQuery Chosen AJAX Autocomplete Library
+This library extends the functionality of HTML <select> fields by enabling AJAX-powered autocomplete and dynamic option loading. It is used to enhance the user experience when selecting from large datasets.
+Source: https://github.com/meltingice/ajax-chosen , https://github.com/michaelperrin/ajax-chosen
+
+Chosen Order
+Chosen Order enhances Chosen multiple-select dropdowns by preserving and managing the order of selected items. It ensures consistent data ordering when users interact with multi-select inputs.
+Source: https://github.com/tristanjahier/chosen-order
+
+jQuery Interdependencies
+This JavaScript library allows for the creation of conditional form logic, enabling specific fields to be shown or hidden based on other input values. It is used to build dynamic, user-friendly form interactions.
+Source: https://github.com/miohtama/jquery-interdependencies
+
+jQuery serializeObject
+This library extends jQuery by adding a serializeObject() method, allowing form data to be converted into structured JavaScript objects. It simplifies the process of handling complex form inputs.
+Source: https://github.com/hongymagic/jQuery.serializeObject
