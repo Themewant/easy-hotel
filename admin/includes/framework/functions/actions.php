@@ -47,7 +47,7 @@ if ( ! function_exists( 'eshb_get_icons' ) ) {
     wp_send_json_success( array( 'content' => $content ) );
 
   }
-  add_action( 'wp_ajax_csf-get-icons', 'eshb_get_icons' );
+  add_action( 'wp_ajax_eshb-get-icons', 'eshb_get_icons' );
 }
 
 /**
@@ -84,7 +84,7 @@ if ( ! function_exists( 'eshb_export' ) ) {
     die();
 
   }
-  add_action( 'wp_ajax_csf-export', 'eshb_export' );
+  add_action( 'wp_ajax_eshb-export', 'eshb_export' );
 }
 
 /**
@@ -136,7 +136,7 @@ if ( ! function_exists( 'eshb_import_ajax' ) ) {
     wp_send_json_success();
 
   }
-  add_action( 'wp_ajax_csf-import', 'eshb_import_ajax' );
+  add_action( 'wp_ajax_eshb-import', 'eshb_import_ajax' );
 }
 
 /**
@@ -163,7 +163,7 @@ if ( ! function_exists( 'eshb_reset_ajax' ) ) {
     wp_send_json_success();
 
   }
-  add_action( 'wp_ajax_csf-reset', 'eshb_reset_ajax' );
+  add_action( 'wp_ajax_eshb-reset', 'eshb_reset_ajax' );
 }
 
 /**
@@ -202,5 +202,5 @@ if ( ! function_exists( 'eshb_chosen_ajax' ) ) {
     wp_send_json_success( $options );
 
   }
-  add_action( 'wp_ajax_csf-chosen', 'eshb_chosen_ajax' );
+  add_action( 'wp_ajax_eshb-chosen', 'eshb_chosen_ajax' );
 }

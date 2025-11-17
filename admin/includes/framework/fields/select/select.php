@@ -43,10 +43,10 @@ if ( ! class_exists( 'ESHB_Field_select' ) ) {
         $chosen_rtl       = ( is_rtl() ) ? ' chosen-rtl' : '';
         $multiple_name    = ( $args['multiple'] ) ? '[]' : '';
         $multiple_attr    = ( $args['multiple'] ) ? ' multiple="multiple"' : '';
-        $chosen_sortable  = ( $args['chosen'] && $args['sortable'] ) ? ' csf-chosen-sortable' : '';
-        $chosen_ajax      = ( $args['chosen'] && $args['ajax'] ) ? ' csf-chosen-ajax' : '';
+        $chosen_sortable  = ( $args['chosen'] && $args['sortable'] ) ? ' eshb-chosen-sortable' : '';
+        $chosen_ajax      = ( $args['chosen'] && $args['ajax'] ) ? ' eshb-chosen-ajax' : '';
         $placeholder_attr = ( $args['chosen'] && $args['placeholder'] ) ? ' data-placeholder="'. esc_attr( $args['placeholder'] ) .'"' : '';
-        $field_class      = ( $args['chosen'] ) ? ' class="csf-chosen'. esc_attr( $chosen_rtl . $chosen_sortable . $chosen_ajax ) .'"' : '';
+        $field_class      = ( $args['chosen'] ) ? ' class="eshb-chosen'. esc_attr( $chosen_rtl . $chosen_sortable . $chosen_ajax ) .'"' : '';
         $field_name       = $this->field_name( $multiple_name );
         $field_attr       = esc_attr($this->field_attributes());
         $maybe_options    = $this->field['options'];

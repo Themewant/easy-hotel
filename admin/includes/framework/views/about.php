@@ -2,7 +2,7 @@
 
 <p>Welcome to the exciting world of Codestar Framework. Built in Object Oriented Programming paradigm with high number of custom fields and tons of options. Allows you to bring custom admin, metabox, taxonomy and customize settings to all of your pages, posts and categories. It's highly modern and advanced framework.</p>
 
-<div class="csf-welcome-cols">
+<div class="eshb-welcome-cols">
 
   <div class="csf--col csf--col-first">
     <span class="csf--icon csf--active"><i class="fas fa-check"></i></span>

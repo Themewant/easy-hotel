@@ -21,7 +21,7 @@
   );
 
 ?>
-<div class="csf-welcome csf-welcome-wrap">
+<div class="eshb-welcome eshb-welcome-wrap">
 
   <h1>Welcome to Codestar Framework v<?php echo esc_attr( ESHB::$version ); ?></h1>
 
@@ -48,7 +48,7 @@
 
         $activate = ( $section === $key ) ? ' nav-tab-active' : '';
 
-        echo '<a href="'. esc_url( add_query_arg( array( 'page' => 'csf-welcome', 'section' => $key ), admin_url( 'tools.php' ) ) ) .'" class="nav-tab'. esc_attr( $activate ) .'">'. esc_attr( $link ) .'</a>';
+        echo '<a href="'. esc_url( add_query_arg( array( 'page' => 'eshb-welcome', 'section' => $key ), admin_url( 'tools.php' ) ) ) .'" class="nav-tab'. esc_attr( $activate ) .'">'. esc_attr( $link ) .'</a>';
 
       }
 

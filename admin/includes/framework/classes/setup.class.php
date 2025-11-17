@@ -567,7 +567,7 @@ if ( ! class_exists( 'ESHB_Setup' ) ) {
           self::$enqueue = true;
         }
 
-        if ( $wpscreen->id === 'tools_page_csf-welcome' ) {
+        if ( $wpscreen->id === 'tools_page_eshb-welcome' ) {
           self::$enqueue = true;
         }
 
