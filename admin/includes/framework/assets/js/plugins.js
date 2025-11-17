@@ -2773,7 +2773,7 @@
 
       _this.options.data['term'] = value;
 
-      _this.chosenXhr = window.wp.ajax.post('csf-chosen', _this.options.data).done( function( response ) {
+      _this.chosenXhr = window.wp.ajax.post('eshb-chosen', _this.options.data).done( function( response ) {
         _this.show_results( response );
         console.log(response);
         

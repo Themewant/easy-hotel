@@ -18,17 +18,17 @@ if ( ! class_exists( 'ESHB_Field_backup' ) ) {
 
       $unique = $this->unique;
       $nonce  = wp_create_nonce( 'eshb_backup_nonce' );
-      $export = add_query_arg( array( 'action' => 'csf-export', 'unique' => $unique, 'nonce' => $nonce ), admin_url( 'admin-ajax.php' ) );
+      $export = add_query_arg( array( 'action' => 'eshb-export', 'unique' => $unique, 'nonce' => $nonce ), admin_url( 'admin-ajax.php' ) );
 
       echo wp_kses_post($this->field_before());
 
-      echo '<textarea name="eshb_import_data" class="csf-import-data"></textarea>';
-      echo '<button type="submit" class="button button-primary csf-confirm csf-import" data-unique="'. esc_attr( $unique ) .'" data-nonce="'. esc_attr( $nonce ) .'">'. esc_html__( 'Import', 'easy-hotel' ) .'</button>';
+      echo '<textarea name="eshb_import_data" class="eshb-import-data"></textarea>';
+      echo '<button type="submit" class="button button-primary csf-confirm eshb-import" data-unique="'. esc_attr( $unique ) .'" data-nonce="'. esc_attr( $nonce ) .'">'. esc_html__( 'Import', 'easy-hotel' ) .'</button>';
       echo '<hr />';
-      echo '<textarea readonly="readonly" class="csf-export-data">'. esc_attr( wp_json_encode( get_option( $unique ) ) ) .'</textarea>';
-      echo '<a href="'. esc_url( $export ) .'" class="button button-primary csf-export" target="_blank">'. esc_html__( 'Export & Download', 'easy-hotel' ) .'</a>';
+      echo '<textarea readonly="readonly" class="eshb-export-data">'. esc_attr( wp_json_encode( get_option( $unique ) ) ) .'</textarea>';
+      echo '<a href="'. esc_url( $export ) .'" class="button button-primary eshb-export" target="_blank">'. esc_html__( 'Export & Download', 'easy-hotel' ) .'</a>';
       echo '<hr />';
-      echo '<button type="submit" name="eshb_transient[reset]" value="reset" class="button csf-warning-primary csf-confirm csf-reset" data-unique="'. esc_attr( $unique ) .'" data-nonce="'. esc_attr( $nonce ) .'">'. esc_html__( 'Reset', 'easy-hotel' ) .'</button>';
+      echo '<button type="submit" name="eshb_transient[reset]" value="reset" class="button csf-warning-primary csf-confirm eshb-reset" data-unique="'. esc_attr( $unique ) .'" data-nonce="'. esc_attr( $nonce ) .'">'. esc_html__( 'Reset', 'easy-hotel' ) .'</button>';
 
       echo wp_kses_post($this->field_after());
 

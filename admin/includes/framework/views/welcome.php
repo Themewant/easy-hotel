@@ -33,7 +33,7 @@ if ( ! class_exists( 'ESHB_Welcome' ) ) {
     }
 
     public function add_about_menu() {
-      add_management_page( 'Codestar Framework', 'Codestar Framework', 'manage_options', 'csf-welcome', array( $this, 'add_page_welcome' ) );
+      add_management_page( 'Codestar Framework', 'Codestar Framework', 'manage_options', 'eshb-welcome', array( $this, 'add_page_welcome' ) );
     }
 
     public function add_page_welcome() {
@@ -83,7 +83,7 @@ if ( ! class_exists( 'ESHB_Welcome' ) ) {
     public static function add_plugin_action_links( $links, $plugin_file ) {
 
       if ( $plugin_file === 'codestar-framework/codestar-framework.php' && ! empty( $links ) ) {
-        $links['csf--welcome'] = '<a href="'. esc_url( admin_url( 'tools.php?page=csf-welcome' ) ) .'">Settings</a>';
+        $links['csf--welcome'] = '<a href="'. esc_url( admin_url( 'tools.php?page=eshb-welcome' ) ) .'">Settings</a>';
         if ( ! ESHB::$premium ) {
           $links['csf--upgrade'] = '<a href="http://codestarframework.com/">Upgrade</a>';
         }

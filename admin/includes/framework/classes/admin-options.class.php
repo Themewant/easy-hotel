@@ -533,8 +533,8 @@ if ( ! class_exists( 'ESHB_Options' ) ) {
 
             echo '<div class="csf-buttons">';
             echo '<input type="submit" name="'. esc_attr( $this->unique ) .'[_nonce][save]" class="button button-primary csf-top-save csf-save'. esc_attr( $ajax_class ) .'" value="'. esc_html__( 'Save', 'easy-hotel' ) .'" data-save="'. esc_html__( 'Saving...', 'easy-hotel' ) .'">';
-            echo ( $this->args['show_reset_section'] ) ? '<input type="submit" name="eshb_transient[reset_section]" class="button button-secondary csf-reset-section csf-confirm" value="'. esc_html__( 'Reset Section', 'easy-hotel' ) .'" data-confirm="'. esc_html__( 'Are you sure to reset this section options?', 'easy-hotel' ) .'">' : '';
-            echo ( $this->args['show_reset_all'] ) ? '<input type="submit" name="eshb_transient[reset]" class="button csf-warning-primary csf-reset-all csf-confirm" value="'. ( ( $this->args['show_reset_section'] ) ? esc_html__( 'Reset All', 'easy-hotel' ) : esc_html__( 'Reset', 'easy-hotel' ) ) .'" data-confirm="'. esc_html__( 'Are you sure you want to reset all settings to default values?', 'easy-hotel' ) .'">' : '';
+            echo ( $this->args['show_reset_section'] ) ? '<input type="submit" name="eshb_transient[reset_section]" class="button button-secondary eshb-reset-section csf-confirm" value="'. esc_html__( 'Reset Section', 'easy-hotel' ) .'" data-confirm="'. esc_html__( 'Are you sure to reset this section options?', 'easy-hotel' ) .'">' : '';
+            echo ( $this->args['show_reset_all'] ) ? '<input type="submit" name="eshb_transient[reset]" class="button csf-warning-primary eshb-reset-all csf-confirm" value="'. ( ( $this->args['show_reset_section'] ) ? esc_html__( 'Reset All', 'easy-hotel' ) : esc_html__( 'Reset', 'easy-hotel' ) ) .'" data-confirm="'. esc_html__( 'Are you sure you want to reset all settings to default values?', 'easy-hotel' ) .'">' : '';
             echo '</div>';
 
           echo '</div>';
@@ -660,8 +660,8 @@ if ( ! class_exists( 'ESHB_Options' ) ) {
 
           echo '<div class="csf-buttons">';
           echo '<input type="submit" name="eshb_transient[save]" class="button button-primary csf-save'. esc_attr( $ajax_class ) .'" value="'. esc_html__( 'Save', 'easy-hotel' ) .'" data-save="'. esc_html__( 'Saving...', 'easy-hotel' ) .'">';
-          echo ( $this->args['show_reset_section'] ) ? '<input type="submit" name="eshb_transient[reset_section]" class="button button-secondary csf-reset-section csf-confirm" value="'. esc_html__( 'Reset Section', 'easy-hotel' ) .'" data-confirm="'. esc_html__( 'Are you sure to reset this section options?', 'easy-hotel' ) .'">' : '';
-          echo ( $this->args['show_reset_all'] ) ? '<input type="submit" name="eshb_transient[reset]" class="button csf-warning-primary csf-reset-all csf-confirm" value="'. ( ( $this->args['show_reset_section'] ) ? esc_html__( 'Reset All', 'easy-hotel' ) : esc_html__( 'Reset', 'easy-hotel' ) ) .'" data-confirm="'. esc_html__( 'Are you sure you want to reset all settings to default values?', 'easy-hotel' ) .'">' : '';
+          echo ( $this->args['show_reset_section'] ) ? '<input type="submit" name="eshb_transient[reset_section]" class="button button-secondary eshb-reset-section csf-confirm" value="'. esc_html__( 'Reset Section', 'easy-hotel' ) .'" data-confirm="'. esc_html__( 'Are you sure to reset this section options?', 'easy-hotel' ) .'">' : '';
+          echo ( $this->args['show_reset_all'] ) ? '<input type="submit" name="eshb_transient[reset]" class="button csf-warning-primary eshb-reset-all csf-confirm" value="'. ( ( $this->args['show_reset_section'] ) ? esc_html__( 'Reset All', 'easy-hotel' ) : esc_html__( 'Reset', 'easy-hotel' ) ) .'" data-confirm="'. esc_html__( 'Are you sure you want to reset all settings to default values?', 'easy-hotel' ) .'">' : '';
           echo '</div>';
 
           echo ( ! empty( $this->args['footer_text'] ) ) ? '<div class="csf-copyright">'. esc_html($this->args['footer_text']) .'</div>' : '';

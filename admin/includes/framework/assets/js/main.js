@@ -486,8 +486,8 @@
       var base    = this,
           $this   = $(this),
           $body   = $('body'),
-          $import = $this.find('.csf-import'),
-          $reset  = $this.find('.csf-reset');
+          $import = $this.find('.eshb-import'),
+          $reset  = $this.find('.eshb-reset');
 
       base.notificationOverlay = function() {
 
@@ -519,7 +519,7 @@
 
           base.notificationOverlay();
 
-          window.wp.ajax.post('csf-reset', {
+          window.wp.ajax.post('eshb-reset', {
             unique: $reset.data('unique'),
             nonce: $reset.data('nonce')
           })
@@ -543,10 +543,10 @@
 
           base.notificationOverlay();
 
-          window.wp.ajax.post( 'csf-import', {
+          window.wp.ajax.post( 'eshb-import', {
             unique: $import.data('unique'),
             nonce: $import.data('nonce'),
-            data: $this.find('.csf-import-data').val()
+            data: $this.find('.eshb-import-data').val()
           }).done( function( response ) {
             window.location.reload(true);
           }).fail( function( response ) {
@@ -1058,7 +1058,7 @@
 
           $modal.find('.csf-modal-loading').show();
 
-          window.wp.ajax.post( 'csf-get-icons', {
+          window.wp.ajax.post( 'eshb-get-icons', {
             nonce: $button.data('nonce')
           }).done( function( response ) {
 
@@ -2995,8 +2995,8 @@
 
       var $this       = $(this),
           $inited     = $this.parent().find('.chosen-container'),
-          is_sortable = $this.hasClass('csf-chosen-sortable') || false,
-          is_ajax     = $this.hasClass('csf-chosen-ajax') || false,
+          is_sortable = $this.hasClass('eshb-chosen-sortable') || false,
+          is_ajax     = $this.hasClass('eshb-chosen-ajax') || false,
           is_multiple = $this.attr('multiple') || false,
           set_width   = is_multiple ? '100%' : 'auto',
           set_options = $.extend({
@@ -3463,7 +3463,7 @@
         $this.children('.csf-field-typography').find('.csf-color').eshb_color();
 
         // Field chosenjs
-        $this.children('.csf-field-select').find('.csf-chosen').eshb_chosen();
+        $this.children('.csf-field-select').find('.eshb-chosen').eshb_chosen();
 
         // Field Checkbox
         $this.children('.csf-field-checkbox').find('.csf-checkbox').eshb_checkbox();
