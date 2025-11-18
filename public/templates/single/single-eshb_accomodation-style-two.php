@@ -6,7 +6,6 @@ $accomodation_id = get_the_ID();
 $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
 $eshb_accomodation_metaboxes_side = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes_side', true);
 
-$accomodation_hero_type = !empty($eshb_accomodation_metaboxes_side['accomodation_hero_type']) ? $eshb_accomodation_metaboxes_side['accomodation_hero_type'] : 'gallery';
 $accomodation_gallery = $eshb_accomodation_metaboxes_side['accomodation_gallery'];
 $accomodation_video = !empty($eshb_accomodation_metaboxes_side['accomodation_video']) ? $eshb_accomodation_metaboxes_side['accomodation_video'] : '';
 $accomodation_video_source = !empty($eshb_accomodation_metaboxes_side['accomodation_video_source']) ? $eshb_accomodation_metaboxes_side['accomodation_video_source'] : '';
