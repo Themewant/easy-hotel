@@ -934,7 +934,6 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
 }
 .eshb-item-grid .grid-item .item-inner .pricing-info .label {
   font-size: 14px;
-  font-family: var(--eshb-title-font);
   margin-bottom: 10px;
 }
 .eshb-item-grid .grid-item .item-inner .pricing-info .price {
@@ -942,8 +941,6 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
   line-height: 1;
   margin-bottom: 1.5rem;
   margin-top: 0;
-  font-family: var(--eshb-title-font);
-  font-weight: var(--eshb-title-font-weight);
   color: var(--eshb-white-color);
   display: flex;
   align-items: end;
@@ -995,8 +992,6 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
   margin-bottom: 0;
   font-size: 26px;
   line-height: 1.4em;
-  font-family: var(--eshb-title-font);
-  font-weight: var(--eshb-title-font-weight);
   color: var(--eshb-white-color);
 }
 .eshb-item-grid .grid-item .item-inner .details-info .capacities {
