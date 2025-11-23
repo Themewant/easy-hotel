@@ -1436,7 +1436,7 @@ class ESHB_Booking {
 			}
 
 			$actual_booked_dates = $this->get_actual_booked_dates_in_date_ranges($accomodation_id, $start_date, $end_date);
-
+			$booked_dates_str = '';
 			if(!empty($actual_booked_dates)){
 
 				$error_message = sprintf(
@@ -2162,6 +2162,10 @@ class ESHB_Booking {
 	}
 	
 	public function update_booking_status_on_woocommerce_order_status_change($order_id, $old_status, $new_status, $order) {
+
+		if($old_status == $new_status) {
+			return;
+		}
 		
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
 
@@ -2169,7 +2173,7 @@ class ESHB_Booking {
 		if ( $screen && $screen->id === 'edit-eshb_booking' ) return;
 
 		if ( $screen && 'woocommerce_page_wc-orders' === $screen->id ) {
-			return;
+			//return;
     	}
 
 		// Retrieve the order object

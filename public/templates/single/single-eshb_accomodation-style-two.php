@@ -38,7 +38,7 @@ $show_check_in_out_time = $eshb_settings['check-in-out-time'] ?? true;
 $show_availability_calendar = $eshb_settings['availability-calendar'] ?? true;
 $show_gallery = $eshb_settings['accomodation-gallery'] ?? true;
 
- $ESHB_View = new ESHB_View(); 
+$ESHB_View = new ESHB_View(); 
 
 ?>
     <div <?php echo esc_attr(post_class($post_class)) ?>>
