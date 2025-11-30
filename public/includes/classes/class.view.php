@@ -470,12 +470,12 @@ class ESHB_View extends ESHB_MAIN{
                                         $total_services_price+=$service_price;
                                     }
 
-
+                                    $is_checked = $service_metaboxes['is_checked'] ?? false;
 
                                     ?>
                                     <li class="service-item">
                                         <label for="eshb-service-message-<?php echo esc_attr( $service_id )?>" class="label-checkbox">
-                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" title="<?php echo esc_attr($service_name) ?>">
+                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" title="<?php echo esc_attr($service_name) ?>" <?php checked( $is_checked ); ?>>
                                             <div class="eshb-styled-checkbox"></div>
                                             <span class="service-name"><?php echo esc_html($service_name, 'easy-hotel'); ?></span>
                                         </label>
