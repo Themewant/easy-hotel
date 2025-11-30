@@ -303,6 +303,7 @@ class ESHB_View extends ESHB_MAIN{
         $available_rooms = $available_rooms < 0 ? 0 : $available_rooms;
         $available_times = ESHB_Helper::get_available_times_by_date($accomodation_id, $start->format('Y-m-d'));
         $price_html = $available_rooms < 1 ? $hotel_core->eshb_price(0) : $price_html;
+        $defaultExtraServicePrice = 0;
         ?>
         <div class="eshb-booking">
             <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
@@ -310,6 +311,7 @@ class ESHB_View extends ESHB_MAIN{
                 <div class="hidden-fields">
                     <input type="hidden" name="subtotal_price" id="eshb-subtotal-price" value="<?php echo esc_html($price);?>"> 
                     <input type="hidden" name="subtotal_price" id="eshb-discounted-subtotal-price" value="<?php echo esc_html($discountedPrice);?>"> 
+                    <input type="hidden" name="default_extra_service_price" id="eshb-default-extra-service-price" value="<?php echo esc_html($defaultExtraServicePrice);?>"> 
                     <input type="hidden" name="accomodation_id" value="<?php echo esc_attr( $accomodation_id ); ?>">
                     <input type="hidden" name="accomodation_title" value="<?php echo esc_attr( get_the_title( $accomodation_id ) ); ?>">
                     <input type="hidden" name="currency_symbol" value="<?php echo esc_attr( $currency_symbol ); ?>">

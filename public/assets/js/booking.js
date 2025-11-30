@@ -110,6 +110,9 @@
       // validate input fields of metaboxes form
       ESHBPUBLICBOOKING.validateInputFields();
 
+      // update checkbox checked attr for change services
+      ESHBPUBLICBOOKING.updateServicesChecked();
+
       // add event listeners
       $(document)
         .on(
@@ -304,6 +307,18 @@
       e.preventDefault();
       console.log("clicked");
     },
+    updateServicesChecked: function () {
+      $('.eshb-booking-form .service-item input[name="extra_services[]"]').each(function(index, element){
+        $(element).on("change", function(){
+          if($(this).is(":checked")){
+            $(this).attr("checked", "checked");
+          }else{
+            $(this).removeAttr("checked");
+          }
+        });
+      });
+    },
+
     addElementsToBookingMetaboxes: function (param) {
       // add available room status field
       $(
@@ -2215,6 +2230,7 @@
 
             $form.find("#eshb-subtotal-price").val(regularTotalPrice);
             $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
+            $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
 
             // update admin booking metaboxes pricing
             if (
@@ -2266,6 +2282,17 @@
         return currencySymbol + totalPrice.toFixed(2); // Keep 2 decimals
       }
     },
+    getDefaultExtraServicesPrice: function () {
+      let $form = $(".eshb-booking-form");
+      if ($form.length === 0) return 0;
+
+      let extraServicesPrice = 0;
+
+      extraServicesPrice = parseFloat($form.find('input[name="default_extra_service_price"]').val()) || 0;
+
+      return extraServicesPrice;
+    },
+
     calculateExtraServicesPricing: function () {
       let $form = $(".eshb-booking-form");
       if ($form.length === 0) return;
@@ -2292,6 +2319,9 @@
 
       $form.find('input[name="extra_services[]"]:checked').each(function () {
         let $checkbox = $(this);
+        let checked = $checkbox.is(":checked");
+
+        if (!checked) return;
         let chargeType = $checkbox.attr("charge_type");
         let periodicity = $checkbox.attr("periodicity");
         let quantity = 1;
@@ -2320,6 +2350,11 @@
         }
       });
 
+      // Subtract default extra services price
+      if( 0 < ESHBPUBLICBOOKING.getDefaultExtraServicesPrice() ){
+        extraServicesPrice = extraServicesPrice - ESHBPUBLICBOOKING.getDefaultExtraServicesPrice();
+      }
+  
       // Update total price
       let totalPrice = currentPrice + extraServicesPrice;
       let discountedPrice = currentDiscountedPrice + extraServicesPrice;
