@@ -55,7 +55,12 @@ if( class_exists( 'ESHB' ) ) {
             ),
             'default'     => 'room'
         ),
-
+        array(
+            'id'         => 'is_checked', // field id
+            'type'       => 'switcher',
+            'title'      => 'Checked by Default',
+            'default'    => false
+            ),
         )
     ) );
 
