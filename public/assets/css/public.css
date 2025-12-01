@@ -1578,6 +1578,11 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   z-index: 2;
   position: relative;
 }
+@media (max-width: 567px) {
+  .eshb-availability-calendars-area {
+    margin-bottom: 200px;
+  }
+}
 .eshb-availability-calendars-area .calendar-title {
   font-weight: 300;
   font-size: 26px;
