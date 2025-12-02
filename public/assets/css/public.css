@@ -48,11 +48,17 @@
 .accomodation-gallery .swiper-button-prev {
   left: 0px;
 }
+.accomodation-gallery .swiper-button-prev .swiper-navigation-icon {
+  display: none;
+}
 .accomodation-gallery .swiper-button-prev::after {
   border-radius: 0 20px 20px 0;
 }
 .accomodation-gallery .swiper-button-next {
   right: 0px;
+}
+.accomodation-gallery .swiper-button-next .swiper-navigation-icon {
+  display: none;
 }
 .accomodation-gallery .swiper-button-next::after {
   border-radius: 20px 0 0 20px;

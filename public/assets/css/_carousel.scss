@@ -25,12 +25,18 @@
         }
     }
     .swiper-button-prev{
+        .swiper-navigation-icon {
+            display: none;
+        }
         left: 0px;
         &::after {
             border-radius:0 20px 20px 0;
         }
     }
     .swiper-button-next{
+        .swiper-navigation-icon {
+            display: none;
+        }
         right: 0px;
         &::after {
             border-radius:20px 0 0 20px;
