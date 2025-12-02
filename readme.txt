@@ -4,7 +4,7 @@ Tags: Easy hotel, hotel booking, hotel, booking
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -242,6 +242,9 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 1.7.7 =
+* Updated Accommodation Gallery CSS
 
 = 1.7.6 =
 * Updated Swiper Slider Library

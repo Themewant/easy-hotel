@@ -78,7 +78,6 @@ class ESHB_Helper {
             $accomodation_metaboxes['available_rooms'] = $available_rooms;
             update_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', $accomodation_metaboxes);
             
-
             // Update Order Status
             $new_status = $booking_status;
             update_post_meta($order_id, '_booking_post_created', $post_id);
@@ -86,6 +85,7 @@ class ESHB_Helper {
 
             do_action( 'eshb_after_booking_created', $post_id, $order_id );
 
+            error_log('booking created with ID: ' . $post_id);
 
             return $post_id;
 
