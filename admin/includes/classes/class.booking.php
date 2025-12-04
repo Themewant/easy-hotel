@@ -2298,38 +2298,38 @@ class ESHB_Booking {
 			// Trigger email manually
 			$mailer = WC()->mailer();
 			
-			switch ( $booking_status ) {
+			// switch ( $booking_status ) {
 
-				case 'cancelled':
-					$to      = $order->get_billing_email();
-					$subject = sprintf(
-						/* translators: %s: booking/post ID */
-						__( 'Your Booking #%s has been Cancelled', 'easy-hotel' ),
-						esc_html( $post_id )
-					);
-					$heading = __( 'Booking Cancelled', 'easy-hotel' );
+			// 	case 'cancelled':
+			// 		$to      = $order->get_billing_email();
+			// 		$subject = sprintf(
+			// 			/* translators: %s: booking/post ID */
+			// 			__( 'Your Booking #%s has been Cancelled', 'easy-hotel' ),
+			// 			esc_html( $post_id )
+			// 		);
+			// 		$heading = __( 'Booking Cancelled', 'easy-hotel' );
 
-					$first_name = esc_html( $order->get_billing_first_name() );
-					$post_title = esc_html( get_the_title( $post_id ) );
+			// 		$first_name = esc_html( $order->get_billing_first_name() );
+			// 		$post_title = esc_html( get_the_title( $post_id ) );
 
-					$message  = '<p>' . sprintf(
-						/* translators: %s: customer first name */
-						__( 'Hi %s,', 'easy-hotel' ),
-						$first_name
-					) . '</p>';
+			// 		$message  = '<p>' . sprintf(
+			// 			/* translators: %s: customer first name */
+			// 			__( 'Hi %s,', 'easy-hotel' ),
+			// 			$first_name
+			// 		) . '</p>';
 
-					$message .= '<p>' . sprintf(
-						/* translators: %s: booking title */
-						__( 'We regret to inform you that your <strong>%s</strong> has been <strong>cancelled</strong>.', 'easy-hotel' ),
-						$post_title
-					) . '</p>';
+			// 		$message .= '<p>' . sprintf(
+			// 			/* translators: %s: booking title */
+			// 			__( 'We regret to inform you that your <strong>%s</strong> has been <strong>cancelled</strong>.', 'easy-hotel' ),
+			// 			$post_title
+			// 		) . '</p>';
 
-					$message .= '<p>' . __( 'If you have any questions, please feel free to reply to this email.', 'easy-hotel' ) . '</p>';
-					$message .= '<p>' . __( 'Thank you for shopping with us.', 'easy-hotel' ) . '</p>';
+			// 		$message .= '<p>' . __( 'If you have any questions, please feel free to reply to this email.', 'easy-hotel' ) . '</p>';
+			// 		$message .= '<p>' . __( 'Thank you for shopping with us.', 'easy-hotel' ) . '</p>';
 
-					$this->send_email_woocommerce_style( $to, $subject, $heading, $message );
-					break;
-			}
+			// 		$this->send_email_woocommerce_style( $to, $subject, $heading, $message );
+			// 		break;
+			// }
 
 		}
 	}
