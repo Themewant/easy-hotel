@@ -12,6 +12,7 @@ class ESHB_Booking_Calendar_Ajax {
     public function __construct() {
         add_action( "wp_ajax_eshb_get_booking_data_tables", [$this, 'eshb_get_booking_data']  );
         add_action( "wp_ajax_eshb_get_accomodation_meta", [$this, 'eshb_get_accomodation_meta']  );
+        add_action( "wp_ajax_nopriv_eshb_get_accomodation_meta", [$this, 'eshb_get_accomodation_meta']  );
     }
 
     public function eshb_get_booking_data() {
