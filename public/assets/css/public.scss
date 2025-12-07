@@ -389,7 +389,46 @@
 
 
 
+.justify-content-center {
+    justify-content: center !important;
+}
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x))
+}
+@media (min-width: 992px) {
+    .col-lg-8 {
+        flex: 0 0 auto;
+        width: 66.66666667%;
+    }
+}
+@media (min-width: 768px) {
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+.text-center {
+    text-align: center !important;
+}
+.text-light {
+    color: #fff;
+}
+.p-4 {
+    padding: 1.5rem !important;
+}
 
+.h-100 {
+    height: 100% !important;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
+}
 
 nav.eshb-pagination {
     margin-top: 50px;
@@ -1408,6 +1447,9 @@ div#easy-hotel-booking-modal {
         background: var(--eshb-white-color);
         border-radius: 5px 5px 5px 5px;
         top: 80px;
+        @media (max-width: 567px) {
+            width: 90%;
+        }
         .easy-hotel-booking-modal-content {
             border-radius: 5px 5px 5px 5px;
         }
