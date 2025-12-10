@@ -33,6 +33,21 @@
             ESHB_MAIN::instance();
     }, 12 );
     
+    /**
+     * Initialize the plugin tracker
+     *
+     * @return void
+     */
+    function eshb_appsero_init_tracker() {
 
-    
+        if ( ! class_exists( 'Appsero\Client' ) ) {
+        include ESHB_PL_PATH . 'apps/Client.php';
+        }
 
+        $client = new Appsero\Client( 'aad425e0-9ec8-4de0-a3cf-011a98a4fb39', 'Easy Hotel Booking – Powerful Hotel Booking', __FILE__ );
+
+        // Active insights
+        $client->insights()->init();
+
+    }
+    add_action( 'plugins_loaded', 'eshb_appsero_init_tracker' );
