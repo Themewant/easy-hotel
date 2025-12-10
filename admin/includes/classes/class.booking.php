@@ -56,6 +56,56 @@ class ESHB_Booking {
         add_action( 'wp_ajax_eshb_get_accomodation_available_capacity_counts', [ $this, 'eshb_get_accomodation_available_capacity_counts' ] );
 		add_action( 'wp_ajax_nopriv_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
         add_action( 'wp_ajax_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
+
+		add_action('rest_api_init', function() {
+			register_rest_route('eshb/v1', '/booking-prices', [
+				'methods'  => 'POST',
+				'callback' => [ $this, 'eshb_get_booking_prices_rest' ], // class method
+				'permission_callback' => function($request) {
+					return true;
+				},
+				'args' => [
+					'accomodationId' => [
+						'required' => true,
+						'sanitize_callback' => 'absint',
+					],
+					'startDate' => [
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'endDate' => [
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'startTime' => [
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'endTime' => [
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'roomQuantity' => [
+						'sanitize_callback' => 'absint',
+					],
+					'extraBedQuantity' => [
+						'sanitize_callback' => 'absint',
+					],
+					'adultQuantity' => [
+						'sanitize_callback' => 'absint',
+					],
+					'childrenQuantity' => [
+						'sanitize_callback' => 'absint',
+					],
+					'selectedServices' => [
+						'sanitize_callback' => function($param) {
+							return json_decode(sanitize_text_field($param), true);
+						}
+					],
+					'nonce' => [
+						'required' => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+				],
+			]);
+		});
+
 		
 	}
 
@@ -1009,9 +1059,12 @@ class ESHB_Booking {
 
 			// filter for $cart_item_data;
 			$cart_item_data = apply_filters( 'on_booking_cart_item_data', $cart_item_data );
-	
+			
 			// Insert the booking
-			ESHB_Helper::eshb_insert_booking($order_id, $booking_status, $cart_item_data);
+			if($accomodation_id && !empty($accomodation_id)) {
+				ESHB_Helper::eshb_insert_booking($order_id, $booking_status, $cart_item_data);
+			}
+			
 			
 		}
 
@@ -1803,7 +1856,45 @@ class ESHB_Booking {
 	
 		wp_die();
 	}
-	
+
+	public function eshb_get_booking_prices_rest( $request ) {
+		do_action('eshb_before_calculate_pricing');
+
+		$params = $request->get_params();
+
+		// // Nonce check
+		if ( ! isset($params['nonce']) || ! wp_verify_nonce($params['nonce'], ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action')) ) {
+			return new WP_Error('invalid_nonce', 'Invalid nonce', ['status' => 403]);
+		}
+
+		$accomodation_id = (int) ($params['accomodationId'] ?? 0);
+		$start_date      = $params['startDate'] ?? date('Y-m-d');
+		$end_date        = $params['endDate'] ?? date('Y-m-d', strtotime('+1 day'));
+		$start_time      = $params['startTime'] ?? '';
+		$end_time        = $params['endTime'] ?? '';
+		$room_quantity   = (int) ($params['roomQuantity'] ?? 1);
+		$extra_bed_quantity = (int) ($params['extraBedQuantity'] ?? 0);
+		$adult_quantity  = (int) ($params['adultQuantity'] ?? 1);
+		$children_quantity = (int) ($params['childrenQuantity'] ?? 0);
+		$selected_services = $params['selectedServices'] ?? [];
+
+		$pricing = $this->calculate_booking_pricing(
+			$accomodation_id,
+			$start_date,
+			$end_date,
+			$room_quantity,
+			$extra_bed_quantity,
+			$adult_quantity,
+			$children_quantity,
+			$selected_services,
+			true,
+			$start_time,
+			$end_time
+		);
+
+		return rest_ensure_response($pricing);
+	}
+
     public function eshb_get_extra_services_charge(){
 
 		// Verify nonce for security
@@ -1956,7 +2047,6 @@ class ESHB_Booking {
 
 		return $available_rooms;
 	}
-
 
 	public function eshb_get_available_rooms_counts_data(){
 
@@ -2288,6 +2378,9 @@ class ESHB_Booking {
 
 		do_action('eshb_booking_status_changed', $post_id, $booking_status, $booking_type, $order_id);
 
+		if(class_exists('ESHB_Booking_Templates')) {
+			return;
+		}
 		// send email for woocommerce
 		if ( $booking_type == 'woocommerce' && function_exists( 'WC' ) ) {
 
@@ -2298,38 +2391,38 @@ class ESHB_Booking {
 			// Trigger email manually
 			$mailer = WC()->mailer();
 			
-			// switch ( $booking_status ) {
+			switch ( $booking_status ) {
 
-			// 	case 'cancelled':
-			// 		$to      = $order->get_billing_email();
-			// 		$subject = sprintf(
-			// 			/* translators: %s: booking/post ID */
-			// 			__( 'Your Booking #%s has been Cancelled', 'easy-hotel' ),
-			// 			esc_html( $post_id )
-			// 		);
-			// 		$heading = __( 'Booking Cancelled', 'easy-hotel' );
+				case 'cancelled':
+					$to      = $order->get_billing_email();
+					$subject = sprintf(
+						/* translators: %s: booking/post ID */
+						__( 'Your Booking #%s has been Cancelled', 'easy-hotel' ),
+						esc_html( $post_id )
+					);
+					$heading = __( 'Booking Cancelled', 'easy-hotel' );
 
-			// 		$first_name = esc_html( $order->get_billing_first_name() );
-			// 		$post_title = esc_html( get_the_title( $post_id ) );
+					$first_name = esc_html( $order->get_billing_first_name() );
+					$post_title = esc_html( get_the_title( $post_id ) );
 
-			// 		$message  = '<p>' . sprintf(
-			// 			/* translators: %s: customer first name */
-			// 			__( 'Hi %s,', 'easy-hotel' ),
-			// 			$first_name
-			// 		) . '</p>';
+					$message  = '<p>' . sprintf(
+						/* translators: %s: customer first name */
+						__( 'Hi %s,', 'easy-hotel' ),
+						$first_name
+					) . '</p>';
 
-			// 		$message .= '<p>' . sprintf(
-			// 			/* translators: %s: booking title */
-			// 			__( 'We regret to inform you that your <strong>%s</strong> has been <strong>cancelled</strong>.', 'easy-hotel' ),
-			// 			$post_title
-			// 		) . '</p>';
+					$message .= '<p>' . sprintf(
+						/* translators: %s: booking title */
+						__( 'We regret to inform you that your <strong>%s</strong> has been <strong>cancelled</strong>.', 'easy-hotel' ),
+						$post_title
+					) . '</p>';
 
-			// 		$message .= '<p>' . __( 'If you have any questions, please feel free to reply to this email.', 'easy-hotel' ) . '</p>';
-			// 		$message .= '<p>' . __( 'Thank you for shopping with us.', 'easy-hotel' ) . '</p>';
+					$message .= '<p>' . __( 'If you have any questions, please feel free to reply to this email.', 'easy-hotel' ) . '</p>';
+					$message .= '<p>' . __( 'Thank you for shopping with us.', 'easy-hotel' ) . '</p>';
 
-			// 		$this->send_email_woocommerce_style( $to, $subject, $heading, $message );
-			// 		break;
-			// }
+					$this->send_email_woocommerce_style( $to, $subject, $heading, $message );
+					break;
+			}
 
 		}
 	}

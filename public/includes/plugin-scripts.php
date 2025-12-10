@@ -26,6 +26,11 @@ function eshb_wp_enqueue_scripts (){
     
     ESHB_Helper::eshb_set_accomodation_localize();
 
+    wp_localize_script('eshb-public-script', 'eshb_rest', [
+        'root'  => esc_url(rest_url()),
+        'nonce' => wp_create_nonce('wp_rest')
+    ]);
+
      // Prepare translations dynamically based on current locale
      $translations = [
          'applyLabel'        => !empty($apply_text_default) ? eshb_get_translated_string($apply_text_default) : __('Apply', 'easy-hotel'),

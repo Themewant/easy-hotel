@@ -782,6 +782,7 @@ class ESHB_Helper {
         }
 
         if($accomodation_id) {
+            error_log('$accomodation_id' . $accomodation_id);
             $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
             $available_rooms = $eshb_booking->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
             $available_rooms = $available_rooms > 0 ? $available_rooms : 0;
@@ -813,6 +814,7 @@ class ESHB_Helper {
             'eshb-public-script', 
             'eshb_ajax',
                 [
+                    'root'  => esc_url(rest_url()),
                     'ajaxurl'          => admin_url( 'admin-ajax.php' ),
                     'adminURL'         => admin_url(),
                     'wooCartUrl'       => $cart_url,

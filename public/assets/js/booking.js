@@ -2167,112 +2167,200 @@
       $form
         .find(".cost-calculator-wrapper .pricing-values")
         .css("display", "none");
+      // const start = performance.now();
+      // $.post(
+      //   eshb_ajax.ajaxurl,
+      //   {
+      //     action: "eshb_get_booking_prices",
+      //     selectedServices: JSON.stringify(selectedServices),
+      //     roomQuantity,
+      //     adultQuantity,
+      //     childrenQuantity,
+      //     extraBedQuantity,
+      //     accomodationId,
+      //     startDate,
+      //     endDate,
+      //     startTime,
+      //     endTime,
+      //     nonce: eshb_ajax.nonce,
+      //   },
+      //   function (response) {
+      //      const end = performance.now();
+      //     console.log(`Response time: ${end - start} ms`);
+      //     if (response.success) {
+      //       let prices = response.data;
+      //       let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
+      //       let subtotalPrice = parseFloat(prices.subtotalPrice);
+      //       let totalPrice = parseFloat(prices.totalPrice);
+      //       let regularTotalPrice = parseFloat(prices.regularTotalPrice);
+      //       let extraServicesPrice = parseFloat(prices.extraServicesPrice);
+      //       let extraBedPrice = parseFloat(prices.extraBedPrice);
+      //       let basePrice = parseFloat(prices.basePrice);
+      //       let currencySymbol = prices.currencySymbol;
+      //       let currencyPosition = prices.currencyPosition;
 
-      $.post(
-        eshb_ajax.ajaxurl,
-        {
-          action: "eshb_get_booking_prices",
-          selectedServices: JSON.stringify(selectedServices),
-          roomQuantity,
-          adultQuantity,
-          childrenQuantity,
-          extraBedQuantity,
-          accomodationId,
-          startDate,
-          endDate,
-          startTime,
-          endTime,
-          nonce: eshb_ajax.nonce,
-        },
-        function (response) {
-
-          if (response.success) {
-            let prices = response.data;
-            let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
-            let subtotalPrice = parseFloat(prices.subtotalPrice);
-            let totalPrice = parseFloat(prices.totalPrice);
-            let regularTotalPrice = parseFloat(prices.regularTotalPrice);
-            let extraServicesPrice = parseFloat(prices.extraServicesPrice);
-            let extraBedPrice = parseFloat(prices.extraBedPrice);
-            let basePrice = parseFloat(prices.basePrice);
-            let currencySymbol = prices.currencySymbol;
-            let currencyPosition = prices.currencyPosition;
-
-            // show discounted pricing
-            if (
-              totalPrice < regularTotalPrice &&
-              totalPrice != regularTotalPrice
-            ) {
-              $form
-                .find(".cost-calculator-wrapper")
-                .addClass("has-discounted-price");
-            } else {
-              $form
-                .find(".cost-calculator-wrapper")
-                .removeClass("has-discounted-price");
+      //       // show discounted pricing
+      //       if (
+      //         totalPrice < regularTotalPrice &&
+      //         totalPrice != regularTotalPrice
+      //       ) {
+      //         $form
+      //           .find(".cost-calculator-wrapper")
+      //           .addClass("has-discounted-price");
+      //       } else {
+      //         $form
+      //           .find(".cost-calculator-wrapper")
+      //           .removeClass("has-discounted-price");
                 
-            }
+      //       }
 
-            // Conditional DOM updates
-            let updateIfChanged = function ($el, value) {
-              if (value && $el.text() !== value) {
-                $el.text(value);
-              }
-            };
+      //       // Conditional DOM updates
+      //       let updateIfChanged = function ($el, value) {
+      //         if (value && $el.text() !== value) {
+      //           $el.text(value);
+      //         }
+      //       };
 
-            // if (regularTotalPrice < totalPrice) {
-            //   regularTotalPrice = totalPrice;
-            // } else {
-            //   totalPrice = totalPrice;
-            // }
+      //       regularTotalPrice = regularTotalPrice != totalPrice && totalPrice > regularTotalPrice ? totalPrice : regularTotalPrice;
 
-            regularTotalPrice = regularTotalPrice != totalPrice && totalPrice > regularTotalPrice ? totalPrice : regularTotalPrice;
+      //       $form.find("#eshb-subtotal-price").val(regularTotalPrice);
+      //       $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
+      //       $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
 
-            $form.find("#eshb-subtotal-price").val(regularTotalPrice);
-            $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
-            $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
+      //       // update admin booking metaboxes pricing
+      //       if (
+      //         typeof eshb_ajax.is_admin !== "undefined" &&
+      //         eshb_ajax.is_admin
+      //       ) {
+      //         $('input[name="eshb_booking_metaboxes[total_price]"]').val(
+      //           totalPrice
+      //         );
+      //         $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(
+      //           subtotalPrice
+      //         );
+      //         $('input[name="eshb_booking_metaboxes[base_price]"]').val(
+      //           basePrice
+      //         );
+      //         $(
+      //           'input[name="eshb_booking_metaboxes[extra_service_price]"]'
+      //         ).val(extraServicesPrice);
+      //         $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(
+      //           extraBedPrice
+      //         );
+      //       }
 
-            // update admin booking metaboxes pricing
-            if (
-              typeof eshb_ajax.is_admin !== "undefined" &&
-              eshb_ajax.is_admin
-            ) {
-              $('input[name="eshb_booking_metaboxes[total_price]"]').val(
-                totalPrice
-              );
-              $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(
-                subtotalPrice
-              );
-              $('input[name="eshb_booking_metaboxes[base_price]"]').val(
-                basePrice
-              );
-              $(
-                'input[name="eshb_booking_metaboxes[extra_service_price]"]'
-              ).val(extraServicesPrice);
-              $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(
-                extraBedPrice
-              );
-            }
+      //       if (currencyPosition == "right") {
+      //         totalPrice = totalPrice + currencySymbol;
+      //         regularTotalPrice = regularTotalPrice + currencySymbol;
+      //       } else {
+      //         totalPrice = currencySymbol + totalPrice;
+      //         regularTotalPrice = currencySymbol + regularTotalPrice;
+      //       }
 
-            if (currencyPosition == "right") {
-              totalPrice = totalPrice + currencySymbol;
-              regularTotalPrice = regularTotalPrice + currencySymbol;
-            } else {
-              totalPrice = currencySymbol + totalPrice;
-              regularTotalPrice = currencySymbol + regularTotalPrice;
-            }
+      //       updateIfChanged(
+      //         $form.find("#eshb-booking-discounted-price"),
+      //         totalPrice
+      //       );
+      //       updateIfChanged(
+      //         $form.find("#eshb-booking-total-price"),
+      //         regularTotalPrice
+      //       );
+      //     }
+      //   }
+      // );
 
-            updateIfChanged(
-              $form.find("#eshb-booking-discounted-price"),
-              totalPrice
-            );
-            updateIfChanged(
-              $form.find("#eshb-booking-total-price"),
-              regularTotalPrice
-            );
-          }
+      const start = performance.now();
+
+    fetch(`${eshb_rest.root}eshb/v1/booking-prices`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-WP-Nonce": eshb_rest.nonce, // REST API nonce
+      },
+      body: JSON.stringify({
+        accomodationId,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        roomQuantity,
+        adultQuantity,
+        childrenQuantity,
+        extraBedQuantity,
+        selectedServices: JSON.stringify(selectedServices),
+        nonce: eshb_ajax.nonce, // optional if your REST callback checks it
+      }),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        const end = performance.now();
+        //console.log(`Response time: ${end - start} ms`);
+
+        if (!response || response.code) {
+          // REST API error
+          console.error(response.message || "Error fetching booking prices");
+          return;
         }
-      );
+
+        let prices = response;
+        let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
+        let subtotalPrice = parseFloat(prices.subtotalPrice);
+        let totalPrice = parseFloat(prices.totalPrice);
+        let regularTotalPrice = parseFloat(prices.regularTotalPrice);
+        let extraServicesPrice = parseFloat(prices.extraServicesPrice);
+        let extraBedPrice = parseFloat(prices.extraBedPrice);
+        let basePrice = parseFloat(prices.basePrice);
+        let currencySymbol = prices.currencySymbol;
+        let currencyPosition = prices.currencyPosition;
+
+        // show discounted pricing
+        if (totalPrice < regularTotalPrice && totalPrice != regularTotalPrice) {
+          $form.find(".cost-calculator-wrapper").addClass("has-discounted-price");
+        } else {
+          $form.find(".cost-calculator-wrapper").removeClass("has-discounted-price");
+        }
+
+        // Conditional DOM updates
+        const updateIfChanged = ($el, value) => {
+          if (value && $el.text() !== value) {
+            $el.text(value);
+          }
+        };
+
+        regularTotalPrice =
+          regularTotalPrice != totalPrice && totalPrice > regularTotalPrice
+            ? totalPrice
+            : regularTotalPrice;
+
+        $form.find("#eshb-subtotal-price").val(regularTotalPrice);
+        $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
+        $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
+
+        // update admin booking metaboxes pricing
+        if (typeof eshb_rest.is_admin !== "undefined" && eshb_rest.is_admin) {
+          $('input[name="eshb_booking_metaboxes[total_price]"]').val(totalPrice);
+          $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(subtotalPrice);
+          $('input[name="eshb_booking_metaboxes[base_price]"]').val(basePrice);
+          $('input[name="eshb_booking_metaboxes[extra_service_price]"]').val(extraServicesPrice);
+          $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(extraBedPrice);
+        }
+
+        if (currencyPosition === "right") {
+          totalPrice = totalPrice + currencySymbol;
+          regularTotalPrice = regularTotalPrice + currencySymbol;
+        } else {
+          totalPrice = currencySymbol + totalPrice;
+          regularTotalPrice = currencySymbol + regularTotalPrice;
+        }
+
+        updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
+        updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
+      })
+      .catch((err) => {
+        console.error("REST API request failed:", err);
+      });
+
+
     },
     formatPrice: function (totalPrice, currencySymbol = "$") {
       // Check if number has decimal part

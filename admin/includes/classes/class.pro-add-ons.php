@@ -11,6 +11,15 @@ class ESHB_PRO_ADDONS {
     public function eshb_get_addons(){
         $addons = array(
                 array(
+                    'name' => 'EHB Email Template',
+                    'slug' => 'ehb-email-template/ehb-email-template.php',
+                    'external_url'  => 'https://themewant.com/downloads/ehb-email-template/',
+                    'demo_url'  => 'https://themewant.com/downloads/ehb-email-template/',
+                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/email-template.png',
+                    'desc' => 'Easy Hotel deposit Plugin, email template builder for for Easy Hotel plugin. Whether you can create custom template for emails of booking.',
+                    'is_pro' => true
+                ),
+                array(
                     'name' => 'EHB Deposit',
                     'slug' => 'ehb-currency/ehb-deposit.php',
                     'external_url'  => 'https://themewant.com/downloads/ehb-deposit/',
