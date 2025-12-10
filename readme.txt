@@ -568,4 +568,4 @@ Appsero SDK **does not gather any data by default.** The SDK only starts gatheri
 
 Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
 
-Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/).
+Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/)
