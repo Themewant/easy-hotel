@@ -774,6 +774,7 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
         $settings = $this->get_settings_for_display();       
         $form_style = $settings['form_style'];
         $accomodation_id = !empty($settings['accomodation_id']) ? $settings['accomodation_id'] : 0;
+        ESHB_Helper::eshb_set_accomodation_localize($accomodation_id);
 
         if(!empty($accomodation_id)) {
             echo do_shortcode( '[eshb_booking_form accomodation_id='.$accomodation_id.' style="'. $form_style .'"]' );

@@ -37,6 +37,12 @@ function eshb_admin_enqueue_scripts (){
             'calendar_start_date_buffer' => $calendar_start_date_buffer,
         ) 
     );
+
+
+    wp_localize_script('eshb-admin-script', 'eshb_rest', [
+        'root'  => esc_url(rest_url()),
+        'nonce' => wp_create_nonce('wp_rest')
+    ]);
     
 
     // Get WordPress current locale
