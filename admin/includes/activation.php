@@ -37,3 +37,25 @@ function eshb_create_easy_hotel_pages() {
         }
     }
 }
+
+
+
+/**
+ * Initialize the plugin tracker
+ *
+ * @return void
+ */
+function appsero_init_tracker_easy_hotel() {
+
+    if ( ! class_exists( 'Appsero\Client' ) ) {
+      include ESHB_PL_PATH . 'appsero/src/Client.php';
+    }
+
+    $client = new Appsero\Client( 'aad425e0-9ec8-4de0-a3cf-011a98a4fb39', 'Easy Hotel Booking – Powerful Hotel Booking', __FILE__ );
+
+    // Active insights
+    $client->insights()->init();
+
+}
+
+appsero_init_tracker_easy_hotel();
