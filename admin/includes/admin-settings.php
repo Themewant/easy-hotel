@@ -841,12 +841,15 @@ add_action( 'plugins_loaded', function(){
         <div>
           <p><strong>Archive Grid: </strong><?php echo esc_html__('[eshb_accomodation_grid]', 'easy-hotel')?></p>
           <p><strong>Search Form: </strong><?php echo esc_html__('[eshb_search_form]', 'easy-hotel')?></p>
-          <p><strong>Booking Form: </strong><?php echo esc_html__('[eshb_booking_form]', 'easy-hotel')?></p>
-          <p><strong>Availability Calendar: </strong><?php echo esc_html__('[eshb_availability_calendar]', 'easy-hotel')?></p>
-          <p><strong>Related Accomodations: </strong><?php echo esc_html__('[eshb_related_accomodations]', 'easy-hotel')?></p>
-          <p><strong>Day Wise Pricing Table: </strong><?php echo esc_html__('[eshb_daywise_pricing_table]', 'easy-hotel')?></p>
-          <p><strong>Check In/Out Times: </strong><?php echo esc_html__('[eshb_check_in_out_times]', 'easy-hotel')?></p>
-          <p><strong>Reviews: </strong><?php echo esc_html__('[eshb_average_rarings]', 'easy-hotel')?></p>
+          <p><strong>Booking Form For Room Details Page: </strong><?php echo esc_html__('[eshb_booking_form]', 'easy-hotel')?></p>
+          <p><strong>Booking Form For Global: </strong><?php echo esc_html__('[eshb_booking_form accomodation_id="123"]', 'easy-hotel')?></p>
+          <p><strong>Availability Calendar For Room Details Page: </strong><?php echo esc_html__('[eshb_availability_calendar]', 'easy-hotel')?></p>
+          <p><strong>Availability Calendar For Global: </strong><?php echo esc_html__('[eshb_availability_calendar accomodation_id="123"]', 'easy-hotel')?></p>
+          <p><strong>Related Accomodations: </strong><?php echo esc_html__('[eshb_related_accomodations]', 'easy-hotel')?> <?php echo esc_html__('(only allowed for room details page)', 'easy-hotel')?></p>
+          <p><strong>Day Wise Pricing Table For Room Details Page: </strong><?php echo esc_html__('[eshb_daywise_pricing_table]', 'easy-hotel')?></p>
+          <p><strong>Day Wise Pricing Table For Global: </strong><?php echo esc_html__('[eshb_daywise_pricing_table accomodation_id="123"]', 'easy-hotel')?></p>
+          <p><strong>Check In/Out Times: </strong><?php echo esc_html__('[eshb_check_in_out_times]', 'easy-hotel')?> <?php echo esc_html__('(only allowed for room details page)', 'easy-hotel')?></p>
+          <p><strong>Reviews: </strong><?php echo esc_html__('[eshb_average_rarings]', 'easy-hotel')?> <?php echo esc_html__('(only allowed for room details page)', 'easy-hotel')?></p>
         </div>
       </div>
 

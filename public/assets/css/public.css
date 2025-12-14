@@ -889,6 +889,7 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
   color: var(--eshb-white-color);
   border: none;
   display: inline-block;
+  margin-bottom: 0;
 }
 
 .archive-search-warpper {
@@ -1235,6 +1236,7 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
   border: none;
   outline: none;
   background: none;
+  margin-bottom: 0;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group label {
   color: var(--eshb-dark-color);
