@@ -1,0 +1,11 @@
+#ignore .git
+.git
+
+#ignore .qodo
+.qodo
+
+# Ignore node_modules folder
+node_modules/
+
+# Ignore specific zip file
+easy-hotel.zip

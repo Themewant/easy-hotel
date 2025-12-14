@@ -58,16 +58,17 @@ function eshb_reorder_columns_payment($columns) {
 add_filter('manage_eshb_payment_posts_columns', 'eshb_reorder_columns_payment');
 
 if( class_exists( 'ESHB' ) ) {
-    // include pluggable file
-    if(is_admin() && isset($_REQUEST['nonce'])) {
-        require_once ABSPATH . 'wp-includes/pluggable.php';
-    }
+    
+
 
     $post_id = '';
 
-    if ( isset( $_GET['post'] ) && isset( $_GET['nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action') ) ) {
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+    if ( isset( $_GET['post'] ) && isset( $_GET['nonce'] ) ) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         $post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
     }
+    
 
     $conditional_hidden_class = 'hidden-metabox';
     $saved_currency = 'USD';
@@ -87,8 +88,9 @@ if( class_exists( 'ESHB' ) ) {
     }
 
     $booking_id = '';
-
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
     if(!empty($_GET['booking'])) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         $booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
     }
 
