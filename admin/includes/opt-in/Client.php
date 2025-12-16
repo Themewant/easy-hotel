@@ -86,13 +86,6 @@ class Client {
     private $insights;
 
     /**
-     * The Object of License Class
-     *
-     * @var object
-     */
-    private $license;
-
-    /**
      * Initialize the class
      *
      * @param string $hash hash of the plugin
@@ -147,25 +140,6 @@ class Client {
         }
     }
 
-    /**
-     * Initialize license checker
-     *
-     * @return Appsero\License
-     */
-    public function license() {
-        if ( ! class_exists( __NAMESPACE__ . '\License' ) ) {
-            require_once __DIR__ . '/License.php';
-        }
-
-        // if already instantiated, return the cached one
-        if ( $this->license ) {
-            return $this->license;
-        }
-
-        $this->license = new License( $this );
-
-        return $this->license;
-    }
 
     /**
      * API Endpoint
