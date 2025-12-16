@@ -495,6 +495,7 @@ class Insights {
      * @return bool
      */
     private function is_optin_request() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return isset( $_GET[ $this->client->slug . '_tracker_optin' ] ) && 'true' === $_GET[ $this->client->slug . '_tracker_optin' ];
     }
 
@@ -504,6 +505,7 @@ class Insights {
      * @return bool
      */
     private function is_optout_request() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         return isset( $_GET[ $this->client->slug . '_tracker_optout' ] ) && 'true' === $_GET[ $this->client->slug . '_tracker_optout' ];
     }
 
@@ -587,6 +589,7 @@ class Insights {
     public function get_post_count( $post_type ) {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return (int) $wpdb->get_var(
             $wpdb->prepare(
                 "SELECT count(ID) FROM $wpdb->posts WHERE post_type = %s and post_status = %s",
@@ -722,7 +725,7 @@ class Insights {
     public function add_weekly_schedule( $schedules ) {
         $schedules['weekly'] = array(
             'interval' => DAY_IN_SECONDS * 7,
-            'display'  => __( 'Once Weekly', 'appsero' ),
+            'display'  => __( 'Once Weekly', 'easy-elements' ),
         );
 
         return $schedules;
@@ -889,7 +892,7 @@ class Insights {
         $custom_reasons = apply_filters( 'appsero_custom_deactivation_reasons', [], $this->client );
         ?>
 
-        <div class="wd-dr-modal" id="<?php echo $this->client->slug; ?>-wd-dr-modal">
+        <div class="wd-dr-modal" id="<?php echo esc_attr( $this->client->slug ); ?>-wd-dr-modal">
             <div class="wd-dr-modal-wrap">
                 <div class="wd-dr-modal-header">
                     <h3> <?php $this->client->_etrans( 'Goodbyes are always hard. If you have a moment, please let us know how we can improve.' ); ?> </h3>
@@ -900,9 +903,9 @@ class Insights {
                         <?php foreach ( $reasons as $reason ) { ?>
                             <li data-placeholder="<?php echo esc_attr( $reason['placeholder'] ); ?>">
                                 <label>
-                                    <input type="radio" name="selected-reason" value="<?php echo $reason['id']; ?>">
-                                    <div class="wd-de-reason-icon"><?php echo $reason['icon']; ?></div>
-                                    <div class="wd-de-reason-text"><?php echo $reason['text']; ?></div>
+                                    <input type="radio" name="selected-reason" value="<?php echo esc_attr( $reason['id'] ); ?>">
+                                    <div class="wd-de-reason-icon"><?php echo wp_kses_post( $reason['icon'] ); ?></div>
+                                    <div class="wd-de-reason-text"><?php echo wp_kses_post( $reason['text'] ); ?></div>
                                 </label>
                             </li>
                         <?php } ?>
@@ -912,24 +915,15 @@ class Insights {
                             <?php foreach ( $custom_reasons as $reason ) { ?>
                                 <li data-placeholder="<?php echo esc_attr( $reason['placeholder'] ); ?>" data-customreason="true">
                                     <label>
-                                        <input type="radio" name="selected-reason" value="<?php echo $reason['id']; ?>">
-                                        <div class="wd-de-reason-icon"><?php echo $reason['icon']; ?></div>
-                                        <div class="wd-de-reason-text"><?php echo $reason['text']; ?></div>
+                                        <input type="radio" name="selected-reason" value="<?php echo esc_attr(  $reason['id'] ); ?>">
+                                        <div class="wd-de-reason-icon"><?php echo wp_kses_post( $reason['icon'] ); ?></div>
+                                        <div class="wd-de-reason-text"><?php echo wp_kses_post( $reason['text'] ); ?></div>
                                     </label>
                                 </li>
                             <?php } ?>
                         </ul>
                     <?php } ?>
                     <div class="wd-dr-modal-reason-input"><textarea></textarea></div>
-                    <p class="wd-dr-modal-reasons-bottom">
-                        <?php
-                        echo sprintf(
-                            $this->client->__trans( 'We share your data with <a href="%1$s" target="_blank">Appsero</a> to troubleshoot problems &amp; make product improvements. <a href="%2$s" target="_blank">Learn more</a> &nearr;' ),
-                            esc_url( 'https://appsero.com/' ),
-                            esc_url( 'https://appsero.com/privacy-policy' )
-                        );
-                        ?>
-                    </p>
                 </div>
 
                 <div class="wd-dr-modal-footer">
@@ -943,11 +937,11 @@ class Insights {
         <script type="text/javascript">
             (function($) {
                 $(function() {
-                    var modal = $('#<?php echo $this->client->slug; ?>-wd-dr-modal');
+                    var modal = $('#<?php echo esc_attr(  $this->client->slug ); ?>-wd-dr-modal');
                     var deactivateLink = '';
 
                     // Open modal
-                    $('#the-list').on('click', 'a.<?php echo $this->client->slug; ?>-deactivate-link', function(e) {
+                    $('#the-list').on('click', 'a.<?php echo esc_attr( $this->client->slug ); ?>-deactivate-link', function(e) {
                         e.preventDefault();
 
                         modal.addClass('modal-active');
@@ -998,15 +992,15 @@ class Insights {
                             return;
                         }
 
-                        var $radio = $('input[type="radio"]:checked', modal);
+                        var $radio = $('input[type="radio"]:checked', modal );
                         var $input = $('.wd-dr-modal-reason-input textarea');
 
                         $.ajax({
                             url: ajaxurl,
                             type: 'POST',
                             data: {
-                                nonce: '<?php echo wp_create_nonce( 'appsero-security-nonce' ); ?>',
-                                action: '<?php echo $this->client->slug; ?>_submit-uninstall-reason',
+                                nonce: '<?php echo esc_js( wp_create_nonce( 'appsero-security-nonce' ) ); ?>',
+                                action: '<?php echo esc_attr( $this->client->slug ); ?>_submit-uninstall-reason',
                                 reason_id: (0 === $radio.length) ? 'none' : $radio.val(),
                                 reason_info: (0 !== $input.length) ? $input.val().trim() : ''
                             },

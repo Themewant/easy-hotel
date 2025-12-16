@@ -41,7 +41,7 @@
     function eshb_appsero_init_tracker() {
 
         if ( ! class_exists( 'Appsero\Client' ) ) {
-        include ESHB_PL_PATH . 'apps/Client.php';
+        include ESHB_PL_PATH . 'admin/includes/opt-in/Client.php';
         }
 
         $client = new Appsero\Client( 'aad425e0-9ec8-4de0-a3cf-011a98a4fb39', 'Easy Hotel Booking – Powerful Hotel Booking', __FILE__ );
