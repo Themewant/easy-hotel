@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "easy-hotel/accomodationgrid",
+	"version": "0.1.0",
+	"title": "Accomodation Grid",
+	"category": "easy-hotel",
+	"icon": "smiley",
+	"description": "Example block scaffolded with Create Block tool.",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "accomodationgrid",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style.scss",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

@@ -26,6 +26,7 @@
     include 'admin/includes/notice.php';
 
     include 'public/includes/widgets/widgets.php';
+    include 'public/includes/gutenberg/blocks/blocks.php';
     include 'class.easy-hotel.php';
 
     add_action( 'plugins_loaded', function(){
