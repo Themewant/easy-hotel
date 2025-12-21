@@ -37,7 +37,12 @@ add_action( 'plugins_loaded', function(){
         
         function eshb_custom_column_content($column, $post_id) {
             $eshb_booking_metaboxes = get_post_meta($post_id, 'eshb_booking_metaboxes', true);
+            if(!$eshb_booking_metaboxes){
+                return;
+            }
+
             $time_slot = !empty($eshb_booking_metaboxes['booking_start_time']) && !empty($eshb_booking_metaboxes['booking_end_time']) ? ESHB_Helper::format_to_wp_time($eshb_booking_metaboxes['booking_start_time']) . ' - ' . ESHB_Helper::format_to_wp_time($eshb_booking_metaboxes['booking_end_time']) : '';
+            $room_qty = !empty($eshb_booking_metaboxes['room_quantity']) ? $eshb_booking_metaboxes['room_quantity'] : '';
 
             switch ($column) {
                 case 'booking_start_date':
@@ -50,7 +55,7 @@ add_action( 'plugins_loaded', function(){
                     echo esc_html( $time_slot );
                     break;
                 case 'room_quantity':
-                    echo esc_html($eshb_booking_metaboxes['room_quantity']);
+                    echo esc_html($room_qty);
                     break;
                 case 'booking_status':
                     $edit_url = get_edit_post_link($post_id);

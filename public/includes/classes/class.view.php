@@ -459,6 +459,10 @@ class ESHB_View extends ESHB_MAIN{
                                 $total_services_price = 0;
 
                                 foreach ($included_service_ids as $key => $service_id) {
+                                    $service = get_post($service_id);
+                                    if(!$service){
+                                        continue;
+                                    }
                                     $service_name = get_the_title( $service_id );
                                     $service_metaboxes = get_post_meta($service_id, 'eshb_service_metaboxes', true);
                                     $service_periodicity = $service_metaboxes['service_periodicity'];

@@ -38,7 +38,9 @@ if ( ! class_exists( 'ESHB_Field_gallery' ) ) {
 
         foreach ( $values as $id ) {
           $attachment = wp_get_attachment_image_src( $id, 'thumbnail' );
-          echo '<li><img src="'. esc_url( $attachment[0] ) .'" /></li>';
+          if($attachment){
+            echo '<li><img src="'. esc_url( $attachment[0] ) .'" /></li>';
+          }
         }
 
       }
