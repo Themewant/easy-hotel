@@ -85,13 +85,10 @@ class ESHB_Helper {
 
             do_action( 'eshb_after_booking_created', $post_id, $order_id );
 
-            error_log('booking created with ID: ' . $post_id);
-
             return $post_id;
 
         }else{
             $error_message = $post_id->get_error_message();
-            //error_log("Error creating booking for order ID: $order_id, Error: $error_message");
             return false;
         }
     }
