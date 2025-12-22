@@ -4,28 +4,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function create_block_searchform_block_init() {
-	// Register the main plugin style so it can be used in block.json
+	// Register the main plugin style
 	wp_register_style( 
 		'eshb-style', 
-		ESHB_PL_URL . 'public/assets/css/public.min.css', 
+		ESHB_PL_URL . 'public/assets/css/public.css', 
 		array(), 
 		ESHB_VERSION 
 	);
 
-	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-		wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
-		return;
-	}
+	// Register block-specific styles manually to be sure
+	wp_register_style(
+		'eshb-searchform-style',
+		plugins_url( 'build/searchform/style-index.css', __FILE__ ),
+		array( 'eshb-style' ),
+		filemtime( __DIR__ . '/build/searchform/style-index.css' )
+	);
 
-	if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
-		wp_register_block_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
-	}
+	wp_register_style(
+		'eshb-searchform-editor-style',
+		plugins_url( 'build/searchform/index.css', __FILE__ ),
+		array( 'eshb-style' ),
+		filemtime( __DIR__ . '/build/searchform/index.css' )
+	);
 
-	if ( file_exists( __DIR__ . '/build/blocks-manifest.php' ) ) {
-		$manifest_data = require __DIR__ . '/build/blocks-manifest.php';
-		foreach ( array_keys( $manifest_data ) as $block_type ) {
-			register_block_type( __DIR__ . "/build/{$block_type}" );
-		}
-	}
+	register_block_type( __DIR__ . '/build/searchform', array(
+		'style'         => 'eshb-searchform-style',
+		'editor_style'  => 'eshb-searchform-editor-style',
+	) );
 }
 add_action( 'init', 'create_block_searchform_block_init' );

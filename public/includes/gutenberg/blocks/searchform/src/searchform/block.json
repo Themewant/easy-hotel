@@ -11,24 +11,7 @@
     "supports": {
         "html": false,
         "align": true,
-        "layout": true,
-        "spacing": {
-            "margin": true,
-            "padding": true
-        },
-        "color": {
-            "background": true,
-            "text": true,
-            "link": true
-        },
-        "typography": {
-            "fontSize": true,
-            "fontWeight": true,
-            "fontStyle": true,
-            "lineHeight": true,
-            "textDecoration": true,
-            "textTransform": true
-        }
+        "layout": true
     },
     "selectors": {
         "root": ".eshb-search",
@@ -49,16 +32,171 @@
     },
     "textdomain": "easy-hotel",
     "editorScript": "file:./index.js",
-    "editorStyle": "file:./index.css",
-    "style": [
-        "file:./style.scss",
-        "eshb-style"
-    ],
     "render": "file:./render.php",
     "attributes": {
         "customBackgroundColor": {
             "type": "string",
+            "default": "var(--eshb-dark-color)"
+        },
+        "padding": {
+            "type": "object",
+            "default": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+            }
+        },
+        "margin": {
+            "type": "object",
+            "default": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+            }
+        },
+        "borderRadius": {
+            "type": "object",
+            "default": {
+                "topLeft": "0px",
+                "topRight": "0px",
+                "bottomLeft": "0px",
+                "bottomRight": "0px"
+            }
+        },
+        "boxShadow": {
+            "type": "string",
             "default": ""
+        },
+        "boxShadowX": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowY": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowBlur": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowSpread": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowColor": {
+            "type": "string",
+            "default": "rgba(0,0,0,0.1)"
+        },
+        "customBackgroundColorHover": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowHover": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowXHover": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowYHover": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowBlurHover": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowSpreadHover": {
+            "type": "number",
+            "default": 0
+        },
+        "boxShadowColorHover": {
+            "type": "string",
+            "default": "rgba(0,0,0,0.1)"
+        },
+        "fieldGroupPadding": {
+            "type": "object",
+            "default": {
+                "top": "30px",
+                "right": "0px",
+                "bottom": "30px",
+                "left": "0px"
+            }
+        },
+        "fieldGroupMargin": {
+            "type": "object",
+            "default": {
+                "top": "30px",
+                "right": "0px",
+                "bottom": "30px",
+                "left": "0px"
+            }
+        },
+        "fieldLabelColor": {
+            "type": "string",
+            "default": "var(--eshb-primary-color)"
+        },
+        "fieldLabelColorHover": {
+            "type": "string",
+            "default": ""
+        },
+        "fieldTextColor": {
+            "type": "string",
+            "default": "var(--eshb-white-color)"
+        },
+        "fieldTextColorHover": {
+            "type": "string",
+            "default": ""
+        },
+        "fieldLabelTypography": {
+            "type": "object",
+            "default": {
+                "fontSize": "14px",
+                "fontWeight": "400",
+                "lineHeight": "1.5",
+                "textTransform": "none",
+                "letterSpacing": "0px"
+            }
+        },
+        "fieldTextTypography": {
+            "type": "object",
+            "default": {
+                "fontSize": "20px",
+                "fontWeight": "400",
+                "lineHeight": "1.5",
+                "textTransform": "none",
+                "letterSpacing": "0px"
+            }
+        },
+        "plusMinusBtnBackgroundColor": {
+            "type": "string",
+            "default": "var(--eshb-primary-color)"
+        },
+        "plusMinusBtnTextColor": {
+            "type": "string",
+            "default": "var(--eshb-white-color)"
+        },
+        "plusMinusBtnTypography": {
+            "type": "object",
+            "default": {
+                "fontSize": "14px",
+                "fontWeight": "400",
+                "lineHeight": "2.5",
+                "textTransform": "none",
+                "letterSpacing": "0px"
+            }
+        },
+        "plusMinusBtnPadding": {
+            "type": "object",
+            "default": {
+                "top": "0px",
+                "right": "0px",
+                "bottom": "0px",
+                "left": "0px"
+            }
         }
     }
 }

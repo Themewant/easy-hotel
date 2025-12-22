@@ -16,24 +16,7 @@ return array(
 		'supports' => array(
 			'html' => false,
 			'align' => true,
-			'layout' => true,
-			'spacing' => array(
-				'margin' => true,
-				'padding' => true
-			),
-			'color' => array(
-				'background' => true,
-				'text' => true,
-				'link' => true
-			),
-			'typography' => array(
-				'fontSize' => true,
-				'fontWeight' => true,
-				'fontStyle' => true,
-				'lineHeight' => true,
-				'textDecoration' => true,
-				'textTransform' => true
-			)
+			'layout' => true
 		),
 		'selectors' => array(
 			'root' => '.eshb-search',
@@ -54,16 +37,171 @@ return array(
 		),
 		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
-		'editorStyle' => 'file:./index.css',
-		'style' => array(
-			'file:./style.scss',
-			'eshb-style'
-		),
 		'render' => 'file:./render.php',
 		'attributes' => array(
 			'customBackgroundColor' => array(
 				'type' => 'string',
+				'default' => 'var(--eshb-dark-color)'
+			),
+			'padding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'margin' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'borderRadius' => array(
+				'type' => 'object',
+				'default' => array(
+					'topLeft' => '0px',
+					'topRight' => '0px',
+					'bottomLeft' => '0px',
+					'bottomRight' => '0px'
+				)
+			),
+			'boxShadow' => array(
+				'type' => 'string',
 				'default' => ''
+			),
+			'boxShadowX' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowY' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowBlur' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowSpread' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowColor' => array(
+				'type' => 'string',
+				'default' => 'rgba(0,0,0,0.1)'
+			),
+			'customBackgroundColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'boxShadowHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'boxShadowXHover' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowYHover' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowBlurHover' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowSpreadHover' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'boxShadowColorHover' => array(
+				'type' => 'string',
+				'default' => 'rgba(0,0,0,0.1)'
+			),
+			'fieldGroupPadding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '30px',
+					'right' => '0px',
+					'bottom' => '30px',
+					'left' => '0px'
+				)
+			),
+			'fieldGroupMargin' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '30px',
+					'right' => '0px',
+					'bottom' => '30px',
+					'left' => '0px'
+				)
+			),
+			'fieldLabelColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-primary-color)'
+			),
+			'fieldLabelColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'fieldTextColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-white-color)'
+			),
+			'fieldTextColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'fieldLabelTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontSize' => '14px',
+					'fontWeight' => '400',
+					'lineHeight' => '1.5',
+					'textTransform' => 'none',
+					'letterSpacing' => '0px'
+				)
+			),
+			'fieldTextTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontSize' => '20px',
+					'fontWeight' => '400',
+					'lineHeight' => '1.5',
+					'textTransform' => 'none',
+					'letterSpacing' => '0px'
+				)
+			),
+			'plusMinusBtnBackgroundColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-primary-color)'
+			),
+			'plusMinusBtnTextColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-white-color)'
+			),
+			'plusMinusBtnTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontSize' => '14px',
+					'fontWeight' => '400',
+					'lineHeight' => '2.5',
+					'textTransform' => 'none',
+					'letterSpacing' => '0px'
+				)
+			),
+			'plusMinusBtnPadding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
 			)
 		)
 	)

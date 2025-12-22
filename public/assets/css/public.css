@@ -895,6 +895,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   background: none;
   color: var(--eshb-white-color);
   text-align: center;
+  max-width: -webkit-fill-available;
 }
 .eshb-search .eshb-search-form .eshb-form-group .form-control:focus {
   outline: none;
