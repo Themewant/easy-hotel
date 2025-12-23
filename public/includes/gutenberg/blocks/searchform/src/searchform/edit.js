@@ -10,9 +10,9 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import metadata from './block.json';
 import './editor.scss';
-import BoxShadowControls from './custom-components/BoxShadowControls';
-import TypographyControls from './custom-components/TypographyControls';
-import ColorPopover from './custom-components/ColorPopover';
+import BoxShadowControls from '../../../custom-components/BoxShadowControls';
+import TypographyControls from '../../../custom-components/TypographyControls';
+import ColorPopover from '../../../custom-components/ColorPopover';
 
 export default function Edit({ attributes, setAttributes }) {
     const {
@@ -29,7 +29,15 @@ export default function Edit({ attributes, setAttributes }) {
         plusMinusBtnPadding,
         customBackgroundColorHover,
         fieldLabelColorHover,
-        fieldTextColorHover
+        fieldTextColorHover,
+        plusMinusBtnBackgroundColorHover,
+        plusMinusBtnTextColorHover,
+        submitBtnBackgroundColor,
+        submitBtnTextColor,
+        submitBtnBackgroundColorHover,
+        submitBtnTextColorHover,
+        submitBtnPadding,
+        submitBtnMargin
     } = attributes;
 
     return (
@@ -51,6 +59,7 @@ export default function Edit({ attributes, setAttributes }) {
                                     <ColorPopover
                                         label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background Color', 'easy-hotel')}
                                         color={isHover ? customBackgroundColorHover : customBackgroundColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-dark-color)'}
                                         onChange={(value) => {
                                             const hex = (value && typeof value === 'object') ? value.hex : value;
                                             setAttributes({ [isHover ? 'customBackgroundColorHover' : 'customBackgroundColor']: hex });
@@ -72,20 +81,18 @@ export default function Edit({ attributes, setAttributes }) {
                         values={padding}
                         onChange={(nextValues) => setAttributes({ padding: nextValues })}
                     />
+                    <Divider />
                     <BoxControl
                         label={__('Margin', 'easy-hotel')}
                         values={margin}
                         onChange={(nextValues) => setAttributes({ margin: nextValues })}
                     />
                     <Divider />
-
-                    {/* Border Radious*/}
                     <BoxControl
                         label={__('Border Radious', 'easy-hotel')}
                         values={borderRadius}
                         onChange={(nextValues) => setAttributes({ borderRadius: nextValues })}
                     />
-                    <Divider />
                 </PanelBody>
 
                 <PanelBody title={__('Fields Group', 'easy-hotel')} initialOpen={false}>
@@ -94,12 +101,12 @@ export default function Edit({ attributes, setAttributes }) {
                         values={fieldGroupPadding}
                         onChange={(nextValues) => setAttributes({ fieldGroupPadding: nextValues })}
                     />
+                    <Divider />
                     <BoxControl
                         label={__('Margin', 'easy-hotel')}
                         values={fieldGroupMargin}
                         onChange={(nextValues) => setAttributes({ fieldGroupMargin: nextValues })}
                     />
-                    <Divider />
                 </PanelBody>
 
                 <PanelBody title={__('Fields', 'easy-hotel')} initialOpen={false}>
@@ -118,6 +125,7 @@ export default function Edit({ attributes, setAttributes }) {
                                     <ColorPopover
                                         label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
                                         color={isHover ? fieldLabelColorHover : fieldLabelColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-primary-color)'}
                                         onChange={(value) => {
                                             const hex = (value && typeof value === 'object') ? value.hex : value;
                                             setAttributes({ [isHover ? 'fieldLabelColorHover' : 'fieldLabelColor']: hex });
@@ -127,7 +135,6 @@ export default function Edit({ attributes, setAttributes }) {
                             );
                         }}
                     </TabPanel>
-
                     <TypographyControls
                         label={__('Typography', 'easy-hotel')}
                         attributes={attributes}
@@ -153,6 +160,7 @@ export default function Edit({ attributes, setAttributes }) {
                                     <ColorPopover
                                         label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
                                         color={isHover ? fieldTextColorHover : fieldTextColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-white-color)'}
                                         onChange={(value) => {
                                             const hex = (value && typeof value === 'object') ? value.hex : value;
                                             setAttributes({ [isHover ? 'fieldTextColorHover' : 'fieldTextColor']: hex });
@@ -172,29 +180,40 @@ export default function Edit({ attributes, setAttributes }) {
                 </PanelBody>
 
                 <PanelBody title={__('Plus Minus Button', 'easy-hotel')} initialOpen={false}>
-                    {/* Add Plus Minus Button styles here */}
-                    <ColorPopover
-                        label={__('Background Color', 'easy-hotel')}
-                        color={plusMinusBtnBackgroundColor}
-                        onChange={(value) => {
-                            if (value && typeof value === 'object') {
-                                setAttributes({ plusMinusBtnBackgroundColor: value.hex });
-                            } else {
-                                setAttributes({ plusMinusBtnBackgroundColor: value });
-                            }
+                    <TabPanel
+                        className="eshb-tab-panel"
+                        tabs={[
+                            { name: 'normal', title: __('Normal', 'easy-hotel') },
+                            { name: 'hover', title: __('Hover', 'easy-hotel') },
+                        ]}
+                    >
+                        {(tab) => {
+                            const isHover = tab.name === 'hover';
+                            return (
+                                <div style={{ marginTop: '15px' }}>
+                                    <ColorPopover
+                                        label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background Color', 'easy-hotel')}
+                                        color={isHover ? plusMinusBtnBackgroundColorHover : plusMinusBtnBackgroundColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-primary-color)'}
+                                        onChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'plusMinusBtnBackgroundColorHover' : 'plusMinusBtnBackgroundColor']: hex });
+                                        }}
+                                    />
+                                    <ColorPopover
+                                        label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
+                                        color={isHover ? plusMinusBtnTextColorHover : plusMinusBtnTextColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-white-color)'}
+                                        onChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'plusMinusBtnTextColorHover' : 'plusMinusBtnTextColor']: hex });
+                                        }}
+                                    />
+                                </div>
+                            );
                         }}
-                    />
-                    <ColorPopover
-                        label={__('Color', 'easy-hotel')}
-                        color={plusMinusBtnTextColor}
-                        onChange={(value) => {
-                            if (value && typeof value === 'object') {
-                                setAttributes({ plusMinusBtnTextColor: value.hex });
-                            } else {
-                                setAttributes({ plusMinusBtnTextColor: value });
-                            }
-                        }}
-                    />
+                    </TabPanel>
+
                     <TypographyControls
                         label={__('Typography', 'easy-hotel')}
                         attributes={attributes}
@@ -202,6 +221,7 @@ export default function Edit({ attributes, setAttributes }) {
                         attributeKey="plusMinusBtnTypography"
                         nextDefaultSize={true}
                     />
+                    <Divider />
                     <BoxControl
                         label={__('Padding', 'easy-hotel')}
                         values={plusMinusBtnPadding}
@@ -209,8 +229,60 @@ export default function Edit({ attributes, setAttributes }) {
                     />
                 </PanelBody>
 
-                <PanelBody title={__('Button', 'easy-hotel')} initialOpen={false}>
-                    {/* Add Button styles here */}
+                <PanelBody title={__('Submit Button', 'easy-hotel')} initialOpen={false}>
+                    <TabPanel
+                        className="eshb-tab-panel"
+                        tabs={[
+                            { name: 'normal', title: __('Normal', 'easy-hotel') },
+                            { name: 'hover', title: __('Hover', 'easy-hotel') },
+                        ]}
+                    >
+                        {(tab) => {
+                            const isHover = tab.name === 'hover';
+                            return (
+                                <div style={{ marginTop: '15px' }}>
+                                    <ColorPopover
+                                        label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background Color', 'easy-hotel')}
+                                        color={isHover ? submitBtnBackgroundColorHover : submitBtnBackgroundColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-primary-color)'}
+                                        onChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'submitBtnBackgroundColorHover' : 'submitBtnBackgroundColor']: hex });
+                                        }}
+                                    />
+                                    <ColorPopover
+                                        label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
+                                        color={isHover ? submitBtnTextColorHover : submitBtnTextColor}
+                                        defaultColor={isHover ? '' : 'var(--eshb-white-color)'}
+                                        onChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'submitBtnTextColorHover' : 'submitBtnTextColor']: hex });
+                                        }}
+                                    />
+                                </div>
+                            );
+                        }}
+                    </TabPanel>
+                    <Divider />
+                    <BoxControl
+                        label={__('Padding', 'easy-hotel')}
+                        values={submitBtnPadding}
+                        onChange={(nextValues) => setAttributes({ submitBtnPadding: nextValues })}
+                    />
+                    <Divider />
+                    <BoxControl
+                        label={__('Margin', 'easy-hotel')}
+                        values={submitBtnMargin}
+                        onChange={(nextValues) => setAttributes({ submitBtnMargin: nextValues })}
+                    />
+                    <Divider />
+                    <TypographyControls
+                        label={__('Typography', 'easy-hotel')}
+                        attributes={attributes}
+                        setAttributes={setAttributes}
+                        attributeKey="submitBtnTypography"
+                        nextDefaultSize={true}
+                    />
                 </PanelBody>
             </InspectorControls>
             <ServerSideRender

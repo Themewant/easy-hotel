@@ -35,7 +35,7 @@ $vars[] = '--eshb-scf-pr:' . esc_attr( $ensure_unit( $padding['right'] ?? '0px' 
 $vars[] = '--eshb-scf-pb:' . esc_attr( $ensure_unit( $padding['bottom'] ?? '0px' ) );
 $vars[] = '--eshb-scf-pl:' . esc_attr( $ensure_unit( $padding['left'] ?? '0px' ) );
 
-$border_radius = $attributes['borderRadius'] ?? []; error_log('$border_radius' . print_r($border_radius, true));
+$border_radius = $attributes['borderRadius'] ?? [];
 $vars[] = '--eshb-scf-bt:' . esc_attr( $ensure_unit( $border_radius['top'] ?? '0px' ) );
 $vars[] = '--eshb-scf-br:' . esc_attr( $ensure_unit( $border_radius['right'] ?? '0px' ) );
 $vars[] = '--eshb-scf-bl:' . esc_attr( $ensure_unit( $border_radius['bottom'] ?? '0px' ) );
@@ -108,9 +108,19 @@ if ( ! empty( $pm_btn_bg_color ) ) {
     $vars[] = '--eshb-scf-pm-btn-bg-color:' . esc_attr( $pm_btn_bg_color );
 }
 
+$pm_btn_bg_color_hover = $attributes['plusMinusBtnBackgroundColorHover'] ?? '';
+if ( ! empty( $pm_btn_bg_color_hover ) ) {
+    $vars[] = '--eshb-scf-pm-btn-bg-color-hover:' . esc_attr( $pm_btn_bg_color_hover );
+}
+
 $pm_btn_text_color = $attributes['plusMinusBtnTextColor'] ?? '';
 if ( ! empty( $pm_btn_text_color ) ) {
     $vars[] = '--eshb-scf-pm-btn-text-color:' . esc_attr( $pm_btn_text_color );
+}
+
+$pm_btn_text_color_hover = $attributes['plusMinusBtnTextColorHover'] ?? '';
+if ( ! empty( $pm_btn_text_color_hover ) ) {
+    $vars[] = '--eshb-scf-pm-btn-text-color-hover:' . esc_attr( $pm_btn_text_color_hover );
 }
 
 $pm_btn_typo = $attributes['plusMinusBtnTypography'] ?? [];
@@ -128,6 +138,52 @@ if ( ! empty( $pm_btn_padding ) ) {
     $vars[] = '--eshb-scf-pm-btn-pr:' . esc_attr( $ensure_unit( $pm_btn_padding['right'] ?? '0px' ) );
     $vars[] = '--eshb-scf-pm-btn-pb:' . esc_attr( $ensure_unit( $pm_btn_padding['bottom'] ?? '0px' ) );
     $vars[] = '--eshb-scf-pm-btn-pl:' . esc_attr( $ensure_unit( $pm_btn_padding['left'] ?? '0px' ) );
+}
+
+
+$submit_btn_bg_color = $attributes['submitBtnBackgroundColor'] ?? '';
+if ( ! empty( $submit_btn_bg_color ) ) {
+    $vars[] = '--eshb-scf-submit-btn-bg-color:' . esc_attr( $submit_btn_bg_color );
+}
+
+$submit_btn_bg_color_hover = $attributes['submitBtnBackgroundColorHover'] ?? '';
+if ( ! empty( $submit_btn_bg_color_hover ) ) {
+    $vars[] = '--eshb-scf-submit-btn-bg-color-hover:' . esc_attr( $submit_btn_bg_color_hover );
+}
+
+$submit_btn_text_color = $attributes['submitBtnTextColor'] ?? '';
+if ( ! empty( $submit_btn_text_color ) ) {
+    $vars[] = '--eshb-scf-submit-btn-text-color:' . esc_attr( $submit_btn_text_color );
+}
+
+$submit_btn_text_color_hover = $attributes['submitBtnTextColorHover'] ?? '';
+if ( ! empty( $submit_btn_text_color_hover ) ) {
+    $vars[] = '--eshb-scf-submit-btn-text-color-hover:' . esc_attr( $submit_btn_text_color_hover );
+}
+
+$submit_btn_typo = $attributes['submitBtnTypography'] ?? [];
+if ( ! empty( $submit_btn_typo ) ) {
+    $vars[] = '--eshb-scf-submit-btn-fs:' . esc_attr( $submit_btn_typo['fontSize'] ?? 'inherit' );
+    $vars[] = '--eshb-scf-submit-btn-fw:' . esc_attr( $submit_btn_typo['fontWeight'] ?? 'inherit' );
+    $vars[] = '--eshb-scf-submit-btn-lh:' . esc_attr( $submit_btn_typo['lineHeight'] ?? 'inherit' );
+    $vars[] = '--eshb-scf-submit-btn-tt:' . esc_attr( $submit_btn_typo['textTransform'] ?? 'inherit' );
+    $vars[] = '--eshb-scf-submit-btn-ls:' . esc_attr( $submit_btn_typo['letterSpacing'] ?? 'inherit' );
+}
+
+$submit_btn_padding = $attributes['submitBtnPadding'] ?? [];
+if ( ! empty( $submit_btn_padding ) ) {
+    $vars[] = '--eshb-scf-submit-btn-pt:' . esc_attr( $ensure_unit( $submit_btn_padding['top'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-pr:' . esc_attr( $ensure_unit( $submit_btn_padding['right'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-pb:' . esc_attr( $ensure_unit( $submit_btn_padding['bottom'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-pl:' . esc_attr( $ensure_unit( $submit_btn_padding['left'] ?? '0px' ) );
+}
+
+$submit_btn_margin = $attributes['submitBtnMargin'] ?? [];
+if ( ! empty( $submit_btn_margin ) ) {
+    $vars[] = '--eshb-scf-submit-btn-mt:' . esc_attr( $ensure_unit( $submit_btn_margin['top'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-mr:' . esc_attr( $ensure_unit( $submit_btn_margin['right'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-mb:' . esc_attr( $ensure_unit( $submit_btn_margin['bottom'] ?? '0px' ) );
+    $vars[] = '--eshb-scf-submit-btn-ml:' . esc_attr( $ensure_unit( $submit_btn_margin['left'] ?? '0px' ) );
 }
 
 // Get shortcode output

@@ -105,7 +105,7 @@ class ESHB_View extends ESHB_MAIN{
                         <div class="eshb-form-group">
                             <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_children));?></h6>
                             <div class="de-number">
-                                <span class="d-minus"><?php echo esc_html('-')?></span>
+                                <span class="d-minus"><?php echo esc_html('-')?><i class="fas fa-minus"></i></span>
                                 <input class="form-control" type="text" value="0" name="children_quantity" max="<?php echo esc_attr( $children_capacity ) ?>">
                                 <span class="d-plus"><?php echo esc_html('+')?></span>
                             </div>

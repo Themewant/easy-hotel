@@ -54,6 +54,7 @@
 .eshb-search .eshb-search-form .eshb-form-group .d-plus,
 .eshb-search .eshb-search-form .eshb-form-group .d-minus {
   background-color: var(--eshb-scf-pm-btn-bg-color);
+  color: var(--eshb-scf-pm-btn-text-color);
   font-weight: var(--eshb-scf-pm-btn-fw, inherit);
   line-height: var(--eshb-scf-pm-btn-lh, inherit);
   text-transform: var(--eshb-scf-pm-btn-tt, inherit);
@@ -62,5 +63,36 @@
   padding-right: var(--eshb-scf-pm-btn-pr, 0);
   padding-bottom: var(--eshb-scf-pm-btn-pb, 0);
   padding-left: var(--eshb-scf-pm-btn-pl, 0);
-  color: var(--eshb-scf-pm-btn-text-color);
+  transition: all 0.3s ease;
+}
+.eshb-search .eshb-search-form .eshb-form-group .d-plus:hover,
+.eshb-search .eshb-search-form .eshb-form-group .d-minus:hover {
+  background-color: var(--eshb-scf-pm-btn-bg-color-hover, var(--eshb-scf-pm-btn-bg-color));
+  color: var(--eshb-scf-pm-btn-text-color-hover, var(--eshb-scf-pm-btn-text-color));
+}
+.eshb-search .eshb-search-form .submition-wrapper .eshb-form-submit-btn {
+  background-color: var(--eshb-scf-submit-btn-bg-color);
+  color: var(--eshb-scf-submit-btn-text-color);
+  font-weight: var(--eshb-scf-submit-btn-fw, inherit);
+  line-height: var(--eshb-scf-submit-btn-lh, inherit);
+  text-transform: var(--eshb-scf-submit-btn-tt, inherit);
+  letter-spacing: var(--eshb-scf-submit-btn-ls, inherit);
+  padding-top: var(--eshb-scf-submit-btn-pt, 0);
+  padding-right: var(--eshb-scf-submit-btn-pr, 0);
+  padding-bottom: var(--eshb-scf-submit-btn-pb, 0);
+  padding-left: var(--eshb-scf-submit-btn-pl, 0);
+  transition: all 0.3s ease;
+  margin-top: var(--eshb-scf-submit-btn-mt, 0);
+  margin-right: var(--eshb-scf-submit-btn-mr, 0);
+  margin-bottom: var(--eshb-scf-submit-btn-mb, 0);
+  margin-left: var(--eshb-scf-submit-btn-ml, 0);
+  font-size: var(--eshb-scf-submit-btn-fs, inherit);
+  font-weight: var(--eshb-scf-submit-btn-fw, inherit);
+  line-height: var(--eshb-scf-submit-btn-lh, inherit);
+  text-transform: var(--eshb-scf-submit-btn-tt, inherit);
+  letter-spacing: var(--eshb-scf-submit-btn-ls, inherit);
+}
+.eshb-search .eshb-search-form .submition-wrapper .eshb-form-submit-btn:hover {
+  background-color: var(--eshb-scf-submit-btn-bg-color-hover, var(--eshb-scf-submit-btn-bg-color));
+  color: var(--eshb-scf-submit-btn-text-color-hover, var(--eshb-scf-submit-btn-text-color));
 }/*# sourceMappingURL=style.css.map */

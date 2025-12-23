@@ -37,6 +37,8 @@ return array(
 		),
 		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
 		'attributes' => array(
 			'customBackgroundColor' => array(
@@ -180,9 +182,17 @@ return array(
 				'type' => 'string',
 				'default' => 'var(--eshb-primary-color)'
 			),
+			'plusMinusBtnBackgroundColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
 			'plusMinusBtnTextColor' => array(
 				'type' => 'string',
 				'default' => 'var(--eshb-white-color)'
+			),
+			'plusMinusBtnTextColorHover' => array(
+				'type' => 'string',
+				'default' => ''
 			),
 			'plusMinusBtnTypography' => array(
 				'type' => 'object',
@@ -201,6 +211,50 @@ return array(
 					'right' => '0px',
 					'bottom' => '0px',
 					'left' => '0px'
+				)
+			),
+			'submitBtnBackgroundColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-primary-color)'
+			),
+			'submitBtnBackgroundColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'submitBtnTextColor' => array(
+				'type' => 'string',
+				'default' => 'var(--eshb-white-color)'
+			),
+			'submitBtnTextColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'submitBtnPadding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '8px',
+					'right' => '20px',
+					'bottom' => '8px',
+					'left' => '20px'
+				)
+			),
+			'submitBtnMargin' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'submitBtnTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontSize' => '14px',
+					'fontWeight' => '400',
+					'lineHeight' => '1.7',
+					'textTransform' => 'none',
+					'letterSpacing' => '0px'
 				)
 			)
 		)

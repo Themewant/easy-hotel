@@ -91,6 +91,25 @@ const TypographyControls = ({ label, attributes, setAttributes, attributeKey, ne
                             onChange={(val) => updateTypography({ letterSpacing: val })}
                             help={__('Include unit (e.g., 1px)', 'easy-hotel')}
                         />
+                        <Button
+                            variant="secondary"
+                            isSmall
+                            onClick={() => {
+                                setAttributes({
+                                    [attributeKey]: {
+                                        fontSize: '',
+                                        fontWeight: 'inherit',
+                                        lineHeight: '',
+                                        textTransform: 'none',
+                                        letterSpacing: ''
+                                    }
+                                });
+                                setIsVisible(false);
+                            }}
+                            style={{ marginTop: '10px', width: '100%', justifyContent: 'center' }}
+                        >
+                            {__('Reset Typography', 'easy-hotel')}
+                        </Button>
                     </div>
                 </Popover>
             )}

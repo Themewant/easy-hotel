@@ -7,7 +7,7 @@ import {
     Icon
 } from '@wordpress/components';
 
-const ColorPopover = ({ label, color, onChange }) => {
+const ColorPopover = ({ label, color, onChange, defaultColor = '' }) => {
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleVisible = () => {
@@ -44,6 +44,17 @@ const ColorPopover = ({ label, color, onChange }) => {
                             onChange={onChange}
                             enableAlpha
                         />
+                        <Button
+                            variant="secondary"
+                            isSmall
+                            onClick={() => {
+                                onChange(defaultColor);
+                                setIsVisible(false);
+                            }}
+                            style={{ marginTop: '10px', width: '100%', justifyContent: 'center' }}
+                        >
+                            {__('Reset', 'easy-hotel')}
+                        </Button>
                     </div>
                 </Popover>
             )}

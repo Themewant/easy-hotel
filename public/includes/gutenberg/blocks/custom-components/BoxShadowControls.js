@@ -114,6 +114,24 @@ const BoxShadowControls = ({ attributes, setAttributes, state = 'normal' }) => {
                                 enableAlpha
                             />
                         </BaseControl>
+                        <Button
+                            variant="secondary"
+                            isSmall
+                            onClick={() => {
+                                setAttributes({
+                                    [xKey]: 0,
+                                    [yKey]: 0,
+                                    [bKey]: 0,
+                                    [sKey]: 0,
+                                    [cKey]: 'rgba(0,0,0,0.1)',
+                                    [mainKey]: ''
+                                });
+                                setIsVisible(false);
+                            }}
+                            style={{ marginTop: '10px', width: '100%', justifyContent: 'center' }}
+                        >
+                            {__('Reset Shadow', 'easy-hotel')}
+                        </Button>
                     </div>
                 </Popover>
             )}
