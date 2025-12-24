@@ -66,6 +66,8 @@ const TypographyControls = ({ label, attributes, setAttributes, attributeKey, ne
                                 { label: __('Black (900)', 'easy-hotel'), value: '900' },
                             ]}
                             onChange={(val) => updateTypography({ fontWeight: val })}
+                            __next40pxDefaultSize={true}
+                            __nextHasNoMarginBottom={true}
                         />
                         <SelectControl
                             label={__('Text Transform', 'easy-hotel')}
@@ -77,6 +79,8 @@ const TypographyControls = ({ label, attributes, setAttributes, attributeKey, ne
                                 { label: __('Capitalize', 'easy-hotel'), value: 'capitalize' },
                             ]}
                             onChange={(val) => updateTypography({ textTransform: val })}
+                            __next40pxDefaultSize={true}
+                            __nextHasNoMarginBottom={true}
                         />
                         <TextControl
                             __next40pxDefaultSize={_nextDefaultSize}

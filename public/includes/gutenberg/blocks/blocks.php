@@ -17,4 +17,5 @@ add_filter( 'block_categories_all', 'eshb_block_categories', 10, 2 );
 // include blocks
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationgrid/accomodationgrid.php';
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/searchform/searchform.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/bookingform/bookingform.php';
 

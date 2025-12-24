@@ -5,11 +5,20 @@
 	"version": "0.1.0",
 	"title": "Accomodation Grid",
 	"category": "easy-hotel",
-	"icon": "smiley",
+	"icon": "grid-view",
 	"description": "Example block scaffolded with Create Block tool.",
 	"example": {},
 	"supports": {
-		"html": false
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"color": {
+			"background": true,
+			"text": false,
+			"gradients": true
+		}
 	},
 	"textdomain": "accomodationgrid",
 	"editorScript": "file:./index.js",
@@ -30,7 +39,7 @@
 		},
 		"thumbnail_size": {
 			"type": "string",
-			"default": "large"
+			"default": "eshb_thumbnail"
 		},
 		"per_page": {
 			"type": "number",
@@ -51,106 +60,6 @@
 		"category": {
 			"type": "string",
 			"default": ""
-		},
-		"customBackgroundColor": {
-			"type": "string",
-			"default": ""
-		},
-		"containerBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"containerBackgroundGradientHover": {
-			"type": "string",
-			"default": ""
-		},
-		"padding": {
-			"type": "object",
-			"default": {
-				"top": "0px",
-				"right": "0px",
-				"bottom": "0px",
-				"left": "0px"
-			}
-		},
-		"margin": {
-			"type": "object",
-			"default": {
-				"top": "0px",
-				"right": "0px",
-				"bottom": "0px",
-				"left": "0px"
-			}
-		},
-		"borderRadius": {
-			"type": "object",
-			"default": {
-				"topLeft": "0px",
-				"topRight": "0px",
-				"bottomLeft": "0px",
-				"bottomRight": "0px"
-			}
-		},
-		"boxShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"boxShadowX": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowY": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowBlur": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowSpread": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowColor": {
-			"type": "string",
-			"default": "rgba(0,0,0,0.1)"
-		},
-		"customBackgroundColorHover": {
-			"type": "string",
-			"default": ""
-		},
-		"boxShadowHover": {
-			"type": "string",
-			"default": ""
-		},
-		"boxShadowXHover": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowYHover": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowBlurHover": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowSpreadHover": {
-			"type": "number",
-			"default": 0
-		},
-		"boxShadowColorHover": {
-			"type": "string",
-			"default": "rgba(0,0,0,0.1)"
-		},
-		"containerPadding": {
-			"type": "object",
-			"default": {
-				"top": "0px",
-				"right": "0px",
-				"bottom": "0px",
-				"left": "0px"
-			}
 		},
 		"itemPadding": {
 			"type": "object",
@@ -206,6 +115,42 @@
 				"left": "0px"
 			}
 		},
+		"capacitiesWrapperPadding": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
+		"capacitiesWrapperMargin": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
+		"capacitiesItemPadding": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
+		"capacitiesItemMargin": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
 		"itemTitleTypography": {
 			"type": "object",
 			"default": {
@@ -219,6 +164,18 @@
 			}
 		},
 		"itemDescriptionTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"capacitiesItemTypography": {
 			"type": "object",
 			"default": {
 				"fontFamily": "",
@@ -249,6 +206,18 @@
 			}
 		},
 		"itemPricingTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemPricingPerodicityTypography": {
 			"type": "object",
 			"default": {
 				"fontFamily": "",
@@ -312,7 +281,7 @@
 		},
 		"itemOverlayBackgroundColorHover": {
 			"type": "string",
-			"default": ""
+			"default": "var(--eshb-primary-color)"
 		},
 		"itemOverlayBackgroundGradient": {
 			"type": "string",
@@ -358,11 +327,27 @@
 			"type": "string",
 			"default": ""
 		},
+		"capacitiesItemColor": {
+			"type": "string",
+			"default": ""
+		},
+		"capacitiesItemColorHover": {
+			"type": "string",
+			"default": ""
+		},
 		"itemPricingColor": {
 			"type": "string",
 			"default": ""
 		},
 		"itemPricingColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingPerodicityColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingPerodicityColorHover": {
 			"type": "string",
 			"default": ""
 		},

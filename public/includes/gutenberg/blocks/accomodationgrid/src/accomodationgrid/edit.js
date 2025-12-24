@@ -157,44 +157,6 @@ export default function Edit({ attributes, setAttributes }) {
 
 			</InspectorControls>
 			<InspectorControls group='styles'>
-				<PanelBody title={__('Container', 'easy-hotel')} initialOpen={false}>
-					<TabPanel
-						className="eshb-tab-panel"
-						activeClass="is-active"
-						tabs={[
-							{ name: 'normal', title: __('Normal', 'easy-hotel'), className: 'eshb-tab-normal' },
-							{ name: 'hover', title: __('Hover', 'easy-hotel'), className: 'eshb-tab-hover' },
-						]}
-					>
-						{(tab) => {
-							const isHover = tab.name === 'hover';
-							return (
-								<div style={{ marginTop: '15px' }}>
-									<BackgroundControl
-										label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background', 'easy-hotel')}
-										colorValue={isHover ? attributes.customBackgroundColorHover : attributes.customBackgroundColor}
-										gradientValue={isHover ? attributes.containerBackgroundGradientHover : attributes.containerBackgroundGradient}
-										onColorChange={(value) => {
-											const hex = (value && typeof value === 'object') ? value.hex : value;
-											setAttributes({ [isHover ? 'customBackgroundColorHover' : 'customBackgroundColor']: hex });
-										}}
-										onGradientChange={(value) => setAttributes({ [isHover ? 'containerBackgroundGradientHover' : 'containerBackgroundGradient']: value })}
-									/>
-									<BoxShadowControls
-										attributes={attributes}
-										setAttributes={setAttributes}
-										state={tab.name}
-									/>
-								</div>
-							);
-						}}
-					</TabPanel>
-					<BoxControl
-						label={__('Padding', 'easy-hotel')}
-						values={attributes.containerPadding}
-						onChange={(value) => setAttributes({ containerPadding: value })}
-					/>
-				</PanelBody>
 				<PanelBody title={__('Item', 'easy-hotel')} initialOpen={false}>
 					<TabPanel
 						className="eshb-tab-panel"
@@ -257,8 +219,8 @@ export default function Edit({ attributes, setAttributes }) {
 					<Divider />
 					<BoxControl
 						label={__('Border Radious', 'easy-hotel')}
-						values={attributes.borderRadius}
-						onChange={(nextValues) => setAttributes({ borderRadius: nextValues })}
+						values={attributes.itemBorderRadius}
+						onChange={(nextValues) => setAttributes({ itemBorderRadius: nextValues })}
 					/>
 				</PanelBody>
 
@@ -360,6 +322,67 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 				</PanelBody>
 
+				<PanelBody title={__('Capacities', 'easy-hotel')} initialOpen={false}>
+					<TabPanel
+						className="eshb-tab-panel"
+						activeClass="is-active"
+						tabs={[
+							{ name: 'normal', title: __('Normal', 'easy-hotel'), className: 'eshb-tab-normal' },
+							{ name: 'hover', title: __('Hover', 'easy-hotel'), className: 'eshb-tab-hover' },
+						]}
+					>
+						{(tab) => {
+							const isHover = tab.name === 'hover';
+							return (
+								<div style={{ marginTop: '15px' }}>
+									<ColorPopover
+										label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
+										color={isHover ?
+											attributes.capacitiesItemColorHover
+											: attributes.capacitiesItemColor}
+										defaultColor={isHover ? '' : ''}
+										onChange={(value) => {
+											const hex = (value && typeof value === 'object') ? value.hex : value;
+											setAttributes({ [isHover ? 'capacitiesItemColorHover' : 'capacitiesItemColor']: hex });
+										}}
+									/>
+								</div>
+							);
+						}}
+					</TabPanel>
+					<Divider />
+					<BoxControl
+						label={__('Wrapper Padding', 'easy-hotel')}
+						values={attributes.capacitiesWrapperPadding}
+						onChange={(value) => setAttributes({ capacitiesWrapperPadding: value })}
+					/>
+					<Divider />
+					<BoxControl
+						label={__('Wrapper Margin', 'easy-hotel')}
+						values={attributes.capacitiesWrapperMargin}
+						onChange={(value) => setAttributes({ capacitiesWrapperMargin: value })}
+					/>
+					<Divider />
+					<BoxControl
+						label={__('Item Padding', 'easy-hotel')}
+						values={attributes.capacitiesItemPadding}
+						onChange={(value) => setAttributes({ capacitiesItemPadding: value })}
+					/>
+					<Divider />
+					<BoxControl
+						label={__('Item Margin', 'easy-hotel')}
+						values={attributes.capacitiesItemMargin}
+						onChange={(value) => setAttributes({ capacitiesItemMargin: value })}
+					/>
+					<Divider />
+					<TypographyControls
+						label={__('Typography', 'easy-hotel')}
+						attributes={attributes}
+						setAttributes={setAttributes}
+						attributeKey="capacitiesItemTypography"
+					/>
+				</PanelBody>
+
 				<PanelBody title={__('Pricing', 'easy-hotel')} initialOpen={false}>
 					<TabPanel
 						className="eshb-tab-panel"
@@ -406,6 +429,41 @@ export default function Edit({ attributes, setAttributes }) {
 						attributes={attributes}
 						setAttributes={setAttributes}
 						attributeKey="itemPricingTypography"
+					/>
+					<Divider />
+					<div className="eshb-divider-label">{__('Periodicity', 'easy-hotel')}</div>
+					<TabPanel
+						className="eshb-tab-panel"
+						activeClass="is-active"
+						tabs={[
+							{ name: 'normal', title: __('Normal', 'easy-hotel'), className: 'eshb-tab-normal' },
+							{ name: 'hover', title: __('Hover', 'easy-hotel'), className: 'eshb-tab-hover' },
+						]}
+					>
+						{(tab) => {
+							const isHover = tab.name === 'hover';
+							return (
+								<div style={{ marginTop: '15px' }}>
+									<ColorPopover
+										label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
+										color={isHover ?
+											attributes.itemPricingPerodicityColorHover
+											: attributes.itemPricingPerodicityColor}
+										defaultColor={isHover ? '' : ''}
+										onChange={(value) => {
+											const hex = (value && typeof value === 'object') ? value.hex : value;
+											setAttributes({ [isHover ? 'itemPricingPerodicityColorHover' : 'itemPricingPerodicityColor']: hex });
+										}}
+									/>
+								</div>
+							);
+						}}
+					</TabPanel>
+					<TypographyControls
+						label={__('Typography', 'easy-hotel')}
+						attributes={attributes}
+						setAttributes={setAttributes}
+						attributeKey="itemPricingPerodicityTypography"
 					/>
 				</PanelBody>
 

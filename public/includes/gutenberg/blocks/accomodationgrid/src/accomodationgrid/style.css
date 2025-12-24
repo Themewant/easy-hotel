@@ -8,6 +8,12 @@
   background-color: var(--eshb-ag-bg-hover) !important;
   box-shadow: var(--eshb-ag-box-shadow-hover) !important;
 }
+.eshb-item-grid .grid-item {
+  overflow: hidden;
+}
+.eshb-item-grid .grid-item .thumbnail {
+  width: 100%;
+}
 .eshb-item-grid .grid-item:hover {
   background-color: var(--eshb-agi-bg-hover) !important;
 }
@@ -17,6 +23,9 @@
 .eshb-item-grid .grid-item:hover .hover-bg-two {
   background: var(--eshb-agi-overlay-bg-two-hover, "--eshb-primary-color") !important;
 }
+.eshb-item-grid .grid-item .capacities .capacity:hover {
+  color: var(--eshb-agid-cap-item-color-hover) !important;
+}
 .eshb-item-grid .grid-item .item-inner .details-info .p-title:hover {
   color: var(--eshb-agit-color-hover) !important;
 }
@@ -25,6 +34,9 @@
 }
 .eshb-item-grid .grid-item .item-inner .pricing-info .price:hover {
   color: var(--eshb-agip-color-hover) !important;
+}
+.eshb-item-grid .grid-item .item-inner .pricing-info .price .pricing-perodicity:hover {
+  color: var(--eshb-agip-periodicity-color-hover) !important;
 }
 .eshb-item-grid .grid-item .details-btn:hover {
   color: var(--eshb-agib-color-hover) !important;

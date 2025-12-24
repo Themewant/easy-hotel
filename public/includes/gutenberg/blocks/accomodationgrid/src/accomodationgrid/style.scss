@@ -12,6 +12,12 @@
 	}
 
 	.grid-item {
+		overflow: hidden;
+
+		.thumbnail {
+			width: 100%;
+		}
+
 		&:hover {
 			background-color: var(--eshb-agi-bg-hover) !important;
 		}
@@ -26,16 +32,24 @@
 			}
 		}
 
+		.capacities {
+			.capacity {
+				&:hover {
+					color: var(--eshb-agid-cap-item-color-hover) !important;
+				}
+			}
+		}
+
 		.item-inner {
 			.details-info {
 				.p-title {
+
 					&:hover {
 						color: var(--eshb-agit-color-hover) !important;
 					}
 				}
 
 				.desc {
-
 					&:hover {
 						color: var(--eshb-agid-color-hover) !important;
 					}
@@ -44,9 +58,14 @@
 
 			.pricing-info {
 				.price {
-
 					&:hover {
 						color: var(--eshb-agip-color-hover) !important;
+					}
+
+					.pricing-perodicity {
+						&:hover {
+							color: var(--eshb-agip-periodicity-color-hover) !important;
+						}
 					}
 				}
 			}

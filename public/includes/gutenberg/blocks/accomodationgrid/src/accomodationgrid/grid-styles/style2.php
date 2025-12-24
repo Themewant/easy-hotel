@@ -20,7 +20,7 @@
                 <div class="label">
                 <?php echo esc_html( $pricing_prefix ); ?>
                 </div>
-                <h3 class="price" style="<?php echo esc_attr($price_inline_style); ?>"><?php echo wp_kses_post($price); ?><div class="label"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></div></h3>
+                <h3 class="price" style="<?php echo esc_attr($price_inline_style); ?>"><?php echo wp_kses_post($price); ?><span class="label pricing-perodicity" style="<?php echo esc_attr($price_periodicity_inline_style); ?>"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></span></h3>
             <?php 
                 } 
             ?>
@@ -35,7 +35,7 @@
                 do_action( 'eshb_before_details_info_html', $accomodation_id, $eshb_settings );
             ?>
             <h3 class="p-title" style="<?php echo esc_attr($title_inline_style); ?>"><?php echo esc_html(get_the_title($accomodation_id)); ?></h3>
-            <div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat;">
+            <div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat; <?php echo esc_attr( $capacities_wrapper_inline_style ); ?>">
                 <?php 
                   
                     $i = 0;
@@ -44,7 +44,7 @@
                             $i++;
                             if($i >= 3) break;
                             ?>
-                            <span class="capacity">
+                            <span class="capacity" style="<?php echo esc_attr( $capacities_item_inline_style ); ?>">
                                 <?php echo esc_html($group['info_title']); ?>
                             </span>
                         <?php }

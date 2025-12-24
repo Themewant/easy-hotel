@@ -21,7 +21,7 @@
     </div>
     <div class="p-3 pb-1 w-100 text-center">
         <h4 class="mt-2 mb-0 p-title" style="<?php echo esc_attr($title_inline_style); ?>"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
-        <div class="text-center mb-3">
+        <div class="text-center mb-3 capacities" style="<?php echo esc_attr( $capacities_wrapper_inline_style ); ?>">
             <?php 
                  if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
                     $x = 0;
@@ -29,7 +29,7 @@
                         $x++;
                         if($x >= 3) break;
                         ?>
-                        <span class="mx-2 capacity">
+                        <span class="mx-2 capacity" style="<?php echo esc_attr( $capacities_item_inline_style ); ?>">
                             <?php echo esc_html($group['info_title']); ?>
                         </span>
                     <?php }
@@ -37,7 +37,7 @@
                     <?php 
                 if(!empty($numeric_price)){
                 ?>
-                    <span class="mx-2 capacity" style="<?php echo esc_attr($price_inline_style); ?>"><?php echo wp_kses_post($price); ?><div class="label"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></div></span>
+                    <span class="mx-2 capacity" style="<?php echo esc_attr($price_inline_style); ?>"><?php echo wp_kses_post($price); ?><span class="label pricing-perodicity" style="<?php echo esc_attr($price_periodicity_inline_style); ?>"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></span></span>
                 <?php 
                     } 
                 ?>

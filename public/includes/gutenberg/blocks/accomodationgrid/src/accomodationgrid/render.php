@@ -50,49 +50,9 @@ $get_inline_styles = function( $style_map ) use ( $ensure_unit ) {
 };
 
 $vars = [];
-$container_styles = [];
 
-// Container Styles
-if ( ! empty( $attributes['customBackgroundColor'] ) ) {
-    $container_styles['background-color'] = $attributes['customBackgroundColor'];
-}
-if ( ! empty( $attributes['customBackgroundColorHover'] ) ) {
-    $vars[] = '--eshb-ag-bg-hover:' . esc_attr( $attributes['customBackgroundColorHover'] );
-}
-if ( ! empty( $attributes['containerBackgroundGradient'] ) ) {
-    $container_styles['background'] = $attributes['containerBackgroundGradient'];
-}
-if ( ! empty( $attributes['containerBackgroundGradientHover'] ) ) {
-    $vars[] = '--eshb-ag-bg-hover:' . esc_attr( $attributes['containerBackgroundGradientHover'] );
-}
-
-$c_padding = $attributes['containerPadding'] ?? [];
-if ( ! empty( $c_padding['top'] ) ) $container_styles['padding-top'] = $ensure_unit( $c_padding['top'] );
-if ( ! empty( $c_padding['right'] ) ) $container_styles['padding-right'] = $ensure_unit( $c_padding['right'] );
-if ( ! empty( $c_padding['bottom'] ) ) $container_styles['padding-bottom'] = $ensure_unit( $c_padding['bottom'] );
-if ( ! empty( $c_padding['left'] ) ) $container_styles['padding-left'] = $ensure_unit( $c_padding['left'] );
-
-$margin = $attributes['margin'] ?? [];
-if ( ! empty( $margin['top'] ) ) $container_styles['margin-top'] = $ensure_unit( $margin['top'] );
-if ( ! empty( $margin['right'] ) ) $container_styles['margin-right'] = $ensure_unit( $margin['right'] );
-if ( ! empty( $margin['bottom'] ) ) $container_styles['margin-bottom'] = $ensure_unit( $margin['bottom'] );
-if ( ! empty( $margin['left'] ) ) $container_styles['margin-left'] = $ensure_unit( $margin['left'] );
-
-$border_radius = $attributes['borderRadius'] ?? [];
-if ( ! empty( $border_radius['topLeft'] ) ) $container_styles['border-top-left-radius'] = $ensure_unit( $border_radius['topLeft'] );
-if ( ! empty( $border_radius['topRight'] ) ) $container_styles['border-top-right-radius'] = $ensure_unit( $border_radius['topRight'] );
-if ( ! empty( $border_radius['bottomLeft'] ) ) $container_styles['border-bottom-left-radius'] = $ensure_unit( $border_radius['bottomLeft'] );
-if ( ! empty( $border_radius['bottomRight'] ) ) $container_styles['border-bottom-right-radius'] = $ensure_unit( $border_radius['bottomRight'] );
-
-if ( ! empty( $attributes['boxShadow'] ) ) {
-    $container_styles['box-shadow'] = $attributes['boxShadow'];
-}
-if ( ! empty( $attributes['boxShadowHover'] ) ) {
-    $vars[] = '--eshb-ag-box-shadow-hover:' . esc_attr( $attributes['boxShadowHover'] );
-}
-
-$container_inline_style = $get_inline_styles( $container_styles );
-$container_inline_style .= ";grid-template-columns: repeat(" . esc_attr( $room_columns ) . ", 1fr);";
+// Container inline style now only handles grid-specific properties
+$container_inline_style = "grid-template-columns: repeat(" . esc_attr( $room_columns ) . ", 1fr);";
 $container_inline_style .= "gap:" . esc_attr( $ensure_unit($attributes['itemGap'] ?? "20px") ) . ";";
 
 // Item Styles
@@ -217,6 +177,51 @@ if ( ! empty( $id_typo['letterSpacing'] ) ) $desc_styles['letter-spacing'] = $id
 
 $desc_inline_style = $get_inline_styles( $desc_styles );
 
+// Capacities Styles
+$capacities_wrapper_styles = [];
+$cw_padding = $attributes['capacitiesWrapperPadding'] ?? [];
+if ( ! empty( $cw_padding['top'] ) ) $capacities_wrapper_styles['padding-top'] = $ensure_unit( $cw_padding['top'] );
+if ( ! empty( $cw_padding['right'] ) ) $capacities_wrapper_styles['padding-right'] = $ensure_unit( $cw_padding['right'] );
+if ( ! empty( $cw_padding['bottom'] ) ) $capacities_wrapper_styles['padding-bottom'] = $ensure_unit( $cw_padding['bottom'] );
+if ( ! empty( $cw_padding['left'] ) ) $capacities_wrapper_styles['padding-left'] = $ensure_unit( $cw_padding['left'] );
+
+$cw_margin = $attributes['capacitiesWrapperMargin'] ?? [];
+if ( ! empty( $cw_margin['top'] ) ) $capacities_wrapper_styles['margin-top'] = $ensure_unit( $cw_margin['top'] );
+if ( ! empty( $cw_margin['right'] ) ) $capacities_wrapper_styles['margin-right'] = $ensure_unit( $cw_margin['right'] );
+if ( ! empty( $cw_margin['bottom'] ) ) $capacities_wrapper_styles['margin-bottom'] = $ensure_unit( $cw_margin['bottom'] );
+if ( ! empty( $cw_margin['left'] ) ) $capacities_wrapper_styles['margin-left'] = $ensure_unit( $cw_margin['left'] );
+
+$capacities_wrapper_inline_style = $get_inline_styles( $capacities_wrapper_styles );
+
+$capacities_item_styles = [];
+if ( ! empty( $attributes['capacitiesItemColor'] ) ) {
+    $capacities_item_styles['color'] = $attributes['capacitiesItemColor'];
+}
+if ( ! empty( $attributes['capacitiesItemColorHover'] ) ) {
+    $vars[] = '--eshb-agid-cap-item-color-hover:' . esc_attr( $attributes['capacitiesItemColorHover'] );
+}
+
+$ci_padding = $attributes['capacitiesItemPadding'] ?? [];
+if ( ! empty( $ci_padding['top'] ) ) $capacities_item_styles['padding-top'] = $ensure_unit( $ci_padding['top'] );
+if ( ! empty( $ci_padding['right'] ) ) $capacities_item_styles['padding-right'] = $ensure_unit( $ci_padding['right'] );
+if ( ! empty( $ci_padding['bottom'] ) ) $capacities_item_styles['padding-bottom'] = $ensure_unit( $ci_padding['bottom'] );
+if ( ! empty( $ci_padding['left'] ) ) $capacities_item_styles['padding-left'] = $ensure_unit( $ci_padding['left'] );
+
+$ci_margin = $attributes['capacitiesItemMargin'] ?? [];
+if ( ! empty( $ci_margin['top'] ) ) $capacities_item_styles['margin-top'] = $ensure_unit( $ci_margin['top'] );
+if ( ! empty( $ci_margin['right'] ) ) $capacities_item_styles['margin-right'] = $ensure_unit( $ci_margin['right'] );
+if ( ! empty( $ci_margin['bottom'] ) ) $capacities_item_styles['margin-bottom'] = $ensure_unit( $ci_margin['bottom'] );
+if ( ! empty( $ci_margin['left'] ) ) $capacities_item_styles['margin-left'] = $ensure_unit( $ci_margin['left'] );
+
+$ci_typo = $attributes['capacitiesItemTypography'] ?? [];
+if ( ! empty( $ci_typo['fontSize'] ) ) $capacities_item_styles['font-size'] = $ci_typo['fontSize'];
+if ( ! empty( $ci_typo['fontWeight'] ) ) $capacities_item_styles['font-weight'] = $ci_typo['fontWeight'];
+if ( ! empty( $ci_typo['lineHeight'] ) ) $capacities_item_styles['line-height'] = $ci_typo['lineHeight'];
+if ( ! empty( $ci_typo['textTransform'] ) ) $capacities_item_styles['text-transform'] = $ci_typo['textTransform'];
+if ( ! empty( $ci_typo['letterSpacing'] ) ) $capacities_item_styles['letter-spacing'] = $ci_typo['letterSpacing'];
+
+$capacities_item_inline_style = $get_inline_styles( $capacities_item_styles );
+
 // Pricing Styles
 $price_styles = [];
 if ( ! empty( $attributes['itemPricingColor'] ) ) {
@@ -245,6 +250,24 @@ if ( ! empty( $ip_typo['textTransform'] ) ) $price_styles['text-transform'] = $i
 if ( ! empty( $ip_typo['letterSpacing'] ) ) $price_styles['letter-spacing'] = $ip_typo['letterSpacing'];
 
 $price_inline_style = $get_inline_styles( $price_styles );
+
+// Pricing Periodicity Styles
+$price_periodicity_styles = [];
+if ( ! empty( $attributes['itemPricingPerodicityColor'] ) ) {
+    $price_periodicity_styles['color'] = $attributes['itemPricingPerodicityColor'];
+}
+if ( ! empty( $attributes['itemPricingPerodicityColorHover'] ) ) {
+    $vars[] = '--eshb-agip-periodicity-color-hover:' . esc_attr( $attributes['itemPricingPerodicityColorHover'] );
+}
+
+$ipp_typo = $attributes['itemPricingPerodicityTypography'] ?? [];
+if ( ! empty( $ipp_typo['fontSize'] ) ) $price_periodicity_styles['font-size'] = $ipp_typo['fontSize'];
+if ( ! empty( $ipp_typo['fontWeight'] ) ) $price_periodicity_styles['font-weight'] = $ipp_typo['fontWeight'];
+if ( ! empty( $ipp_typo['lineHeight'] ) ) $price_periodicity_styles['line-height'] = $ipp_typo['lineHeight'];
+if ( ! empty( $ipp_typo['textTransform'] ) ) $price_periodicity_styles['text-transform'] = $ipp_typo['textTransform'];
+if ( ! empty( $ipp_typo['letterSpacing'] ) ) $price_periodicity_styles['letter-spacing'] = $ipp_typo['letterSpacing'];
+
+$price_periodicity_inline_style = $get_inline_styles( $price_periodicity_styles );
 
 // Button Styles
 $button_styles = [];
@@ -291,58 +314,61 @@ $style_attr = $container_inline_style;
 if ( ! empty( $vars ) ) {
     $style_attr .= implode( ';', $vars ) . ';';
 }
+
+
 ?>
+<div class="room-grid-wrap">
+    <div class="room-grid eshb-item-grid <?php echo esc_attr($grid_style); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
 
-<div class="room-grid eshb-item-grid <?php echo esc_attr($grid_style); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
+            <?php 
 
-        <?php 
+            $hotel_core = new ESHB_Core();
+            $hotel_view = new ESHB_View();
 
-        $hotel_core = new ESHB_Core();
-        $hotel_view = new ESHB_View();
-
-        $eshb_settings = get_option('eshb_settings');
-        
-        $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
-        
-        
-        $args = array(
-            'post_type'      => 'eshb_accomodation',
-            'posts_per_page' => $per_page,	
-            'orderby' 		 => $room_orderby,
-            'order' 		 => $room_order,
-            'offset' 		 => $room_offset,							
-        );
-
-        if(!empty($cat)){
-            $args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
-                array(
-                    'taxonomy' => 'eshb_category',
-                    'field'    => 'slug', 
-                    'terms'    => $cat 
-                ),
+            $eshb_settings = get_option('eshb_settings');
+            
+            $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
+            
+            
+            $args = array(
+                'post_type'      => 'eshb_accomodation',
+                'posts_per_page' => $per_page,	
+                'orderby' 		 => $room_orderby,
+                'order' 		 => $room_order,
+                'offset' 		 => $room_offset,							
             );
-        }
 
-        $best_wp = new WP_Query($args);	  
+            if(!empty($cat)){
+                $args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
+                    array(
+                        'taxonomy' => 'eshb_category',
+                        'field'    => 'slug', 
+                        'terms'    => $cat 
+                    ),
+                );
+            }
 
-        $i = 0;
-        $animation_delay = 0.2;
+            $best_wp = new WP_Query($args);	  
 
-        while($best_wp->have_posts()): $best_wp->the_post();
+            $i = 0;
+            $animation_delay = 0.2;
 
-            $animation_delay+=0.1;
-            $accomodation_id = get_the_ID();
-            $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
-            $accomodation_info_group = $eshb_accomodation_metaboxes['accomodation_info_group'];
-            $booking_url = get_the_permalink($accomodation_id);
-            $price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
-            $numeric_price = $hotel_core->get_eshb_price('', '', $accomodation_id);
-            $excerpt = $hotel_view->eshb_custom_excerpt(35, $accomodation_id);
-            $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $string_night, $accomodation_id, $eshb_settings);
-            include ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationgrid/src/accomodationgrid/grid-styles/' . $grid_style .".php";  
+            while($best_wp->have_posts()): $best_wp->the_post();
 
-        endwhile;
-        wp_reset_postdata();
-        ?>
-    
+                $animation_delay+=0.1;
+                $accomodation_id = get_the_ID();
+                $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
+                $accomodation_info_group = $eshb_accomodation_metaboxes['accomodation_info_group'];
+                $booking_url = get_the_permalink($accomodation_id);
+                $price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
+                $numeric_price = $hotel_core->get_eshb_price('', '', $accomodation_id);
+                $excerpt = $hotel_view->eshb_custom_excerpt(35, $accomodation_id);
+                $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $string_night, $accomodation_id, $eshb_settings);
+                include ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationgrid/src/accomodationgrid/grid-styles/' . $grid_style .".php";  
+
+            endwhile;
+            wp_reset_postdata();
+            ?>
+        
+    </div>
 </div>

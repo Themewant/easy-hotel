@@ -8,13 +8,22 @@ return array(
 		'version' => '0.1.0',
 		'title' => 'Accomodation Grid',
 		'category' => 'easy-hotel',
-		'icon' => 'smiley',
+		'icon' => 'grid-view',
 		'description' => 'Example block scaffolded with Create Block tool.',
 		'example' => array(
 			
 		),
 		'supports' => array(
-			'html' => false
+			'html' => false,
+			'spacing' => array(
+				'padding' => true,
+				'margin' => true
+			),
+			'color' => array(
+				'background' => true,
+				'text' => false,
+				'gradients' => true
+			)
 		),
 		'textdomain' => 'accomodationgrid',
 		'editorScript' => 'file:./index.js',
@@ -35,7 +44,7 @@ return array(
 			),
 			'thumbnail_size' => array(
 				'type' => 'string',
-				'default' => 'large'
+				'default' => 'eshb_thumbnail'
 			),
 			'per_page' => array(
 				'type' => 'number',
@@ -56,106 +65,6 @@ return array(
 			'category' => array(
 				'type' => 'string',
 				'default' => ''
-			),
-			'customBackgroundColor' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'containerBackgroundGradient' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'containerBackgroundGradientHover' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'padding' => array(
-				'type' => 'object',
-				'default' => array(
-					'top' => '0px',
-					'right' => '0px',
-					'bottom' => '0px',
-					'left' => '0px'
-				)
-			),
-			'margin' => array(
-				'type' => 'object',
-				'default' => array(
-					'top' => '0px',
-					'right' => '0px',
-					'bottom' => '0px',
-					'left' => '0px'
-				)
-			),
-			'borderRadius' => array(
-				'type' => 'object',
-				'default' => array(
-					'topLeft' => '0px',
-					'topRight' => '0px',
-					'bottomLeft' => '0px',
-					'bottomRight' => '0px'
-				)
-			),
-			'boxShadow' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'boxShadowX' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowY' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowBlur' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowSpread' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowColor' => array(
-				'type' => 'string',
-				'default' => 'rgba(0,0,0,0.1)'
-			),
-			'customBackgroundColorHover' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'boxShadowHover' => array(
-				'type' => 'string',
-				'default' => ''
-			),
-			'boxShadowXHover' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowYHover' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowBlurHover' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowSpreadHover' => array(
-				'type' => 'number',
-				'default' => 0
-			),
-			'boxShadowColorHover' => array(
-				'type' => 'string',
-				'default' => 'rgba(0,0,0,0.1)'
-			),
-			'containerPadding' => array(
-				'type' => 'object',
-				'default' => array(
-					'top' => '0px',
-					'right' => '0px',
-					'bottom' => '0px',
-					'left' => '0px'
-				)
 			),
 			'itemPadding' => array(
 				'type' => 'object',
@@ -211,6 +120,42 @@ return array(
 					'left' => '0px'
 				)
 			),
+			'capacitiesWrapperPadding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'capacitiesWrapperMargin' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'capacitiesItemPadding' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
+			'capacitiesItemMargin' => array(
+				'type' => 'object',
+				'default' => array(
+					'top' => '0px',
+					'right' => '0px',
+					'bottom' => '0px',
+					'left' => '0px'
+				)
+			),
 			'itemTitleTypography' => array(
 				'type' => 'object',
 				'default' => array(
@@ -224,6 +169,18 @@ return array(
 				)
 			),
 			'itemDescriptionTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontFamily' => '',
+					'fontSize' => '',
+					'fontWeight' => '',
+					'fontStyle' => '',
+					'textTransform' => '',
+					'lineHeight' => '',
+					'letterSpacing' => ''
+				)
+			),
+			'capacitiesItemTypography' => array(
 				'type' => 'object',
 				'default' => array(
 					'fontFamily' => '',
@@ -254,6 +211,18 @@ return array(
 				)
 			),
 			'itemPricingTypography' => array(
+				'type' => 'object',
+				'default' => array(
+					'fontFamily' => '',
+					'fontSize' => '',
+					'fontWeight' => '',
+					'fontStyle' => '',
+					'textTransform' => '',
+					'lineHeight' => '',
+					'letterSpacing' => ''
+				)
+			),
+			'itemPricingPerodicityTypography' => array(
 				'type' => 'object',
 				'default' => array(
 					'fontFamily' => '',
@@ -317,7 +286,7 @@ return array(
 			),
 			'itemOverlayBackgroundColorHover' => array(
 				'type' => 'string',
-				'default' => ''
+				'default' => 'var(--eshb-primary-color)'
 			),
 			'itemOverlayBackgroundGradient' => array(
 				'type' => 'string',
@@ -363,11 +332,27 @@ return array(
 				'type' => 'string',
 				'default' => ''
 			),
+			'capacitiesItemColor' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'capacitiesItemColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
 			'itemPricingColor' => array(
 				'type' => 'string',
 				'default' => ''
 			),
 			'itemPricingColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'itemPricingPerodicityColor' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'itemPricingPerodicityColorHover' => array(
 				'type' => 'string',
 				'default' => ''
 			),
