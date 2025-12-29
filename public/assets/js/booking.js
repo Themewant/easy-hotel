@@ -258,7 +258,7 @@
           )
         );
 
-        
+
 
     },
     eshbCalVars: function () {
@@ -308,11 +308,11 @@
       console.log("clicked");
     },
     updateServicesChecked: function () {
-      $('.eshb-booking-form .service-item input[name="extra_services[]"]').each(function(index, element){
-        $(element).on("change", function(){
-          if($(this).is(":checked")){
+      $('.eshb-booking-form .service-item input[name="extra_services[]"]').each(function (index, element) {
+        $(element).on("change", function () {
+          if ($(this).is(":checked")) {
             $(this).attr("checked", "checked");
-          }else{
+          } else {
             $(this).removeAttr("checked");
           }
         });
@@ -334,7 +334,7 @@
       $(
         "#eshb_booking_metaboxes .booking-requirement-input .csf-fieldset"
       ).append('<p class="err-msg"></p>');
-      
+
       $(
         "#eshb_booking_metaboxes .booking-end-date-field .csf-fieldset"
       ).append('<p class="date-err-msg err-msg"></p>');
@@ -368,7 +368,7 @@
 
         if (!isValid) {
           $("#submitpost .eshb-error-message").show();
-        }else{
+        } else {
           $("body.post-type-eshb_booking form#post").submit();
         }
       });
@@ -420,7 +420,7 @@
             accomodationId,
             form
           );
-          
+
         }
       );
     },
@@ -549,7 +549,7 @@
     ) {
       let newStartDate = startDateInput.val();
       let newEndDate = endDateInput.val();
-      
+
       if (eshb_ajax.is_admin && renderTimeSlotsList) {
         newEndDate = newStartDate;
         endDateInput.val(newEndDate);
@@ -576,7 +576,7 @@
         }
 
         // update time slots by dates
-        if (newStartDate == newEndDate) { 
+        if (newStartDate == newEndDate) {
           ESHBPUBLICBOOKING.updateTimeSlotsHtml(
             accomodationId,
             newStartDate,
@@ -729,35 +729,35 @@
         return defaultDate;
       }
     },
-    minMaxErr: function (minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) { 
-       let translations = eshb_ajax.translations;
+    minMaxErr: function (minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) {
+      let translations = eshb_ajax.translations;
 
-        if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
-          translations = eshb_ajax.admin_translations;
-        }
-      
+      if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
+        translations = eshb_ajax.admin_translations;
+      }
+
       var diff = picker.endDate.diff(picker.startDate, "days");
 
-        let isValid = true;
-        if(!document.querySelector('.date-err-msg')) return;
-        document.querySelector('.date-err-msg').innerHTML = '';
-        if(minNights > 1 && diff < minNights) {
-          document.querySelector('.date-err-msg').innerHTML = translations.minNightsErrorMsgAvCal + minNights;
-          isValid = false;
-        }else if (maxNights !== 0 && diff > maxNights) {
-          isValid = false;
-          document.querySelector('.date-err-msg').innerHTML = translations.maxNightsErrorMsgAvCal + maxNights;
-        }
-        if(isValid !==true) {
-          ESHBPUBLICBOOKING.resetCalendar(minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
-        }
+      let isValid = true;
+      if (!document.querySelector('.date-err-msg')) return;
+      document.querySelector('.date-err-msg').innerHTML = '';
+      if (minNights > 1 && diff < minNights) {
+        document.querySelector('.date-err-msg').innerHTML = translations.minNightsErrorMsgAvCal + minNights;
+        isValid = false;
+      } else if (maxNights !== 0 && diff > maxNights) {
+        isValid = false;
+        document.querySelector('.date-err-msg').innerHTML = translations.maxNightsErrorMsgAvCal + maxNights;
+      }
+      if (isValid !== true) {
+        ESHBPUBLICBOOKING.resetCalendar(minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
+      }
 
-        setTimeout(() => {
-          
-          document.querySelector('.date-err-msg').innerHTML = '';
-        }, 4000);
+      setTimeout(() => {
+
+        document.querySelector('.date-err-msg').innerHTML = '';
+      }, 4000);
     },
-    resetCalendar: function (minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) { 
+    resetCalendar: function (minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) {
 
       let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
       let startDate = moment().startOf("day").add(startDateBuffer, "days");
@@ -773,13 +773,13 @@
       endDateInput.val(formatedEndDate);
 
       ESHBPUBLICBOOKING.updateEshbCalendar(
-          startDateInput,
-          endDateInput,
-          availableDatePickerInput,
-          roomQuantityInput,
-          accomodationId,
-          form
-        );
+        startDateInput,
+        endDateInput,
+        availableDatePickerInput,
+        roomQuantityInput,
+        accomodationId,
+        form
+      );
     },
     setEshbFormCalendar: function (
       startDateInput,
@@ -802,15 +802,15 @@
 
 
       let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
-      
+
 
       minNights = parseInt(minNights);
       maxNights = parseInt(maxNights);
 
       options.minDate = moment().startOf("day").add(startDateBuffer, "days");
-      options.endDate = moment().startOf("hour").add(minNights+startDateBuffer, "days");
+      options.endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
 
-      if (minNights > 1 &&  options.startDate !== options.endDate) {
+      if (minNights > 1 && options.startDate !== options.endDate) {
         allowSingleDate = false;
       }
 
@@ -940,7 +940,7 @@
         return false;
       };
 
-   
+
       // Initialize the first date range picker
       $(startDateInput).daterangepicker(options, function (start, end) {
         $(startDateInput).val(start.format("YYYY-MM-DD"));
@@ -1155,7 +1155,7 @@
           if (diff < minNights || diff > maxNights) {
 
             if (diff > maxNights) {
-              
+
               reqquiredNights = maxNights;
             }
 
@@ -1196,24 +1196,24 @@
 
             let minMaxValid = true;
             var diff = picker.endDate.diff(picker.startDate, "days");
-            
+
             document.querySelector('.eshb-availability-calendars-err').innerHTML = '';
-            if(minNights > 1 && diff < minNights) {
+            if (minNights > 1 && diff < minNights) {
               minMaxValid = false;
               document.querySelector('.eshb-availability-calendars-err').innerHTML = eshb_ajax.translations.minNightsErrorMsgAvCal + minNights;
 
-            }else if (maxNights !== 0 && diff > maxNights) {
+            } else if (maxNights !== 0 && diff > maxNights) {
               minMaxValid = false;
               document.querySelector('.eshb-availability-calendars-err').innerHTML = eshb_ajax.translations.maxNightsErrorMsgAvCal + maxNights;
             }
-            if(minMaxValid != true) {
+            if (minMaxValid != true) {
               ESHBPUBLICBOOKING.resetCalendar(minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
               return setTimeout(() => {
                 document.querySelector('.eshb-availability-calendars-err').innerHTML = '';
               }, 4000);
             }
-           
-            
+
+
             // check seleceted day in allowedDays and show errors
             selectedDay = picker.startDate.format("dddd").toLowerCase();
             startDate = ESHBPUBLICBOOKING.checkInDayErrors(
@@ -1307,29 +1307,29 @@
         }
       );
 
-      $(availableDatePickerInput).on('cancel.daterangepicker', function(ev, picker) {
-        
-          let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
-          let startDate = moment().startOf("day").add(startDateBuffer, "days");
-          let endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
+      $(availableDatePickerInput).on('cancel.daterangepicker', function (ev, picker) {
 
-          let formatedStartDate = startDate.format("YYYY-MM-DD");
-          let formatedEndDate = endDate.format("YYYY-MM-DD");
+        let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
+        let startDate = moment().startOf("day").add(startDateBuffer, "days");
+        let endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
 
-          picker.setStartDate(startDate);
-          picker.setEndDate(endDate);
+        let formatedStartDate = startDate.format("YYYY-MM-DD");
+        let formatedEndDate = endDate.format("YYYY-MM-DD");
 
-          startDateInput.val(formatedStartDate);
-          endDateInput.val(formatedEndDate);
+        picker.setStartDate(startDate);
+        picker.setEndDate(endDate);
 
-          ESHBPUBLICBOOKING.updateEshbCalendar(
-              startDateInput,
-              endDateInput,
-              availableDatePickerInput,
-              roomQuantityInput,
-              accomodationId,
-              form
-            );
+        startDateInput.val(formatedStartDate);
+        endDateInput.val(formatedEndDate);
+
+        ESHBPUBLICBOOKING.updateEshbCalendar(
+          startDateInput,
+          endDateInput,
+          availableDatePickerInput,
+          roomQuantityInput,
+          accomodationId,
+          form
+        );
       });
     },
     setBookingFormCalendar: function (
@@ -1373,7 +1373,7 @@
                 eshb_ajax.is_admin
               ) {
                 isRenderTimeSlots = true;
-              }else if(availableTimeSlots){
+              } else if (availableTimeSlots) {
                 isRenderTimeSlots = true;
               }
             } else {
@@ -1521,8 +1521,8 @@
             eshb_ajax.is_admin
           ) {
             setTimeout(() => {
-              
-              
+
+
               $(
                 '#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_start_time]"]'
               ).val(selecetedStartTime);
@@ -1685,28 +1685,22 @@
           max_start = ESHBPUBLICBOOKING.addHours(timeSlot[1], 1, false);
           min_end = ESHBPUBLICBOOKING.addHours(timeSlot[0], 1);
 
-          timeSlotHtml += `<div class="eshb-form-groups eshb-time-slot ${
-            slotIndex == 1 ? "selected" : ""
-          }">
-                                <input type="radio" name="time-slot" ${
-                                  slotIndex == 1 ? "checked" : ""
-                                } class="time-slot">
+          timeSlotHtml += `<div class="eshb-form-groups eshb-time-slot ${slotIndex == 1 ? "selected" : ""
+            }">
+                                <input type="radio" name="time-slot" ${slotIndex == 1 ? "checked" : ""
+            } class="time-slot">
                                 <div class="eshb-styled-checkbox"></div>
                                 <div class="eshb-times">
                                     <div class="eshb-time-wrapper">
-                                        <input type="time" id="booking-time-picker_start_time" class="booking-time-picker form-control" name="start_time" value="${
-                                          timeSlot[0]
-                                        }" min="${
-            timeSlot[0]
-          }" max="${max_start}" step="1800"> 
+                                        <input type="time" id="booking-time-picker_start_time" class="booking-time-picker form-control" name="start_time" value="${timeSlot[0]
+            }" min="${timeSlot[0]
+            }" max="${max_start}" step="1800"> 
                                     </div>
                                     -
                                     <div class="eshb-time-wrapper">
-                                        <input type="time" id="booking-time-picker_end_time" class="booking-time-picker form-control" name="end_time" value="${
-                                          timeSlot[1]
-                                        }" min="${min_end}" max="${
-            timeSlot[1]
-          }" step="1800">
+                                        <input type="time" id="booking-time-picker_end_time" class="booking-time-picker form-control" name="end_time" value="${timeSlot[1]
+            }" min="${min_end}" max="${timeSlot[1]
+            }" step="1800">
                                     </div>
                                 </div>
                             </div>`;
@@ -2211,7 +2205,7 @@
       //         $form
       //           .find(".cost-calculator-wrapper")
       //           .removeClass("has-discounted-price");
-                
+
       //       }
 
       //       // Conditional DOM updates
@@ -2271,94 +2265,94 @@
 
       const start = performance.now();
 
-    fetch(`${eshb_rest.root}eshb/v1/booking-prices`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-WP-Nonce": eshb_rest.nonce, // REST API nonce
-      },
-      body: JSON.stringify({
-        accomodationId,
-        startDate,
-        endDate,
-        startTime,
-        endTime,
-        roomQuantity,
-        adultQuantity,
-        childrenQuantity,
-        extraBedQuantity,
-        selectedServices: JSON.stringify(selectedServices),
-        nonce: eshb_ajax.nonce, // optional if your REST callback checks it
-      }),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        const end = performance.now();
-        //console.log(`Response time: ${end - start} ms`);
-
-        if (!response || response.code) {
-          // REST API error
-          console.error(response.message || "Error fetching booking prices");
-          return;
-        }
-
-        let prices = response;
-        let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
-        let subtotalPrice = parseFloat(prices.subtotalPrice);
-        let totalPrice = parseFloat(prices.totalPrice);
-        let regularTotalPrice = parseFloat(prices.regularTotalPrice);
-        let extraServicesPrice = parseFloat(prices.extraServicesPrice);
-        let extraBedPrice = parseFloat(prices.extraBedPrice);
-        let basePrice = parseFloat(prices.basePrice);
-        let currencySymbol = prices.currencySymbol;
-        let currencyPosition = prices.currencyPosition;
-
-        // show discounted pricing
-        if (totalPrice < regularTotalPrice && totalPrice != regularTotalPrice) {
-          $form.find(".cost-calculator-wrapper").addClass("has-discounted-price");
-        } else {
-          $form.find(".cost-calculator-wrapper").removeClass("has-discounted-price");
-        }
-
-        // Conditional DOM updates
-        const updateIfChanged = ($el, value) => {
-          if (value && $el.text() !== value) {
-            $el.text(value);
-          }
-        };
-
-        regularTotalPrice =
-          regularTotalPrice != totalPrice && totalPrice > regularTotalPrice
-            ? totalPrice
-            : regularTotalPrice;
-
-        $form.find("#eshb-subtotal-price").val(regularTotalPrice);
-        $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
-        $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
-
-        // update admin booking metaboxes pricing
-        if (typeof eshb_rest.is_admin !== "undefined" && eshb_rest.is_admin) {
-          $('input[name="eshb_booking_metaboxes[total_price]"]').val(totalPrice);
-          $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(subtotalPrice);
-          $('input[name="eshb_booking_metaboxes[base_price]"]').val(basePrice);
-          $('input[name="eshb_booking_metaboxes[extra_service_price]"]').val(extraServicesPrice);
-          $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(extraBedPrice);
-        }
-
-        if (currencyPosition === "right") {
-          totalPrice = totalPrice + currencySymbol;
-          regularTotalPrice = regularTotalPrice + currencySymbol;
-        } else {
-          totalPrice = currencySymbol + totalPrice;
-          regularTotalPrice = currencySymbol + regularTotalPrice;
-        }
-
-        updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
-        updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
+      fetch(`${eshb_rest.root}eshb/v1/booking-prices`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": eshb_rest.nonce, // REST API nonce
+        },
+        body: JSON.stringify({
+          accomodationId,
+          startDate,
+          endDate,
+          startTime,
+          endTime,
+          roomQuantity,
+          adultQuantity,
+          childrenQuantity,
+          extraBedQuantity,
+          selectedServices: JSON.stringify(selectedServices),
+          nonce: eshb_ajax.nonce, // optional if your REST callback checks it
+        }),
       })
-      .catch((err) => {
-        console.error("REST API request failed:", err);
-      });
+        .then((res) => res.json())
+        .then((response) => {
+          const end = performance.now();
+          //console.log(`Response time: ${end - start} ms`);
+
+          if (!response || response.code) {
+            // REST API error
+            console.error(response.message || "Error fetching booking prices");
+            return;
+          }
+
+          let prices = response;
+          let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
+          let subtotalPrice = parseFloat(prices.subtotalPrice);
+          let totalPrice = parseFloat(prices.totalPrice);
+          let regularTotalPrice = parseFloat(prices.regularTotalPrice);
+          let extraServicesPrice = parseFloat(prices.extraServicesPrice);
+          let extraBedPrice = parseFloat(prices.extraBedPrice);
+          let basePrice = parseFloat(prices.basePrice);
+          let currencySymbol = prices.currencySymbol;
+          let currencyPosition = prices.currencyPosition;
+
+          // show discounted pricing
+          if (totalPrice < regularTotalPrice && totalPrice != regularTotalPrice) {
+            $form.find(".cost-calculator-wrapper").addClass("has-discounted-price");
+          } else {
+            $form.find(".cost-calculator-wrapper").removeClass("has-discounted-price");
+          }
+
+          // Conditional DOM updates
+          const updateIfChanged = ($el, value) => {
+            if (value && $el.text() !== value) {
+              $el.text(value);
+            }
+          };
+
+          regularTotalPrice =
+            regularTotalPrice != totalPrice && totalPrice > regularTotalPrice
+              ? totalPrice
+              : regularTotalPrice;
+
+          $form.find("#eshb-subtotal-price").val(regularTotalPrice);
+          $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
+          $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
+
+          // update admin booking metaboxes pricing
+          if (typeof eshb_rest.is_admin !== "undefined" && eshb_rest.is_admin) {
+            $('input[name="eshb_booking_metaboxes[total_price]"]').val(totalPrice);
+            $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(subtotalPrice);
+            $('input[name="eshb_booking_metaboxes[base_price]"]').val(basePrice);
+            $('input[name="eshb_booking_metaboxes[extra_service_price]"]').val(extraServicesPrice);
+            $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(extraBedPrice);
+          }
+
+          if (currencyPosition === "right") {
+            totalPrice = totalPrice + currencySymbol;
+            regularTotalPrice = regularTotalPrice + currencySymbol;
+          } else {
+            totalPrice = currencySymbol + totalPrice;
+            regularTotalPrice = currencySymbol + regularTotalPrice;
+          }
+
+          updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
+          updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
+        })
+        .catch((err) => {
+          console.error("REST API request failed:", err);
+        });
 
 
     },
@@ -2439,10 +2433,10 @@
       });
 
       // Subtract default extra services price
-      if( 0 < ESHBPUBLICBOOKING.getDefaultExtraServicesPrice() ){
+      if (0 < ESHBPUBLICBOOKING.getDefaultExtraServicesPrice()) {
         extraServicesPrice = extraServicesPrice - ESHBPUBLICBOOKING.getDefaultExtraServicesPrice();
       }
-  
+
       // Update total price
       let totalPrice = currentPrice + extraServicesPrice;
       let discountedPrice = currentDiscountedPrice + extraServicesPrice;
@@ -2507,7 +2501,7 @@
 
       if (bookingType == "booking_request") {
         action = "eshb_send_reservation_request";
-       
+
 
         let customerName = $(form).find('input[name="customer_name"]').val();
         let customerEmail = $(form).find('input[name="customer_email"]').val();
@@ -2606,7 +2600,7 @@
                 $(errWrapper).find(".status-success").css("display", "none");
               });
 
-              if(bookingType == "woocommerce") {
+              if (bookingType == "woocommerce") {
                 location.replace(carUrl);
               } else if (bookingType == "surecart") {
                 location.replace(response.data.checkout_url);
@@ -2667,7 +2661,7 @@
 
       console.log('currienciesData', currienciesData);
       console.log('countriesData', countriesData);
-      
+
 
       const currencySelect = document.querySelector(
         "select.eshb-payment-currency"
@@ -2713,19 +2707,19 @@
             currencySelect.appendChild(opt);
           });
         }
-        
+
       }
 
       countrySelect.addEventListener("change", function () {
         const selectedCountryCode = this.value;
         stateSelect.innerHTML = '<option value="">Select State</option>';
-        
+
         //citySelect.innerHTML = '<option value="">Select City</option>';
 
         const country = countriesData.find(
           (c) => c.code2 === selectedCountryCode
         );
-        
+
         if (country && country.states) {
           country.states.forEach((state) => {
             const opt = document.createElement("option");
@@ -2826,5 +2820,5 @@
   };
 
   ESHBPUBLICBOOKING.init();
-  
+
 })(jQuery);

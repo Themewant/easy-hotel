@@ -640,7 +640,7 @@ class ESHB_View extends ESHB_MAIN{
         }
     }
 
-    public function eshb_get_availability_calendar_html($accomodation_id = null, $style = 'style-one'){
+    public function eshb_get_availability_calendar_html($accomodation_id = null, $style = 'style-one', $show_title = true){
 
         $eshb_settings = get_option('eshb_settings', []);
   
@@ -673,7 +673,9 @@ class ESHB_View extends ESHB_MAIN{
         
         ?>
         <div class="eshb-availability-calendars-area">
+            <?php if($show_title){ ?>
             <h3 class="calendar-title"><?php echo esc_html( eshb_get_translated_string($availability_calendar_title) );?></h3>
+            <?php } ?>
             <div class="eshb-availability-calendars">
                 <input type="hidden" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="available_date_picker" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
             </div>

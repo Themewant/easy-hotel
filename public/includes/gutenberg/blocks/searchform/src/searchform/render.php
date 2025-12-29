@@ -186,21 +186,12 @@ if ( ! empty( $submit_btn_margin ) ) {
     $vars[] = '--eshb-scf-submit-btn-ml:' . esc_attr( $ensure_unit( $submit_btn_margin['left'] ?? '0px' ) );
 }
 
-// Get shortcode output
-$output = do_shortcode( '[eshb_search_form]' );
 
 // Inject CSS variables into existing wrapper
+$style_attr = '';
 if ( $vars ) {
     $style_attr = implode( ';', $vars );
-
-    // Add style to first wrapper div with class eshb-search
-    $output = preg_replace(
-        '/(<div\b[^>]*\bclass\s*=\s*"[^"]*\beshb-search\b[^"]*"[^>]*)>/i',
-        '$1 style="' . esc_attr( $style_attr ) . '">',
-        $output,
-        1
-    );
 }
 
-echo $output;
-
+?>
+<div class="eshb-search-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_search_form]' ); ?></div>

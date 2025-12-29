@@ -1,0 +1,42 @@
+.eshb-accomodation-info-block-wrapper {
+    .basic-information-list {
+        display: flex;
+        align-items: center;
+        column-gap: var(--eshb-acmInfo-space-between, 1.5rem);
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+
+        p {
+            margin: 0;
+        }
+
+        .info {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--eshb-acmInfo-icon-space, 4px);
+
+            .info-title {
+                font-size: var(--eshb-acmInfo-text-size, 18px);
+                color: var(--eshb-acmInfo-text-color);
+
+                &:hover {
+                    color: var(--eshb-acmInfo-text-color-hover);
+                }
+            }
+
+            .info-icon {
+                color: var(--eshb-acmInfo-icon-color, var(--eshb-primary-color));
+                font-size: var(--eshb-acmInfo-icon-size, 18px);
+
+                &:hover {
+                    color: var(--eshb-acmInfo-icon-color-hover);
+                }
+            }
+
+            img.info-icon {
+                height: var(--eshb-acmInfo-icon-size, 18px);
+            }
+        }
+    }
+}

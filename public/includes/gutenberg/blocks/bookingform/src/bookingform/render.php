@@ -280,10 +280,10 @@ if ( ! empty( $service_qty_border_radius ) ) {
 }
 
 // Inject CSS variables into existing wrapper
+$style_attr = '';
 if ( $vars ) {
     $style_attr = implode( ';', $vars );
-    ?>
-        <div class="eshb-bkf-wrapper" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_booking_form accomodation_id="' . $accomodation_id . '"]' ); ?></div>
-    <?php
 }
-
+?>
+    <div class="eshb-booking-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_booking_form accomodation_id="' . $accomodation_id . '"]' ); ?></div>
+<?php

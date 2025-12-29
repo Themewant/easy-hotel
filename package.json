@@ -6,16 +6,21 @@
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
-		"build": "npm run build:accomodationgrid && npm run build:searchform && npm run build:bookingform",
+		"build": "npm run build:accomodationgrid && npm run build:searchform && npm run build:bookingform && npm run build:accomodationGallery && npm run build:accomodationInfo && npm run build:checkInOutTimes && npm run build:availabilityCalendars && npm run build:accomodationSlider",
 		"build:accomodationgrid": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationgrid/src --output-path=public/includes/gutenberg/blocks/accomodationgrid/build",
 		"build:searchform": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/searchform/src --output-path=public/includes/gutenberg/blocks/searchform/build",
 		"build:bookingform": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/bookingform/src --output-path=public/includes/gutenberg/blocks/bookingform/build",
+		"build:accomodationGallery": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationGallery/src --output-path=public/includes/gutenberg/blocks/accomodationGallery/build",
+		"build:accomodationInfo": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationInfo/src --output-path=public/includes/gutenberg/blocks/accomodationInfo/build",
+		"build:checkInOutTimes": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/checkInOutTimes/src --output-path=public/includes/gutenberg/blocks/checkInOutTimes/build",
+		"build:availabilityCalendars": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/availabilityCalendars/src --output-path=public/includes/gutenberg/blocks/availabilityCalendars/build",
+		"build:accomodationSlider": "wp-scripts build --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationSlider/src --output-path=public/includes/gutenberg/blocks/accomodationSlider/build",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start": "wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationgrid/src --output-path=public/includes/gutenberg/blocks/accomodationgrid/build"
+		"start": "wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationgrid/src --output-path=public/includes/gutenberg/blocks/accomodationgrid/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/searchform/src --output-path=public/includes/gutenberg/blocks/searchform/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/bookingform/src --output-path=public/includes/gutenberg/blocks/bookingform/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationGallery/src --output-path=public/includes/gutenberg/blocks/accomodationGallery/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationInfo/src --output-path=public/includes/gutenberg/blocks/accomodationInfo/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/checkInOutTimes/src --output-path=public/includes/gutenberg/blocks/checkInOutTimes/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/availabilityCalendars/src --output-path=public/includes/gutenberg/blocks/availabilityCalendars/build && wp-scripts start --blocks-manifest --webpack-src-dir=public/includes/gutenberg/blocks/accomodationSlider/src --output-path=public/includes/gutenberg/blocks/accomodationSlider/build"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^31.1.0"

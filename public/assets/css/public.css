@@ -487,6 +487,9 @@
 }
 .eshb-details-page .basic-information-list .info .info-icon {
   color: var(--eshb-primary-color);
+  font-size: 18px;
+}
+.eshb-details-page .basic-information-list .info img.info-icon {
   height: 18px;
 }
 .eshb-details-page .eshb-archive-wrapper {
@@ -754,7 +757,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 
 .de-number input {
-  width: 40px;
+  width: 40px !important;
   text-align: center;
   font-size: 20px;
   border: none;

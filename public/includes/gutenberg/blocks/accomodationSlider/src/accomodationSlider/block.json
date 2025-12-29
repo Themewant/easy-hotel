@@ -1,0 +1,345 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "easy-hotel/accomodation-slider",
+	"version": "0.1.0",
+	"title": "Accomodation Slider",
+	"category": "easy-hotel",
+	"icon": "grid-view",
+	"description": "Accomodation Slider block scaffolded with Create Block tool.",
+	"example": {},
+	"supports": {
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"color": {
+			"background": true,
+			"text": false,
+			"gradients": true
+		}
+	},
+	"textdomain": "accomodation-slider",
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"attributes": {
+		"grid_style": {
+			"type": "string",
+			"default": "1"
+		},
+		"per_page": {
+			"type": "number",
+			"default": 10
+		},
+		"btn_text": {
+			"type": "string",
+			"default": "Book Now"
+		},
+		"thumbnail_size": {
+			"type": "string",
+			"default": "eshb_thumbnail"
+		},
+		"room_order": {
+			"type": "string",
+			"default": "ASC"
+		},
+		"room_orderby": {
+			"type": "string",
+			"default": "date"
+		},
+		"category": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPadding": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
+		"itemBorderRadius": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		},
+		"itemTitleTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemDescriptionTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"capacitiesItemTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemPricingTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemPricingPerodicityTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemButtonTypography": {
+			"type": "object",
+			"default": {
+				"fontFamily": "",
+				"fontSize": "",
+				"fontWeight": "",
+				"fontStyle": "",
+				"textTransform": "",
+				"lineHeight": "",
+				"letterSpacing": ""
+			}
+		},
+		"itemBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBackgroundColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBackgroundGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundColorHover": {
+			"type": "string",
+			"default": "var(--eshb-primary-color)"
+		},
+		"itemOverlayBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundColorTwo": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundColorTwoHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundGradientTwo": {
+			"type": "string",
+			"default": ""
+		},
+		"itemOverlayBackgroundGradientTwoHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTitleColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTitleColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDescriptionColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemDescriptionColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"capacitiesItemColor": {
+			"type": "string",
+			"default": ""
+		},
+		"capacitiesItemColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingPerodicityColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemPricingPerodicityColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonBackgroundColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonBackgroundGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonColor": {
+			"type": "string",
+			"default": ""
+		},
+		"itemButtonColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"slidesPerView": {
+			"type": "number",
+			"default": 3
+		},
+		"slidesPerViewTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"slidesPerViewMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"slidesPerViewMobileSmall": {
+			"type": "number",
+			"default": 1
+		},
+		"spaceBetween": {
+			"type": "string",
+			"default": "20"
+		},
+		"effect": {
+			"type": "string",
+			"default": "slide"
+		},
+		"speed": {
+			"type": "number",
+			"default": 300
+		},
+		"loop": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplaySpeed": {
+			"type": "number",
+			"default": 3000
+		},
+		"pauseOnHover": {
+			"type": "boolean",
+			"default": false
+		},
+		"pauseOnInter": {
+			"type": "boolean",
+			"default": false
+		},
+		"nextBtnBorderRadius": {
+			"type": "object",
+			"default": {
+				"top": "20px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "20px"
+			}
+		},
+		"prevBtnBorderRadius": {
+			"type": "object",
+			"default": {
+				"top": "0px",
+				"right": "20px",
+				"bottom": "20px",
+				"left": "0px"
+			}
+		},
+		"navBtnBgColor": {
+			"type": "string",
+			"default": ""
+		},
+		"navBtnBgColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"navBtnColor": {
+			"type": "string",
+			"default": ""
+		},
+		"navBtnColorHover": {
+			"type": "string",
+			"default": ""
+		},
+		"dotsBgColor": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

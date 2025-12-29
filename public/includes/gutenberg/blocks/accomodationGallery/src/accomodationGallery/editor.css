@@ -1,0 +1,98 @@
+.eshb-bkf {
+  background-color: var(--eshb-bkf-bg);
+  padding-top: var(--eshb-bkf-pt);
+  padding-right: var(--eshb-bkf-pr);
+  padding-bottom: var(--eshb-bkf-pb);
+  padding-left: var(--eshb-bkf-pl);
+  margin-top: var(--eshb-bkf-mt);
+  margin-right: var(--eshb-bkf-mr);
+  margin-left: var(--eshb-bkf-ml);
+  box-shadow: var(--eshb-bkf-box-shadow);
+  border-radius: var(--eshb-bkf-bt) var(--eshb-bkf-br) var(--eshb-bkf-bl) var(--eshb-bkf-br);
+  transition: all 0.3s ease;
+}
+.eshb-bkf:hover {
+  background-color: var(--eshb-bkf-bg-hover, var(--eshb-bkf-bg));
+  box-shadow: var(--eshb-bkf-box-shadow-hover, var(--eshb-bkf-box-shadow));
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group {
+  padding-top: var(--eshb-bkfgp-pt, 0);
+  padding-right: var(--eshb-bkfgp-pr, 0);
+  padding-bottom: var(--eshb-bkfgp-pb, 0);
+  padding-left: var(--eshb-bkfgp-pl, 0);
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .field-label {
+  color: var(--eshb-bkf-field-label-color);
+  font-size: var(--eshb-bkf-fl-fs, inherit);
+  font-weight: var(--eshb-bkf-fl-fw, inherit);
+  line-height: var(--eshb-bkf-fl-lh, inherit);
+  text-transform: var(--eshb-bkf-fl-tt, inherit);
+  letter-spacing: var(--eshb-bkf-fl-ls, inherit);
+  transition: color 0.3s ease;
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .field-label:hover {
+  color: var(--eshb-bkf-field-label-color-hover, var(--eshb-bkf-field-label-color));
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .form-control {
+  color: var(--eshb-bkf-field-text-color);
+  font-size: var(--eshb-bkf-ft-fs, inherit);
+  font-weight: var(--eshb-bkf-ft-fw, inherit);
+  line-height: var(--eshb-bkf-ft-lh, inherit);
+  text-transform: var(--eshb-bkf-ft-tt, inherit);
+  letter-spacing: var(--eshb-bkf-ft-ls, inherit);
+  transition: color 0.3s ease;
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .form-control:hover {
+  color: var(--eshb-bkf-field-text-color-hover, var(--eshb-bkf-field-text-color));
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-plus {
+  font-size: var(--eshb-bkf-pm-btn-fs, inherit);
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-minus::before {
+  width: var(--eshb-bkf-pm-btn-fs, inherit);
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-plus,
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-minus {
+  background-color: var(--eshb-bkf-pm-btn-bg-color);
+  color: var(--eshb-bkf-pm-btn-text-color);
+  font-weight: var(--eshb-bkf-pm-btn-fw, inherit);
+  line-height: var(--eshb-bkf-pm-btn-lh, inherit);
+  text-transform: var(--eshb-bkf-pm-btn-tt, inherit);
+  letter-spacing: var(--eshb-bkf-pm-btn-ls, inherit);
+  padding-top: var(--eshb-bkf-pm-btn-pt, 0);
+  padding-right: var(--eshb-bkf-pm-btn-pr, 0);
+  padding-bottom: var(--eshb-bkf-pm-btn-pb, 0);
+  padding-left: var(--eshb-bkf-pm-btn-pl, 0);
+  transition: all 0.3s ease;
+}
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-plus:hover,
+.eshb-bkf .eshb-bkf-form .eshb-form-group .d-minus:hover {
+  background-color: var(--eshb-bkf-pm-btn-bg-color-hover, var(--eshb-bkf-pm-btn-bg-color));
+  color: var(--eshb-bkf-pm-btn-text-color-hover, var(--eshb-bkf-pm-btn-text-color));
+}
+.eshb-bkf .eshb-bkf-form .submition-wrapper .eshb-form-submit-btn {
+  background-color: var(--eshb-bkf-submit-btn-bg-color);
+  color: var(--eshb-bkf-submit-btn-text-color);
+  font-weight: var(--eshb-bkf-submit-btn-fw, inherit);
+  line-height: var(--eshb-bkf-submit-btn-lh, inherit);
+  text-transform: var(--eshb-bkf-submit-btn-tt, inherit);
+  letter-spacing: var(--eshb-bkf-submit-btn-ls, inherit);
+  padding-top: var(--eshb-bkf-submit-btn-pt, 0);
+  padding-right: var(--eshb-bkf-submit-btn-pr, 0);
+  padding-bottom: var(--eshb-bkf-submit-btn-pb, 0);
+  padding-left: var(--eshb-bkf-submit-btn-pl, 0);
+  transition: all 0.3s ease;
+  margin-top: var(--eshb-bkf-submit-btn-mt, 0);
+  margin-right: var(--eshb-bkf-submit-btn-mr, 0);
+  margin-bottom: var(--eshb-bkf-submit-btn-mb, 0);
+  margin-left: var(--eshb-bkf-submit-btn-ml, 0);
+  font-size: var(--eshb-bkf-submit-btn-fs, inherit);
+  font-weight: var(--eshb-bkf-submit-btn-fw, inherit);
+  line-height: var(--eshb-bkf-submit-btn-lh, inherit);
+  text-transform: var(--eshb-bkf-submit-btn-tt, inherit);
+  letter-spacing: var(--eshb-bkf-submit-btn-ls, inherit);
+}
+.eshb-bkf .eshb-bkf-form .submition-wrapper .eshb-form-submit-btn:hover {
+  background-color: var(--eshb-bkf-submit-btn-bg-color-hover, var(--eshb-bkf-submit-btn-bg-color));
+  color: var(--eshb-bkf-submit-btn-text-color-hover, var(--eshb-bkf-submit-btn-text-color));
+}/*# sourceMappingURL=editor.css.map */

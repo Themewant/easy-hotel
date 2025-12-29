@@ -327,6 +327,10 @@
 
             .info-icon {
                 color: var(--eshb-primary-color);
+                font-size: 18px;
+            }
+
+            img.info-icon {
                 height: 18px;
             }
         }
@@ -644,7 +648,7 @@ nav.eshb-pagination {
 }
 
 .de-number input {
-    width: 40px;
+    width: 40px !important;
     text-align: center;
     font-size: 20px;
     border: none;
