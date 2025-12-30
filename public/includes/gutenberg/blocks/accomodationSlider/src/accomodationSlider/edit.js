@@ -16,7 +16,6 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 
 import {
 	PanelBody,
-	__experimentalHeading as Heading,
 	BoxControl,
 	__experimentalDivider as Divider,
 	TabPanel,
@@ -48,43 +47,17 @@ import ServerSideRender from '@wordpress/server-side-render';
 import metadata from './block.json';
 
 export default function Edit({ attributes, setAttributes }) {
-	const imageSizeOptions = useSelect((select) => {
-		const blockEditorStore = select('core/block-editor');
-		const editorStore = select('core'); // Testing 'core' store as well
-
-		const blockEditorSettings = blockEditorStore && typeof blockEditorStore.getSettings === 'function' ? blockEditorStore.getSettings() : null;
-		const coreSettings = editorStore && typeof editorStore.getSettings === 'function' ? editorStore.getSettings() : null;
-
-		const sizes = blockEditorSettings?.imageSizes || coreSettings?.imageSizes;
-
-		let options = [];
-
-		if (sizes && Array.isArray(sizes)) {
-			options = sizes.map((size) => ({
-				label: size.name,
-				value: size.slug,
-			}));
-		} else {
-			options = [
-				{ label: __('Large', 'easy-hotel'), value: 'large' },
-				{ label: __('Medium', 'easy-hotel'), value: 'medium' },
-				{ label: __('Thumbnail', 'easy-hotel'), value: 'thumbnail' },
-			];
-		}
-
-		// Ensure our custom size is always there if missing
-		if (!options.find(o => o.value === 'eshb_thumbnail')) {
-			options.unshift({ label: __('Easy Hotel Thumbnail', 'easy-hotel'), value: 'eshb_thumbnail' });
-		}
-
-		return options;
-	}, []);
 
 	return (
 		<div {...useBlockProps()}>
 			<InspectorControls>
 				{/* {query settings panel group} */}
 				<PanelBody title={__('Query', 'easy-hotel')} initialOpen={false}>
+					<ToggleControl
+						label={__('Show Related Posts', 'easy-hotel')}
+						checked={attributes.is_related_post}
+						onChange={(value) => setAttributes({ is_related_post: value })}
+					/>
 					<NumberControl
 						label={__('Posts Per Page', 'easy-hotel')}
 						value={attributes.per_page}
@@ -111,11 +84,6 @@ export default function Edit({ attributes, setAttributes }) {
 							{ label: __('Random', 'easy-hotel'), value: 'rand' },
 						]}
 					/>
-					<NumberControl
-						label={__('Offset', 'easy-hotel')}
-						value={attributes.room_offset}
-						onChange={(value) => setAttributes({ room_offset: value })}
-					/>
 				</PanelBody>
 				{ /* content settings panel group */}
 				<PanelBody title={__('Content', 'easy-hotel')} initialOpen={false}>
@@ -124,7 +92,6 @@ export default function Edit({ attributes, setAttributes }) {
 						value={attributes.grid_style}
 						onChange={(value) => setAttributes({ grid_style: value })}
 						options={[
-							{ label: __('Default', 'easy-hotel'), value: 'default' },
 							{ label: __('Style 1', 'easy-hotel'), value: '1' },
 							{ label: __('Style 2', 'easy-hotel'), value: '2' },
 							{ label: __('Style 3', 'easy-hotel'), value: '3' },
@@ -139,7 +106,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 			</InspectorControls>
 			<InspectorControls>
-				<PanelBody title={__('Slides Per View', 'easy-hotel')} initialOpen={true}>
+				<PanelBody title={__('Slider Settings', 'easy-hotel')} initialOpen={true}>
 					<SelectControl
 						label={__('Slides Per View', 'easy-hotel')}
 						value={attributes.slidesPerView}
@@ -280,21 +247,6 @@ export default function Edit({ attributes, setAttributes }) {
 						onChange={(value) => setAttributes({ autoplaySpeed: value })}
 						help={__('Autoplay speed of the transition between slides', 'easy-hotel')}
 					/>
-					<Divider />
-					<ToggleControl
-						__nextHasNoMarginBottom={true}
-						label={__('Centered Slides', 'easy-hotel')}
-						help={
-							attributes.centeredSlides
-								? __('Centered Slides', 'easy-hotel')
-								: __('No centered slides', 'easy-hotel')
-						}
-						checked={attributes.centeredSlides}
-						onChange={(newValue) => {
-							setAttributes({ centeredSlides: newValue });
-						}}
-					/>
-
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls group='styles'>
@@ -394,18 +346,6 @@ export default function Edit({ attributes, setAttributes }) {
 						}}
 					</TabPanel>
 					<Divider />
-					<BoxControl
-						label={__('Padding', 'easy-hotel')}
-						values={attributes.itemTitlePadding}
-						onChange={(value) => setAttributes({ itemTitlePadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Margin', 'easy-hotel')}
-						values={attributes.itemTitleMargin}
-						onChange={(value) => setAttributes({ itemTitleMargin: value })}
-					/>
-					<Divider />
 					<TypographyControls
 						label={__('Typography', 'easy-hotel')}
 						attributes={attributes}
@@ -442,18 +382,6 @@ export default function Edit({ attributes, setAttributes }) {
 							);
 						}}
 					</TabPanel>
-					<Divider />
-					<BoxControl
-						label={__('Padding', 'easy-hotel')}
-						values={attributes.itemDescriptionPadding}
-						onChange={(value) => setAttributes({ itemDescriptionPadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Margin', 'easy-hotel')}
-						values={attributes.itemDescriptionMargin}
-						onChange={(value) => setAttributes({ itemDescriptionMargin: value })}
-					/>
 					<Divider />
 					<TypographyControls
 						label={__('Typography', 'easy-hotel')}
@@ -492,30 +420,6 @@ export default function Edit({ attributes, setAttributes }) {
 						}}
 					</TabPanel>
 					<Divider />
-					<BoxControl
-						label={__('Wrapper Padding', 'easy-hotel')}
-						values={attributes.capacitiesWrapperPadding}
-						onChange={(value) => setAttributes({ capacitiesWrapperPadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Wrapper Margin', 'easy-hotel')}
-						values={attributes.capacitiesWrapperMargin}
-						onChange={(value) => setAttributes({ capacitiesWrapperMargin: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Item Padding', 'easy-hotel')}
-						values={attributes.capacitiesItemPadding}
-						onChange={(value) => setAttributes({ capacitiesItemPadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Item Margin', 'easy-hotel')}
-						values={attributes.capacitiesItemMargin}
-						onChange={(value) => setAttributes({ capacitiesItemMargin: value })}
-					/>
-					<Divider />
 					<TypographyControls
 						label={__('Typography', 'easy-hotel')}
 						attributes={attributes}
@@ -552,18 +456,6 @@ export default function Edit({ attributes, setAttributes }) {
 							);
 						}}
 					</TabPanel>
-					<Divider />
-					<BoxControl
-						label={__('Padding', 'easy-hotel')}
-						values={attributes.itemPricingPadding}
-						onChange={(value) => setAttributes({ itemPricingPadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Margin', 'easy-hotel')}
-						values={attributes.itemPricingMargin}
-						onChange={(value) => setAttributes({ itemPricingMargin: value })}
-					/>
 					<Divider />
 					<TypographyControls
 						label={__('Typography', 'easy-hotel')}
@@ -646,18 +538,6 @@ export default function Edit({ attributes, setAttributes }) {
 							);
 						}}
 					</TabPanel>
-					<Divider />
-					<BoxControl
-						label={__('Padding', 'easy-hotel')}
-						values={attributes.itemButtonPadding}
-						onChange={(value) => setAttributes({ itemButtonPadding: value })}
-					/>
-					<Divider />
-					<BoxControl
-						label={__('Margin', 'easy-hotel')}
-						values={attributes.itemButtonMargin}
-						onChange={(value) => setAttributes({ itemButtonMargin: value })}
-					/>
 					<Divider />
 					<TypographyControls
 						label={__('Typography', 'easy-hotel')}

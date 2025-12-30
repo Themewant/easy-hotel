@@ -155,7 +155,7 @@ class ESHB_View extends ESHB_MAIN{
         return $givenDate->format('Y-m-d');
     }
 
-    public function eshb_get_booking_form_html($accomodation_id = null, $style = 'style-one'){
+    public function eshb_get_booking_form_html($accomodation_id = null, $style = 'style-one', $form_attr = ''){
 
         if(is_singular( 'eshb_accomodation' ) && ($accomodation_id == null || empty($accomodation_id))){
             $accomodation_id = get_the_ID();
@@ -306,7 +306,7 @@ class ESHB_View extends ESHB_MAIN{
         $defaultExtraServicePrice = 0;
         ?>
         <div class="eshb-booking">
-            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
+            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" <?php echo $form_attr; ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
                 
                 <div class="hidden-fields">
                     <input type="hidden" name="subtotal_price" id="eshb-subtotal-price" value="<?php echo esc_html($price);?>"> 

@@ -5,6 +5,7 @@
 
 
 $attributes = $attributes ?? [];
+$is_related_post = $attributes['is_related_post'] ?? false;
 $style = $attributes['grid_style'] ?? '1';
 $sstyle = 'style'.$style;
 $per_page = $attributes['per_page'] ?? 10;
@@ -47,7 +48,6 @@ $grid_style = $attributes['grid_style'] ?? 'default';
 $grid_style = 'style'. $grid_style;
 $btn_text  = $attributes['btn_text'] ?? 'Book Now';
 $pricing_prefix = '';
-$thumbnail_size = $attributes['thumbnail_size'] ?? 'large';
 $room_order = $attributes['room_order'] ?? 'ASC';
 $room_orderby = $attributes['room_orderby'] ?? 'date';
 $room_offset = $attributes['room_offset'] ?? 0;
@@ -275,9 +275,28 @@ if ( ! empty( $vars ) ) {
 $unique      = wp_rand(2012, 35120);
 $galleryDots = true;
 $galleryNav  = true;
-
+$thumbnail_size = 'eshb_thumbnail';
+$current_accomodation_id = get_the_ID();
+if($is_related_post){
+    $cat = wp_get_post_terms( $current_accomodation_id, 'eshb_category', array( 'fields' => 'slugs' ) ); // Get categories of the current post
+}
 ?>
-<div class="eshb-accomodation-slider-block-wrap">
+<div 
+    class="eshb-accomodation-slider-block-wrap" 
+    data-unique="<?php echo esc_attr($unique); ?>"  
+    data-slides-per-view="<?php echo esc_attr($slidesPerView); ?>"
+    data-slides-per-view-tablet="<?php echo esc_attr($slidesPerViewTablet); ?>"
+    data-slides-per-view-mobile="<?php echo esc_attr($slidesPerViewMobile); ?>"
+    data-slides-per-view-mobile-small="<?php echo esc_attr($slidesPerViewMobileSmall); ?>"
+    data-slides-to-scroll="<?php echo esc_attr($slidesToScroll); ?>"
+    data-space-between="<?php echo esc_attr($spaceBetween); ?>"
+    data-centered-slides="<?php echo esc_attr($centeredSlides); ?>"
+    data-gallery-nav="<?php echo esc_attr($galleryNav); ?>"
+    data-gallery-dots="<?php echo esc_attr($galleryDots); ?>"
+    data-loop="<?php echo esc_attr($loop); ?>"
+    data-effect="<?php echo esc_attr($effect); ?>"
+    data-speed="<?php echo esc_attr($speed); ?>">
+
     <div class="room_slider-inner-wrapper room_slider-inner-wrapper-<?php echo esc_attr($unique); ?>">            
         <div class="swiper rt_room_slider-<?php echo esc_attr($unique); ?> rt_room_slider <?php echo esc_attr( $sstyle )?> eshb-item-grid">
             <div class="swiper-wrapper">
@@ -319,6 +338,11 @@ $galleryNav  = true;
 
                     $animation_delay+=0.1;
                     $accomodation_id = get_the_ID();
+
+                    if($is_related_post && $accomodation_id == $current_accomodation_id){
+                        continue;
+                    }
+
                     $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
                     $accomodation_info_group = $eshb_accomodation_metaboxes['accomodation_info_group'];
                     $booking_url = get_the_permalink($accomodation_id);
@@ -344,45 +368,4 @@ $galleryNav  = true;
                 <div class="swiper-scrollbar"></div>
             </div>
     <?php endif; ?>
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-            var swiper<?php echo esc_attr($unique); ?> = new Swiper(".rt_room_slider-<?php echo esc_attr($unique); ?>", {
-                slidesPerView: <?php echo esc_attr($slidesPerView); ?>,
-                slidesPerViewTablet: <?php echo esc_attr($slidesPerViewTablet); ?>,
-                slidesPerViewMobile: <?php echo esc_attr($slidesPerViewMobile); ?>,
-                slidesPerViewMobileSmall: <?php echo esc_attr($slidesPerViewMobileSmall); ?>,
-                slidesPerGroup: <?php echo esc_attr($slidesToScroll); ?>,
-                spaceBetween: <?php echo esc_attr($spaceBetween); ?>,
-                centeredSlides: <?php echo esc_attr($centeredSlides); ?>,
-                navigation: {
-                    nextEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($unique); ?> .swiper-button-next",
-                    prevEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($unique); ?> .swiper-button-prev",
-                },
-                breakpoints: {
-                    0: {
-                        slidesPerView: 1,
-                    },
-                    375: {
-                        slidesPerView: 1,
-                    },
-                    480: {
-                        slidesPerView: 1,
-                    },
-                    575: {
-                        slidesPerView: 1,
-                    },
-                    <?php
-                            echo (!empty($slidesPerViewMobileSmall)) ?  '575: { slidesPerView: ' . esc_attr($slidesPerViewMobileSmall) . ' },' : '';
-                            echo (!empty($slidesPerViewMobile)) ?  '767: { slidesPerView: ' . esc_attr($slidesPerViewMobile) . ' },' : '';
-                            echo (!empty($slidesPerViewTablet)) ?  '991: { slidesPerView: ' . esc_attr($slidesPerViewTablet) . ' },' : '';
-                            echo (!empty($slidesPerView)) ?  '1199: { slidesPerView: ' . esc_attr($slidesPerView) . ' },' : '';
-                            ?>
-                    1399: {
-                        slidesPerView: <?php echo esc_attr($slidesPerView); ?>,
-                        spaceBetween: <?php echo esc_attr($spaceBetween); ?>
-                    }
-                }
-            });
-        });
-    </script>
 </div>

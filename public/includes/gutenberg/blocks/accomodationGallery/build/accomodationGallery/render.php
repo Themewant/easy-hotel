@@ -156,44 +156,23 @@ $thumbnail_size  = 'full';
 $galleryDots = true;
 $galleryNav = true;
 ?>
-<div class="eshb-accomodation-gallery-block-wrapper eshb-accomodation-gallery-block-wrapper-<?php echo esc_attr($unique); ?>" style="<?php echo esc_attr($style_attr); ?>">
+<div 
+    class="eshb-accomodation-gallery-block-wrapper eshb-accomodation-gallery-block-wrapper-<?php echo esc_attr($unique); ?>" 
+    style="<?php echo esc_attr($style_attr); ?>"
+    data-accomodation-id="<?php echo esc_attr($accomodation_id); ?>"
+    data-unique="<?php echo esc_attr($unique); ?>"
+    data-slides-per-view="<?php echo esc_attr($slidesPerView); ?>"
+    data-slides-per-view-tablet="<?php echo esc_attr($slidesPerViewTablet); ?>"
+    data-slides-per-view-mobile="<?php echo esc_attr($slidesPerViewMobile); ?>"
+    data-slides-per-view-mobile-small="<?php echo esc_attr($slidesPerViewMobileSmall); ?>"
+    data-slides-to-scroll="<?php echo esc_attr($slidesToScroll); ?>"
+    data-space-between="<?php echo esc_attr($spaceBetween); ?>"
+    data-centered-slides="<?php echo esc_attr($centeredSlides); ?>"
+    data-gallery-nav="<?php echo esc_attr($galleryNav); ?>"
+    data-gallery-dots="<?php echo esc_attr($galleryDots); ?>"
+    data-loop="<?php echo esc_attr($loop); ?>"
+    data-effect="<?php echo esc_attr($effect); ?>"
+    data-speed="<?php echo esc_attr($speed); ?>"
+    >
     <?php echo esc_html($ESHB_View->eshb_get_gallery_html($accomodation_id, $unique, $thumbnail_size, $galleryDots, $galleryNav)); ?>
 </div>
-<script type="text/javascript">
-    jQuery(document).ready(function() {
-        var swiper<?php echo esc_attr($unique); ?> = new Swiper(".has-accomodation-gallery-<?php echo esc_attr($unique); ?>", {
-            slidesPerView: <?php echo esc_attr($slidesPerView); ?>,
-            slidesPerGroup: <?php echo esc_attr($slidesToScroll); ?>,
-            effect: "<?php echo esc_attr($effect); ?>",
-            speed: <?php echo esc_attr($speed); ?>,
-            loop: <?php echo esc_attr($loop); ?>,
-            <?php echo esc_attr($autoplay); ?>,
-            spaceBetween: <?php echo esc_attr($spaceBetween); ?>,
-            centeredSlides: <?php echo esc_attr($centeredSlides); ?>,
-            <?php
-                if ($galleryNav == 'true') {
-                    echo 'navigation: { nextEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-next", prevEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-prev", },';
-                }
-            ?>
-            <?php if ($galleryDots == 'true') { ?>
-                pagination: {
-                    el: ".has-accomodation-gallery-<?php echo esc_attr($unique); ?> .swiper-pagination",
-                    clickable: true,
-                },
-            <?php } ?>
-            breakpoints: {
-                <?php
-                echo (!empty($slidesPerViewMobileSmall)) ?  '520: { slidesPerView: ' . esc_attr($slidesPerViewMobileSmall) . ' },' : '';
-                echo (!empty($slidesPerViewMobile)) ?  '640: { slidesPerView: ' . esc_attr($slidesPerViewMobile) . ' },' : '';
-                echo (!empty($slidesPerViewTablet)) ?  '768: { slidesPerView: ' . esc_attr($slidesPerViewTablet) . ' },' : '';
-                echo (!empty($slidesPerView)) ?  '1024: { slidesPerView: ' . esc_attr($slidesPerView) . ' },' : '';
-                echo (!empty($slidesPerView)) ?  '1280: { slidesPerView: ' . esc_attr($slidesPerView) . ' },' : '';
-                ?>
-                1600: {
-                    slidesPerView: <?php echo esc_attr($slidesPerView); ?>,
-                    spaceBetween: <?php echo esc_attr($spaceBetween); ?>
-                }
-            }
-        });
-    });
-</script>

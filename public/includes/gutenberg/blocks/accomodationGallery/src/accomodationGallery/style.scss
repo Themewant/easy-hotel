@@ -6,23 +6,35 @@
             border-radius: var(--eshb-acmglr-item-border-radius, 0px);
         }
 
-        .swiper-button-prev::after,
-        .swiper-button-next::after {
-            background-color: var(--eshb-acmglrnv-bg);
-            color: var(--eshb-acmglrnv-color);
+        .swiper-button-prev,
+        .swiper-button-next {
+            background-color: var(--eshb-acmglrnv-bg, var(--eshb-primary-color));
+            color: var(--eshb-acmglrnv-color, var(--eshb-white-color));
             padding: var(--eshb-acmglrnv-pd, 5px 0);
+            height: 50px;
+            width: 40px;
+
+            &::after {
+                display: none;
+            }
+
+            .swiper-navigation-icon {
+                display: block;
+                height: 17px;
+                width: 17px;
+            }
 
             &:hover {
-                background-color: var(--eshb-acmglrnv-bg-hover, var(--eshb-acmglrnv-bg));
-                color: var(--eshb-acmglrnv-color-hover, var(--eshb-acmglrnv-color));
+                background-color: var(--eshb-acmglrnv-bg-hover, var(--eshb-primary-color));
+                color: var(--eshb-acmglrnv-color-hover, var(--eshb-white-color));
             }
         }
 
-        .swiper-button-prev::after {
+        .swiper-button-prev {
             border-radius: var(--eshb-acmglrnv-prev-btn-border-radius, 0px 20px 20px 0px);
         }
 
-        .swiper-button-next::after {
+        .swiper-button-next {
             border-radius: var(--eshb-acmglrnv-next-btn-border-radius, 20px 0px 0px 20px);
         }
 

@@ -30,6 +30,10 @@ return array(
 		'viewScript' => 'file:./view.js',
 		'render' => 'file:./render.php',
 		'attributes' => array(
+			'is_related_post' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
 			'grid_style' => array(
 				'type' => 'string',
 				'default' => '1'

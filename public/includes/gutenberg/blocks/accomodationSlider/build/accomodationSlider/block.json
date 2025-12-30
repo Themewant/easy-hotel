@@ -25,6 +25,10 @@
   "viewScript": "file:./view.js",
   "render": "file:./render.php",
   "attributes": {
+    "is_related_post": {
+      "type": "boolean",
+      "default": false
+    },
     "grid_style": {
       "type": "string",
       "default": "1"

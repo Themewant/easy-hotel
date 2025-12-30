@@ -1,22 +1,25 @@
-.accomodation-gallery{
+.accomodation-gallery {
     .swiper-wrapper {
         height: auto;
     }
+
     img {
         height: 600px;
         width: 100%;
         object-fit: cover;
     }
+
     .swiper-button-prev,
-    .swiper-button-next{
+    .swiper-button-next {
         width: 40px;
         height: auto;
         line-height: 40px;
+
         &::after {
             display: block;
-            color:#ffffff;
-            padding:5px 0;
-            font-size:14px;
+            color: #ffffff;
+            padding: 5px 0;
+            font-size: 14px;
             width: 100%;
             height: 100%;
             line-height: 40px;
@@ -24,22 +27,29 @@
             text-align: center;
         }
     }
-    .swiper-button-prev{
+
+    .swiper-button-prev {
         .swiper-navigation-icon {
-            display: none;
+            //display: none;
         }
+
         left: 0px;
+
         &::after {
-            border-radius:0 20px 20px 0;
+            border-radius: 0 20px 20px 0;
         }
     }
-    .swiper-button-next{
+
+    .swiper-button-next {
         .swiper-navigation-icon {
-            display: none;
+            //display: none;
         }
+
         right: 0px;
+
         &::after {
-            border-radius:20px 0 0 20px;
-            }
+            content: "next";
+            border-radius: 20px 0 0 20px;
+        }
     }
 }

@@ -1112,6 +1112,9 @@ nav.eshb-pagination {
 
         .form-control {
             background-color: transparent;
+            display: block;
+            width: 100%;
+            max-width: -webkit-fill-available;
         }
 
         .form-control:focus {

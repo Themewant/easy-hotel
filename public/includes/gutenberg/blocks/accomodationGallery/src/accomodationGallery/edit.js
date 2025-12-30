@@ -28,11 +28,11 @@ export default function Edit({ attributes, setAttributes }) {
                         options={[
                             { label: __('1', 'easy-hotel'), value: 1 },
                             { label: __('2', 'easy-hotel'), value: 2 },
-                            { label: __('2.3', 'easy-hotel'), value: 2.3 },
+                            { label: __('2.1', 'easy-hotel'), value: 2.1 },
                             { label: __('3', 'easy-hotel'), value: 3 },
-                            { label: __('3.3', 'easy-hotel'), value: 3.3 },
+                            { label: __('3.1', 'easy-hotel'), value: 3.1 },
                             { label: __('4', 'easy-hotel'), value: 4 },
-                            { label: __('4.3', 'easy-hotel'), value: 4.3 }
+                            { label: __('4.1', 'easy-hotel'), value: 4.1 }
                         ]}
                         onChange={(value) => setAttributes({ slidesPerView: value })}
                         help={__('Choose which effect this booking form is for', 'easy-hotel')}

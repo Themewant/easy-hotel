@@ -4,13 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function create_block_accomodationgallery_block_init() {
-	// if swier not existing
-	if (!wp_style_is('swiper', 'enqueued')) {
-		wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), ESHB_VERSION, 'all' );
-	}
-	if (!wp_script_is('eshb-swiper', 'enqueued')) {
-		wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.0.3',false );
-	}
+
 
 	// Register the main plugin style
 	wp_register_style( 

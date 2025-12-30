@@ -85,57 +85,7 @@ export default function Edit({ attributes, setAttributes }) {
                 </PanelBody>
             </InspectorControls>
             <InspectorControls group="styles">
-                <PanelBody title={__('Container', 'easy-hotel')} initialOpen={false}>
-                    <TabPanel
-                        className="eshb-tab-panel"
-                        activeClass="is-active"
-                        tabs={[
-                            { name: 'normal', title: __('Normal', 'easy-hotel'), className: 'eshb-tab-normal' },
-                            { name: 'hover', title: __('Hover', 'easy-hotel'), className: 'eshb-tab-hover' },
-                        ]}
-                    >
-                        {(tab) => {
-                            const isHover = tab.name === 'hover';
-                            return (
-                                <div style={{ marginTop: '15px' }}>
-                                    <ColorPopover
-                                        label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background Color', 'easy-hotel')}
-                                        color={isHover ? customBackgroundColorHover : customBackgroundColor}
-                                        defaultColor={isHover ? '' : ''}
-                                        onChange={(value) => {
-                                            const hex = (value && typeof value === 'object') ? value.hex : value;
-                                            setAttributes({ [isHover ? 'customBackgroundColorHover' : 'customBackgroundColor']: hex });
-                                        }}
-                                    />
-                                    <BoxShadowControls
-                                        attributes={attributes}
-                                        setAttributes={setAttributes}
-                                        state={tab.name}
-                                    />
-                                </div>
-                            );
-                        }}
-                    </TabPanel>
 
-                    <Divider />
-                    <BoxControl
-                        label={__('Padding', 'easy-hotel')}
-                        values={padding}
-                        onChange={(nextValues) => setAttributes({ padding: nextValues })}
-                    />
-                    <Divider />
-                    <BoxControl
-                        label={__('Margin', 'easy-hotel')}
-                        values={margin}
-                        onChange={(nextValues) => setAttributes({ margin: nextValues })}
-                    />
-                    <Divider />
-                    <BoxControl
-                        label={__('Border Radious', 'easy-hotel')}
-                        values={borderRadius}
-                        onChange={(nextValues) => setAttributes({ borderRadius: nextValues })}
-                    />
-                </PanelBody>
                 <PanelBody title={__('Form Title', 'easy-hotel')} initialOpen={false}>
                     <TabPanel
                         className="eshb-tab-panel"

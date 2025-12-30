@@ -4,13 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function create_block_accomodationSlider_block_init() {
-	// Register the main plugin style
-	wp_register_style( 
-		'eshb-style', 
-		ESHB_PL_URL . 'public/assets/css/public.css', 
-		array(), 
-		ESHB_VERSION 
-	);
 
 	// Register block-specific styles manually to be sure
 	wp_register_style(

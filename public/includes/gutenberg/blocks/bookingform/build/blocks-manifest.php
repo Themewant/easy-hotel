@@ -16,23 +16,27 @@ return array(
 		'supports' => array(
 			'html' => false,
 			'align' => true,
-			'layout' => true
-		),
-		'selectors' => array(
-			'root' => '.eshb-bkf',
+			'layout' => true,
 			'color' => array(
-				'text' => '.eshb-bkf .field-label',
-				'background' => '.eshb-bkf',
-				'link' => '.eshb-bkf a'
-			),
-			'typography' => array(
-				'root' => '.eshb-bkf .field-label',
-				'text' => '.eshb-bkf .field-label'
+				'background' => true,
+				'text' => true,
+				'gradients' => true,
+				'link' => false
 			),
 			'spacing' => array(
-				'root' => '.eshb-bkf',
-				'padding' => '.eshb-bkf',
-				'margin' => '.eshb-bkf'
+				'margin' => true,
+				'padding' => true
+			)
+		),
+		'selectors' => array(
+			'root' => '.eshb-booking-form',
+			'color' => array(
+				'text' => '.eshb-booking-form .field-label',
+				'background' => '.eshb-booking-form'
+			),
+			'spacing' => array(
+				'padding' => '.eshb-booking-form',
+				'margin' => '.eshb-booking-form'
 			)
 		),
 		'textdomain' => 'easy-hotel',
@@ -40,6 +44,17 @@ return array(
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
+		'styles' => array(
+			array(
+				'name' => 'one',
+				'label' => 'Style One',
+				'isDefault' => true
+			),
+			array(
+				'name' => 'two',
+				'label' => 'Style Two'
+			)
+		),
 		'attributes' => array(
 			'accomodationId' => array(
 				'type' => 'string',

@@ -49,19 +49,14 @@
 .accomodation-gallery .swiper-button-prev {
   left: 0px;
 }
-.accomodation-gallery .swiper-button-prev .swiper-navigation-icon {
-  display: none;
-}
 .accomodation-gallery .swiper-button-prev::after {
   border-radius: 0 20px 20px 0;
 }
 .accomodation-gallery .swiper-button-next {
   right: 0px;
 }
-.accomodation-gallery .swiper-button-next .swiper-navigation-icon {
-  display: none;
-}
 .accomodation-gallery .swiper-button-next::after {
+  content: "next";
   border-radius: 20px 0 0 20px;
 }
 
@@ -170,8 +165,8 @@
 
 .rt_room_slider-btn-wrapper .nav-btn {
   border-radius: 0 20px 20px 0;
-  background: var(--color-primary);
-  color: var(--color-white);
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
   width: 40px;
   height: 40px;
   z-index: 2;
@@ -1175,6 +1170,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .form-control {
   background-color: transparent;
+  display: block;
+  width: 100%;
+  max-width: -webkit-fill-available;
 }
 .eshb-booking .eshb-booking-form .form-control:focus {
   background-color: transparent;

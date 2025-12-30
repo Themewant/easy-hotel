@@ -32,25 +32,26 @@
     },
     "textdomain": "easy-hotel",
     "editorScript": "file:./index.js",
+    "viewScript": "file:./view.js",
     "editorStyle": "file:./index.css",
     "style": "file:./style-index.css",
     "render": "file:./render.php",
     "attributes": {
         "slidesPerView": {
-            "type": "number",
-            "default": 3
+            "type": "string",
+            "default": "3"
         },
         "slidesPerViewTablet": {
-            "type": "number",
-            "default": 2
+            "type": "string",
+            "default": "2"
         },
         "slidesPerViewMobile": {
-            "type": "number",
-            "default": 1
+            "type": "string",
+            "default": "1"
         },
         "slidesPerViewMobileSmall": {
-            "type": "number",
-            "default": 1
+            "type": "string",
+            "default": "1"
         },
         "thumbnail_size": {
             "type": "string",

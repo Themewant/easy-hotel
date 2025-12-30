@@ -26,7 +26,7 @@ import metadata from './block.json';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockType( metadata.name, {
+registerBlockType(metadata.name, {
 	/**
 	 * @see ./edit.js
 	 */
@@ -36,4 +36,25 @@ registerBlockType( metadata.name, {
 	 * @see ./save.js
 	 */
 	save,
-} );
+});
+
+// Import shared slider
+import './slider-init.js';
+import domReady from '@wordpress/dom-ready';
+
+domReady(() => {
+	const observer = new MutationObserver(() => {
+		jQuery(document).trigger('eshb-init-sliders');
+	});
+
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true,
+	});
+
+	jQuery(document).on('eshb-init-sliders', () => {
+		if (typeof window.initESHBSlider === 'function') {
+			window.initESHBSlider(document);
+		}
+	});
+});

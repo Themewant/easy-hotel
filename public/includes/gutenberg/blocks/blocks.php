@@ -17,6 +17,15 @@ add_filter( 'block_categories_all', 'eshb_block_categories', 10, 2 );
 
 add_action( 'init', 'eshb_enqueue_block_styles' );
 function eshb_enqueue_block_styles() {
+
+    // if swier not existing
+	if (!wp_style_is('swiper', 'enqueued')) {
+		wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), ESHB_VERSION, 'all' );
+	}
+	if (!wp_script_is('eshb-swiper', 'enqueued')) {
+		wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.0.3',false );
+	}
+
     // register plugin style if not exist
 	if ( ! wp_style_is( 'eshb-style', 'registered' ) ) {
 		wp_register_style( 
@@ -26,6 +35,8 @@ function eshb_enqueue_block_styles() {
 			ESHB_VERSION 
 		);
 	}
+
+    
 }
 
 // include blocks

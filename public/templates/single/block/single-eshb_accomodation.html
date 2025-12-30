@@ -1,15 +1,32 @@
-<!-- wp:template-part {"slug":"header"} /-->
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
 
-<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group eshb-details-page">
+<!-- wp:easy-hotel/accomodationgallery {"slidesPerView":"2.1","spaceBetween":"0","centeredSlides":true,"loop":true} /-->
 
-    <!-- wp:post-title {"level":1} /-->
+<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px","justifyContent":"center"}} -->
+<div class="wp-block-group"><!-- wp:columns -->
+    <div class="wp-block-columns"><!-- wp:column {"width":"60.66%"} -->
+        <div class="wp-block-column" style="flex-basis:60.66%">
+            <!-- wp:easy-hotel/accomodationinfo {"spaceBetween":"50px","textColor":"#0e1546","textColorHover":"#a52525","iconSize":"","iconColor":"#0e1546","iconColorHover":"#3d17e4","iconSpace":""} /-->
 
-    <!-- wp:post-featured-image {"sizeSlug":"large"} /-->
+            <!-- wp:easy-hotel/checkinouttimes /-->
 
-    <!-- wp:post-content /-->
+            <!-- wp:post-content /-->
 
+            <!-- wp:easy-hotel/availabilitycalendars /-->
+        </div>
+        <!-- /wp:column -->
+
+        <!-- wp:column {"width":"39.33%"} -->
+        <div class="wp-block-column" style="flex-basis:39.33%">
+            <!-- wp:easy-hotel/bookingform {"accomodationId":"4166"} /--></div>
+        <!-- /wp:column -->
+    </div>
+    <!-- /wp:columns -->
 </div>
 <!-- /wp:group -->
 
-<!-- wp:template-part {"slug":"footer"} /-->
+<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:easy-hotel/accomodation-slider /--></div>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->

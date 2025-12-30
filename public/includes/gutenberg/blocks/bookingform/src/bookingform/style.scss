@@ -1,6 +1,6 @@
 .eshb-booking-form-block-wrapper .eshb-booking {
     .eshb-booking-form {
-        background-color: var(--eshb-bkf-bg);
+        background-color: var(--eshb-bkf-bg, var(--eshb-dark-color));
         padding-top: var(--eshb-bkf-pt, 35px);
         padding-right: var(--eshb-bkf-pr, 40px);
         padding-bottom: var(--eshb-bkf-pb, 35px);
@@ -12,7 +12,7 @@
         border-radius: var(--eshb-bkf-bt) var(--eshb-bkf-br) var(--eshb-bkf-bl) var(--eshb-bkf-br);
 
         &:hover {
-            background-color: var(--eshb-bkf-bg-hover, var(--eshb-bkf-bg));
+            background-color: var(--eshb-bkf-bg-hover, var(--eshb-dark-color));
             box-shadow: var(--eshb-bkf-box-shadow-hover, var(--eshb-bkf-box-shadow));
         }
 
@@ -34,7 +34,7 @@
         }
 
         .service-quantity-selector.show-dropdown {
-            background-color: var(--eshb-bkf-bg, #fff) !important;
+            background-color: var(--eshb-bkf-bg, var(--eshb-dark-color)) !important;
         }
 
         .eshb-form-group {

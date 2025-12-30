@@ -8,7 +8,17 @@
 
 $attributes = $attributes ?? [];
 
-$accomodation_id = $attributes['accomodationId'] ?? '';
+$style = 'style-one';
+
+if ( ! empty( $block->parsed_block['attrs']['className'] ) ) {
+    $class_name = $block->parsed_block['attrs']['className'];
+
+    if ( str_contains( $class_name, 'is-style-two' ) ) {
+        $style = 'style-two';
+    }
+}
+
+$accomodation_id = $attributes['accomodationId'] ?? get_the_ID();
 
 // Helper function to ensure units
 $ensure_unit = function( $value ) {
@@ -284,6 +294,10 @@ $style_attr = '';
 if ( $vars ) {
     $style_attr = implode( ';', $vars );
 }
+
+$ESHB_View = new ESHB_View();
 ?>
-    <div class="eshb-booking-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_booking_form accomodation_id="' . $accomodation_id . '"]' ); ?></div>
-<?php
+
+<div class="eshb-booking eshb-booking-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>">
+    <?php $ESHB_View->eshb_get_booking_form_html( $accomodation_id, $style, get_block_wrapper_attributes(['class' => 'eshb-booking-form']) ); ?>
+</div>
