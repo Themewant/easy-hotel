@@ -23,8 +23,8 @@ const ColorPopover = ({ label, color, onChange, defaultColor = '' }) => {
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
-                        width: '16px',
-                        height: '16px',
+                        width: '20px',
+                        height: '20px',
                         borderRadius: '4px',
                         backgroundColor: color || 'transparent',
                         border: '1px solid #ccc'

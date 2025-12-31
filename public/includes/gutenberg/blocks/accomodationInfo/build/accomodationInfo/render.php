@@ -31,36 +31,48 @@ $vars = [];
 
 // Styles
 
-if ( ! empty( $attributes['spaceBetween'] ) ) {
-    $vars[] = '--eshb-acmInfo-space-between:' . esc_attr( $ensure_unit($attributes['spaceBetween']) );
-}
-
-if ( ! empty( $attributes['textColor'] ) ) {
-    $vars[] = '--eshb-acmInfo-text-color:' . esc_attr( $attributes['textColor'] );
-}
 if ( ! empty( $attributes['textColorHover'] ) ) {
     $vars[] = '--eshb-acmInfo-text-color-hover:' . esc_attr( $attributes['textColorHover'] );
 }
 
-if ( ! empty( $attributes['iconColor'] ) ) {
-    $vars[] = '--eshb-acmInfo-icon-color:' . esc_attr( $attributes['iconColor'] );
-}
 if ( ! empty( $attributes['iconColorHover'] ) ) {
     $vars[] = '--eshb-acmInfo-icon-color-hover:' . esc_attr( $attributes['iconColorHover'] );
 }
 
+
+$list_styles = [];
+if ( ! empty( $attributes['spaceBetween'] ) ) {
+    $list_styles['column-gap'] = esc_attr( $attributes['spaceBetween'] );
+}
+$list_styles_inline = $get_inline_styles($list_styles);
+
+$title_styles = [];
+if ( ! empty( $attributes['textColor'] ) ) {
+    $title_styles['color'] = esc_attr( $attributes['textColor'] );
+}
+
 if ( ! empty( $attributes['textSize'] ) ) {
-    $vars[] = '--eshb-acmInfo-text-size:' . esc_attr( $ensure_unit($attributes['textSize']) );
+    $title_styles['font-size'] = esc_attr( $ensure_unit($attributes['textSize']) );
+}
+
+$title_styles_inline = $get_inline_styles($title_styles);
+
+$icon_styles = [];
+$img_icon_styles = [];
+if ( ! empty( $attributes['iconSpace'] ) ) {
+    $icon_styles['margin-right'] = esc_attr( $attributes['iconSpace'] );
+}
+if ( ! empty( $attributes['iconColor'] ) ) {
+    $icon_styles['color'] = esc_attr( $attributes['iconColor'] );
 }
 
 if ( ! empty( $attributes['iconSize'] ) ) {
-    $vars[] = '--eshb-acmInfo-icon-size:' . esc_attr( $ensure_unit($attributes['iconSize']) );
+    $icon_styles['font-size'] = esc_attr( $ensure_unit($attributes['iconSize']) );
+    $img_icon_styles['height'] = esc_attr( $ensure_unit($attributes['iconSize']) );
+    $img_icon_styles['width'] = esc_attr( $ensure_unit($attributes['iconSize']) );
 }
 
-if ( ! empty( $attributes['iconSpace'] ) ) {
-    $vars[] = '--eshb-acmInfo-icon-space:' . esc_attr( $ensure_unit($attributes['iconSpace']) );
-}
-
+$icon_styles_inline = $get_inline_styles($icon_styles);
 
 $style_attr = '';
 if ( ! empty( $vars ) ) {
@@ -73,24 +85,24 @@ $accomodation_info_group = !empty($eshb_accomodation_metaboxes['accomodation_inf
 
 ?>
 <div class="eshb-accomodation-info-block-wrapper" style="<?php echo esc_attr($style_attr); ?>">
-   <div class="basic-information-list">
+   <div class="basic-information-list" style="<?php echo esc_attr($list_styles_inline); ?>">
         <?php 
             if ( ! empty( $accomodation_info_group ) ) {
                 foreach ( $accomodation_info_group as $group ) { ?>
                     <p class="info">
                         <?php 
                             if(!empty($group['info_icon'])){ ?>
-                                <i class="info-icon <?php echo esc_html($group['info_icon']); ?>"></i>
+                                <i class="info-icon <?php echo esc_html($group['info_icon']); ?>" style="<?php echo esc_attr($icon_styles_inline); ?>"></i>
                             <?php }
 
                             if(!empty($group['info_icon_img']['url'])){ 
                                 $icon_img_url = $group['info_icon_img']['url'];
                                 ?>
-                                <img src="<?php echo esc_url($icon_img_url); ?>" alt="info Icon" class="info-icon">
+                                <img src="<?php echo esc_url($icon_img_url); ?>" alt="info Icon" class="info-icon" style="<?php echo esc_attr($img_icon_styles_inline); ?>">
                             <?php }
                         ?>
                         
-                        <span class="info-title"><?php echo esc_html($group['info_title']); ?></span>
+                        <span class="info-title" style="<?php echo esc_attr($title_styles_inline); ?>"><?php echo esc_html($group['info_title']); ?></span>
                     </p>
                 <?php }
             }

@@ -1,34 +1,19 @@
 .eshb-accomodation-info-block-wrapper .basic-information-list {
   display: flex;
   align-items: center;
-  -moz-column-gap: var(--eshb-acmInfo-space-between, 1.5rem);
-       column-gap: var(--eshb-acmInfo-space-between, 1.5rem);
+  column-gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 26px;
 }
 .eshb-accomodation-info-block-wrapper .basic-information-list p {
   margin: 0;
 }
-.eshb-accomodation-info-block-wrapper .basic-information-list .info {
-  margin-bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--eshb-acmInfo-icon-space, 4px);
-}
-.eshb-accomodation-info-block-wrapper .basic-information-list .info .info-title {
-  font-size: var(--eshb-acmInfo-text-size, 18px);
-  color: var(--eshb-acmInfo-text-color);
-}
 .eshb-accomodation-info-block-wrapper .basic-information-list .info .info-title:hover {
-  color: var(--eshb-acmInfo-text-color-hover);
+  color: var(--eshb-acmInfo-text-color-hover) !important;
 }
 .eshb-accomodation-info-block-wrapper .basic-information-list .info .info-icon {
-  color: var(--eshb-acmInfo-icon-color, var(--eshb-primary-color));
-  font-size: var(--eshb-acmInfo-icon-size, 18px);
+  color: var(--eshb-primary-color);
 }
 .eshb-accomodation-info-block-wrapper .basic-information-list .info .info-icon:hover {
-  color: var(--eshb-acmInfo-icon-color-hover);
-}
-.eshb-accomodation-info-block-wrapper .basic-information-list .info img.info-icon {
-  height: var(--eshb-acmInfo-icon-size, 18px);
+  color: var(--eshb-acmInfo-icon-color-hover) !important;
 }/*# sourceMappingURL=style.css.map */

@@ -23,9 +23,29 @@
                     },
 
                     breakpoints: {
-                        575: { slidesPerView: $wrap.data('slides-per-view-mobile-small') },
-                        767: { slidesPerView: $wrap.data('slides-per-view-mobile') },
-                        991: { slidesPerView: $wrap.data('slides-per-view-tablet') },
+                        0: {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                        },
+                        360: {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                        },
+                        375: {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                        },
+                        480: {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                        },
+                        520: {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                        },
+                        575: { slidesPerView: $wrap.data('slides-per-view-mobile-small'), spaceBetween: 0 },
+                        767: { slidesPerView: $wrap.data('slides-per-view-mobile'), spaceBetween: 0 },
+                        991: { slidesPerView: $wrap.data('slides-per-view-tablet'), spaceBetween: 10 },
                         1199: { slidesPerView: $wrap.data('slides-per-view') },
                     },
                 });

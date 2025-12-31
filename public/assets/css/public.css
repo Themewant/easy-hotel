@@ -25,8 +25,7 @@
 .accomodation-gallery img {
   height: 600px;
   width: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 .accomodation-gallery .swiper-button-prev,
 .accomodation-gallery .swiper-button-next {
@@ -131,8 +130,7 @@
 .room-grid.style2 {
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-  -moz-column-gap: 20px;
-       column-gap: 20px;
+  column-gap: 20px;
 }
 .room-grid.style2 .grid-item .item-inner .hover-bg-two {
   background: linear-gradient(180deg, rgba(113, 155, 14, 0) 0%, rgb(23, 23, 23) 100%);
@@ -183,15 +181,13 @@
 }
 
 .room_slider-inner-wrapper {
-  height: -moz-max-content;
   height: max-content;
 }
 
 .rt_room_slider.eshb-item-grid .all-features {
   margin-top: 20px;
   display: flex;
-  -moz-column-gap: 5px;
-       column-gap: 5px;
+  column-gap: 5px;
   flex-wrap: wrap;
 }
 .rt_room_slider.eshb-item-grid .all-features .feature {
@@ -237,8 +233,7 @@
 }
 .rt_room_slider.eshb-item-grid.style4 .grid-item .item-inner .details-info {
   background: rgba(255, 255, 255, 0.15);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   padding-top: 1rem;
   padding-bottom: 1rem;
   margin-bottom: 0;
@@ -412,6 +407,11 @@
   background-color: #f6f6f6;
 }
 
+.single-eshb_accomodation svg {
+  width: 20px;
+  height: auto;
+}
+
 .eshb-details-page {
   width: 100%;
   clear: both;
@@ -455,8 +455,7 @@
   }
 }
 .eshb-details-page .accomodation-video video {
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 @media only screen and (max-width: 767px) {
   .eshb-details-page .accomodation-video video {
@@ -469,8 +468,7 @@
 .eshb-details-page .basic-information-list {
   display: flex;
   align-items: center;
-  -moz-column-gap: 1.5rem;
-       column-gap: 1.5rem;
+  column-gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 26px;
 }
@@ -708,10 +706,12 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 @keyframes fadeInUp {
   from {
     opacity: 0;
+    -webkit-transform: translate3d(0, 30%, 0);
     transform: translate3d(0, 30%, 0);
   }
   to {
     opacity: 1;
+    -webkit-transform: none;
     transform: none;
   }
 }
@@ -736,9 +736,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center;
   -webkit-user-select: none;
   /* Safari */
+  -ms-user-select: none;
   /* IE 10 and IE 11 */
-  -moz-user-select: none;
-       user-select: none;
+  user-select: none;
   /* Standard syntax */
   border-radius: 30px;
   -moz-border-radius: 30px;
@@ -886,9 +886,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   line-height: 1.5;
   background-clip: padding-box;
   border: none;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   background: none;
   color: var(--eshb-white-color);
@@ -1016,7 +1014,6 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   color: var(--eshb-white-color);
   display: flex;
   align-items: end;
-  width: -moz-max-content;
   width: max-content;
   margin-inline: auto;
 }
@@ -1036,7 +1033,6 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   min-height: 37px;
   line-height: 37px;
   font-family: var(--eshb-body-font);
-  width: -moz-max-content;
   width: max-content;
 }
 .eshb-item-grid .grid-item .item-inner .hover-bg-one {
@@ -1106,19 +1102,20 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   padding: 35px 45px 35px;
   border: 1px solid var(--eshb-border-color);
   transition: opacity 0.3s;
-  width: -moz-fit-content;
   width: fit-content;
 }
 @media (max-width: 767px) {
   .eshb-booking .eshb-booking-form {
     padding: 30px 15px;
     width: 100%;
+    max-width: -webkit-fill-available;
   }
 }
 .eshb-booking .eshb-booking-form h3 {
   font-size: 26px;
 }
 .eshb-booking .eshb-booking-form h3.field-label {
+  margin-top: 0;
   margin-bottom: 20px;
 }
 .eshb-booking .eshb-booking-form .label-checkbox,
@@ -1184,8 +1181,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   display: grid;
   margin: 10px 0;
   grid-template-columns: repeat(2, 1fr);
-  -moz-column-gap: 10px;
-       column-gap: 10px;
+  column-gap: 10px;
 }
 @media (max-width: 767px) {
   .eshb-booking .eshb-booking-form .eshb-form-groups {
@@ -1285,6 +1281,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group h6.field-label {
+  margin-top: 0;
   margin-bottom: 5px;
   font-size: 14px;
 }
@@ -1800,7 +1797,6 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 
 @media (min-width: 564px) {
   .brxe-eshb-availability-calendar .daterangepicker {
-    width: -moz-max-content;
     width: max-content;
   }
 }

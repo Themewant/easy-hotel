@@ -207,7 +207,7 @@ class ESHB_View extends ESHB_MAIN{
         $tomorrow = $date->format('Y-m-d');
         
         $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 1; 
-        $children_capacity = $accomodation_metaboxes['children_capacity']; 
+        $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? $accomodation_metaboxes['children_capacity'] : 0; 
         $room_visibility = in_array('rooms', $eshb_settings['booking-form-fields']) ? true : false;
         
         $is_single_day_plugin_active = get_option('eshb_single_day_activated');
@@ -296,8 +296,8 @@ class ESHB_View extends ESHB_MAIN{
         $string_room = isset($eshb_settings['string_room']) && !empty($eshb_settings['string_room']) ? $eshb_settings['string_room'] : 'room';
         $string_guest = isset($eshb_settings['string_guest']) && !empty($eshb_settings['string_guest']) ? $eshb_settings['string_guest'] : 'guest';
         $string_time_slots = isset($eshb_settings['string_time_slots']) && !empty($eshb_settings['string_time_slots']) ? $eshb_settings['string_time_slots'] : 'Available Time Slots';
-        $included_service_ids = $accomodation_metaboxes['accomodation_services'];
-        $total_rooms = $accomodation_metaboxes['total_rooms']; 
+        $included_service_ids = !empty($accomodation_metaboxes['accomodation_services']) ? $accomodation_metaboxes['accomodation_services'] : [];
+        $total_rooms = !empty($accomodation_metaboxes['total_rooms']) ? $accomodation_metaboxes['total_rooms'] : 0; 
         $eshb_bookings = new ESHB_Booking();
         $available_rooms = $eshb_bookings->get_available_room_count_by_date_range($accomodation_id, $start->format('Y-m-d'), $end->format('Y-m-d'));
         $available_rooms = $available_rooms < 0 ? 0 : $available_rooms;

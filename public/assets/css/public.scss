@@ -251,6 +251,13 @@
     }
 }
 
+.single-eshb_accomodation {
+    svg {
+        width: 20px;
+        height: auto;
+    }
+}
+
 .eshb-details-page {
     width: 100%;
     clear: both;
@@ -1054,12 +1061,14 @@ nav.eshb-pagination {
         @media (max-width: 767px) {
             padding: 30px 15px;
             width: 100%;
+            max-width: -webkit-fill-available;
         }
 
         h3 {
             font-size: 26px;
 
             &.field-label {
+                margin-top: 0;
                 margin-bottom: 20px;
             }
         }
@@ -1256,6 +1265,7 @@ nav.eshb-pagination {
             }
 
             h6.field-label {
+                margin-top: 0;
                 margin-bottom: 5px;
                 font-size: 14px;
             }

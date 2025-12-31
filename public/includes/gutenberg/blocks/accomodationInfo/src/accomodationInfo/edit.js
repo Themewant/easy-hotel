@@ -31,7 +31,7 @@ export default function Edit({ attributes, setAttributes }) {
                                     <ColorPopover
                                         label={isHover ? __('Text Color (Hover)', 'easy-hotel') : __('Text Color', 'easy-hotel')}
                                         color={isHover ? attributes.textColorHover : attributes.textColor}
-                                        defaultColor={isHover ? '' : 'var(--eshb-primary-color)'}
+                                        defaultColor={isHover ? '' : ''}
                                         onChange={(value) => {
                                             const hex = (value && typeof value === 'object') ? value.hex : value;
                                             setAttributes({ [isHover ? 'textColorHover' : 'textColor']: hex });
@@ -40,7 +40,7 @@ export default function Edit({ attributes, setAttributes }) {
                                     <ColorPopover
                                         label={isHover ? __('Icon Color (Hover)', 'easy-hotel') : __('Icon Color', 'easy-hotel')}
                                         color={isHover ? attributes.iconColorHover : attributes.iconColor}
-                                        defaultColor={isHover ? '' : 'var(--eshb-white-color)'}
+                                        defaultColor={isHover ? '' : ''}
                                         onChange={(value) => {
                                             const hex = (value && typeof value === 'object') ? value.hex : value;
                                             setAttributes({ [isHover ? 'iconColorHover' : 'iconColor']: hex });

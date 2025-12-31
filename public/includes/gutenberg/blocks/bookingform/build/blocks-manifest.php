@@ -13,32 +13,6 @@ return array(
 		'example' => array(
 			
 		),
-		'supports' => array(
-			'html' => false,
-			'align' => true,
-			'layout' => true,
-			'color' => array(
-				'background' => true,
-				'text' => true,
-				'gradients' => true,
-				'link' => false
-			),
-			'spacing' => array(
-				'margin' => true,
-				'padding' => true
-			)
-		),
-		'selectors' => array(
-			'root' => '.eshb-booking-form',
-			'color' => array(
-				'text' => '.eshb-booking-form .field-label',
-				'background' => '.eshb-booking-form'
-			),
-			'spacing' => array(
-				'padding' => '.eshb-booking-form',
-				'margin' => '.eshb-booking-form'
-			)
-		),
 		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
@@ -163,7 +137,7 @@ return array(
 			),
 			'fieldLabelColor' => array(
 				'type' => 'string',
-				'default' => 'var(--eshb-primary-color)'
+				'default' => 'var(--eshb-white-color)'
 			),
 			'fieldLabelColorHover' => array(
 				'type' => 'string',
@@ -341,7 +315,7 @@ return array(
 			),
 			'groupTitleColor' => array(
 				'type' => 'string',
-				'default' => 'var(--eshb-primary-color)'
+				'default' => 'var(--eshb-white-color)'
 			),
 			'groupTitleColorHover' => array(
 				'type' => 'string',
@@ -359,7 +333,7 @@ return array(
 			),
 			'formTitleColor' => array(
 				'type' => 'string',
-				'default' => 'var(--eshb-primary-color)'
+				'default' => 'var(--eshb-white-color)'
 			),
 			'formTitleColorHover' => array(
 				'type' => 'string',

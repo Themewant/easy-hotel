@@ -12,9 +12,9 @@ import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
 import metadata from './block.json';
 import './editor.scss';
-import BoxShadowControls from '../../../custom-components/BoxShadowControls';
 import TypographyControls from '../../../custom-components/TypographyControls';
 import ColorPopover from '../../../custom-components/ColorPopover';
+import BackgroundControl from '../../../custom-components/BackgroundControl';
 
 export default function Edit({ attributes, setAttributes }) {
     const {
@@ -85,7 +85,46 @@ export default function Edit({ attributes, setAttributes }) {
                 </PanelBody>
             </InspectorControls>
             <InspectorControls group="styles">
-
+                <PanelBody title={__('Container', 'easy-hotel')} initialOpen={false}>
+                    <TabPanel
+                        className="eshb-tab-panel"
+                        activeClass="is-active"
+                        tabs={[
+                            { name: 'normal', title: __('Normal', 'easy-hotel'), className: 'eshb-tab-normal' },
+                            { name: 'hover', title: __('Hover', 'easy-hotel'), className: 'eshb-tab-hover' },
+                        ]}
+                    >
+                        {(tab) => {
+                            const isHover = tab.name === 'hover';
+                            return (
+                                <div style={{ marginTop: '15px' }}>
+                                    <BackgroundControl
+                                        label={isHover ? __('Background (Hover)', 'easy-hotel') : __('Background', 'easy-hotel')}
+                                        colorValue={isHover ? attributes.customBackgroundColorHover : attributes.customBackgroundColor}
+                                        gradientValue={isHover ? attributes.customBackgroundGradientHover : attributes.customBackgroundGradient}
+                                        onColorChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'customBackgroundColorHover' : 'customBackgroundColor']: hex });
+                                        }}
+                                        onGradientChange={(value) => setAttributes({ [isHover ? 'customBackgroundGradientHover' : 'customBackgroundGradient']: value })}
+                                    />
+                                </div>
+                            );
+                        }}
+                    </TabPanel>
+                    <Divider />
+                    <BoxControl
+                        label={__('Padding', 'easy-hotel')}
+                        values={attributes.padding}
+                        onChange={(value) => setAttributes({ padding: value })}
+                    />
+                    <Divider />
+                    <BoxControl
+                        label={__('Border Radious', 'easy-hotel')}
+                        values={attributes.borderRadius}
+                        onChange={(nextValues) => setAttributes({ borderRadius: nextValues })}
+                    />
+                </PanelBody>
                 <PanelBody title={__('Form Title', 'easy-hotel')} initialOpen={false}>
                     <TabPanel
                         className="eshb-tab-panel"
@@ -144,19 +183,6 @@ export default function Edit({ attributes, setAttributes }) {
                         setAttributes={setAttributes}
                         attributeKey="groupTitleTypography"
                         nextDefaultSize={true}
-                    />
-
-                    <Divider />
-                    <BoxControl
-                        label={__('Padding', 'easy-hotel')}
-                        values={fieldGroupPadding}
-                        onChange={(nextValues) => setAttributes({ fieldGroupPadding: nextValues })}
-                    />
-                    <Divider />
-                    <BoxControl
-                        label={__('Margin', 'easy-hotel')}
-                        values={fieldGroupMargin}
-                        onChange={(nextValues) => setAttributes({ fieldGroupMargin: nextValues })}
                     />
                 </PanelBody>
 

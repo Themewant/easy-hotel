@@ -18,7 +18,8 @@ if ( ! empty( $block->parsed_block['attrs']['className'] ) ) {
     }
 }
 
-$accomodation_id = $attributes['accomodationId'] ?? get_the_ID();
+// $accomodation_id = !empty($attributes['accomodationId']) ? $attributes['accomodationId'] : get_the_ID();
+$accomodation_id = get_the_ID();
 
 // Helper function to ensure units
 $ensure_unit = function( $value ) {
@@ -29,16 +30,23 @@ $ensure_unit = function( $value ) {
 
 // Collect CSS variables
 $vars = [];
-
+$default_background_color = '#fff';
+$default_background_color_hover = '#fff';
+if($style == 'style-two') {
+    $default_background_color = 'var(--eshb-dark-color)';
+    $default_background_color_hover = 'var(--eshb-dark-color)';
+}
 
 if(!empty($attributes['customBackgroundColor'])) {
     $vars[] = '--eshb-bkf-bg:' . esc_attr($attributes['customBackgroundColor']);
 }else{
-    $vars[] = '--eshb-bkf-bg:' . 'initial';
+    $vars[] = '--eshb-bkf-bg:' . $default_background_color;
 }
 
 if(!empty($attributes['customBackgroundColorHover'])) {
     $vars[] = '--eshb-bkf-bg-hover:' . esc_attr($attributes['customBackgroundColorHover']);
+}else{
+    $vars[] = '--eshb-bkf-bg-hover:' . $default_background_color_hover;
 }
 
 $padding = $attributes['padding'] ?? [];
@@ -299,5 +307,5 @@ $ESHB_View = new ESHB_View();
 ?>
 
 <div class="eshb-booking eshb-booking-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>">
-    <?php $ESHB_View->eshb_get_booking_form_html( $accomodation_id, $style, get_block_wrapper_attributes(['class' => 'eshb-booking-form']) ); ?>
+    <?php $ESHB_View->eshb_get_booking_form_html( $accomodation_id, $style ); ?>
 </div>

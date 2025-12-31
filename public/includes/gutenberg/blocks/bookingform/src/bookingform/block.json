@@ -8,32 +8,6 @@
     "icon": "calendar-alt",
     "description": "A booking form for easy hotel rooms.",
     "example": {},
-    "supports": {
-        "html": false,
-        "align": true,
-        "layout": true,
-        "color": {
-            "background": true,
-            "text": true,
-            "gradients": true,
-            "link": false
-        },
-        "spacing": {
-            "margin": true,
-            "padding": true
-        }
-    },
-    "selectors": {
-        "root": ".eshb-booking-form",
-        "color": {
-            "text": ".eshb-booking-form .field-label",
-            "background": ".eshb-booking-form"
-        },
-        "spacing": {
-            "padding": ".eshb-booking-form",
-            "margin": ".eshb-booking-form"
-        }
-    },
     "textdomain": "easy-hotel",
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",
@@ -158,7 +132,7 @@
         },
         "fieldLabelColor": {
             "type": "string",
-            "default": "var(--eshb-primary-color)"
+            "default": "var(--eshb-white-color)"
         },
         "fieldLabelColorHover": {
             "type": "string",
@@ -336,7 +310,7 @@
         },
         "groupTitleColor": {
             "type": "string",
-            "default": "var(--eshb-primary-color)"
+            "default": "var(--eshb-white-color)"
         },
         "groupTitleColorHover": {
             "type": "string",
@@ -354,7 +328,7 @@
         },
         "formTitleColor": {
             "type": "string",
-            "default": "var(--eshb-primary-color)"
+            "default": "var(--eshb-white-color)"
         },
         "formTitleColorHover": {
             "type": "string",
