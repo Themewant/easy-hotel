@@ -317,7 +317,7 @@ if ( ! empty( $vars ) ) {
 
 
 ?>
-<div class="room-grid-wrap">
+<div class="eshb-accomodation-grid-block-wrap room-grid-wrap">
     <div class="room-grid eshb-item-grid <?php echo esc_attr($grid_style); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
 
             <?php 

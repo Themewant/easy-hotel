@@ -45,8 +45,8 @@
                         },
                         575: { slidesPerView: $wrap.data('slides-per-view-mobile-small'), spaceBetween: 0 },
                         767: { slidesPerView: $wrap.data('slides-per-view-mobile'), spaceBetween: 0 },
-                        991: { slidesPerView: $wrap.data('slides-per-view-tablet'), spaceBetween: 10 },
-                        1199: { slidesPerView: $wrap.data('slides-per-view') },
+                        991: { slidesPerView: $wrap.data('slides-per-view-tablet'), spaceBetween: 0 },
+                        1199: { slidesPerView: $wrap.data('slides-per-view'), spaceBetween: 0 },
                     },
                 });
 

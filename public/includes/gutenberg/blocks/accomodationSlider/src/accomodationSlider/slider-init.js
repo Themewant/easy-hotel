@@ -1,62 +1,82 @@
-(function ($, window) {
+(function (window) {
 
     window.initESHBSlider = function (scope) {
-        $(scope)
-            .find('.eshb-accomodation-slider-block-wrap')
-            .each(function () {
 
-                const $wrap = $(this);
-                const unique = $wrap.data('unique');
+        const wraps = (scope || document).querySelectorAll(
+            '.eshb-accomodation-slider-block-wrap'
+        );
 
-                if ($wrap.data('initialized')) return;
+        wraps.forEach(function (wrap) {
 
-                new Swiper('.rt_room_slider-' + unique, {
-                    slidesPerView: $wrap.data('slides-per-view'),
-                    spaceBetween: $wrap.data('space-between'),
-                    centeredSlides: $wrap.data('centered-slides'),
-                    loop: $wrap.data('loop'),
-                    effect: $wrap.data('effect'),
-                    speed: $wrap.data('speed'),
-                    navigation: {
-                        nextEl: '.rt_room_slider-btn-wrapper-' + unique + ' .swiper-button-next',
-                        prevEl: '.rt_room_slider-btn-wrapper-' + unique + ' .swiper-button-prev',
+            const unique = wrap.dataset.unique;
+
+            // already initialized হলে skip
+            if (wrap.dataset.initialized === 'true') {
+                return;
+            }
+
+            new Swiper('.rt_room_slider-' + unique, {
+                slidesPerView: Number(wrap.dataset.slidesPerView),
+                spaceBetween: Number(wrap.dataset.spaceBetween),
+                centeredSlides: wrap.dataset.centeredSlides === 'true',
+                loop: wrap.dataset.loop === 'true',
+                effect: wrap.dataset.effect,
+                speed: Number(wrap.dataset.speed),
+
+                navigation: {
+                    nextEl:
+                        '.rt_room_slider-btn-wrapper-' +
+                        unique +
+                        ' .swiper-button-next',
+                    prevEl:
+                        '.rt_room_slider-btn-wrapper-' +
+                        unique +
+                        ' .swiper-button-prev',
+                },
+
+                breakpoints: {
+                    0: { slidesPerView: 1, spaceBetween: 10 },
+                    360: { slidesPerView: 1, spaceBetween: 10 },
+                    375: { slidesPerView: 1, spaceBetween: 10 },
+                    480: { slidesPerView: 1, spaceBetween: 10 },
+                    520: { slidesPerView: 1, spaceBetween: 10 },
+                    575: {
+                        slidesPerView: Number(
+                            wrap.dataset.slidesPerViewMobileSmall
+                        ),
+                        spaceBetween: 10,
                     },
-
-                    breakpoints: {
-                        0: {
-                            slidesPerView: 1,
-                            spaceBetween: 0,
-                        },
-                        360: {
-                            slidesPerView: 1,
-                            spaceBetween: 0,
-                        },
-                        375: {
-                            slidesPerView: 1,
-                            spaceBetween: 0,
-                        },
-                        480: {
-                            slidesPerView: 1,
-                            spaceBetween: 0,
-                        },
-                        520: {
-                            slidesPerView: 1,
-                            spaceBetween: 0,
-                        },
-                        575: { slidesPerView: $wrap.data('slides-per-view-mobile-small'), spaceBetween: 0 },
-                        767: { slidesPerView: $wrap.data('slides-per-view-mobile'), spaceBetween: 0 },
-                        991: { slidesPerView: $wrap.data('slides-per-view-tablet'), spaceBetween: 10 },
-                        1199: { slidesPerView: $wrap.data('slides-per-view') },
+                    767: {
+                        slidesPerView: Number(
+                            wrap.dataset.slidesPerViewMobile
+                        ),
+                        spaceBetween: 10,
                     },
-                });
-
-                $wrap.data('initialized', true);
+                    991: {
+                        slidesPerView: Number(
+                            wrap.dataset.slidesPerViewTablet
+                        ),
+                        spaceBetween: 10,
+                    },
+                    1199: {
+                        slidesPerView: Number(wrap.dataset.slidesPerView),
+                        spaceBetween: 20,
+                    },
+                    1600: {
+                        slidesPerView: Number(wrap.dataset.slidesPerView),
+                        spaceBetween: 30,
+                    },
+                },
             });
+
+            // mark as initialized
+            wrap.dataset.initialized = 'true';
+        });
     };
 
     // Frontend initial load
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         window.initESHBSlider(document);
     });
 
-})(jQuery, window);
+})(window);

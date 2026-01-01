@@ -24,6 +24,5 @@
 console.log('Hello World! (from create-block-accomodationgrid block)');
 /* eslint-enable no-console */
 import './slider-init.js';
-jQuery(function () {
-    window.initESHBSlider(document);
-});
+
+window.initESHBSlider(document);

@@ -7,6 +7,11 @@
 .eshb-accomodation-slider-block-wrap {
   position: relative;
 }
+@media (max-width: 1199px) {
+  .eshb-accomodation-slider-block-wrap .eshb-item-grid {
+    padding: 0 0 !important;
+  }
+}
 .eshb-accomodation-slider-block-wrap .grid-item:hover {
   background-color: var(--eshb-agi-bg-hover) !important;
 }
@@ -33,6 +38,10 @@
 }
 .eshb-accomodation-slider-block-wrap .grid-item .details-btn:hover {
   color: var(--eshb-agib-color-hover) !important;
+}
+.eshb-accomodation-slider-block-wrap .swiper-button-next:after,
+.eshb-accomodation-slider-block-wrap .swiper-button-prev:after {
+  display: none;
 }
 .eshb-accomodation-slider-block-wrap svg.swiper-navigation-icon {
   width: 17px;

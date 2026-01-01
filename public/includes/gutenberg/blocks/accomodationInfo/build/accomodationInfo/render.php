@@ -6,8 +6,6 @@
 
 $attributes = $attributes ?? [];
 
-$spaceBetween = $attributes['spaceBetween'] ?? 10;
-
 
 // Dynamic Styles Processing helper
 $ensure_unit = function( $value ) {
@@ -42,7 +40,7 @@ if ( ! empty( $attributes['iconColorHover'] ) ) {
 
 $list_styles = [];
 if ( ! empty( $attributes['spaceBetween'] ) ) {
-    $list_styles['column-gap'] = esc_attr( $attributes['spaceBetween'] );
+    $list_styles['column-gap'] = esc_attr( $ensure_unit($attributes['spaceBetween']) );
 }
 $list_styles_inline = $get_inline_styles($list_styles);
 

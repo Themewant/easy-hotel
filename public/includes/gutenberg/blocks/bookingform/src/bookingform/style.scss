@@ -11,6 +11,11 @@
         box-shadow: var(--eshb-bkf-box-shadow);
         border-radius: var(--eshb-bkf-bt) var(--eshb-bkf-br) var(--eshb-bkf-bl) var(--eshb-bkf-br);
 
+        @media (max-width: 782px) {
+            width: unset;
+            padding: 30px 15px;
+        }
+
         &:hover {
             background-color: var(--eshb-bkf-bg-hover, inherit);
             box-shadow: var(--eshb-bkf-box-shadow-hover, inherit);

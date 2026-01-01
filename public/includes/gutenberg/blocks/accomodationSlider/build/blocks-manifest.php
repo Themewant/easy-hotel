@@ -27,6 +27,7 @@ return array(
 		),
 		'textdomain' => 'accomodation-slider',
 		'editorScript' => 'file:./index.js',
+		'script' => 'file:./view.js',
 		'viewScript' => 'file:./view.js',
 		'render' => 'file:./render.php',
 		'attributes' => array(

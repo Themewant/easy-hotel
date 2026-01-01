@@ -7,6 +7,10 @@
         height: 600px;
         width: 100%;
         object-fit: cover;
+
+        @media (max-width: 782px) {
+            height: 450px;
+        }
     }
 
     .swiper-button-prev,
@@ -30,7 +34,7 @@
 
     .swiper-button-prev {
         .swiper-navigation-icon {
-            //display: none;
+            display: none;
         }
 
         left: 0px;
@@ -42,7 +46,7 @@
 
     .swiper-button-next {
         .swiper-navigation-icon {
-            //display: none;
+            display: none;
         }
 
         right: 0px;

@@ -8,6 +8,13 @@
 .eshb-accomodation-slider-block-wrap {
 	position: relative;
 
+	.eshb-item-grid {
+		@media (max-width: 1199px) {
+			padding: 0 0 !important;
+		}
+	}
+
+
 	.grid-item {
 		&:hover {
 			background-color: var(--eshb-agi-bg-hover) !important;
@@ -67,6 +74,11 @@
 				color: var(--eshb-agib-color-hover) !important;
 			}
 		}
+	}
+
+	.swiper-button-next:after,
+	.swiper-button-prev:after {
+		display: none;
 	}
 
 	svg.swiper-navigation-icon {

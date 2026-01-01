@@ -27,6 +27,11 @@
   width: 100%;
   object-fit: cover;
 }
+@media (max-width: 782px) {
+  .accomodation-gallery img {
+    height: 450px;
+  }
+}
 .accomodation-gallery .swiper-button-prev,
 .accomodation-gallery .swiper-button-next {
   width: 40px;
@@ -48,11 +53,17 @@
 .accomodation-gallery .swiper-button-prev {
   left: 0px;
 }
+.accomodation-gallery .swiper-button-prev .swiper-navigation-icon {
+  display: none;
+}
 .accomodation-gallery .swiper-button-prev::after {
   border-radius: 0 20px 20px 0;
 }
 .accomodation-gallery .swiper-button-next {
   right: 0px;
+}
+.accomodation-gallery .swiper-button-next .swiper-navigation-icon {
+  display: none;
 }
 .accomodation-gallery .swiper-button-next::after {
   content: "next";
@@ -1346,6 +1357,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   justify-content: space-between;
   align-items: center;
   position: relative;
+  margin-bottom: 10px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item label {
   display: flex;
@@ -1695,12 +1707,17 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   position: relative;
   height: 400px;
 }
-@media (max-width: 576px) {
+@media (max-width: 1024px) {
+  .eshb-availability-calendars-area .eshb-availability-calendars {
+    height: 580px;
+  }
+}
+@media (max-width: 768px) {
   .eshb-availability-calendars-area .eshb-availability-calendars {
     height: 650px;
   }
   .eshb-availability-calendars-area .eshb-availability-calendars .daterangepicker.show-calendar {
-    width: 100%;
+    width: auto;
   }
 }
 .eshb-availability-calendars-area .eshb-availability-calendars .daterangepicker.show-calendar {
