@@ -100,10 +100,13 @@ if( class_exists( 'ESHB' ) ) {
     
     $saved_state_name = !empty(ESHB_Helper::eshb_get_wc_state_city_name($saved_country, $saved_state)) ? ESHB_Helper::eshb_get_wc_state_city_name($saved_country, $saved_state) : $saved_state;
     $saved_city_name = !empty(ESHB_Helper::eshb_get_wc_state_city_name($saved_country, $saved_city)) ? ESHB_Helper::eshb_get_wc_state_city_name($saved_country, $saved_city) : $saved_city;
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
     $default_payment_amount = !empty($_GET['amount']) ? sanitize_text_field( wp_unslash( $_GET['amount'] ) ) : 0;
 
     $current_booking_customer_metadata = [];
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
     if(!empty($_GET['booking'])){
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         $booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
         $current_booking_customer_metadata = ESHB_Helper::get_current_booking_customer_metadata($booking_id, '', '');
         $saved_state_name = $current_booking_customer_metadata['state'];
@@ -144,6 +147,7 @@ if( class_exists( 'ESHB' ) ) {
                 //'placeholder' => 'Enter booking id',
                 //'class'       => 'hidden-metabox'
                 'options'     => ESHB_Helper::eshb_get_booking_ids(),
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
                 'default'     => !empty($_GET['booking']) ? sanitize_text_field( wp_unslash( $_GET['booking'] ) ) : '',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,

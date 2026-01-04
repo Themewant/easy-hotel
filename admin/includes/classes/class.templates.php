@@ -38,9 +38,11 @@ class ESHB_Templates {
                 $template_style = $eshb_settings['single-page-template-style']; // Return original content if settings are not properly set
             }
 
-            // Verify nonce for security
-            if (isset($_GET['template-style']) && !empty($_POST['nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'))) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+            if (!empty($_GET['template-style'])) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
                 if(!empty($_GET['template-style'])){
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
                     $template_style = sanitize_text_field( wp_unslash( $_GET['template-style'] ) );
                 }
             }

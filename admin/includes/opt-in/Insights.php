@@ -1,7 +1,6 @@
 <?php
-
 namespace Appsero;
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Appsero Insights
  *
@@ -725,7 +724,7 @@ class Insights {
     public function add_weekly_schedule( $schedules ) {
         $schedules['weekly'] = array(
             'interval' => DAY_IN_SECONDS * 7,
-            'display'  => __( 'Once Weekly', 'easy-elements' ),
+            'display'  => __( 'Once Weekly', 'easy-hotel' ),
         );
 
         return $schedules;

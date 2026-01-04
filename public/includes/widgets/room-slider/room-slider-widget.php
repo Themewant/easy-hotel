@@ -1074,7 +1074,7 @@ class Eshb_Room_Slider_Widget  extends \Elementor\Widget_Base {
         ?>
 
       
-            <div class=" room_slider-inner-wrapper room_slider-inner-wrapper-<?php echo esc_attr($unique); ?> section-dark text-light no-top no-bottom position-relative overflow-hidden z-1000">            
+            <div class=" room_slider-inner-wrapper room_slider-inner-wrapper-<?php echo esc_attr($unique); ?> section-dark eshb-text-light no-top no-bottom position-relative overflow-hidden z-1000">            
               
                 <div class="swiper rt_room_slider-<?php echo esc_attr($unique); ?> rt_room_slider <?php echo esc_attr( $sstyle )?> eshb-item-grid">
                     <div class="swiper-wrapper">

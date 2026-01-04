@@ -740,7 +740,7 @@ class ESHB_View extends ESHB_MAIN{
                     if( count($accomodation_gallery_ids) > 1 && !empty($sliderDots == 'true' || $sliderNav == 'true') ) : ?>
                             <?php
                                 if($sliderDots == 'true') : ?>
-                                    <div class="swiper-pagination text-center"></div>      
+                                    <div class="swiper-pagination eshb-text-center"></div>      
                                 <?php endif; 
                                     
                                 if($sliderNav == 'true') : ?>
