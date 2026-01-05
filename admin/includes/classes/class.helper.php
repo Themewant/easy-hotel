@@ -762,6 +762,15 @@ class ESHB_Helper {
                 'max_children_quantity' => !empty($eshb_settings['max-children-capacity']) ? $eshb_settings['max-children-capacity'] : 1000,
             ];
         }
+        $booking_capacity_settings = [];
+        if(!empty($eshb_settings)){
+            $booking_capacity_settings = [
+                'min_adult_quantity' => !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1,
+                'min_children_quantity' => !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0,
+                'max_adult_quantity' => !empty($eshb_settings['booking-max-adult-capacity']) ? $eshb_settings['booking-max-adult-capacity'] : 1000,
+                'max_children_quantity' => !empty($eshb_settings['booking-max-children-capacity']) ? $eshb_settings['booking-max-children-capacity'] : 1000,
+            ];
+        }
 
         $eshb_min_max_settings = apply_filters( 'eshb_min_max_global_settings_localize', $min_max_settings);
         $calendar_start_date_buffer = !empty($eshb_min_max_settings['calendar_start_date_buffer']) ? $eshb_min_max_settings['calendar_start_date_buffer'] : 0;
@@ -840,6 +849,7 @@ class ESHB_Helper {
                     'checkInDayErrorMsg' => $string_check_in_day_error_msg,
                     'currentAccomodationMeta' => $eshb_accomodation_metaboxes,
                     'search_capacities' => $search_capacity_settings,
+                    'booking_capacities' => $booking_capacity_settings,
                     'translations' => $eshb_translations
                 ]
         );
