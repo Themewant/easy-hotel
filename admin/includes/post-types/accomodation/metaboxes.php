@@ -53,6 +53,38 @@ add_action( 'plugins_loaded', function(){
                 'subtitle' => 'Total Capacity for 1 Room',
                 'desc'  => 'If you leave this empty, the total capacity will extract from adult & children capacity. For examle: you leave this empty and adult capcity 3 and children capacity 2. So total capacity is 3 + 2 = 5',
             ),
+            array(
+                'id'    => 'min_capacities',
+                'type'  => 'repeater',
+                'title' => 'Min Capacities',
+                'subtitle' => 'Min Capacities for 1 Room',
+                'desc'  => 'If you leave this empty, the min capacity will 1 for adult & 0 for children capacity.',
+                'max'       => 1,
+                'min'       => 1,
+                'class'     => 'hide-add-new has-inline-repeater-fields',
+                'fields' => array(
+                    array(
+                        'id'    => 'min_adult_capacity',
+                        'type'  => 'number',
+                        'title' => 'Adult',
+                        //'subtitle' => 'Min Adult Capacity for 1 Room',
+                        //'desc'  => 'If you leave this empty, the min capacity will extract from adult & children capacity. For examle: you leave this empty and adult capcity 3 and children capacity 2. So min capacity is 3 + 2 = 5',
+                    ),
+                    array(
+                        'id'    => 'min_children_capacity',
+                        'type'  => 'number',
+                        'title' => 'Children',
+                        //'subtitle' => 'Min Children Capacity for 1 Room',
+                        //'desc'  => 'If you leave this empty, the min capacity will extract from adult & children capacity. For examle: you leave this empty and adult capcity 3 and children capacity 2. So min capacity is 3 + 2 = 5',
+                    ),
+                ),
+                'default' => array(
+                    array(
+                        'min_adult_capacity' => 1,
+                        'min_children_capacity' => 0,
+                    ),
+                ),
+            ),
             )
         ) );
 

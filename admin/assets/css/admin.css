@@ -33,7 +33,9 @@
   padding-bottom: 10px;
 }
 
-.csf-field input, .csf-field select, .csf-field textarea {
+.csf-field input,
+.csf-field select,
+.csf-field textarea {
   border-color: #e1dede;
 }
 
@@ -48,28 +50,27 @@
   display: none;
 }
 
-.csf-field-repeater.has-inline-repeater-fields .csf-repeater-content {
+.has-inline-repeater-fields .csf-repeater-content {
   display: flex;
   gap: 16px;
 }
-.csf-field-repeater.has-inline-repeater-fields .csf-repeater-content > .csf-field {
+.has-inline-repeater-fields .csf-repeater-content > .csf-field {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 @media only screen and (max-width: 1024px) {
-  .csf-field-repeater.has-inline-repeater-fields .csf-repeater-content > .csf-field {
+  .has-inline-repeater-fields .csf-repeater-content > .csf-field {
     display: block;
   }
 }
-.csf-field-repeater.has-inline-repeater-fields .csf-repeater-content > .csf-field .csf-title {
-  width: 25%;
+.has-inline-repeater-fields .csf-repeater-content > .csf-field .csf-title {
+  width: auto;
 }
-.csf-field-repeater.has-inline-repeater-fields .csf-repeater-content > .csf-field .csf-fieldset {
-  width: 65%;
+.has-inline-repeater-fields .csf-repeater-content > .csf-field .csf-fieldset {
+  width: auto;
 }
 @media only screen and (max-width: 1024px) {
-  .csf-field-repeater.has-inline-repeater-fields .csf-repeater-content {
+  .has-inline-repeater-fields .csf-repeater-content {
     display: block;
   }
 }
@@ -599,18 +600,21 @@ body.rtl .csf-content {
     height: calc(100% + 3px);
   }
 }
-.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > thead tr, .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > tfoot tr {
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > thead tr,
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > tfoot tr {
   height: 77px;
   max-height: 77px;
 }
-.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > thead tr th, .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > tfoot tr th {
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > thead tr th,
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table > tfoot tr th {
   min-width: 45px;
   width: 45px;
 }
 .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table tr {
   height: 100%;
 }
-.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table th, .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td {
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table th,
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td {
   height: inherit;
   min-width: 40px;
   border-collapse: collapse;
@@ -659,7 +663,8 @@ body.rtl .csf-content {
   position: sticky;
   left: 0;
   z-index: 3;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* optional for visual effect */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  /* optional for visual effect */
   width: 160px;
   background-color: #fff;
 }
