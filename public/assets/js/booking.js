@@ -2001,9 +2001,9 @@
         let totalCapacity = parseInt(currentAccomodationMeta.total_capacity);
 
         if (typeof eshb_ajax.booking_capacities !== "undefined" && eshb_ajax.booking_capacities) {
-          adultCapacity = parseInt(eshb_ajax.booking_capacities.max_adult_quantity);
-          childrenCapacity = parseInt(eshb_ajax.booking_capacities.max_children_quantity);
-          totalCapacity = parseInt(eshb_ajax.booking_capacities.max_adult_quantity) + parseInt(eshb_ajax.booking_capacities.max_children_quantity);
+          adultCapacity = eshb_ajax.booking_capacities.max_adult_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_adult_quantity) : parseInt(currentAccomodationMeta.adult_capacity);
+          childrenCapacity = eshb_ajax.booking_capacities.max_children_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_children_quantity) : parseInt(currentAccomodationMeta.children_capacity);
+          totalCapacity = eshb_ajax.booking_capacities.max_adult_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_adult_quantity) + parseInt(eshb_ajax.booking_capacities.max_children_quantity) : parseInt(currentAccomodationMeta.total_capacity);
         }
 
         let extraBedCapacity = parseInt(
