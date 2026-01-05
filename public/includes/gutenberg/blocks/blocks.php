@@ -50,3 +50,15 @@ require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/availabilityCalend
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationSlider/accomodationSlider.php';
 
 
+add_action('pre_get_posts', function($query){
+    if(is_admin()) return;
+
+    if ( ! is_admin() && $query->is_main_query() && $query->is_post_type_archive('eshb_accomodation') ) {
+
+		$eshb_settings = get_option( 'eshb_settings' );
+        $posts_per_page = isset($eshb_settings['accomodation_posts_per_page']) && !empty($eshb_settings['accomodation_posts_per_page']) ? $eshb_settings['accomodation_posts_per_page'] : 6;
+        $query->set('posts_per_page', $posts_per_page);
+        $query->set('orderby', 'date');
+        $query->set('order', 'DESC');
+    }
+});

@@ -29,8 +29,9 @@
     include 'public/includes/gutenberg/blocks/blocks.php';
     include 'class.easy-hotel.php';
 
+    register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
     add_action( 'plugins_loaded', function(){
-        register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
+        
             ESHB_MAIN::instance();
     }, 12 );
     

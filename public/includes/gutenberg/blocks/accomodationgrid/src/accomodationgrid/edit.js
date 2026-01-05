@@ -86,9 +86,10 @@ export default function Edit({ attributes, setAttributes }) {
 				{/* {query settings panel group} */}
 				<PanelBody title={__('Query', 'easy-hotel')} initialOpen={false}>
 					<NumberControl
-						label={__('Posts Per Page', 'easy-hotel')}
+						label={__('Posts Per Page (Only for custom grid page not archive page)', 'easy-hotel')}
 						value={attributes.per_page}
 						onChange={(value) => setAttributes({ per_page: value })}
+						help={__('Number of rooms to display. Only for custom grid page not archive page', 'easy-hotel')}
 					/>
 					<SelectControl
 						label={__('Order', 'easy-hotel')}
@@ -98,6 +99,7 @@ export default function Edit({ attributes, setAttributes }) {
 							{ label: __('Ascending', 'easy-hotel'), value: 'ASC' },
 							{ label: __('Descending', 'easy-hotel'), value: 'DESC' },
 						]}
+						help={__('Order of rooms to display. Only for custom grid page not archive page', 'easy-hotel')}
 					/>
 					<SelectControl
 						label={__('Order By', 'easy-hotel')}
@@ -110,11 +112,13 @@ export default function Edit({ attributes, setAttributes }) {
 							{ label: __('ID', 'easy-hotel'), value: 'id' },
 							{ label: __('Random', 'easy-hotel'), value: 'rand' },
 						]}
+						help={__('Order of rooms to display. Only for custom grid page not archive page', 'easy-hotel')}
 					/>
 					<NumberControl
 						label={__('Offset', 'easy-hotel')}
 						value={attributes.room_offset}
 						onChange={(value) => setAttributes({ room_offset: value })}
+						help={__('Number of rooms to skip. Only for custom grid page not archive page', 'easy-hotel')}
 					/>
 				</PanelBody>
 				{ /* content settings panel group */}

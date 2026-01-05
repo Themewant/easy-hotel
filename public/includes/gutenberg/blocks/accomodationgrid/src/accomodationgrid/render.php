@@ -315,45 +315,53 @@ if ( ! empty( $vars ) ) {
     $style_attr .= implode( ';', $vars ) . ';';
 }
 
-
+$hotel_core = new ESHB_Core();
+$hotel_view = new ESHB_View();
 ?>
 <div class="eshb-accomodation-grid-block-wrap room-grid-wrap">
     <div class="room-grid eshb-item-grid <?php echo esc_attr($grid_style); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
 
-            <?php 
-
-            $hotel_core = new ESHB_Core();
-            $hotel_view = new ESHB_View();
-
+            <?php
             $eshb_settings = get_option('eshb_settings');
             
             $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
             
-            
-            $args = array(
-                'post_type'      => 'eshb_accomodation',
-                'posts_per_page' => $per_page,	
-                'orderby' 		 => $room_orderby,
-                'order' 		 => $room_order,
-                'offset' 		 => $room_offset,							
-            );
+            $paged = get_query_var('paged') ? get_query_var('paged') : get_query_var('page');
+            $paged = $paged ? $paged : 1;
 
-            if(!empty($cat)){
-                $args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
-                    array(
-                        'taxonomy' => 'eshb_category',
-                        'field'    => 'slug', 
-                        'terms'    => $cat 
-                    ),
+            if(!is_archive(  )){
+                $args = array(
+                    'post_type'      => 'eshb_accomodation',
+                    'posts_per_page' => $per_page,	
+                    'paged'          => $paged,
+                    'orderby' 		 => $room_orderby,
+                    'order' 		 => $room_order,
+                    'offset' 		 => $room_offset,							
                 );
+            
+                if(!empty($cat)){
+                    $args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
+                        array(
+                            'taxonomy' => 'eshb_category',
+                            'field'    => 'slug', 
+                            'terms'    => $cat 
+                        ),
+                    );
+                }
+                $grid_query = new WP_Query($args);	  
+            }else{
+                global $wp_query;
+                $grid_query = $wp_query;
+                $grid_query->set('posts_per_page', $per_page);
+                $grid_query->set('paged', $paged);
+                $grid_query->set('orderby', $room_orderby);
+                $grid_query->set('order', $room_order);
             }
-
-            $best_wp = new WP_Query($args);	  
 
             $i = 0;
             $animation_delay = 0.2;
 
-            while($best_wp->have_posts()): $best_wp->the_post();
+            while($grid_query->have_posts()): $grid_query->the_post();
 
                 $animation_delay+=0.1;
                 $accomodation_id = get_the_ID();
@@ -371,4 +379,8 @@ if ( ! empty( $vars ) ) {
             ?>
         
     </div>
+    <?php
+    
+    echo esc_html($hotel_view->eshb_get_pagination($grid_query, $paged));
+    ?>
 </div>

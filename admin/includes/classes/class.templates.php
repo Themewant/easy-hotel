@@ -77,7 +77,9 @@ class ESHB_Templates {
         }
 
         if (is_post_type_archive('eshb_accomodation') || is_tax( 'eshb_category' )) {
-           
+            if ( $this->eshb_is_block_theme() ) {
+                return $template;
+            }
             // Check if the custom template exists in your plugin directory
             $plugin_template = ESHB_PL_PATH . 'public/templates/archive-eshb_accomodation.php';
             $theme_template = get_stylesheet_directory() . '/easy-hotel/templates/archive-eshb_accomodation.php';
@@ -161,19 +163,25 @@ class ESHB_Templates {
 
         if ( empty( $query['slug__in'][1] ) || $query['slug__in'][1] !== 'single-eshb_accomodation' ) {
             return $templates;
+        }else if ( empty( $query['slug__in'][2] ) || $query['slug__in'][2] !== 'archive-eshb_accomodation' ) {
+            return $templates;
         }
 
-        $template = $this->eshb_get_accomodation_block_template();
+        $template = $this->eshb_get_accomodation_single_block_template();
+        $template_archive = $this->eshb_get_accomodation_archive_block_template();
 
         if ( $template ) {
             $templates[] = $template;
+        }
+        if ( $template_archive ) {
+            $templates[] = $template_archive;
         }
 
         return $templates;
     }
 
 
-    function eshb_get_accomodation_block_template() {
+    function eshb_get_accomodation_single_block_template() {
 
         $file = ESHB_PL_PATH . 'public/templates/single/block/single-eshb_accomodation.html';
 
@@ -193,6 +201,35 @@ class ESHB_Templates {
         $template->slug        = 'single-eshb_accomodation';
         $template->title       = __( 'Accommodation Single', 'eshb' );
         $template->description = __( 'Single template for Accommodation CPT', 'eshb' );
+        $template->content     = $content;
+        $template->source      = 'plugin';
+        $template->type        = 'wp_template';
+        $template->status      = 'publish';
+        $template->is_custom   = true;
+
+        return $template;
+    }
+
+    function eshb_get_accomodation_archive_block_template() {
+
+        $file = ESHB_PL_PATH . 'public/templates/archive/block/archive-eshb_accomodation.html';
+
+        if ( ! file_exists( $file ) ) {
+            return null;
+        }
+
+        $content = file_get_contents( $file );
+
+        if ( empty( $content ) ) {
+            return null;
+        }
+
+        $template              = new WP_Block_Template();
+        $template->id          = 'easyhotel-accomodation//archive-eshb_accomodation';
+        $template->theme       = get_stylesheet();
+        $template->slug        = 'archive-eshb_accomodation';
+        $template->title       = __( 'Accommodation Archive', 'eshb' );
+        $template->description = __( 'Archive template for Accommodation CPT', 'eshb' );
         $template->content     = $content;
         $template->source      = 'plugin';
         $template->type        = 'wp_template';
