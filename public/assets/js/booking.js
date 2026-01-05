@@ -1999,6 +1999,13 @@
           currentAccomodationMeta.children_capacity
         );
         let totalCapacity = parseInt(currentAccomodationMeta.total_capacity);
+
+        if (typeof eshb_ajax.booking_capacities !== "undefined" && eshb_ajax.booking_capacities) {
+          adultCapacity = parseInt(eshb_ajax.booking_capacities.max_adult_quantity);
+          childrenCapacity = parseInt(eshb_ajax.booking_capacities.max_children_quantity);
+          totalCapacity = parseInt(eshb_ajax.booking_capacities.max_adult_quantity) + parseInt(eshb_ajax.booking_capacities.max_children_quantity);
+        }
+
         let extraBedCapacity = parseInt(
           currentAccomodationMeta.total_extra_beds
         );
@@ -2178,6 +2185,10 @@
           currentAccomodationMeta.min_capacities.length > 0
         ) {
           let minData = currentAccomodationMeta.min_capacities[0];
+          let minDataSettings = {};
+          if (typeof eshb_ajax.booking_capacities !== "undefined" && eshb_ajax.booking_capacities) {
+            minDataSettings = eshb_ajax.booking_capacities;
+          }
           if (
             ["adult_quantity", "eshb_booking_metaboxes[adult_quantity]"].includes(
               type
@@ -2188,6 +2199,10 @@
               minData.min_adult_capacity != ""
             ) {
               minCount = parseInt(minData.min_adult_capacity) || minCount;
+            }
+
+            if (minDataSettings.min_adult_quantity && minDataSettings.min_adult_quantity != "") {
+              minCount = parseInt(minDataSettings.min_adult_quantity) || minCount;
             }
           }
           if (
@@ -2201,6 +2216,10 @@
               minData.min_children_capacity != ""
             ) {
               minCount = parseInt(minData.min_children_capacity) || minCount;
+            }
+
+            if (minDataSettings.min_children_quantity && minDataSettings.min_children_quantity != "") {
+              minCount = parseInt(minDataSettings.min_children_quantity) || minCount;
             }
           }
         }
