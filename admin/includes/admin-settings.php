@@ -422,9 +422,19 @@ add_action( 'plugins_loaded', function(){
                     'default'     => ['adults', 'childrens']
                   ),
                   array(
+                    'id'    => 'min-adult-capacity',
+                    'type'  => 'number',
+                    'title' => 'Minimum Adult Capacity for Search',
+                  ),
+                  array(
                     'id'    => 'adult-capacity',
                     'type'  => 'number',
                     'title' => 'Maximum Adult Capacity for Search',
+                  ),
+                  array(
+                    'id'    => 'min-children-capacity',
+                    'type'  => 'number',
+                    'title' => 'Minimum Children Capacity for Search',
                   ),
                   array(
                     'id'    => 'children-capacity',

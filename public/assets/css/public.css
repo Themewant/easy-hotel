@@ -915,6 +915,12 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   display: inline-block;
   margin-bottom: 0;
 }
+.eshb-search .eshb-search-form p.err-msg {
+  color: red;
+  display: none;
+  width: 100%;
+  text-align: center;
+}
 
 .archive-search-warpper {
   margin-bottom: 50px;
