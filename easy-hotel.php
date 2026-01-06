@@ -27,6 +27,7 @@
 
     include 'public/includes/widgets/widgets.php';
     include 'public/includes/gutenberg/blocks/blocks.php';
+    //include 'public/includes/dynamic-css.php';
     include 'class.easy-hotel.php';
 
     register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');

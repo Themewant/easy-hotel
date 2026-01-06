@@ -7,5 +7,5 @@
 # Ignore node_modules folder
 node_modules/
 
-# Ignore specific zip file
-easy-hotel.zip
+# Ignore all zip file
+*.zip

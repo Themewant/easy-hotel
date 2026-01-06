@@ -233,10 +233,7 @@
 }
 
 .eshb_easy_hotel_help_support_callback {
-  border: 1px solid #ededed;
-  border-radius: 10px;
   margin-bottom: 50px;
-  padding: 30px;
 }
 .eshb_easy_hotel_help_support_callback .help-col-container {
   display: flex;
@@ -248,6 +245,11 @@
   padding: 30px;
   border-radius: 20px;
   box-shadow: 2px 2px 30px #ededed;
+}
+@media only screen and (max-width: 1024px) {
+  .eshb_easy_hotel_help_support_callback .help-col-container .help-col {
+    width: 100%;
+  }
 }
 .eshb_easy_hotel_help_support_callback .eshb-youtube-playlist {
   display: flex;
@@ -1156,6 +1158,7 @@ body.post-type-eshb_payment .input-error {
 
 .eshb_easy_hotel_help_support_callback .eshb-help-support h2 {
   font-size: 32px;
+  line-height: normal;
 }
 
 .eshb_easy_hotel_help_support_callback .help-col-container {
@@ -1229,16 +1232,33 @@ body.post-type-eshb_payment .input-error {
   flex: 2 1 320px;
   min-width: 320px;
 }
+@media only screen and (max-width: 1024px) {
+  .eshb_easy_hotel_help_support_callback .eshb-video-player {
+    flex: 1 !important;
+  }
+}
 
 .eshb_easy_hotel_help_support_callback .eshb-video-player iframe {
   width: 100%;
   min-height: 220px;
   border-radius: 8px;
 }
+@media only screen and (max-width: 1024px) {
+  .eshb_easy_hotel_help_support_callback .eshb-video-player iframe {
+    min-height: 160px;
+    width: auto !important;
+  }
+}
 
 .eshb_easy_hotel_help_support_callback .eshb-playlist-sidebar {
   flex: 1 1 180px;
   min-width: 180px;
+}
+@media only screen and (max-width: 1024px) {
+  .eshb_easy_hotel_help_support_callback .eshb-playlist-sidebar {
+    flex: 1 !important;
+    width: 100% !important;
+  }
 }
 
 .eshb_easy_hotel_help_support_callback .eshb-playlist-item {

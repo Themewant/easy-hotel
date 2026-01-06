@@ -27,6 +27,11 @@
   width: 100%;
   object-fit: cover;
 }
+@media (max-width: 782px) {
+  .accomodation-gallery img {
+    height: 450px;
+  }
+}
 .accomodation-gallery .swiper-button-prev,
 .accomodation-gallery .swiper-button-next {
   width: 40px;
@@ -662,6 +667,11 @@ nav.eshb-pagination ul.pagination-list li a.current, nav.eshb-pagination ul.pagi
 nav.eshb-pagination ul.pagination-list li span.current,
 nav.eshb-pagination ul.pagination-list li span:hover {
   background: var(--eshb-dark-color);
+}
+
+.no-customize-support .eshb-container.eshb-archive-wrapper {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .eshb-container {

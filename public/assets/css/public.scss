@@ -559,6 +559,13 @@ nav.eshb-pagination {
     }
 }
 
+.no-customize-support {
+    .eshb-container.eshb-archive-wrapper {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
 .eshb-container {
     max-width: 1200px;
     margin: auto;
