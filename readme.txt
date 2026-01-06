@@ -251,6 +251,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 = 1.8.1 =
 * Fixed External accommodation importing issue
+* Fixed Css issues for third part theme (xtra)
 
 = 1.8.0 =
 * Fixed Ajax issues of booking form for multisite

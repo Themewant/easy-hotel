@@ -52,7 +52,7 @@ add_action( 'plugins_loaded', function(){
                 'title' => 'Total Capacity',
                 'subtitle' => 'Total Capacity for 1 Room',
                 'desc'  => 'If you leave this empty, the total capacity will extract from adult & children capacity. For examle: you leave this empty and adult capcity 3 and children capacity 2. So total capacity is 3 + 2 = 5',
-            ),
+            )
             )
         ) );
 

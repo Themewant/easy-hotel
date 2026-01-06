@@ -33,7 +33,7 @@
 				?>
 
 				<h3 class="title"><?php echo esc_html(get_the_title($accomodation_id)); ?></h3>
-				<div class="capacities text-center">
+				<div class="capacities eshb-text-center">
 					<?php 
 						$i = 0;
 						if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
@@ -62,7 +62,7 @@
 		}
 		
 		if(isset($settings['show_all_features_icons']) && $settings['show_all_features_icons'] == 'yes'){ ?>
-				<div class="all-features text-center">
+				<div class="all-features eshb-text-center">
 					<?php 
 						foreach ($accomodation_info_group as $key => $group) { 
 							?>

@@ -751,6 +751,27 @@ class ESHB_Helper {
             'required_min_nights' => 1,
             'required_max_nights' => 999,
         ];
+
+        $eshb_settings = get_option('eshb_settings');
+        $search_capacity_settings = [];
+        if(!empty($eshb_settings)){
+            $search_capacity_settings = [
+                'min_adult_quantity' => !empty($eshb_settings['min-adult-capacity']) ? $eshb_settings['min-adult-capacity'] : 1,
+                'min_children_quantity' => !empty($eshb_settings['min-children-capacity']) ? $eshb_settings['min-children-capacity'] : 0,
+                'max_adult_quantity' => !empty($eshb_settings['max-adult-capacity']) ? $eshb_settings['max-adult-capacity'] : 1000,
+                'max_children_quantity' => !empty($eshb_settings['max-children-capacity']) ? $eshb_settings['max-children-capacity'] : 1000,
+            ];
+        }
+        $booking_capacity_settings = [];
+        if(!empty($eshb_settings)){
+            $booking_capacity_settings = [
+                'min_adult_quantity' => !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1,
+                'min_children_quantity' => !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0,
+                'max_adult_quantity' => !empty($eshb_settings['booking-max-adult-capacity']) ? $eshb_settings['booking-max-adult-capacity'] : '',
+                'max_children_quantity' => !empty($eshb_settings['booking-max-children-capacity']) ? $eshb_settings['booking-max-children-capacity'] : '',
+            ];
+        }
+
         $eshb_min_max_settings = apply_filters( 'eshb_min_max_global_settings_localize', $min_max_settings);
         $calendar_start_date_buffer = !empty($eshb_min_max_settings['calendar_start_date_buffer']) ? $eshb_min_max_settings['calendar_start_date_buffer'] : 0;
         $required_min_nights = !empty($eshb_min_max_settings['required_min_nights']) ? $eshb_min_max_settings['required_min_nights'] : 1;
@@ -827,6 +848,8 @@ class ESHB_Helper {
                     'calendar_start_date_buffer' => $calendar_start_date_buffer,
                     'checkInDayErrorMsg' => $string_check_in_day_error_msg,
                     'currentAccomodationMeta' => $eshb_accomodation_metaboxes,
+                    'search_capacities' => $search_capacity_settings,
+                    'booking_capacities' => $booking_capacity_settings,
                     'translations' => $eshb_translations
                 ]
         );

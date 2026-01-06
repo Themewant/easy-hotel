@@ -28,7 +28,7 @@
 
 			<div class="details-info">
 				
-				<div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat;">
+				<div class="capacities eshb-text-center" style="background-size: cover; background-repeat: no-repeat;">
 					<?php 
 						$i = 0;
 						if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
@@ -47,7 +47,7 @@
 			</div>
 			<div class="hover-bg-two"></div>
 		</div>
-		<h4 class="title mt-3 text-center"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
+		<h4 class="title mt-3 eshb-text-center"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
 	</div>
 </div>
 		

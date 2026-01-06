@@ -48,20 +48,20 @@ $ESHB_View = new ESHB_View();
                 if($booking_type != 'disable' && !empty($numeric_price)){
                     ?>
                         <div class="minimal-booking">
-                            <div class="row justify-content-center">
-                                <div class="col-lg-8">
-                                    <div class="row g-0">
-                                        <div class="col-md-6 text-center">
-                                            <div class="left-col text-light p-4 h-100 fadeInRight">
+                            <div class="eshb-row justify-content-center">
+                                <div class="eshb-col-lg-8">
+                                    <div class="eshb-row g-0">
+                                        <div class="eshb-col-md-6 eshb-text-center">
+                                            <div class="left-col eshb-text-light eshb-p-4 eshb-h-100 fadeInRight">
                                                 <div class="de_count fs-15 fadeInRight animated">
-                                                    <h2 class="mb-0"><?php echo wp_kses_post($price); ?></h2>
+                                                    <h2 class="eshb-mb-0"><?php echo wp_kses_post($price); ?></h2>
                                                     <span><?php echo esc_html( $string_night ) ?></span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6 text-center">
-                                            <div class="right-col text-light p-4 h-100 fadeInRight bgcustom animated">
+                                        <div class="eshb-col-md-6 eshb-text-center">
+                                            <div class="right-col eshb-text-light eshb-p-4 eshb-h-100 fadeInRight bgcustom animated">
                                                 <div class="de_count fs-15 fadeInRight">
                                                     <?php 
                                                         if($booking_type != 'woocommerce'){ ?>
@@ -96,8 +96,8 @@ $ESHB_View = new ESHB_View();
             
            
             
-            <div class="row justify-content-center">
-                <div class="col-lg-7 text-center">
+            <div class="eshb-row justify-content-center">
+                <div class="col-lg-7 eshb-text-center">
                     <h3 class="fadeInUp animated excerpt">
                         <?php echo esc_html( get_the_excerpt() ); ?>
                     </h3>

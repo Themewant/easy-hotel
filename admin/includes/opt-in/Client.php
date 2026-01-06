@@ -1,7 +1,6 @@
 <?php
-
 namespace Appsero;
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Appsero Client
  *

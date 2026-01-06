@@ -16,44 +16,34 @@
     .swiper-button-prev,
     .swiper-button-next {
         width: 40px;
-        height: auto;
+        height: 50px;
         line-height: 40px;
-
-        &::after {
-            display: block;
-            color: #ffffff;
-            padding: 5px 0;
-            font-size: 14px;
-            width: 100%;
-            height: 100%;
-            line-height: 40px;
-            background: var(--eshb-primary-color);
-            text-align: center;
-        }
-    }
-
-    .swiper-button-prev {
+        display: flex;
+        color:#ffffff;
+        padding:5px 0;
+        font-size:14px;
+        line-height: 40px;
+        background: var(--eshb-primary-color);
+        text-align: center;
         .swiper-navigation-icon {
+            height: 20px;
+        }
+        &::after {
             display: none;
         }
-
-        left: 0px;
-
-        &::after {
-            border-radius: 0 20px 20px 0;
-        }
     }
-
-    .swiper-button-next {
-        .swiper-navigation-icon {
+    .swiper-button-prev{
+        border-radius:0 20px 20px 0;
+        left: 0px !important;
+        &::after {
             display: none;
         }
-
-        right: 0px;
-
+    }
+    .swiper-button-next{
+        border-radius:20px 0 0 20px;
+        right: 0px !important;
         &::after {
-            content: "next";
-            border-radius: 20px 0 0 20px;
+            display: none;    
         }
     }
 }

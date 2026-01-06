@@ -64,6 +64,9 @@ class ESHB_View extends ESHB_MAIN{
 
         $adult_capacity = isset($eshb_settings['adult-capacity']) && !empty($eshb_settings['adult-capacity']) ? $eshb_settings['adult-capacity'] : 1000;
         $children_capacity = isset($eshb_settings['children-capacity']) && !empty($eshb_settings['children-capacity']) ? $eshb_settings['children-capacity'] : 1000;
+        $min_adult_quantity = isset($eshb_settings['min-adult-capacity']) && !empty($eshb_settings['min-adult-capacity']) ? $eshb_settings['min-adult-capacity'] : 1;
+        $min_children_quantity = isset($eshb_settings['min-children-capacity']) && !empty($eshb_settings['min-children-capacity']) ? $eshb_settings['min-children-capacity'] : 0;
+        
         $room_capacity = isset($eshb_settings['room-capacity']) && !empty($eshb_settings['room-capacity']) ? $eshb_settings['room-capacity'] : 1000;
 
          // Translations
@@ -94,7 +97,7 @@ class ESHB_View extends ESHB_MAIN{
                         <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_adult));?></h6>
                         <div class="de-number">
                             <span class="d-minus"><?php echo esc_html('-')?></span>
-                            <input class="form-control" type="text" value="1" name="adult_quantity" max="<?php echo esc_attr( $adult_capacity ) ?>">
+                            <input class="form-control" type="text" value="<?php echo esc_attr( $min_adult_quantity ) ?>" name="adult_quantity" max="<?php echo esc_attr( $adult_capacity ) ?>" min="<?php echo esc_attr( $min_adult_quantity ) ?>">
                             <span class="d-plus"><?php echo esc_html('+')?></span>
                         </div>
                     </div>
@@ -105,8 +108,8 @@ class ESHB_View extends ESHB_MAIN{
                         <div class="eshb-form-group">
                             <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_children));?></h6>
                             <div class="de-number">
-                                <span class="d-minus"><?php echo esc_html('-')?><i class="fas fa-minus"></i></span>
-                                <input class="form-control" type="text" value="0" name="children_quantity" max="<?php echo esc_attr( $children_capacity ) ?>">
+                                <span class="d-minus"><?php echo esc_html('-')?></span>
+                                <input class="form-control" type="text" value="<?php echo esc_attr( $min_children_quantity ) ?>" name="children_quantity" max="<?php echo esc_attr( $children_capacity ) ?>" min="<?php echo esc_attr( $min_children_quantity ) ?>">
                                 <span class="d-plus"><?php echo esc_html('+')?></span>
                             </div>
                         </div>
@@ -126,7 +129,9 @@ class ESHB_View extends ESHB_MAIN{
                 <div class="eshb-form-group submition-wrapper py-0">
                     <button class="eshb-form-submit-btn" href="#"><?php echo esc_html(eshb_get_translated_string($string_check_availability));?></button>
                 </div>
+                <p class="err-msg"></p>
             </form>
+            
         </div>
         <?php
     }
@@ -205,10 +210,13 @@ class ESHB_View extends ESHB_MAIN{
 
         // Get the new date in 'Y-m-d' format
         $tomorrow = $date->format('Y-m-d');
-        
-        $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 1; 
-        $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? $accomodation_metaboxes['children_capacity'] : 0; 
         $room_visibility = in_array('rooms', $eshb_settings['booking-form-fields']) ? true : false;
+        $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 1; 
+        $children_capacity = $accomodation_metaboxes['children_capacity']; 
+        $min_adult_quantity = !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1;
+        $min_children_quantity = !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0;
+        
+        
         
         $is_single_day_plugin_active = get_option('eshb_single_day_activated');
         
@@ -234,6 +242,11 @@ class ESHB_View extends ESHB_MAIN{
             $children_quantity = 0;
         }
 
+        $adult_quantity = $adult_quantity > $adult_capacity ? $adult_capacity : $adult_quantity;
+        $children_quantity = $children_quantity > $children_capacity ? $children_capacity : $children_quantity;
+
+        $adult_quantity = $adult_quantity < $min_adult_quantity ? $min_adult_quantity : $adult_quantity;
+        $children_quantity = $children_quantity < $min_children_quantity ? $min_children_quantity : $children_quantity;
 
         // set end to same as start date for single day hourly booking
         if($pricing_periodicity == 'per_hour') {
@@ -745,7 +758,7 @@ class ESHB_View extends ESHB_MAIN{
                     if( count($accomodation_gallery_ids) > 1 && !empty($sliderDots == 'true' || $sliderNav == 'true') ) : ?>
                             <?php
                                 if($sliderDots == 'true') : ?>
-                                    <div class="swiper-pagination text-center"></div>      
+                                    <div class="swiper-pagination eshb-text-center"></div>      
                                 <?php endif; 
                                     
                                 if($sliderNav == 'true') : ?>

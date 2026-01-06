@@ -85,7 +85,7 @@
                             do_action( 'eshb_before_details_info_html', $accomodation_id, $eshb_settings );
                         ?>
                         <h3 class="title"><?php echo esc_html($title); ?></h3>
-                        <div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat;">
+                        <div class="capacities eshb-text-center" style="background-size: cover; background-repeat: no-repeat;">
                             <?php 
                                 $i = 0;
                                 if ( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0) {

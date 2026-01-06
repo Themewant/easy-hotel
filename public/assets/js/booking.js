@@ -173,8 +173,13 @@
         )
         .on(
           "click.ESHBPUBLICBOOKING",
-          ".eshb-booking-form .d-minus, .eshb-search-form .d-minus",
-          this.eshbNumberDecreament
+          ".eshb-booking-form .d-minus",
+          this.eshbBookingQtyNumberDecreamentFrontEnd
+        )
+        .on(
+          "click.ESHBPUBLICBOOKING",
+          ".eshb-search-form .d-minus",
+          this.eshbSearchQtyNumberDecreamentFrontEnd
         )
         .on(
           "click.ESHBPUBLICBOOKING",
@@ -1723,26 +1728,87 @@
       $input.val(count);
       $input.change();
     },
-    eshbNumberDecreament: function () {
-      var $input = $(this).parent().find("input");
-      var count = parseInt($input.val()) - 1;
-      count = count < 0 ? 0 : count;
+    eshbSearchQtyNumberIncreament: function (e) {
+      let $this = $(this);
+      let $input = $this.parent().find("input");
+      let maxCount = parseInt($input.attr("max"));
+      let currentVal = parseInt($input.val());
+      let nextVal = currentVal + 1;
+
+      var errContainer = $this.closest("form").find(".err-msg");
+      var errMsg = "Maximum Capacity is";
+
       if (
-        $input.attr("name") == "adult_quantity" ||
-        $input.attr("name") == "room_quantity"
+        typeof eshb_ajax !== "undefined" &&
+        eshb_ajax.translations &&
+        eshb_ajax.translations.maximumCapacity
       ) {
-        if (count == 0) {
-          count = 1;
+        errMsg = eshb_ajax.translations.maximumCapacity;
+      }
+
+      if (maxCount && nextVal > maxCount) {
+        errContainer
+          .html(errMsg + " " + maxCount)
+          .css("display", "inline-block");
+        setTimeout(() => {
+          errContainer.html("").css("display", "none");
+        }, 2000);
+        return; // Do not increment
+      }
+
+      ESHBPUBLICBOOKING.eshbNumberIncreament($this, maxCount);
+    },
+    eshbSearchQtyNumberDecreamentFrontEnd: function (e) {
+      const element = e.target;
+      const input = $(element).parent().find("input");
+      ESHBPUBLICBOOKING.eshbSearchQtyNumberDecreament(element, input);
+    },
+    eshbSearchQtyNumberDecreament: function (element, input) {
+      var count = parseInt(input.val()) - 1;
+      var name = input.attr("name");
+      var min = 0;
+      var errContainer = $(element).closest("form").parent().find(".err-msg");
+      var errMsg = "Minimum Capacity is";
+
+      if (
+        typeof eshb_ajax !== "undefined" &&
+        eshb_ajax.translations &&
+        eshb_ajax.translations.minimumCapacity
+      ) {
+        errMsg = eshb_ajax.translations.minimumCapacity;
+      }
+
+      // Default Minimums
+      if (name == "adult_quantity" || name == "room_quantity") {
+        min = 1;
+      }
+
+      // Use search capacities from localized script if available
+      if (typeof eshb_ajax !== "undefined" && eshb_ajax.search_capacities) {
+        if (
+          name == "adult_quantity" &&
+          eshb_ajax.search_capacities.min_adult_quantity !== undefined
+        ) {
+          min = parseInt(eshb_ajax.search_capacities.min_adult_quantity);
+        } else if (
+          name == "children_quantity" &&
+          eshb_ajax.search_capacities.min_children_quantity !== undefined
+        ) {
+          min = parseInt(eshb_ajax.search_capacities.min_children_quantity);
         }
       }
-      $input.val(count);
-      $input.change();
+
+      if (count < min) {
+        count = min;
+        errContainer.html(errMsg + " " + min).css("display", "inline-block");
+        setTimeout(() => {
+          errContainer.html("").css("display", "none");
+        }, 2000);
+      }
+
+      input.val(count);
+      input.change();
       return false;
-    },
-    eshbSearchQtyNumberIncreament: function (that) {
-      let $this = $(this);
-      let maxCount = $this.parent().find("input").attr("max");
-      ESHBPUBLICBOOKING.eshbNumberIncreament($this, maxCount);
     },
     updateAvailabilityNotice: function (
       form,
@@ -1933,6 +1999,13 @@
           currentAccomodationMeta.children_capacity
         );
         let totalCapacity = parseInt(currentAccomodationMeta.total_capacity);
+
+        if (typeof eshb_ajax.booking_capacities !== "undefined" && eshb_ajax.booking_capacities) {
+          adultCapacity = eshb_ajax.booking_capacities.max_adult_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_adult_quantity) : parseInt(currentAccomodationMeta.adult_capacity);
+          childrenCapacity = eshb_ajax.booking_capacities.max_children_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_children_quantity) : parseInt(currentAccomodationMeta.children_capacity);
+          totalCapacity = eshb_ajax.booking_capacities.max_adult_quantity != '' ? parseInt(eshb_ajax.booking_capacities.max_adult_quantity) + parseInt(eshb_ajax.booking_capacities.max_children_quantity) : parseInt(currentAccomodationMeta.total_capacity);
+        }
+
         let extraBedCapacity = parseInt(
           currentAccomodationMeta.total_extra_beds
         );
@@ -2052,6 +2125,130 @@
             ESHBPUBLICBOOKING.eshbNumberIncreament($this, maxCount);
           }
         }
+      }
+    },
+    eshbBookingQtyNumberDecreamentFrontEnd: async function (e) {
+      const element = e.target;
+      const input = $(element).parent().find("input");
+      ESHBPUBLICBOOKING.eshbBookingQtyNumberDecreament(element, input);
+    },
+    eshbBookingQtyNumberDecreamentAdmin: async function (e) {
+      const element = e.target;
+      const input = $(element).parent().find("input");
+      ESHBPUBLICBOOKING.eshbBookingQtyNumberDecreament(element, input);
+    },
+    eshbBookingQtyNumberDecreament: async function (e, input) {
+      const eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
+      let form = eshbCalVars.bookingFormEl;
+      let type = input.attr("name");
+      let $this = $(e);
+      let accomodationId = eshbCalVars.accomodationId;
+      let minCount = 0;
+      let startDate = eshbCalVars.startDateInput.val();
+      let endDate = eshbCalVars.endDateInput.val();
+      let errContainer = $this.parent().parent().find(".err-msg");
+
+      // Default Minimums
+      if (
+        ["adult_quantity", "room_quantity"].includes(type) ||
+        [
+          "eshb_booking_metaboxes[adult_quantity]",
+          "eshb_booking_metaboxes[room_quantity]",
+        ].includes(type)
+      ) {
+        minCount = 1;
+      }
+
+      if (accomodationId != null && accomodationId != "") {
+        let currentAccomodationMeta = eshb_ajax.currentAccomodationMeta;
+        let translations = eshb_ajax.translations;
+
+        if (
+          currentAccomodationMeta == "" ||
+          (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin)
+        ) {
+          let data = await ESHBPUBLICBOOKING.fetchAccomodationMeta(
+            accomodationId,
+            startDate,
+            endDate
+          );
+          currentAccomodationMeta = data.currentAccomodationMeta;
+          translations = data.translations;
+
+          eshb_ajax.currentAccomodationMeta = currentAccomodationMeta;
+        }
+
+        // Min Capacities from Meta
+        if (
+          currentAccomodationMeta &&
+          currentAccomodationMeta.min_capacities &&
+          currentAccomodationMeta.min_capacities.length > 0
+        ) {
+          let minData = currentAccomodationMeta.min_capacities[0];
+          let minDataSettings = {};
+          if (typeof eshb_ajax.booking_capacities !== "undefined" && eshb_ajax.booking_capacities) {
+            minDataSettings = eshb_ajax.booking_capacities;
+          }
+          if (
+            ["adult_quantity", "eshb_booking_metaboxes[adult_quantity]"].includes(
+              type
+            )
+          ) {
+            if (
+              minData.min_adult_capacity &&
+              minData.min_adult_capacity != ""
+            ) {
+              minCount = parseInt(minData.min_adult_capacity) || minCount;
+            }
+
+            if (minDataSettings.min_adult_quantity && minDataSettings.min_adult_quantity != "") {
+              minCount = parseInt(minDataSettings.min_adult_quantity) || minCount;
+            }
+          }
+          if (
+            [
+              "children_quantity",
+              "eshb_booking_metaboxes[children_quantity]",
+            ].includes(type)
+          ) {
+            if (
+              minData.min_children_capacity &&
+              minData.min_children_capacity != ""
+            ) {
+              minCount = parseInt(minData.min_children_capacity) || minCount;
+            }
+
+            if (minDataSettings.min_children_quantity && minDataSettings.min_children_quantity != "") {
+              minCount = parseInt(minDataSettings.min_children_quantity) || minCount;
+            }
+          }
+        }
+
+        let inputVal = parseInt(input.val());
+        let newVal = inputVal - 1;
+        let errMsg = translations.minimumCapacity || "Minimum Capacity is";
+
+        let minAttr = parseInt(input.attr("min"));
+        if (!isNaN(minAttr) && minAttr > minCount) {
+          minCount = minAttr;
+        }
+
+        if (newVal < minCount) {
+          errContainer.html(errMsg + " " + minCount);
+          input.val(minCount);
+          setTimeout(() => {
+            errContainer.html("");
+          }, 2000);
+        } else {
+          input.val(newVal);
+          input.change();
+        }
+      } else {
+        let inputVal = parseInt(input.val());
+        let newVal = inputVal - 1;
+        if (newVal < minCount) newVal = minCount;
+        input.val(newVal);
+        input.change();
       }
     },
     hideServiceQtyDropdown: function (event) {

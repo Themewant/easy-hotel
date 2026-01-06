@@ -1,7 +1,7 @@
 <?php 
 	if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 ?>
-<div class="grid-item relative text-center wow fadeInUp animated" data-wow-delay="<?php echo esc_attr( $animation_delay )?>s">
+<div class="grid-item relative eshb-text-center wow fadeInUp animated" data-wow-delay="<?php echo esc_attr( $animation_delay )?>s">
     <div class="relative overflow-hidden">
         <div class="p-0 px-3 abs fw-600 ms-3 mt-3 best-seller">
             <?php 
@@ -19,9 +19,9 @@
         ?>
         <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
     </div>
-    <div class="p-3 pb-1 w-100 text-center">
-        <h4 class="mt-2 mb-0 p-title"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
-        <div class="text-center mb-3">
+    <div class="p-3 pb-1 w-100 eshb-text-center">
+        <h4 class="mt-2 eshb-mb-0 p-title"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
+        <div class="eshb-text-center mb-3">
             <?php 
                  if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
                     $x = 0;

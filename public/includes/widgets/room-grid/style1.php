@@ -12,9 +12,9 @@
 	?>
 	<div class="grid-item container-fluid position-relative half-fluid" style="background-size: cover; background-repeat: no-repeat;">
 		<div class="container" style="background-size: cover; background-repeat: no-repeat;">
-		<div class="row" style="background-size: cover; background-repeat: no-repeat;">
+		<div class="eshb-row" style="background-size: cover; background-repeat: no-repeat;">
 			<!-- Image -->
-			<div class="thumbnail-col col-lg-6 col-sm-12 col-12 position-lg-absolute <?php echo esc_attr( $class )?> h-100" style="background-size: cover; background-repeat: no-repeat;">
+			<div class="thumbnail-col col-lg-6 col-sm-12 col-12 position-lg-absolute <?php echo esc_attr( $class )?> eshb-h-100" style="background-size: cover; background-repeat: no-repeat;">
 				<div class="image bgcustom" data-bgimage="url(<?php echo esc_url($thumbnail_url) ?>) center" style="background: url(<?php echo esc_url($thumbnail_url) ?>) center center / cover no-repeat;"></div>
 			</div>
 			<!-- Text -->

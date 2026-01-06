@@ -1868,8 +1868,8 @@ class ESHB_Booking {
 		}
 
 		$accomodation_id = (int) ($params['accomodationId'] ?? 0);
-		$start_date      = $params['startDate'] ?? date('Y-m-d');
-		$end_date        = $params['endDate'] ?? date('Y-m-d', strtotime('+1 day'));
+		$start_date      = $params['startDate'] ?? gmdate('Y-m-d');
+		$end_date        = $params['endDate'] ?? gmdate('Y-m-d', strtotime('+1 day'));
 		$start_time      = $params['startTime'] ?? '';
 		$end_time        = $params['endTime'] ?? '';
 		$room_quantity   = (int) ($params['roomQuantity'] ?? 1);
