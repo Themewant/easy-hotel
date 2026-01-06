@@ -11,6 +11,8 @@
 			box-shadow: var(--eshb-ag-box-shadow-hover) !important;
 		}
 
+		padding: 0;
+
 		.grid-item {
 			overflow: hidden;
 
@@ -77,5 +79,9 @@
 				}
 			}
 		}
+	}
+
+	nav.eshb-pagination {
+		padding: 0;
 	}
 }

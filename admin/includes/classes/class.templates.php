@@ -155,26 +155,31 @@ class ESHB_Templates {
         return $content;
     }
 
-    function eshb_register_accomodation_block_template( $templates, $query, $template_type ) {
+    public function eshb_register_accomodation_block_template( $templates, $query, $template_type ) {
 
-        if ( ! function_exists( 'wp_is_block_theme' ) || ! wp_is_block_theme() || $template_type !== 'wp_template' ) {
+        if (
+            ! function_exists( 'wp_is_block_theme' ) ||
+            ! wp_is_block_theme() ||
+            $template_type !== 'wp_template' ||
+            empty( $query['slug__in'] ) ||
+            ! is_array( $query['slug__in'] )
+        ) {
             return $templates;
         }
 
-        if ( empty( $query['slug__in'][1] ) || $query['slug__in'][1] !== 'single-eshb_accomodation' ) {
-            return $templates;
-        }else if ( empty( $query['slug__in'][2] ) || $query['slug__in'][2] !== 'archive-eshb_accomodation' ) {
-            return $templates;
-        }
+        $map = [
+            'single-eshb_accomodation'  => 'eshb_get_accomodation_single_block_template',
+            'archive-eshb_accomodation' => 'eshb_get_accomodation_archive_block_template',
+        ];
 
-        $template = $this->eshb_get_accomodation_single_block_template();
-        $template_archive = $this->eshb_get_accomodation_archive_block_template();
-
-        if ( $template ) {
-            $templates[] = $template;
-        }
-        if ( $template_archive ) {
-            $templates[] = $template_archive;
+        foreach ( $map as $slug => $callback ) {
+            if ( in_array( $slug, $query['slug__in'], true ) && method_exists( $this, $callback ) ) {
+                $template = $this->$callback();
+                if ( $template ) {
+                    $templates[] = $template;
+                }
+                break;
+            }
         }
 
         return $templates;
@@ -242,6 +247,3 @@ class ESHB_Templates {
     
 }
 ESHB_Templates::instance();
-
-
-

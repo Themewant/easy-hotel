@@ -4,6 +4,9 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
+.eshb-accomodation-grid-block-wrap .eshb-item-grid {
+  padding: 0;
+}
 .eshb-accomodation-grid-block-wrap .eshb-item-grid:hover {
   background-color: var(--eshb-ag-bg-hover) !important;
   box-shadow: var(--eshb-ag-box-shadow-hover) !important;
@@ -40,4 +43,7 @@
 }
 .eshb-accomodation-grid-block-wrap .eshb-item-grid .grid-item .details-btn:hover {
   color: var(--eshb-agib-color-hover) !important;
+}
+.eshb-accomodation-grid-block-wrap nav.eshb-pagination {
+  padding: 0;
 }/*# sourceMappingURL=style.css.map */
