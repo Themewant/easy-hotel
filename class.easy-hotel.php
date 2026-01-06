@@ -126,3 +126,9 @@ class ESHB_MAIN {
 		}
 	}
 }
+
+add_action( 'init', 'eshb_add_image_sizes' );
+function eshb_add_image_sizes() {
+	// Register a new image size
+	add_image_size( 'eshb_thumbnail', 533, 533, true );
+}

@@ -1,0 +1,8 @@
+{
+    "private": true,
+    "scripts": {
+        "start": "wp-scripts start --blocks-manifest",
+        "build": "wp-scripts build --blocks-manifest"
+    },
+    "devDependencies": {}
+}

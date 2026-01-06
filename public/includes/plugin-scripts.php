@@ -1,13 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
-add_action('wp_enqueue_scripts', 'eshb_wp_enqueue_scripts');
+add_action('wp_enqueue_scripts', 'eshb_wp_enqueue_scripts', 999);
 function eshb_wp_enqueue_scripts (){
 
     $css_version = filemtime( ESHB_PL_PATH . 'public/assets/css/public.css' );
    
     wp_enqueue_style( 'dashicons' );
     wp_enqueue_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), $css_version );
-    wp_enqueue_style( 'eshb-style', ESHB_PL_URL . 'public/assets/css/public.min.css', array(), $css_version );
+    wp_enqueue_style( 'eshb-style', ESHB_PL_URL . 'public/assets/css/public.css', array(), $css_version );
     wp_enqueue_style( 'eshb-fontawesome-style', ESHB_PL_URL . 'public/assets/css/fontawesome-5.13-all.css', array(), '5.13.0', 'all' );
     wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), $css_version, 'all' );
     wp_enqueue_script( 'jquery' );

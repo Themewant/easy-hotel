@@ -27,6 +27,11 @@
   width: 100%;
   object-fit: cover;
 }
+@media (max-width: 782px) {
+  .accomodation-gallery img {
+    height: 450px;
+  }
+}
 .accomodation-gallery .swiper-button-prev,
 .accomodation-gallery .swiper-button-next {
   width: 40px;
@@ -167,8 +172,8 @@
 
 .rt_room_slider-btn-wrapper .nav-btn {
   border-radius: 0 20px 20px 0;
-  background: var(--color-primary);
-  color: var(--color-white);
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
   width: 40px;
   height: 40px;
   z-index: 2;
@@ -411,6 +416,11 @@
   background-color: #f6f6f6;
 }
 
+.single-eshb_accomodation svg {
+  width: 20px;
+  height: auto;
+}
+
 .eshb-details-page {
   width: 100%;
   clear: both;
@@ -479,6 +489,9 @@
 }
 .eshb-details-page .basic-information-list .info .info-icon {
   color: var(--eshb-primary-color);
+  font-size: 18px;
+}
+.eshb-details-page .basic-information-list .info img.info-icon {
   height: 18px;
 }
 .eshb-details-page .eshb-archive-wrapper {
@@ -656,6 +669,11 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   background: var(--eshb-dark-color);
 }
 
+.no-customize-support .eshb-container.eshb-archive-wrapper {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .eshb-container {
   max-width: 1200px;
   margin: auto;
@@ -760,7 +778,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 
 .de-number input {
-  width: 40px;
+  width: 40px !important;
   text-align: center;
   font-size: 20px;
   border: none;
@@ -899,6 +917,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   background: none;
   color: var(--eshb-white-color);
   text-align: center;
+  max-width: -webkit-fill-available;
 }
 .eshb-search .eshb-search-form .eshb-form-group .form-control:focus {
   outline: none;
@@ -1122,12 +1141,14 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   .eshb-booking .eshb-booking-form {
     padding: 30px 15px;
     width: 100%;
+    max-width: -webkit-fill-available;
   }
 }
 .eshb-booking .eshb-booking-form h3 {
   font-size: 26px;
 }
 .eshb-booking .eshb-booking-form h3.field-label {
+  margin-top: 0;
   margin-bottom: 20px;
 }
 .eshb-booking .eshb-booking-form .label-checkbox,
@@ -1179,6 +1200,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .form-control {
   background-color: transparent;
+  display: block;
+  width: 100%;
+  max-width: -webkit-fill-available;
 }
 .eshb-booking .eshb-booking-form .form-control:focus {
   background-color: transparent;
@@ -1290,6 +1314,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group h6.field-label {
+  margin-top: 0;
   margin-bottom: 5px;
   font-size: 14px;
 }
@@ -1354,6 +1379,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   justify-content: space-between;
   align-items: center;
   position: relative;
+  margin-bottom: 10px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item label {
   display: flex;
@@ -1703,7 +1729,12 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   position: relative;
   height: 400px;
 }
-@media (max-width: 576px) {
+@media (max-width: 1024px) {
+  .eshb-availability-calendars-area .eshb-availability-calendars {
+    height: 580px;
+  }
+}
+@media (max-width: 768px) {
   .eshb-availability-calendars-area .eshb-availability-calendars {
     height: 650px;
   }
