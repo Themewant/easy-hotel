@@ -160,7 +160,7 @@ class ESHB_View extends ESHB_MAIN{
         return $givenDate->format('Y-m-d');
     }
 
-    public function eshb_get_booking_form_html($accomodation_id = null, $style = 'style-one'){
+    public function eshb_get_booking_form_html($accomodation_id = null, $style = 'style-one', $form_attr = ''){
 
         if(is_singular( 'eshb_accomodation' ) && ($accomodation_id == null || empty($accomodation_id))){
             $accomodation_id = get_the_ID();
@@ -309,8 +309,8 @@ class ESHB_View extends ESHB_MAIN{
         $string_room = isset($eshb_settings['string_room']) && !empty($eshb_settings['string_room']) ? $eshb_settings['string_room'] : 'room';
         $string_guest = isset($eshb_settings['string_guest']) && !empty($eshb_settings['string_guest']) ? $eshb_settings['string_guest'] : 'guest';
         $string_time_slots = isset($eshb_settings['string_time_slots']) && !empty($eshb_settings['string_time_slots']) ? $eshb_settings['string_time_slots'] : 'Available Time Slots';
-        $included_service_ids = $accomodation_metaboxes['accomodation_services'];
-        $total_rooms = $accomodation_metaboxes['total_rooms']; 
+        $included_service_ids = !empty($accomodation_metaboxes['accomodation_services']) ? $accomodation_metaboxes['accomodation_services'] : [];
+        $total_rooms = !empty($accomodation_metaboxes['total_rooms']) ? $accomodation_metaboxes['total_rooms'] : 0; 
         $eshb_bookings = new ESHB_Booking();
         $available_rooms = $eshb_bookings->get_available_room_count_by_date_range($accomodation_id, $start->format('Y-m-d'), $end->format('Y-m-d'));
         $available_rooms = $available_rooms < 0 ? 0 : $available_rooms;
@@ -319,7 +319,7 @@ class ESHB_View extends ESHB_MAIN{
         $defaultExtraServicePrice = 0;
         ?>
         <div class="eshb-booking">
-            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
+            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" <?php echo $form_attr; ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
                 
                 <div class="hidden-fields">
                     <input type="hidden" name="subtotal_price" id="eshb-subtotal-price" value="<?php echo esc_html($price);?>"> 
@@ -619,7 +619,7 @@ class ESHB_View extends ESHB_MAIN{
         <?php
     }
 
-    public function eshb_get_pagination($query = null){
+    public function eshb_get_pagination($query = null, $paged = 1){
            // Use the global $wp_query if no custom query is provided
         if ( !$query ) {
             global $wp_query;
@@ -633,11 +633,14 @@ class ESHB_View extends ESHB_MAIN{
 
         $big = 999999999; // Need an unlikely integer
 
+        // $paged = $paged ? $paged : get_query_var('paged') ? get_query_var('paged') : get_query_var('page');
+        // $paged = $paged ? intval($paged) : 1;
+
         // Generate pagination links
         $pages = paginate_links( array(
             'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
             'format'    => '?paged=%#%',
-            'current'   => max( 1, get_query_var('paged') ),
+            'current'   => $paged,
             'total'     => $query->max_num_pages,
             'prev_text' => __('&laquo; Previous', 'easy-hotel'),
             'next_text' => __('Next &raquo;', 'easy-hotel'),
@@ -653,7 +656,7 @@ class ESHB_View extends ESHB_MAIN{
         }
     }
 
-    public function eshb_get_availability_calendar_html($accomodation_id = null, $style = 'style-one'){
+    public function eshb_get_availability_calendar_html($accomodation_id = null, $style = 'style-one', $show_title = true){
 
         $eshb_settings = get_option('eshb_settings', []);
   
@@ -686,7 +689,9 @@ class ESHB_View extends ESHB_MAIN{
         
         ?>
         <div class="eshb-availability-calendars-area">
+            <?php if($show_title){ ?>
             <h3 class="calendar-title"><?php echo esc_html( eshb_get_translated_string($availability_calendar_title) );?></h3>
+            <?php } ?>
             <div class="eshb-availability-calendars">
                 <input type="hidden" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="available_date_picker" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
             </div>

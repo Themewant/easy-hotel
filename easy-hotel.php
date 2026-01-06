@@ -5,7 +5,7 @@
  * Plugin URI:  https://themewant.com/downloads/hotel-booking/
  * Author:      Themewant
  * Author URI:  http://themewant.com/
- * Version:     1.8.2
+ * Version:     1.8.3
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: easy-hotel
@@ -13,7 +13,7 @@
 */
     if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-    define( 'ESHB_VERSION', '1.8.2' );
+    define( 'ESHB_VERSION', '1.8.3' );
     define( 'ESHB_PL_ROOT', __FILE__ );
     define( 'ESHB_PL_URL', plugins_url( '/', ESHB_PL_ROOT ) );
     define( 'ESHB_PL_PATH', plugin_dir_path( ESHB_PL_ROOT ) );
@@ -26,10 +26,12 @@
     include 'admin/includes/notice.php';
 
     include 'public/includes/widgets/widgets.php';
+    include 'public/includes/gutenberg/blocks/blocks.php';
     include 'class.easy-hotel.php';
 
+    register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
     add_action( 'plugins_loaded', function(){
-        register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
+        
             ESHB_MAIN::instance();
     }, 12 );
     

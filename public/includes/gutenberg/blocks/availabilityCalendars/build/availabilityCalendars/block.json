@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "easy-hotel/availabilitycalendars",
+  "version": "0.1.0",
+  "title": "Easy Hotel Availability Calendars",
+  "category": "easy-hotel",
+  "icon": "calendar-alt",
+  "description": "Availability Calendars for easy hotel room.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "align": true,
+    "layout": true,
+    "styles": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": false
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "selectors": {
+    "root": ".eshb-availability-calendars-block-wrapper",
+    "color": {
+      "text": ".eshb-availability-calendars-block-wrapper p",
+      "background": ".eshb-availability-calendars-block-wrapper"
+    },
+    "typography": {
+      "root": ".eshb-availability-calendars-block-wrapper p",
+      "text": ".eshb-availability-calendars-block-wrapper p"
+    },
+    "spacing": {
+      "root": ".eshb-availability-calendars-block-wrapper",
+      "padding": ".eshb-availability-calendars-block-wrapper",
+      "margin": ".eshb-availability-calendars-block-wrapper"
+    }
+  },
+  "textdomain": "easy-hotel",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

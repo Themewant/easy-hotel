@@ -1,0 +1,187 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "easy-hotel/accomodationgallery",
+  "version": "0.1.0",
+  "title": "Easy Hotel Accomodation Gallery",
+  "category": "easy-hotel",
+  "icon": "calendar-alt",
+  "description": "A gallery for easy hotel rooms.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "align": true,
+    "layout": true
+  },
+  "selectors": {
+    "root": ".eshb-accomodation-gallery-wrapper",
+    "color": {
+      "text": ".eshb-accomodation-gallery-wrapper .field-label",
+      "background": ".eshb-accomodation-gallery-wrapper",
+      "link": ".eshb-accomodation-gallery-wrapper a"
+    },
+    "typography": {
+      "root": ".eshb-accomodation-gallery-wrapper .field-label",
+      "text": ".eshb-accomodation-gallery-wrapper .field-label"
+    },
+    "spacing": {
+      "root": ".eshb-accomodation-gallery-wrapper",
+      "padding": ".eshb-accomodation-gallery-wrapper",
+      "margin": ".eshb-accomodation-gallery-wrapper"
+    }
+  },
+  "textdomain": "easy-hotel",
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "slidesPerView": {
+      "type": "string",
+      "default": "3"
+    },
+    "slidesPerViewTablet": {
+      "type": "string",
+      "default": "2"
+    },
+    "slidesPerViewMobile": {
+      "type": "string",
+      "default": "1"
+    },
+    "slidesPerViewMobileSmall": {
+      "type": "string",
+      "default": "1"
+    },
+    "thumbnail_size": {
+      "type": "string",
+      "default": "eshb_thumbnail"
+    },
+    "spaceBetween": {
+      "type": "string",
+      "default": "20"
+    },
+    "effect": {
+      "type": "string",
+      "default": "slide"
+    },
+    "centeredSlides": {
+      "type": "boolean",
+      "default": false
+    },
+    "speed": {
+      "type": "number",
+      "default": 300
+    },
+    "loop": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplaySpeed": {
+      "type": "number",
+      "default": 3000
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": false
+    },
+    "pauseOnInter": {
+      "type": "boolean",
+      "default": false
+    },
+    "itemBorderRadius": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "navigationButtonPadding": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "nextBtnBorderRadius": {
+      "type": "object",
+      "default": {
+        "top": "20px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "20px"
+      }
+    },
+    "prevBtnBorderRadius": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "20px",
+        "bottom": "20px",
+        "left": "0px"
+      }
+    },
+    "navBtnBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "navBtnBgColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "navBtnColor": {
+      "type": "string",
+      "default": ""
+    },
+    "navBtnColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "dotsBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dotsBgColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "dotsColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dotsColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "dotsPadding": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "dotsBorderRadius": {
+      "type": "object",
+      "default": {
+        "top": "100%",
+        "right": "100%",
+        "bottom": "100%",
+        "left": "100%"
+      }
+    },
+    "dotsSize": {
+      "type": "string",
+      "default": "8"
+    }
+  }
+}

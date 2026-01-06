@@ -1,0 +1,29 @@
+.eshb-accomodation-info-block-wrapper {
+    .basic-information-list {
+        display: flex;
+        align-items: center;
+        column-gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+
+        p {
+            margin: 0;
+        }
+
+        .info {
+            .info-title {
+                &:hover {
+                    color: var(--eshb-acmInfo-text-color-hover) !important;
+                }
+            }
+
+            .info-icon {
+                color: var(--eshb-primary-color);
+
+                &:hover {
+                    color: var(--eshb-acmInfo-icon-color-hover) !important;
+                }
+            }
+        }
+    }
+}

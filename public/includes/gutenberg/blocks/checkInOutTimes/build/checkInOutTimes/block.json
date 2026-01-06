@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "easy-hotel/checkinouttimes",
+  "version": "0.1.0",
+  "title": "Easy Hotel Check In Out Times",
+  "category": "easy-hotel",
+  "icon": "calendar-alt",
+  "description": "Check In Out Times for easy hotel room.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "align": true,
+    "layout": true,
+    "styles": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": false
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "selectors": {
+    "root": ".eshb-check-in-out-times-block-wrapper",
+    "color": {
+      "text": ".eshb-check-in-out-times-block-wrapper p",
+      "background": ".eshb-check-in-out-times-block-wrapper"
+    },
+    "typography": {
+      "root": ".eshb-check-in-out-times-block-wrapper p",
+      "text": ".eshb-check-in-out-times-block-wrapper p"
+    },
+    "spacing": {
+      "root": ".eshb-check-in-out-times-block-wrapper",
+      "padding": ".eshb-check-in-out-times-block-wrapper",
+      "margin": ".eshb-check-in-out-times-block-wrapper"
+    }
+  },
+  "textdomain": "easy-hotel",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
