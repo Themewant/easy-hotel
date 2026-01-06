@@ -113,3 +113,19 @@ final class Eshb_Elementor_Extension {
     }
 }
 Eshb_Elementor_Extension::instance();
+
+add_action( 'init', function() {
+  if( ! class_exists( '\Bricks\Elements' ) ) {
+	return; // Bricks is not active
+  }
+  $element_files = [
+    __DIR__ . '/bricks/room-gallery/room-gallery.php',
+	__DIR__ . '/bricks/room-grid/room-grid.php',
+	__DIR__ . '/bricks/room-slider/room-slider.php',
+  ];
+
+  foreach ( $element_files as $file ) {
+    \Bricks\Elements::register_element( $file );
+  }
+}, 11 );
+

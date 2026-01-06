@@ -1,7 +1,7 @@
 <?php
 defined('ABSPATH') || die();
 
-class Eshb_Room_Gallery_Widget_Bricks  extends \Bricks\Element {
+class Eshb_Room_Gallery_Widget extends \Bricks\Element {
 
     public $category     = 'general'; // Use predefined element category 'general'
 	public $name         = 'eshb-room-room-gallery'; // Make sure to prefix your elements

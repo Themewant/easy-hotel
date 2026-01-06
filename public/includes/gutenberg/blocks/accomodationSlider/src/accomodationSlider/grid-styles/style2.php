@@ -36,7 +36,7 @@
                     do_action( 'eshb_before_details_info_html', $accomodation_id, $eshb_settings );
                 ?>
                 <h3 class="p-title" style="<?php echo esc_attr($title_inline_style); ?>"><?php echo esc_html(get_the_title($accomodation_id)); ?></h3>
-                <div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat; <?php echo esc_attr( $capacities_wrapper_inline_style ); ?>">
+                <div class="capacities text-center" style="background-size: cover; background-repeat: no-repeat;">
                     <?php 
                     
                         $i = 0;

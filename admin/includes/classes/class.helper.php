@@ -767,8 +767,6 @@ class ESHB_Helper {
             $booking_capacity_settings = [
                 'min_adult_quantity' => !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1,
                 'min_children_quantity' => !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0,
-                'max_adult_quantity' => !empty($eshb_settings['booking-max-adult-capacity']) ? $eshb_settings['booking-max-adult-capacity'] : '',
-                'max_children_quantity' => !empty($eshb_settings['booking-max-children-capacity']) ? $eshb_settings['booking-max-children-capacity'] : '',
             ];
         }
 

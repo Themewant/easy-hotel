@@ -22,7 +22,7 @@
         </div>
         <div class="p-3 pb-1 w-100 text-center">
             <h4 class="mt-2 mb-0 p-title" style="<?php echo esc_attr($title_inline_style); ?>"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
-            <div class="text-center mb-3 capacities" style="<?php echo esc_attr( $capacities_wrapper_inline_style ); ?>">
+            <div class="text-center mb-3 capacities">
                 <?php 
                     if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
                         $x = 0;

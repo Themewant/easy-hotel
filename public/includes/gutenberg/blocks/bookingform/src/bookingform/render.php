@@ -17,9 +17,18 @@ if ( ! empty( $block->parsed_block['attrs']['className'] ) ) {
         $style = 'style-two';
     }
 }
+$posts = get_posts([
+    'post_type'      => 'eshb_accommodation',
+    'posts_per_page' => 1,
+    'fields'         => 'ids',
+]);
 
-// $accomodation_id = !empty($attributes['accomodationId']) ? $attributes['accomodationId'] : get_the_ID();
-$accomodation_id = get_the_ID();
+$first_accommodation_id = $posts[0] ?? 0;
+$accomodation_id = !empty($attributes['accomodationId']) ? $attributes['accomodationId'] : $first_accommodation_id;
+
+if(is_single() && 'eshb_accommodation' == get_post_type() ) {
+   $accomodation_id = get_the_ID();
+}
 
 // Helper function to ensure units
 $ensure_unit = function( $value ) {
