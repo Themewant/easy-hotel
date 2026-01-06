@@ -447,19 +447,9 @@ add_action( 'plugins_loaded', function(){
                     'title' => 'Minimum Adult Capacity for Booking',
                   ),
                   array(
-                    'id'    => 'booking-max-adult-capacity',
-                    'type'  => 'number',
-                    'title' => 'Maximum Adult Capacity for Booking',
-                  ),
-                  array(
                     'id'    => 'booking-min-children-capacity',
                     'type'  => 'number',
                     'title' => 'Minimum Children Capacity for Booking',
-                  ),
-                  array(
-                    'id'    => 'booking-max-children-capacity',
-                    'type'  => 'number',
-                    'title' => 'Maximum Children Capacity for Booking',
                   ),
                   array(
                     'id'          => 'booking-form-fields',

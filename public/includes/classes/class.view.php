@@ -212,7 +212,7 @@ class ESHB_View extends ESHB_MAIN{
         $tomorrow = $date->format('Y-m-d');
         $room_visibility = in_array('rooms', $eshb_settings['booking-form-fields']) ? true : false;
         $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 1; 
-        $children_capacity = $accomodation_metaboxes['children_capacity']; 
+        $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? $accomodation_metaboxes['children_capacity'] : 0; 
         $min_adult_quantity = !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1;
         $min_children_quantity = !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0;
         
