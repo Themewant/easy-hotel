@@ -26,7 +26,7 @@ $posts = get_posts([
 $first_accommodation_id = $posts[0] ?? 0;
 $accomodation_id = !empty($attributes['accomodationId']) ? $attributes['accomodationId'] : $first_accommodation_id;
 
-if(is_single() && 'eshb_accommodation' == get_post_type() ) {
+if(is_single() ) {
    $accomodation_id = get_the_ID();
 }
 
