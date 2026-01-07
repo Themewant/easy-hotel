@@ -117,7 +117,7 @@ class ESHB_Core {
         $query = new WP_Query($qargs);
 
         $sessions = [];
-
+        
         if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
@@ -134,6 +134,7 @@ class ESHB_Core {
                     'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
                     'longstay_pricing'   => $metaboxes['longstay_pricing'] ?? [],
                     'variable_pricing'   => $metaboxes['variable_pricing'] ?? [],
+                    'days'               => $metaboxes['days'] ?? [],
                 ];
             }
             wp_reset_postdata();
@@ -154,10 +155,10 @@ class ESHB_Core {
         $longstay_applied = false;
         $variable_applied = false;
         $session_price_applied = false;
-
+        
         foreach ($period as $day) {
             $current_date = $day->format('Y-m-d');
-
+            $current_day_name = strtolower($day->format('l'));
             foreach ($sessions as $session) {
 
                 if(empty($session['accomodation_ids'])){
@@ -167,8 +168,12 @@ class ESHB_Core {
                 if (!empty($session['accomodation_ids']) && !in_array($accomodation_id, $session['accomodation_ids'])) {
                     continue;
                 }
-
-                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date']) {
+                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                if(in_array('all', $session['days'])){
+                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                }
+                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
+                 
                     // 1. Longstay Pricing
                     if (!empty($session['longstay_pricing']) && $total_nights >= 1) {
                         // reverse the longstay_pricing array
@@ -224,7 +229,7 @@ class ESHB_Core {
         $query = new WP_Query($qargs);
 
         $sessions = [];
-
+        
         if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
@@ -241,6 +246,7 @@ class ESHB_Core {
                     'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
                     'longstay_pricing'   => $metaboxes['longstay_pricing'] ?? [],
                     'variable_pricing'   => $metaboxes['variable_pricing'] ?? [],
+                    'days'               => $metaboxes['days'] ?? [],
                 ];
             }
             wp_reset_postdata();
@@ -261,6 +267,7 @@ class ESHB_Core {
 
         foreach ($period as $day) {
             $current_date = $day->format('Y-m-d');
+            $current_day_name = strtolower($day->format('l'));
             $matched_price = $regular_price;
 
             foreach ($sessions as $session) {
@@ -274,7 +281,13 @@ class ESHB_Core {
                     continue;
                 }
 
-                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date']) {
+                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                if(in_array('all', $session_days)){
+                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                }
+
+                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
+         
                     // 1. Longstay Pricing (highest priority)
                     $longstay_applied = false;
                     

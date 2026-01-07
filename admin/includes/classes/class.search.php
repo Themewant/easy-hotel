@@ -362,10 +362,16 @@ class ESHB_Search {
                         $accomodation_metaboxes = get_post_meta($available_accomodation_id, 'eshb_accomodation_metaboxes', true);
     
                         $total_capacity = !empty($accomodation_metaboxes['total_capacity']) ? intval($accomodation_metaboxes['total_capacity']) : 1;
-                        $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? intval($accomodation_metaboxes['adult_capacity']) : 1;
-                        $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? intval($accomodation_metaboxes['children_capacity']) : 1;
+                        $adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? intval($accomodation_metaboxes['adult_capacity']) : 0;
+                        $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? intval($accomodation_metaboxes['children_capacity']) : 0;
                         $total_rooms = !empty($accomodation_metaboxes['total_rooms']) ? intval($accomodation_metaboxes['total_rooms']) : 1;
-    
+                        if(empty($adult_capacity)) {
+                            $adult_capacity = $total_capacity;
+                        }
+                        if(empty($children_capacity)) {
+                            $children_capacity = $total_capacity;
+                        }
+                        
                         if (
                             $adult_quantity > $adult_capacity ||
                             $children_quantity > $children_capacity ||

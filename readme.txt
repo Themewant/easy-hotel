@@ -247,6 +247,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 * Added Gutenberg blocks
 * Made compatible for Block Themes
 * Removed maximum booking capacity option from plugin settings
+* Made compatible with new version of advanced pricing 1.0.2 (added days selection option)
 
 = 1.8.2 =
 * Added Min guest options

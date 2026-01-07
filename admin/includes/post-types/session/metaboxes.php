@@ -45,6 +45,12 @@ add_action( 'plugins_loaded', function(){
                 'title' => 'Variable Pricing',
                 'function' => 'eshb_advanced_pricing_settings_fallback_sm',
             ),
+            array(
+                'id'    => 'days_pricing_warning',
+                'type'  => 'callback',
+                'title' => 'Days',
+                'function' => 'eshb_days_pricing_settings_fallback_sm',
+            ),
             
             array(
                 'id'    => 'start_date',
