@@ -18,6 +18,7 @@ $room_orderby = $attributes['room_orderby'] ?? 'date';
 $room_offset = $attributes['room_offset'] ?? 0;
 $today_date = gmdate('Y-m-d'); // Get today's date
 $cat = $attributes['category'] ?? '';
+$show_pagination = $attributes['show_pagination'] ?? false;
 // Create a DateTime object from today's date
 
 $date = new DateTime($today_date);
@@ -380,7 +381,8 @@ $hotel_view = new ESHB_View();
         
     </div>
     <?php
-    
-    echo esc_html($hotel_view->eshb_get_pagination($grid_query, $paged));
+    if($show_pagination){
+        echo esc_html($hotel_view->eshb_get_pagination($grid_query, $paged));
+    }
     ?>
 </div>

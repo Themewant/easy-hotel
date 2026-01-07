@@ -22,7 +22,8 @@ import {
 	TabPanel,
 	__experimentalNumberControl as NumberControl,
 	SelectControl,
-	TextControl
+	TextControl,
+	ToggleControl
 } from '@wordpress/components';
 import BackgroundControl from '../../../custom-components/BackgroundControl';
 import BoxShadowControls from '../../../custom-components/BoxShadowControls';
@@ -119,6 +120,11 @@ export default function Edit({ attributes, setAttributes }) {
 						value={attributes.room_offset}
 						onChange={(value) => setAttributes({ room_offset: value })}
 						help={__('Number of rooms to skip. Only for custom grid page not archive page', 'easy-hotel')}
+					/>
+					<ToggleControl
+						label={__('Show Pagination', 'easy-hotel')}
+						checked={attributes.show_pagination}
+						onChange={(value) => setAttributes({ show_pagination: value })}
 					/>
 				</PanelBody>
 				{ /* content settings panel group */}

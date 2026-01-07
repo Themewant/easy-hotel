@@ -62,7 +62,7 @@ if(!empty($cat)){
 
 $best_wp = new WP_Query($args);
 
-if($best_wp->have_posts() && $best_wp->found_posts > 2){
+if($best_wp->have_posts() && $best_wp->found_posts > 1){
    
     ?>
     <div class="eshb-archive-wrapper related-accomodations related-accomodations-style-one">

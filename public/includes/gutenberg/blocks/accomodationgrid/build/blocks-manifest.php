@@ -30,6 +30,10 @@ return array(
 		'viewScript' => 'file:./view.js',
 		'render' => 'file:./render.php',
 		'attributes' => array(
+			'show_pagination' => array(
+				'type' => 'boolean',
+				'default' => true
+			),
 			'grid_style' => array(
 				'type' => 'string',
 				'default' => 'default'
