@@ -25,6 +25,10 @@
   "viewScript": "file:./view.js",
   "render": "file:./render.php",
   "attributes": {
+    "show_pagination": {
+      "type": "boolean",
+      "default": true
+    },
     "grid_style": {
       "type": "string",
       "default": "default"
