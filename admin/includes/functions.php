@@ -40,6 +40,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     $plugin_slug = 'ehb-advanced-pricing';
     eshb_settings_fallback('EHB Advanced Pricing', $plugin_slug, 'https://themewant.com/downloads/ehb-advanced-pricing/', '');
   }
+
+  function eshb_days_pricing_settings_fallback_sm(){
+    $plugin_slug = 'ehb-advanced-pricing';
+    eshb_settings_fallback('EHB Advanced Pricing', $plugin_slug, 'https://themewant.com/downloads/ehb-advanced-pricing/', '');
+  }
   
   
   // manual booking settings fallback

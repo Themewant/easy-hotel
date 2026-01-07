@@ -104,11 +104,8 @@ class ESHB_Helper {
         $product_id = 0;
 
         if ($booking_type == 'woocommerce') {
-            $product_id = get_post_meta($accomodation_id, '_woocommerce_product_id', true);
-            if (empty($product_id) || get_post_status($product_id) !== 'publish') {
-                $thumbnail_id = get_post_thumbnail_id($accomodation_id);
-                $product_id = self::get_or_create_woocommerce_product($accomodation_id, $thumbnail_id);
-            }
+            $thumbnail_id = get_post_thumbnail_id($accomodation_id);
+            $product_id = self::get_or_create_woocommerce_product($accomodation_id, $thumbnail_id);
         } 
         return $product_id;
     }

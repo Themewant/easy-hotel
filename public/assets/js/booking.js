@@ -2801,6 +2801,7 @@
             }, timeoutDuration);
           } else if (response.success == false) {
             erroMsg = response.data.error.message;
+            console.log('response', response);
 
             $(errWrapper).find(".status-failed .status-msg").html(erroMsg);
             $(errWrapper)
