@@ -619,7 +619,7 @@ class ESHB_View extends ESHB_MAIN{
         <?php
     }
 
-    public function eshb_get_pagination($query = null, $paged = 1){
+    public function eshb_get_pagination($query = null){
            // Use the global $wp_query if no custom query is provided
         if ( !$query ) {
             global $wp_query;
@@ -633,14 +633,11 @@ class ESHB_View extends ESHB_MAIN{
 
         $big = 999999999; // Need an unlikely integer
 
-        // $paged = $paged ? $paged : get_query_var('paged') ? get_query_var('paged') : get_query_var('page');
-        // $paged = $paged ? intval($paged) : 1;
-
         // Generate pagination links
         $pages = paginate_links( array(
             'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
             'format'    => '?paged=%#%',
-            'current'   => $paged,
+            'current'   => max( 1, get_query_var('paged') ),
             'total'     => $query->max_num_pages,
             'prev_text' => __('&laquo; Previous', 'easy-hotel'),
             'next_text' => __('Next &raquo;', 'easy-hotel'),

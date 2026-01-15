@@ -26,6 +26,7 @@ class ESHB_MAIN {
 		add_action( 'init', [$this, 'enable_elementor_for_custom_post_type'] );
 		add_filter( 'admin_body_class',  [$this, 'add_admin_body_class'] );
 		add_action( 'phpmailer_init', [$this, 'enable_local_mail'] );
+		add_action( 'pre_get_posts', [$this, 'eshb_archive_posts_query_modify'] );
 	}
 
 	
@@ -123,6 +124,19 @@ class ESHB_MAIN {
 			$phpmailer->isSMTP();
 			$phpmailer->Host = 'localhost';
 			$phpmailer->Port = 1025;
+		}
+	}
+
+	public function eshb_archive_posts_query_modify($query){
+		if(!is_admin() && $query->is_main_query() && $query->is_post_type_archive('eshb_accomodation')){
+			$eshb_settings = get_option( 'eshb_settings' );
+            $posts_per_page = isset($eshb_settings['accomodation_posts_per_page']) && !empty($eshb_settings['accomodation_posts_per_page']) ? $eshb_settings['accomodation_posts_per_page'] : 6;
+            $posts_order_by = isset($eshb_settings['accomodation_posts_order_by']) && !empty($eshb_settings['accomodation_posts_order_by']) ? $eshb_settings['accomodation_posts_order_by'] : 'id';
+            $posts_order = isset($eshb_settings['accomodation_posts_order']) && !empty($eshb_settings['accomodation_posts_order']) ? $eshb_settings['accomodation_posts_order'] : 'DESC';
+            $query->set( 'post_type', 'eshb_accomodation' );
+            $query->set( 'posts_per_page', $posts_per_page );
+            $query->set( 'orderby', $posts_order_by );
+            $query->set( 'order', $posts_order );
 		}
 	}
 }

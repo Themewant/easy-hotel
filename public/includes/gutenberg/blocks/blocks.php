@@ -1,18 +1,19 @@
 <?php
 // register category
 function eshb_block_categories( $block_categories, $editor_context ) {
-    //if ( ! empty( $editor_context->post ) ) {
-        array_push(
-            $block_categories,
+    ///if ( ! empty( $editor_context->post ) ) {
+       $attr = array(
             array(
-                'slug'  => 'easy-hotel', // A unique slug for your category
-                'label' => __( 'Easy Hotel', 'easy-hotel' ), // A human-readable label
+                'slug'  => 'easy-hotel',
+                'title' => __( 'Easy Hotel', 'easy-hotel' ),
             )
         );
-   // }
+        $block_categories =  array_merge( $attr, $block_categories );
+	   
+   //}
     return $block_categories;
 }
-add_filter( 'block_categories_all', 'eshb_block_categories', 10, 2 );
+add_filter( 'block_categories_all', 'eshb_block_categories', 999999, 2 );
 
 
 add_action( 'init', 'eshb_enqueue_block_styles' );
@@ -40,25 +41,11 @@ function eshb_enqueue_block_styles() {
 }
 
 // include blocks
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationgrid/accomodationgrid.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/searchform/searchform.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/bookingform/bookingform.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationGallery/accomodationGallery.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationInfo/accomodationInfo.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/checkInOutTimes/checkInOutTimes.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/availabilityCalendars/availabilityCalendars.php';
-require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodationSlider/accomodationSlider.php';
-
-
-add_action('pre_get_posts', function($query){
-    if(is_admin()) return;
-
-    if ( ! is_admin() && $query->is_main_query() && $query->is_post_type_archive('eshb_accomodation') ) {
-
-		$eshb_settings = get_option( 'eshb_settings' );
-        $posts_per_page = isset($eshb_settings['accomodation_posts_per_page']) && !empty($eshb_settings['accomodation_posts_per_page']) ? $eshb_settings['accomodation_posts_per_page'] : 6;
-        $query->set('posts_per_page', $posts_per_page);
-        $query->set('orderby', 'date');
-        $query->set('order', 'DESC');
-    }
-});
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-grid/accomodation-grid.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/search-form/search-form.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/booking-form/booking-form.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-gallery/accomodation-gallery.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-info/accomodation-info.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/check-in-out-times/check-in-out-times.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/availability-calendars/availability-calendars.php';
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-slider/accomodation-slider.php';
