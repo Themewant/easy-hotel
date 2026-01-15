@@ -1,0 +1,256 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "easy-hotel/search-form",
+  "version": "0.1.0",
+  "title": "Easy Hotel Search Form",
+  "category": "easy-hotel",
+  "icon": "search",
+  "description": "A search form for easy hotel rooms.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "align": true,
+    "layout": true
+  },
+  "selectors": {
+    "root": ".eshb-search",
+    "color": {
+      "text": ".eshb-search .field-label",
+      "background": ".eshb-search",
+      "link": ".eshb-search a"
+    },
+    "typography": {
+      "root": ".eshb-search .field-label",
+      "text": ".eshb-search .field-label"
+    },
+    "spacing": {
+      "root": ".eshb-search",
+      "padding": ".eshb-search",
+      "margin": ".eshb-search"
+    }
+  },
+  "textdomain": "easy-hotel",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php",
+  "attributes": {
+    "customBackgroundColor": {
+      "type": "string",
+      "default": "var(--eshb-dark-color)"
+    },
+    "padding": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "margin": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "borderRadius": {
+      "type": "object",
+      "default": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomLeft": "0px",
+        "bottomRight": "0px"
+      }
+    },
+    "boxShadow": {
+      "type": "string",
+      "default": ""
+    },
+    "boxShadowX": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowY": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowBlur": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowSpread": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowColor": {
+      "type": "string",
+      "default": "rgba(0,0,0,0.1)"
+    },
+    "customBackgroundColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "boxShadowHover": {
+      "type": "string",
+      "default": ""
+    },
+    "boxShadowXHover": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowYHover": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowBlurHover": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowSpreadHover": {
+      "type": "number",
+      "default": 0
+    },
+    "boxShadowColorHover": {
+      "type": "string",
+      "default": "rgba(0,0,0,0.1)"
+    },
+    "fieldGroupPadding": {
+      "type": "object",
+      "default": {
+        "top": "30px",
+        "right": "0px",
+        "bottom": "30px",
+        "left": "0px"
+      }
+    },
+    "fieldGroupMargin": {
+      "type": "object",
+      "default": {
+        "top": "30px",
+        "right": "0px",
+        "bottom": "30px",
+        "left": "0px"
+      }
+    },
+    "fieldLabelColor": {
+      "type": "string",
+      "default": "var(--eshb-primary-color)"
+    },
+    "fieldLabelColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "fieldTextColor": {
+      "type": "string",
+      "default": "var(--eshb-white-color)"
+    },
+    "fieldTextColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "fieldLabelTypography": {
+      "type": "object",
+      "default": {
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "1.5",
+        "textTransform": "none",
+        "letterSpacing": "0px"
+      }
+    },
+    "fieldTextTypography": {
+      "type": "object",
+      "default": {
+        "fontSize": "20px",
+        "fontWeight": "400",
+        "lineHeight": "1.5",
+        "textTransform": "none",
+        "letterSpacing": "0px"
+      }
+    },
+    "plusMinusBtnBackgroundColor": {
+      "type": "string",
+      "default": "var(--eshb-primary-color)"
+    },
+    "plusMinusBtnBackgroundColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "plusMinusBtnTextColor": {
+      "type": "string",
+      "default": "var(--eshb-white-color)"
+    },
+    "plusMinusBtnTextColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "plusMinusBtnTypography": {
+      "type": "object",
+      "default": {
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "2.5",
+        "textTransform": "none",
+        "letterSpacing": "0px"
+      }
+    },
+    "plusMinusBtnPadding": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "submitBtnBackgroundColor": {
+      "type": "string",
+      "default": "var(--eshb-primary-color)"
+    },
+    "submitBtnBackgroundColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "submitBtnTextColor": {
+      "type": "string",
+      "default": "var(--eshb-white-color)"
+    },
+    "submitBtnTextColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "submitBtnPadding": {
+      "type": "object",
+      "default": {
+        "top": "8px",
+        "right": "20px",
+        "bottom": "8px",
+        "left": "20px"
+      }
+    },
+    "submitBtnMargin": {
+      "type": "object",
+      "default": {
+        "top": "0px",
+        "right": "0px",
+        "bottom": "0px",
+        "left": "0px"
+      }
+    },
+    "submitBtnTypography": {
+      "type": "object",
+      "default": {
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "lineHeight": "1.7",
+        "textTransform": "none",
+        "letterSpacing": "0px"
+      }
+    }
+  }
+}

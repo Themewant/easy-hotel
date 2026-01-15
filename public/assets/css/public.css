@@ -674,6 +674,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   padding-bottom: 0;
 }
 
+.no-customize-support .eshb-container {
+  max-width: 100%;
+}
+
 .eshb-container {
   max-width: 1200px;
   margin: auto;
@@ -864,6 +868,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   margin-top: 0;
   line-height: 1.7em;
   width: auto;
+  cursor: pointer;
 }
 .eshb-search .eshb-search-form .eshb-form-group {
   width: auto;
@@ -1345,6 +1350,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   gap: 20px;
   align-items: center;
   padding: 10px 20px;
+  cursor: pointer;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group .eshb-form-submit-btn::after {
   display: block;

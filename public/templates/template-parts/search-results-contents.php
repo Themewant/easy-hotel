@@ -29,11 +29,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 $posts_per_row = isset($eshb_settings['accomodation_posts_per_row']) && !empty($eshb_settings['accomodation_posts_per_row']) ? $eshb_settings['accomodation_posts_per_row'] : 3;
                 $posts_order_by = isset($eshb_settings['accomodation_posts_order_by']) && !empty($eshb_settings['accomodation_posts_order_by']) ? $eshb_settings['accomodation_posts_order_by'] : 'id';
                 $posts_order = isset($eshb_settings['accomodation_posts_order']) && !empty($eshb_settings['accomodation_posts_order']) ? $eshb_settings['accomodation_posts_order'] : 'DESC';
-
+                $paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
                 $available_accomodations_args = array(
                     'post_type' => 'eshb_accomodation',
                     'post__in'  => $available_accomodation_ids,
-                    'paged'          => ( get_query_var('paged') ) ? get_query_var('paged') : 1,
+                    'paged'          => $paged,
                     'posts_per_page'  => $posts_per_page,
                     'orderby' => $posts_order_by,
                     'order' => $posts_order

@@ -12,7 +12,6 @@
     $btn_text = ($btn_text) ? $btn_text : __('View Details', 'easy-hotel') ;
     $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
 
-
     if ($query->have_posts()) {
 
         ?>
@@ -115,7 +114,6 @@
 
         <?php
 
-        
         echo esc_html($hotel_view->eshb_get_pagination($query));
         
 

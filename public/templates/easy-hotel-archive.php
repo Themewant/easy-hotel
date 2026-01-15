@@ -22,21 +22,30 @@ $search_form_archive_visibility = isset($eshb_settings['search-form-archive']) ?
             $posts_order_by = isset($eshb_settings['accomodation_posts_order_by']) && !empty($eshb_settings['accomodation_posts_order_by']) ? $eshb_settings['accomodation_posts_order_by'] : 'id';
             $posts_order = isset($eshb_settings['accomodation_posts_order']) && !empty($eshb_settings['accomodation_posts_order']) ? $eshb_settings['accomodation_posts_order'] : 'DESC';
         
-            $paged = get_query_var('paged') ? get_query_var('paged') : get_query_var('page');
-            $paged = $paged ? $paged : 1;
-
-            if(is_tax( 'eshb_category' )){
-                $category_id = get_queried_object_id(  );
-            }
+            $paged = max( 1, get_query_var('paged') );
 
             $available_accomodations_args = array(
-                'post_type' => 'eshb_accomodation',
-                'paged'     => $paged,
-                'post_status' => 'publish',
+                'post_type'      => 'eshb_accomodation',
+                'post_status'    => 'publish',
                 'posts_per_page' => $posts_per_page,
-                'orderby' => $posts_order_by,
-                'order' => $posts_order
+                'paged'          => $paged,
+                'orderby'        => $posts_order_by,
+                'order'          => $posts_order,
             );
+
+            // ✅ IMPORTANT: add tax_query for taxonomy archive
+            if ( is_tax( 'eshb_category' ) ) {
+
+                $term = get_queried_object();
+
+                $available_accomodations_args['tax_query'] = array(
+                    array(
+                        'taxonomy' => 'eshb_category',
+                        'field'    => 'term_id',
+                        'terms'    => $term->term_id,
+                    ),
+                );
+            }
 
             // Add taxonomy filter if category is set
             if ( ! empty( $category_id ) ) {

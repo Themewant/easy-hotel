@@ -566,6 +566,10 @@ nav.eshb-pagination {
     }
 }
 
+.no-customize-support .eshb-container {
+    max-width: 100%;
+}
+
 .eshb-container {
     max-width: 1200px;
     margin: auto;
@@ -769,6 +773,7 @@ nav.eshb-pagination {
                 margin-top: 0;
                 line-height: 1.7em;
                 width: auto;
+                cursor: pointer;
             }
         }
 
@@ -1329,6 +1334,7 @@ nav.eshb-pagination {
                 gap: 20px;
                 align-items: center;
                 padding: 10px 20px;
+                cursor: pointer;
 
                 &::after {
                     display: block;

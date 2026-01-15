@@ -245,6 +245,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 = 1.8.4 =
 * Updated related rooms slider
+* Fixed Gutenberg blocks warning issue
 
 = 1.8.3 =
 * Added Gutenberg blocks
