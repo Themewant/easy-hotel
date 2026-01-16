@@ -138,6 +138,9 @@ Looking for a professional hotel website? Our Premium Hotel Booking Theme is des
 * [Moonlit](https://themeforest.net/item/moonlit-hotel-booking-wordpress-theme/57289887)
 * [Luxera](https://themewant.com/downloads/luxera-hotel-booking-wordpress-theme/)
 
+==Reviews by WordPress Experts==
+
+https://www.youtube.com/watch?v=klccWXDGx-w
 
 **📌 Supported themes**
 * [Twenty Twenty-Five](https://wordpress.org/themes/twentytwentyfive)
