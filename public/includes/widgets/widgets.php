@@ -110,6 +110,10 @@ final class Eshb_Elementor_Extension {
 		require_once(__DIR__ . '/room-gallery/room-gallery.php');
 		\Elementor\Plugin::instance()->widgets_manager->register(new \Eshb_Room_Gallery_Widget());
 
+		// room basic info
+		require_once(__DIR__ . '/room-basic-info/room-basic-info.php');
+		\Elementor\Plugin::instance()->widgets_manager->register(new \Eshb_Room_Basic_Info_Widget());
+
     }
 }
 Eshb_Elementor_Extension::instance();

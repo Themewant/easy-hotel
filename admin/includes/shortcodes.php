@@ -62,17 +62,18 @@ add_shortcode('eshb_accomodation_search_result', 'eshb_accomodation_search_resul
 function eshb_accomodation_info_shortcode() {
     $accomodation_id = get_the_ID();
     $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
-    $output = '';
+    $output = '<div class="basic-information-list">';
 
     if ( ! empty( $eshb_accomodation_metaboxes['accomodation_info_group'] ) ) {
         foreach ( $eshb_accomodation_metaboxes['accomodation_info_group'] as $group ) {
             $icon = !empty($group['info_icon']) ? '<i class="info-icon ' . esc_html($group['info_icon']) . '"></i>' : '';
+            $img = !empty($group['info_icon_img']['url']) ? '<img src="' . esc_url($group['info_icon_img']['url']) . '" class="info-icon"> ' : '';
             $title = esc_html($group['info_title']);
-            $output .= "<p class='info'>{$icon}<span class='info-title'>{$title}</span></p>";
+            $output .= "<p class='info'>{$icon}{$img}<span class='info-title'>{$title}</span></p>";
         }
     }
 
-    return $output;
+    return $output . '</div>';
 }
 add_shortcode('eshb_accomodation_info', 'eshb_accomodation_info_shortcode');
 

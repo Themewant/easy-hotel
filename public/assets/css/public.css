@@ -421,28 +421,28 @@
   height: auto;
 }
 
-.eshb-details-page {
+.single-eshb_accomodation {
   width: 100%;
   clear: both;
 }
-.eshb-details-page svg {
+.single-eshb_accomodation svg {
   width: 20px;
   height: auto;
 }
-.eshb-details-page .eshb-container {
+.single-eshb_accomodation .eshb-container {
   padding-top: 140px;
   padding-bottom: 140px;
 }
 @media only screen and (max-width: 767px) {
-  .eshb-details-page .eshb-container {
+  .single-eshb_accomodation .eshb-container {
     padding-top: 60px;
     padding-bottom: 60px;
   }
 }
-.eshb-details-page h3.eshb-day-wise-pricing-table-title {
+.single-eshb_accomodation h3.eshb-day-wise-pricing-table-title {
   font-weight: 300;
 }
-.eshb-details-page .accomodation-video {
+.single-eshb_accomodation .accomodation-video {
   position: relative;
   height: 0;
   overflow: hidden;
@@ -451,7 +451,7 @@
   align-items: center;
   justify-content: center;
 }
-.eshb-details-page .accomodation-video iframe {
+.single-eshb_accomodation .accomodation-video iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -459,138 +459,138 @@
   height: 100%;
 }
 @media only screen and (max-width: 767px) {
-  .eshb-details-page .accomodation-video.eshb-self-hosted-video {
+  .single-eshb_accomodation .accomodation-video.eshb-self-hosted-video {
     height: auto !important;
   }
 }
-.eshb-details-page .accomodation-video video {
+.single-eshb_accomodation .accomodation-video video {
   object-fit: cover;
 }
 @media only screen and (max-width: 767px) {
-  .eshb-details-page .accomodation-video video {
+  .single-eshb_accomodation .accomodation-video video {
     height: auto;
   }
 }
-.eshb-details-page .gallery-wrapper .wp-post-image {
+.single-eshb_accomodation .gallery-wrapper .wp-post-image {
   width: 100%;
 }
-.eshb-details-page .basic-information-list {
+.single-eshb_accomodation .basic-information-list {
   display: flex;
   align-items: center;
   column-gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 26px;
 }
-.eshb-details-page .basic-information-list .info {
+.single-eshb_accomodation .basic-information-list .info {
   margin-bottom: 0;
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.eshb-details-page .basic-information-list .info .info-icon {
+.single-eshb_accomodation .basic-information-list .info .info-icon {
   color: var(--eshb-primary-color);
   font-size: 18px;
 }
-.eshb-details-page .basic-information-list .info img.info-icon {
+.single-eshb_accomodation .basic-information-list .info img.info-icon {
   height: 18px;
 }
-.eshb-details-page .eshb-archive-wrapper {
+.single-eshb_accomodation .eshb-archive-wrapper {
   position: relative;
 }
-.eshb-details-page .eshb-archive-wrapper.related-accomodations {
+.single-eshb_accomodation .eshb-archive-wrapper.related-accomodations {
   padding-top: 120px;
 }
-.eshb-details-page.eshb-disabled-booking .eshb-container .eshb-row {
+.single-eshb_accomodation.eshb-disabled-booking .eshb-container .eshb-row {
   display: block;
 }
-.eshb-details-page.eshb-disabled-booking .eshb-container #eshb-contents,
-.eshb-details-page.eshb-disabled-booking .eshb-container #eshb-aside {
+.single-eshb_accomodation.eshb-disabled-booking .eshb-container #eshb-contents,
+.single-eshb_accomodation.eshb-disabled-booking .eshb-container #eshb-aside {
   width: 100% !important;
 }
-.eshb-details-page .eshb-check-in-out-times-area {
+.single-eshb_accomodation .eshb-check-in-out-times-area {
   margin-top: 40px;
   margin-bottom: 40px;
 }
-.eshb-details-page .eshb-check-in-out-times-area .eshb-check-in-out-times-title {
+.single-eshb_accomodation .eshb-check-in-out-times-area .eshb-check-in-out-times-title {
   font-weight: 300;
   font-size: 26px;
   margin-bottom: 10px;
 }
-.eshb-details-page .eshb-check-in-out-times-area p {
+.single-eshb_accomodation .eshb-check-in-out-times-area p {
   margin-bottom: 0;
 }
-.eshb-details-page.style-two .contents-container {
+.single-eshb_accomodation.style-two .contents-container {
   padding-top: 53px;
   padding-bottom: 100px;
 }
-.eshb-details-page.style-two h3.excerpt {
+.single-eshb_accomodation.style-two h3.excerpt {
   font-weight: 300;
   padding: 40px 0;
 }
-.eshb-details-page.style-two .minimal-booking {
+.single-eshb_accomodation.style-two .minimal-booking {
   padding: 100px 0;
 }
-.eshb-details-page.style-two .minimal-booking .left-col {
+.single-eshb_accomodation.style-two .minimal-booking .left-col {
   background-color: var(--eshb-primary-color);
   height: 138px;
   align-content: center;
   padding: 0 20px;
 }
-.eshb-details-page.style-two .minimal-booking .left-col h2 {
+.single-eshb_accomodation.style-two .minimal-booking .left-col h2 {
   color: var(--eshb-white-color);
 }
-.eshb-details-page.style-two .minimal-booking .right-col {
+.single-eshb_accomodation.style-two .minimal-booking .right-col {
   background-color: var(--eshb-territory-color);
   height: 138px;
   align-content: center;
   padding: 0 20px;
 }
-.eshb-details-page.style-two .minimal-booking .right-col .btn-main {
+.single-eshb_accomodation.style-two .minimal-booking .right-col .btn-main {
   background-color: transparent;
   border: solid 1px rgba(255, 255, 255, 0.35);
   padding: 7px 25px;
   color: var(--eshb-white-color);
 }
-.eshb-details-page.style-two .minimal-booking .right-col .btn-main:hover {
+.single-eshb_accomodation.style-two .minimal-booking .right-col .btn-main:hover {
   color: var(--eshb-white-color);
   box-shadow: 2px 2px 20px 0px rgba(29, 29, 31, 0.5);
 }
-.eshb-details-page.style-two .basic-information-list .info {
+.single-eshb_accomodation.style-two .basic-information-list .info {
   flex: 0 0 auto;
   width: calc(25% - 1.56rem);
 }
 @media (max-width: 767px) {
-  .eshb-details-page.style-two .basic-information-list .info {
+  .single-eshb_accomodation.style-two .basic-information-list .info {
     width: auto;
     margin-bottom: 15px;
   }
 }
-.eshb-details-page.style-two .basic-information-list .info .info-icon {
+.single-eshb_accomodation.style-two .basic-information-list .info .info-icon {
   font-size: 40px;
   height: auto;
 }
-.eshb-details-page.style-two .basic-information-list .info .info-title {
+.single-eshb_accomodation.style-two .basic-information-list .info .info-title {
   margin-left: 30px;
   font-weight: 500;
   color: var(--eshb-text-color);
 }
-.eshb-details-page.style-two .related-accomodations {
+.single-eshb_accomodation.style-two .related-accomodations {
   background: var(--eshb-secondary-color);
   padding: 80px 40px 130px 40px;
 }
-.eshb-details-page.style-two .related-accomodations .easy-hotel-heading {
+.single-eshb_accomodation.style-two .related-accomodations .easy-hotel-heading {
   text-align: center;
   margin-bottom: 30px;
 }
-.eshb-details-page.style-two .related-accomodations .easy-hotel-heading .easy-related-subtitle {
+.single-eshb_accomodation.style-two .related-accomodations .easy-hotel-heading .easy-related-subtitle {
   font-weight: 500;
   color: var(--eshb-text-color);
 }
-.eshb-details-page.style-two .accomodation-gallery .swiper-slide {
+.single-eshb_accomodation.style-two .accomodation-gallery .swiper-slide {
   padding: 0 15px;
   overflow: hidden;
 }
-.eshb-details-page.style-two .eshb-day-wise-pricing-table-container {
+.single-eshb_accomodation.style-two .eshb-day-wise-pricing-table-container {
   margin-top: 70px;
   margin-bottom: 70px;
 }
@@ -1849,4 +1849,19 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 
 .brxe-eshb-room-slider {
   position: relative;
+}
+
+.elementor-widget-eshb-room-basic-info .eshb-basic-information-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.elementor-widget-eshb-room-basic-info .eshb-basic-information-wrapper .basic-information-list {
+  margin: 0;
+}
+.elementor-widget-eshb-room-basic-info .eshb-basic-information-wrapper .price {
+  display: flex;
+  align-items: flex-end;
+  margin: 0;
+  gap: 5px;
 }/*# sourceMappingURL=public.css.map */
