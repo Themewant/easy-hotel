@@ -421,6 +421,11 @@
   height: auto;
 }
 
+.eshb-details-page {
+  width: 100%;
+  clear: both;
+}
+
 .single-eshb_accomodation {
   width: 100%;
   clear: both;
