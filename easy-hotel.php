@@ -5,7 +5,7 @@
  * Plugin URI:  https://themewant.com/downloads/hotel-booking/
  * Author:      Themewant
  * Author URI:  http://themewant.com/
- * Version:     1.8.4
+ * Version:     1.8.5
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: easy-hotel
@@ -13,7 +13,7 @@
 */
     if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-    define( 'ESHB_VERSION', '1.8.4' );
+    define( 'ESHB_VERSION', '1.8.5' );
     define( 'ESHB_PL_ROOT', __FILE__ );
     define( 'ESHB_PL_URL', plugins_url( '/', ESHB_PL_ROOT ) );
     define( 'ESHB_PL_PATH', plugin_dir_path( ESHB_PL_ROOT ) );

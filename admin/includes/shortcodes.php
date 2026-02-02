@@ -112,7 +112,7 @@ add_shortcode('eshb_availability_calendar', 'eshb_availability_calendar_shortcod
 function eshb_related_accomodations_shortcode() {
     if(is_singular( 'eshb_accomodation')) {
         ob_start();
-        require ESHB_PL_PATH . 'public/templates/template-parts/room-slider.php';
+        require ESHB_PL_PATH . 'public/templates/template-parts/related-room-slider.php';
         return ob_get_clean();
     } 
 }
