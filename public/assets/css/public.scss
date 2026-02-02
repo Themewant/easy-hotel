@@ -261,6 +261,11 @@
 .eshb-details-page {
     width: 100%;
     clear: both;
+}
+
+.single-eshb_accomodation {
+    width: 100%;
+    clear: both;
 
     svg {
         width: 20px;
@@ -1968,4 +1973,22 @@ body.rtl {
 
 .brxe-eshb-room-slider {
     position: relative;
+}
+
+// widget room basic info 
+.elementor-widget-eshb-room-basic-info .eshb-basic-information-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    .basic-information-list {
+        margin: 0;
+    }
+
+    .price {
+        display: flex;
+        align-items: flex-end;
+        margin: 0;
+        gap: 5px;
+    }
 }
