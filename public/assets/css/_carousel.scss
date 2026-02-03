@@ -7,6 +7,7 @@
         height: 600px;
         width: 100%;
         object-fit: cover;
+        display: block;
 
         @media (max-width: 782px) {
             height: 450px;
@@ -19,31 +20,37 @@
         height: 50px;
         line-height: 40px;
         display: flex;
-        color:#ffffff;
-        padding:5px 0;
-        font-size:14px;
+        color: #ffffff;
+        padding: 5px 0;
+        font-size: 14px;
         line-height: 40px;
         background: var(--eshb-primary-color);
         text-align: center;
+
         .swiper-navigation-icon {
             height: 20px;
         }
+
         &::after {
             display: none;
         }
     }
-    .swiper-button-prev{
-        border-radius:0 20px 20px 0;
+
+    .swiper-button-prev {
+        border-radius: 0 20px 20px 0;
         left: 0px !important;
+
         &::after {
             display: none;
         }
     }
-    .swiper-button-next{
-        border-radius:20px 0 0 20px;
+
+    .swiper-button-next {
+        border-radius: 20px 0 0 20px;
         right: 0px !important;
+
         &::after {
-            display: none;    
+            display: none;
         }
     }
 }
