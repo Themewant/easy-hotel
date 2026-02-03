@@ -494,7 +494,8 @@
     display: flex;
     margin-top: calc(-1 * var(--bs-gutter-y));
     margin-right: calc(-.5 * var(--bs-gutter-x));
-    margin-left: calc(-.5 * var(--bs-gutter-x))
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+    width: 100%;
 }
 
 @media (min-width: 992px) {
@@ -1980,6 +1981,11 @@ body.rtl {
     display: flex;
     align-items: center;
     gap: 1.5rem;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: self-start;
+    }
 
     .basic-information-list {
         margin: 0;
