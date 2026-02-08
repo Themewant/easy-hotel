@@ -1,6 +1,6 @@
 === Easy Hotel Booking – Powerful Hotel Booking
 Contributors: themewant
-Tags: Easy hotel, hotel booking, hotel, booking
+Tags: easy hotel, hotel booking, booking system, room booking, woocommerce booking, reservation calendar
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -138,6 +138,10 @@ Looking for a professional hotel website? Our Premium Hotel Booking Theme is des
 * [Moonlit](https://themeforest.net/item/moonlit-hotel-booking-wordpress-theme/57289887)
 * [Luxera](https://themewant.com/downloads/luxera-hotel-booking-wordpress-theme/)
 
+==Reviews by WordPress Experts==
+
+https://www.youtube.com/watch?v=klccWXDGx-w
+https://www.youtube.com/watch?v=emJ1wowtSYQ
 
 **📌 Supported themes**
 * [Twenty Twenty-Five](https://wordpress.org/themes/twentytwentyfive)
@@ -193,6 +197,8 @@ With Easy Hotel Booking, you can have a fully functional hotel booking system on
 If you like The Our Plugin, then consider checking out other WordPress Plugins:
 
 * [RT Mega Menu](https://wordpress.org/plugins/rt-mega-menu/) Advanced WordPress Mega Menu Builder for Elementor
+* [Easy Currency](https://wordpress.org/plugins/easy-currency/) Easy Currency Converter plugin for easy hotel.
+* [Easy Elements](https://wordpress.org/plugins/easy-elements/) Easy Elements for Elementor
 * [Easy Menu Iocns](https://wordpress.org/plugins/easy-menu-icons/) WordPress Menu Icon Plugin
 
 
@@ -244,7 +250,12 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 == Changelog ==
 
 = 1.8.5 =
+* Added template container size option to admin settings
+* Fixed accommodation basic information shortcode css issues
 * Fixed related rooms slider shortcode issue
+* Fixed accommodation gallery slider nav icon issues
+* Fixed template style two css issues
+* Fixed booking form responsive css issues
 
 = 1.8.4 =
 * Updated related rooms slider

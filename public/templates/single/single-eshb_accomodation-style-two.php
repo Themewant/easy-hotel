@@ -43,7 +43,7 @@ $ESHB_View = new ESHB_View();
 ?>
     <div <?php echo esc_attr(post_class($post_class)) ?>>
 
-        <div class="container">
+        <div class="eshb-container">
             <?php 
                 if($booking_type != 'disable' && !empty($numeric_price)){
                     ?>
@@ -108,7 +108,7 @@ $ESHB_View = new ESHB_View();
         <div class="eshb-accomodation-gallery-section">
             <?php
             if($show_gallery) {
-                echo wp_kses_post($ESHB_View->eshb_get_gallery_html($accomodation_id, '', 'full', false));
+                echo esc_html($ESHB_View->eshb_get_gallery_html($accomodation_id, '', 'full', false));
             }
             ?>
         </div>

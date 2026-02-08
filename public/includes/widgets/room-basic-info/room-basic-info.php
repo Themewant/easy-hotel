@@ -95,7 +95,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
                 ],
             ]
         );
-        $this->add_control(
+        $this->add_responsive_control(
             'wrapper_padding',
             [
                 'type' => \Elementor\Controls_Manager::DIMENSIONS,
@@ -113,7 +113,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
 				'selector' => '{{WRAPPER}} .eshb-basic-information-wrapper',
 			]
 		);
-        $this->add_control(
+        $this->add_responsive_control(
             'wrapper_border_radius',
             [
                 'type' => \Elementor\Controls_Manager::DIMENSIONS,
@@ -125,24 +125,31 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
             ]
         );	
 
-        $this->add_control(
-            'wrapper_space_between',
+        $this->add_responsive_control(
+            'justify_content',
             [
-                'type' => \Elementor\Controls_Manager::SLIDER,
-                'label' => esc_html__( 'Space Between', 'easy-hotel' ),
-                'size_units' => [ 'px', 'em', 'rem', 'custom' ],
-                'default' => [
-					'unit' => 'px',
-					'size' => 20,
-				],
-                'range' => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 300,
+                'type' => \Elementor\Controls_Manager::CHOOSE,
+                'label' => esc_html__( 'Justify Content', 'easy-hotel' ),
+                'options' => [
+                    'flex-start' => [
+                        'title' => esc_html__( 'Start', 'easy-hotel' ),
+                        'icon' => 'eicon-flex eicon-justify-start-h',
+                    ],
+                    'center' => [
+                        'title' => esc_html__( 'Center', 'easy-hotel' ),
+                        'icon' => 'eicon-flex eicon-justify-center-h',
+                    ],
+                    'flex-end' => [
+                        'title' => esc_html__( 'End', 'easy-hotel' ),
+                        'icon' => 'eicon-flex eicon-justify-end-h',
+                    ],
+                    'space-between' => [
+                        'title' => esc_html__( 'Space Between', 'easy-hotel' ),
+                        'icon' => 'eicon-flex eicon-justify-space-between-h',
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .eshb-basic-information-wrapper' => 'gap: {{SIZE}}{{UNIT}}',
+                    '{{WRAPPER}} .basic-information-list' => 'justify-content: {{VALUE}};',
                 ],
             ]
         );
@@ -156,7 +163,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
                 'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
             ]
         );           
-        $this->add_control(
+        $this->add_responsive_control(
             'items_space_between',
             [
                 'type' => \Elementor\Controls_Manager::SLIDER,
@@ -346,14 +353,14 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
                 $icon = !empty($group['info_icon']) ? '<i class="info-icon ' . esc_html($group['info_icon']) . '"></i>' : '';
                 $img = !empty($group['info_icon_img']['url']) ? '<img src="' . esc_url($group['info_icon_img']['url']) . '" class="info-icon"> ' : '';
                 $title = esc_html($group['info_title']);
-                $output .= "<p class='info'>{$icon}{$img}<span class='info-title'>{$title}</span></p>";
+                $output .= "<div class='info'>{$icon}{$img}<span class='info-title'>{$title}</span></div>";
             }
         }
-
-        $output .= '</div>';
         if ($show_price == 'yes') {
             $output .= '<h3 class="price">' . wp_kses_post($price) . '<div class="label"> / ' . esc_html( eshb_get_translated_string($perodicity_string) ) . '</div></h3>';
         }
+
+        $output .= '</div>';
         $output .= '</div>';
 
         echo $output;

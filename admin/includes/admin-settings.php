@@ -607,6 +607,14 @@ add_action( 'plugins_loaded', function(){
                       'units' => array( 'px' ),
                       'output_mode' => 'padding', // or margin, relative
                     ),
+                    array(
+                      'id'    => 'page-container-size',
+                      'type'  => 'dimensions',
+                      'title' => 'Page Container Size',
+                      'units' => array( 'px' ),
+                      'height' => false,
+                      'output_mode' => 'width', // or margin, relative
+                    ),
                     
                 )
           )
