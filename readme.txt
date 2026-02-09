@@ -4,7 +4,7 @@ Tags: easy hotel, hotel booking, booking system, room booking, woocommerce booki
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -248,6 +248,9 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 1.8.6 =
+* Updated minimal booking wrap css
 
 = 1.8.5 =
 * Added template container size option to admin settings
