@@ -285,6 +285,48 @@ class Eshb_Room_Gallery_Widget  extends \Elementor\Widget_Base {
         );
 
         $this->add_control(
+            'need_custom_icon',
+            [
+                'label'        => esc_html__( 'Need Custom Icon', 'easy-hotel' ),
+                'type'         => \Elementor\Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__( 'Yes', 'easy-hotel' ),
+                'label_off'    => esc_html__( 'No', 'easy-hotel' ),
+                'return_value' => 'yes',
+                'default'      => '', // অথবা এখানে 'no' দিয়ে দেখতে পারেন
+            ]
+        );
+
+        $this->add_control(
+            'room_prev_icon',
+            [
+                'label'            => esc_html__( 'Previous Icon', 'easy-hotel' ),
+                'type'             => \Elementor\Controls_Manager::ICONS,
+                'default'          => [
+                    'value'   => 'fas fa-chevron-left',
+                    'library' => 'solid',
+                ],
+                'condition'        => [
+                    'need_custom_icon' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'room_next_icon',
+            [
+                'label'            => esc_html__( 'Next Icon', 'easy-hotel' ),
+                'type'             => \Elementor\Controls_Manager::ICONS,
+                'default'          => [
+                    'value'   => 'fas fa-chevron-right',
+                    'library' => 'solid',
+                ],
+                'condition'        => [
+                    'need_custom_icon' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'room_gallerynav_text_bg',
             [
                 'label' => esc_html__('Nav BG Color', 'easy-hotel'),
@@ -565,8 +607,6 @@ class Eshb_Room_Gallery_Widget  extends \Elementor\Widget_Base {
         $settings = $this->get_settings_for_display();
 
         $thumbnail_size = isset($settings['thumbnail_size']) && !empty($settings['thumbnail_size']) ? $settings['thumbnail_size'] : 'eshb_thumbnail';
-    
-
         $col_xl          = $settings['col_xl'];
         $col_xl          = !empty($col_xl) ? $col_xl : 4;
         $slidesToShow    = $col_xl;

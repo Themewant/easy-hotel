@@ -26,6 +26,7 @@ function eshb_dynamic_css() {
     $inrange_color = !empty($calendar_colors['inrange-color']) ? $calendar_colors['inrange-color'] : '#fff';
 
     $page_padding = !empty($eshb_settings['page-spacing']) ? $eshb_settings['page-spacing'] : '';
+    $page_container_size = !empty($eshb_settings['page-container-size']) ? $eshb_settings['page-container-size'] : '';
 
     $custom_css = "";
 
@@ -68,6 +69,19 @@ function eshb_dynamic_css() {
         }
         if(!empty($page_padding['bottom'])) {
             $custom_css .= "padding-bottom: " . esc_attr($page_padding['bottom']) . "px;";
+        }
+
+        $custom_css .= "
+        }
+        ";
+    }
+
+    if(!empty($page_container_size)) {
+        $custom_css .= "
+        .eshb-container {";
+        
+        if(!empty($page_container_size['width'])) {
+            $custom_css .= "max-width: " . esc_attr($page_container_size['width']) . "px;";
         }
 
         $custom_css .= "

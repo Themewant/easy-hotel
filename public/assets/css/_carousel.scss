@@ -1,4 +1,4 @@
-.accomodation-gallery {
+body.single .accomodation-gallery {
     .swiper-wrapper {
         height: auto;
     }
@@ -7,7 +7,6 @@
         height: 600px;
         width: 100%;
         object-fit: cover;
-        display: block;
 
         @media (max-width: 782px) {
             height: 450px;
@@ -20,19 +19,18 @@
         height: 50px;
         line-height: 40px;
         display: flex;
-        color: #ffffff;
         padding: 5px 0;
-        font-size: 14px;
-        line-height: 40px;
         background: var(--eshb-primary-color);
         text-align: center;
 
         .swiper-navigation-icon {
-            height: 20px;
+            display: none;
         }
 
         &::after {
-            display: none;
+            color: #ffffff;
+            font-size: 18px;
+            background: none !important;
         }
     }
 
@@ -41,7 +39,7 @@
         left: 0px !important;
 
         &::after {
-            display: none;
+            margin-left: -5px;
         }
     }
 
@@ -50,7 +48,7 @@
         right: 0px !important;
 
         &::after {
-            display: none;
+            margin-right: -5px;
         }
     }
 }

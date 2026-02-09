@@ -1,11 +1,11 @@
-(function($) {
+(function ($) {
 
     let ESHBPUBLIC = {
-        init: function () { 
+        init: function () {
             ESHBPUBLIC.enableEshbGalleyCarousel();
             ESHBPUBLIC.enableEshbGridAnimation();
         },
-        enableEshbGalleyCarousel: function () { 
+        enableEshbGalleyCarousel: function () {
 
             let slidesPerView = $('.eshb_accomodation-template-default .eshb-accomodation-gallery-section .has-accomodation-gallery').attr('data-slides-per-view');
 
@@ -16,8 +16,8 @@
                 centeredSlides: true,
                 // Navigation arrows
                 navigation: {
-                  nextEl: '.accomodation-gallery .swiper-button-next',
-                  prevEl: '.accomodation-gallery .swiper-button-prev',
+                    nextEl: '.accomodation-gallery .swiper-button-next',
+                    prevEl: '.accomodation-gallery .swiper-button-prev',
                 },
                 breakpoints: {
                     0: {
@@ -36,13 +36,13 @@
                         slidesPerView: 1,
                     },
                     640: {
-                      slidesPerView: 1,
+                        slidesPerView: 1,
                     },
                     768: {
-                      slidesPerView: 1,
+                        slidesPerView: 1,
                     },
                     1024: {
-                      slidesPerView: 2,
+                        slidesPerView: 2,
                     },
                     1600: {
                         slidesPerView: slidesPerView,
@@ -50,18 +50,18 @@
                 },
             });
         },
-        enableEshbGridAnimation: function () { 
-            $('.eshb-item-grid .grid-item.has-animation-fade-in-up').each(function (index, element) { 
+        enableEshbGridAnimation: function () {
+            $('.eshb-item-grid .grid-item.has-animation-fade-in-up').each(function (index, element) {
 
                 var delay = parseFloat(3) + parseFloat(index);
-    
+
                 $(element).css('animation-delay', '0.' + delay + 's');
-    
+
             });
         },
-        
+
     }
 
     ESHBPUBLIC.init();
-    
+
 })(jQuery);

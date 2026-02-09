@@ -261,11 +261,6 @@
 .eshb-details-page {
     width: 100%;
     clear: both;
-}
-
-.single-eshb_accomodation {
-    width: 100%;
-    clear: both;
 
     svg {
         width: 20px;
@@ -397,7 +392,11 @@
         }
 
         .minimal-booking {
-            padding: 100px 0;
+            padding: 0 0 100px 0;
+
+            .eshb-row {
+                gap: 0;
+            }
 
             .left-col {
                 background-color: var(--eshb-primary-color);
@@ -441,7 +440,6 @@
 
             .info-icon {
                 font-size: 40px;
-                height: auto;
             }
 
             .info-title {
@@ -494,8 +492,7 @@
     display: flex;
     margin-top: calc(-1 * var(--bs-gutter-y));
     margin-right: calc(-.5 * var(--bs-gutter-x));
-    margin-left: calc(-.5 * var(--bs-gutter-x));
-    width: 100%;
+    margin-left: calc(-.5 * var(--bs-gutter-x))
 }
 
 @media (min-width: 992px) {
@@ -617,6 +614,8 @@ nav.eshb-pagination {
 
     #eshb-aside {
         width: 41.66666667%;
+        display: flex;
+        justify-content: end;
 
         @media (max-width: 1200px) {
             padding: 0 15px;
@@ -1093,7 +1092,6 @@ nav.eshb-pagination {
         padding: 35px 45px 35px;
         border: 1px solid var(--eshb-border-color);
         transition: opacity 0.3s;
-        width: fit-content;
         max-width: -webkit-fill-available;
 
         @media (max-width: 767px) {
@@ -1177,10 +1175,7 @@ nav.eshb-pagination {
             margin: 10px 0;
             grid-template-columns: repeat(2, 1fr);
             column-gap: 10px;
-
-            @media (max-width: 767px) {
-                grid-template-columns: repeat(1, 1fr);
-            }
+            justify-content: center;
 
             .eshb-form-group {
                 text-align: center;
@@ -1978,17 +1973,9 @@ body.rtl {
 
 // widget room basic info 
 .elementor-widget-eshb-room-basic-info .eshb-basic-information-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-
-    @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: self-start;
-    }
-
     .basic-information-list {
         margin: 0;
+        display: flex;
     }
 
     .price {
