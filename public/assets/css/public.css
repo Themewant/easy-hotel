@@ -527,7 +527,7 @@ body.single .accomodation-gallery .swiper-button-next::after {
   padding: 40px 0;
 }
 .eshb-details-page.style-two .minimal-booking {
-  padding: 100px 0;
+  padding: 0 0 100px 0;
 }
 .eshb-details-page.style-two .minimal-booking .eshb-row {
   gap: 0;
