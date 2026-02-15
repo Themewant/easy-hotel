@@ -1,6 +1,6 @@
 === Easy Hotel Booking – Powerful Hotel Booking
 Contributors: themewant
-Tags: easy hotel, hotel booking, booking system, room booking, woocommerce booking, hotel
+Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -141,6 +141,7 @@ Looking for a professional hotel website? Our Premium Hotel Booking Theme is des
 ==Reviews by WordPress Experts==
 
 https://www.youtube.com/watch?v=klccWXDGx-w
+
 https://www.youtube.com/watch?v=emJ1wowtSYQ
 
 **📌 Supported themes**
