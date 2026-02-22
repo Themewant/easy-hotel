@@ -161,15 +161,17 @@
 
 .eshb-notice {
   padding: 10px;
+}
+.eshb-notice.notice {
+  border-left-color: #576AE3 !important;
+  padding: 10px;
+}
+.eshb-notice {
   padding: 5px !important;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-}
-.eshb-notice.notice {
-  border-left-color: #576AE3 !important;
-  padding: 10px;
 }
 
 .eshb-notice .notice-logo {

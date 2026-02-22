@@ -392,7 +392,6 @@
         }
 
         .minimal-booking {
-            padding: 0 0 100px 0;
 
             .eshb-row {
                 gap: 0;
@@ -577,11 +576,6 @@ nav.eshb-pagination {
     max-width: 1200px;
     margin: auto;
     width: 100%;
-
-    &.eshb-archive-wrapper {
-        padding-top: 120px;
-        padding-bottom: 120px;
-    }
 
     .eshb-row {
         display: flex;

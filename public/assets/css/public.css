@@ -526,9 +526,6 @@ body.single .accomodation-gallery .swiper-button-next::after {
   font-weight: 300;
   padding: 40px 0;
 }
-.eshb-details-page.style-two .minimal-booking {
-  padding: 0 0 100px 0;
-}
 .eshb-details-page.style-two .minimal-booking .eshb-row {
   gap: 0;
 }
@@ -581,11 +578,13 @@ body.single .accomodation-gallery .swiper-button-next::after {
 }
 .eshb-details-page.style-two .related-accomodations .easy-hotel-heading {
   text-align: center;
-  margin-bottom: 30px;
 }
 .eshb-details-page.style-two .related-accomodations .easy-hotel-heading .easy-related-subtitle {
   font-weight: 500;
   color: var(--eshb-text-color);
+}
+.eshb-details-page.style-two .related-accomodations .easy-hotel-heading {
+  margin-bottom: 30px;
 }
 .eshb-details-page.style-two .accomodation-gallery .swiper-slide {
   padding: 0 15px;
@@ -683,10 +682,6 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   max-width: 1200px;
   margin: auto;
   width: 100%;
-}
-.eshb-container.eshb-archive-wrapper {
-  padding-top: 120px;
-  padding-bottom: 120px;
 }
 .eshb-container .eshb-row {
   display: flex;
@@ -813,7 +808,6 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 
 .eshb-search {
   width: 100%;
-  background-color: var(--eshb-dark-color);
 }
 .eshb-search .eshb-search-form {
   display: flex;
@@ -852,6 +846,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-search .eshb-search-form .eshb-form-submit-btn {
   margin-top: 40px;
+}
+.eshb-search {
+  background-color: var(--eshb-dark-color);
 }
 .eshb-search .eshb-search-form .submition-wrapper .eshb-form-submit-btn {
   display: inline-block;
@@ -1777,11 +1774,13 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
 
 .related-accomodations .easy-hotel-heading {
   text-align: center;
-  margin-bottom: 30px;
 }
 .related-accomodations .easy-hotel-heading .easy-related-subtitle {
   font-weight: 500;
   color: var(--eshb-text-color);
+}
+.related-accomodations .easy-hotel-heading {
+  margin-bottom: 30px;
 }
 .related-accomodations .grid-item .item-inner {
   line-height: 0;

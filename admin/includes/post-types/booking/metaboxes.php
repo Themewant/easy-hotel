@@ -26,6 +26,7 @@ add_action( 'plugins_loaded', function(){
         }
 
         function eshb_add_custom_columns($columns) {
+            $columns['booking_customer'] = esc_html__( 'Customer', 'easy-hotel' );
             $columns['booking_start_date'] = esc_html__( 'Start Date', 'easy-hotel' );
             $columns['booking_end_date'] = esc_html__( 'End Date', 'easy-hotel' );
             $columns['booking_time_slot'] = esc_html__( 'Time Slot', 'easy-hotel' );
@@ -44,7 +45,19 @@ add_action( 'plugins_loaded', function(){
             $time_slot = !empty($eshb_booking_metaboxes['booking_start_time']) && !empty($eshb_booking_metaboxes['booking_end_time']) ? ESHB_Helper::format_to_wp_time($eshb_booking_metaboxes['booking_start_time']) . ' - ' . ESHB_Helper::format_to_wp_time($eshb_booking_metaboxes['booking_end_time']) : '';
             $room_qty = !empty($eshb_booking_metaboxes['room_quantity']) ? $eshb_booking_metaboxes['room_quantity'] : '';
 
+            $eshb_booking_customer_details_metaboxes = get_post_meta($post_id, 'eshb_booking_customer_details_metaboxes', true);
+            if(!$eshb_booking_customer_details_metaboxes){
+                return;
+            }
+
+            $customer_first_name =  !empty($eshb_booking_customer_details_metaboxes['first_name']) ? $eshb_booking_customer_details_metaboxes['first_name'] : '';
+            $customer_last_name =  !empty($eshb_booking_customer_details_metaboxes['last_name']) ? $eshb_booking_customer_details_metaboxes['last_name'] : '';
+            $customer_full_name = $customer_first_name . ' ' . $customer_last_name;
+
             switch ($column) {
+                case 'booking_customer':
+                    echo esc_html($customer_full_name);
+                    break;
                 case 'booking_start_date':
                     echo esc_html(date_i18n( get_option('date_format'), strtotime( $eshb_booking_metaboxes['booking_start_date'] ) ));
                     break;
@@ -73,6 +86,7 @@ add_action( 'plugins_loaded', function(){
             unset($columns['date']); // Remove the date column temporarily
         
             // Add your custom columns
+            $columns['booking_customer'] = esc_html__( 'Customer', 'easy-hotel' );
             $columns['booking_start_date'] = esc_html__( 'Start Date', 'easy-hotel' );
             $columns['booking_end_date'] = esc_html__( 'End Date', 'easy-hotel' );
             $columns['booking_time_slot'] = esc_html__( 'Time Slot', 'easy-hotel' );

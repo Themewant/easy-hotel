@@ -1,10 +1,10 @@
 === Easy Hotel Booking – Powerful Hotel Booking
 Contributors: themewant
-Tags: easy hotel, hotel booking, booking system, room booking, woocommerce booking, hotel
+Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.6
+Stable tag: 1.8.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -141,6 +141,7 @@ Looking for a professional hotel website? Our Premium Hotel Booking Theme is des
 ==Reviews by WordPress Experts==
 
 https://www.youtube.com/watch?v=klccWXDGx-w
+
 https://www.youtube.com/watch?v=emJ1wowtSYQ
 
 **📌 Supported themes**
@@ -248,6 +249,12 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 1.8.8 =
+* Added customer name column to bookings table
+
+= 1.8.7 =
+* Fixed: Removed padding from archive wrapper & minimal booking wrap css
 
 = 1.8.6 =
 * Updated minimal booking wrap css
