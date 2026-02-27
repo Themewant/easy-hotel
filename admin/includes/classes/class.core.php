@@ -169,7 +169,7 @@ class ESHB_Core {
                     continue;
                 }
                 $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                if(in_array('all', $session['days'])){
+                if(is_array($session['days']) && in_array('all', $session['days'])){
                     $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
                 }
                 if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
