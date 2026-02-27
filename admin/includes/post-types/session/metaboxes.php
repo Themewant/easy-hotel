@@ -114,16 +114,19 @@ function eshb_custom_column_content_session_post($column, $post_id) {
     $eshb_session_metaboxes = get_post_meta($post_id, 'eshb_session_metaboxes', true);
     $hotel_core = new ESHB_Core();
     $currency_symbol = $hotel_core->get_eshb_currency_symbol();
+    $price = !empty($eshb_session_metaboxes['session_price']) ? $currency_symbol . $eshb_session_metaboxes['session_price'] : '';
+    $start_date = !empty($eshb_session_metaboxes['start_date']) ? $eshb_session_metaboxes['start_date'] : '';
+    $end_date = !empty($eshb_session_metaboxes['end_date']) ? $eshb_session_metaboxes['end_date'] : '';
 
     switch ($column) {
         case 'session_price':
-            echo esc_html($currency_symbol) . esc_html($eshb_session_metaboxes['session_price']);
+            echo esc_html($price);
             break;
         case 'start_date':
-            echo esc_html($eshb_session_metaboxes['start_date']);
+            echo esc_html($start_date);
             break;
         case 'end_date':
-            echo esc_html($eshb_session_metaboxes['end_date']);
+            echo esc_html($end_date);
             break;
     }
 }
