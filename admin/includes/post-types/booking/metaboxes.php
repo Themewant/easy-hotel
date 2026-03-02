@@ -46,12 +46,21 @@ add_action( 'plugins_loaded', function(){
             $room_qty = !empty($eshb_booking_metaboxes['room_quantity']) ? $eshb_booking_metaboxes['room_quantity'] : '';
 
             $eshb_booking_customer_details_metaboxes = get_post_meta($post_id, 'eshb_booking_customer_details_metaboxes', true);
-            if(!$eshb_booking_customer_details_metaboxes){
-                return;
-            }
-
             $customer_first_name =  !empty($eshb_booking_customer_details_metaboxes['first_name']) ? $eshb_booking_customer_details_metaboxes['first_name'] : '';
             $customer_last_name =  !empty($eshb_booking_customer_details_metaboxes['last_name']) ? $eshb_booking_customer_details_metaboxes['last_name'] : '';
+            
+            $order_id = !empty($eshb_booking_metaboxes['order_id']) ? $eshb_booking_metaboxes['order_id'] : '';
+
+            // get customer data from woocommerce if not exist in booking meta
+            if(class_exists('WooCommerce') && (empty($customer_first_name) || empty($customer_last_name))){
+                $order = wc_get_order($order_id);
+                if($order){
+                    $customer_first_name = $order->get_billing_first_name();
+                    $customer_last_name = $order->get_billing_last_name();
+                }
+            }
+
+
             $customer_full_name = $customer_first_name . ' ' . $customer_last_name;
 
             switch ($column) {

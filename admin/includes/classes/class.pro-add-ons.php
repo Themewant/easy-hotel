@@ -11,6 +11,15 @@ class ESHB_PRO_ADDONS {
     public function eshb_get_addons(){
         $addons = array(
                 array(
+                    'name' => 'EHB WhatsApp',
+                    'slug' => 'ehb-whatsapp/ehb-whatsapp.php',
+                    'external_url'  => 'https://themewant.com/downloads/ehb-whatsapp/',
+                    'demo_url'  => 'https://themewant.com/downloads/ehb-whatsapp/',
+                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/whatsapp.png',
+                    'desc' => 'Easy Hotel WhatsApp Plugin, WhatsApp notification sender for Easy Hotel plugin.',
+                    'is_pro' => true
+                ),
+                array(
                     'name' => 'EHB Email Template',
                     'slug' => 'ehb-email-template/ehb-email-template.php',
                     'external_url'  => 'https://themewant.com/downloads/ehb-email-template/',
