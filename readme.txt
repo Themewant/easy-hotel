@@ -251,6 +251,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 == Changelog ==
 
 = 1.8.9 =
+* Added made compatible for ehb whatsapp
 * Fixed seasonal pricing conditions issues
 
 = 1.8.8 =
