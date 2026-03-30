@@ -16,7 +16,6 @@ return array(
 		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
-		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
 		'styles' => array(
 			array(
@@ -30,6 +29,10 @@ return array(
 			)
 		),
 		'attributes' => array(
+			'blockId' => array(
+				'type' => 'string',
+				'default' => ''
+			),
 			'accomodationId' => array(
 				'type' => 'string',
 				'default' => ''
@@ -328,6 +331,35 @@ return array(
 			'formTitleColorHover' => array(
 				'type' => 'string',
 				'default' => ''
+			),
+			'calendarIconColor' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'calendarIconColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'calendarIconSize' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionX' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionY' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionXTablet' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionYTablet' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionXMobile' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionYMobile' => array(
+				'type' => 'string'
 			)
 		)
 	)

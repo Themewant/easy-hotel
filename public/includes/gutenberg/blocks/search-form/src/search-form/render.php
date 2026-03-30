@@ -193,5 +193,22 @@ if ( $vars ) {
     $style_attr = implode( ';', $vars );
 }
 
+$calendar_icon_position_x_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_x_responsive, 'calendarIconPositionX', 'right', [], false);
+
+$calendar_icon_position_y_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_y_responsive, 'calendarIconPositionY', 'top', [], false);
+
+$style_handle = 'eshb-style';
+$unique_id    = $attributes['blockId'];
+$selector     = '.eshb-search-form-block-wrapper.' . $unique_id;
+
+$full_responsive_css = '';
+$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_x_responsive);
+$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_y_responsive);
+
+wp_enqueue_style( $style_handle );
+ESHB_Block_Helper::add_custom_style( $style_handle, $selector, $full_responsive_css, []);   
+
 ?>
-<div class="eshb-search-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_search_form]' ); ?></div>
+<div class="eshb-search-form-block-wrapper <?php echo esc_attr( $unique_id ); ?>" style="<?php echo esc_attr( $style_attr ); ?>"><?php echo do_shortcode( '[eshb_search_form]' ); ?></div>

@@ -183,6 +183,97 @@ class Eshb_Search_Widget extends \Elementor\Widget_Base {
 		    ]
 		);
 
+         $this->add_control(
+            'eshb_search_form_calendar_icon_styles',
+            [
+                'type' => Controls_Manager::HEADING,
+                'label' => esc_html__( 'Calendar Icon', 'easy-hotel' ),
+                'separator' => 'before',               
+            ]
+        );
+        $this->add_control(
+            'eshb_search_form_calendar_icon_color',
+            [
+                'label' => esc_html__( 'Color', 'easy-hotel' ),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .eshb-search .eshb-search-form .eshb-form-group .eshb-calendar-icon' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+        $this->add_responsive_control(
+            'eshb_search_form_calendar_icon_size',
+            [
+                'label' => esc_html__( 'Size', 'easy-hotel' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'devices' => [ 'desktop', 'tablet', 'mobile' ],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 1200,
+                        'step' => 1,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                        'step' => 1,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eshb-search .eshb-search-form .eshb-form-group .eshb-calendar-icon' => 'font-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+        $this->add_responsive_control(
+            'eshb_search_form_calendar_icon_position_x',
+            [
+                'label' => esc_html__( 'Position X', 'easy-hotel' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'devices' => [ 'desktop', 'tablet', 'mobile' ],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 600,
+                        'step' => 1,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                        'step' => 1,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eshb-search .eshb-search-form .eshb-form-group .eshb-calendar-icon' => 'right: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+        $this->add_responsive_control(
+            'eshb_search_form_calendar_icon_position_y',
+            [
+                'label' => esc_html__( 'Position Y', 'easy-hotel' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'devices' => [ 'desktop', 'tablet', 'mobile' ],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 600,
+                        'step' => 1,
+                    ],
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                        'step' => 1,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eshb-search .eshb-search-form .eshb-form-group .eshb-calendar-icon' => 'top: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
         $this->add_control(
             'eshb_search_plus_minus_btn_styles',
             [

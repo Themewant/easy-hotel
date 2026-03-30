@@ -11,7 +11,6 @@
   "textdomain": "easy-hotel",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
   "render": "file:./render.php",
   "styles": [
     {
@@ -25,6 +24,10 @@
     }
   ],
   "attributes": {
+    "blockId": {
+      "type": "string",
+      "default": ""
+    },
     "accomodationId": {
       "type": "string",
       "default": ""
@@ -323,6 +326,35 @@
     "formTitleColorHover": {
       "type": "string",
       "default": ""
+    },
+    "calendarIconColor": {
+      "type": "string",
+      "default": ""
+    },
+    "calendarIconColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "calendarIconSize": {
+      "type": "string"
+    },
+    "calendarIconPositionX": {
+      "type": "string"
+    },
+    "calendarIconPositionY": {
+      "type": "string"
+    },
+    "calendarIconPositionXTablet": {
+      "type": "string"
+    },
+    "calendarIconPositionYTablet": {
+      "type": "string"
+    },
+    "calendarIconPositionXMobile": {
+      "type": "string"
+    },
+    "calendarIconPositionYMobile": {
+      "type": "string"
     }
   }
 }

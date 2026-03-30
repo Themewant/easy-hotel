@@ -1599,6 +1599,8 @@ class ESHB_Booking {
 			$total_capacity = !empty($accomodation_metaboxes['total_capacity']) ? $accomodation_metaboxes['total_capacity'] : 0;
 			$extra_bed_capacity = !empty($accomodation_metaboxes['total_extra_beds']) ? $accomodation_metaboxes['total_extra_beds'] : 0;
 			
+			// multiply total capacity by per rooms
+			$total_capacity = $total_capacity * $room_quantity;
 
 			if(!empty($total_capacity)){
 				if($adult_capacity < 1 && $children_capacity > 0){
@@ -1614,23 +1616,27 @@ class ESHB_Booking {
 				}
 			}
 
-			
+			// multiply capacity by per rooms
+			$adult_capacity = $adult_capacity * $room_quantity;
+			$children_capacity = $children_capacity * $room_quantity;
+			$extra_bed_capacity = $extra_bed_capacity * $room_quantity;
+
 			if($adult_quantity > 0 && $adult_capacity < $adult_quantity){
-				$error = array('code' => 'adult_capacity_not_enough', 'message' => esc_html__('Maximum Adult Capacity', 'easy-hotel') . $adult_capacity);
+				$error = array('code' => 'adult_capacity_not_enough', 'message' => esc_html__('Maximum Adult Capacity', 'easy-hotel') . ' ' . $adult_capacity);
 				wp_send_json_error([
 					'error' => $error,
 				]);
 			}
 
 			if($children_quantity > 0 && $children_capacity < $children_quantity){
-				$error = array('code' => 'children_capacity_not_enough', 'message' => esc_html__('Maximum Children Capacity', 'easy-hotel') . $children_capacity);
+				$error = array('code' => 'children_capacity_not_enough', 'message' => esc_html__('Maximum Children Capacity', 'easy-hotel') . ' ' . $children_capacity);
 				wp_send_json_error([
 					'error' => $error,
 				]);
 			}
 			
 			if($extra_bed_quantity > 0 && $extra_bed_capacity < $extra_bed_quantity){
-				$error = array('code' => 'extra_bed_capacity_not_enough', 'message' => esc_html__('Maximum Extra Bed Capacity', 'easy-hotel') . $extra_bed_capacity );
+				$error = array('code' => 'extra_bed_capacity_not_enough', 'message' => esc_html__('Maximum Extra Bed Capacity', 'easy-hotel') . ' ' . $extra_bed_capacity );
 				wp_send_json_error([
 					'error' => $error,
 				]);
@@ -1803,7 +1809,6 @@ class ESHB_Booking {
 				}
 
 				do_action( 'eshb_after_add_to_cart', $booking_type, $cart_item_data, $string_booking_success_msg );
-				
 
 			}else{
 				$error = array('code' => 'accomodation_post_type_not_found', 'message' => esc_html($string_booking_failed_msg));
