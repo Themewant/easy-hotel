@@ -16,7 +16,8 @@ function eshb_block_categories( $block_categories, $editor_context ) {
 add_filter( 'block_categories_all', 'eshb_block_categories', 999999, 2 );
 
 
-add_action( 'init', 'eshb_enqueue_block_styles' );
+add_action( 'enqueue_block_assets', 'eshb_enqueue_block_styles' );
+add_action( 'enqueue_block_editor_assets', 'eshb_enqueue_block_styles' );
 function eshb_enqueue_block_styles() {
 
     // if swier not existing
@@ -28,19 +29,20 @@ function eshb_enqueue_block_styles() {
 	}
 
     // register plugin style if not exist
-	if ( ! wp_style_is( 'eshb-style', 'registered' ) ) {
+	//if ( ! wp_style_is( 'eshb-style', 'registered' ) ) {
 		wp_register_style( 
 			'eshb-style', 
 			ESHB_PL_URL . 'public/assets/css/public.css', 
 			array(), 
 			ESHB_VERSION 
 		);
-	}
+	//}
 
     
 }
 
 // include blocks
+require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/class.block-helper.php';
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-grid/accomodation-grid.php';
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/search-form/search-form.php';
 require_once ESHB_PL_PATH . 'public/includes/gutenberg/blocks/booking-form/booking-form.php';

@@ -452,6 +452,18 @@ add_action( 'plugins_loaded', function(){
                     'title' => 'Minimum Children Capacity for Booking',
                   ),
                   array(
+                    'id'      => 'search-form-calendar-icon',
+                    'type'    => 'switcher',
+                    'title'   => 'Search Form Calendar Icon',
+                    'default' => false
+                  ),
+                  array(
+                    'id'      => 'booking-form-calendar-icon',
+                    'type'    => 'switcher',
+                    'title'   => 'Booking Form Calendar Icon',
+                    'default' => false
+                  ),
+                  array(
                     'id'          => 'booking-form-fields',
                     'type'        => 'select',
                     'title'       => 'Booking Form Fields',

@@ -173,6 +173,31 @@ if ( ! empty( $ft_typo ) ) {
     $vars[] = '--eshb-bkf-ft-ls:' . esc_attr( $ft_typo['letterSpacing'] ?? 'inherit' );
 }
 
+$calendar_icon_color = $attributes['calendarIconColor'] ?? '';
+if ( ! empty( $calendar_icon_color ) ) {
+    $vars[] = '--eshb-bkf-calendar-icon-color:' . esc_attr( $calendar_icon_color );
+}
+
+$calendar_icon_color_hover = $attributes['calendarIconColorHover'] ?? '';
+if ( ! empty( $calendar_icon_color_hover ) ) {
+    $vars[] = '--eshb-bkf-calendar-icon-color-hover:' . esc_attr( $calendar_icon_color_hover );
+}
+
+$calendar_icon_size = $attributes['calendarIconSize'] ?? '';
+if ( ! empty( $calendar_icon_size ) ) {
+    $vars[] = '--eshb-bkf-calendar-icon-size:' . esc_attr( $calendar_icon_size ) . 'px';
+}
+
+$calendar_icon_position_x = $attributes['calendarIconPositionX'] ?? '';
+if ( ! empty( $calendar_icon_position_x ) ) {
+    $vars[] = '--eshb-bkf-calendar-icon-position-x:' . esc_attr( $calendar_icon_position_x ) . '%';
+}
+
+$calendar_icon_position_y = $attributes['calendarIconPositionY'] ?? '';
+if ( ! empty( $calendar_icon_position_y ) ) {
+    $vars[] = '--eshb-bkf-calendar-icon-position-y:' . esc_attr( $calendar_icon_position_y ) . '%';
+}
+
 $pm_btn_bg_color = $attributes['plusMinusBtnBackgroundColor'] ?? '';
 if ( ! empty( $pm_btn_bg_color ) ) {
     $vars[] = '--eshb-bkf-pm-btn-bg-color:' . esc_attr( $pm_btn_bg_color );
@@ -313,10 +338,27 @@ $style_attr = '';
 if ( $vars ) {
     $style_attr = implode( ';', $vars );
 }
+$calendar_icon_position_x_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_x_responsive, 'calendarIconPositionX', 'right', [], false);
+
+$calendar_icon_position_y_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_y_responsive, 'calendarIconPositionY', 'top', [], false);
+
+$style_handle = 'eshb-style';
+$unique_id    = $attributes['blockId'];
+$selector     = '.eshb-booking-form-block-wrapper.' . $unique_id;
+
+$full_responsive_css = '';
+$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_x_responsive);
+$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_y_responsive);
+
+wp_enqueue_style( $style_handle );
+ESHB_Block_Helper::add_custom_style( $style_handle, $selector, $full_responsive_css, []);   
+
 
 $ESHB_View = new ESHB_View();
 ?>
 
-<div class="eshb-booking eshb-booking-form-block-wrapper" style="<?php echo esc_attr( $style_attr ); ?>">
+<div class="eshb-booking eshb-booking-form-block-wrapper <?php echo esc_attr( $unique_id ); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
     <?php $ESHB_View->eshb_get_booking_form_html( $accomodation_id, $style ); ?>
 </div>

@@ -36,6 +36,10 @@
   "style": "file:./style-index.css",
   "render": "file:./render.php",
   "attributes": {
+    "blockId": {
+      "type": "string",
+      "default": ""
+    },
     "customBackgroundColor": {
       "type": "string",
       "default": "var(--eshb-dark-color)"
@@ -251,6 +255,35 @@
         "textTransform": "none",
         "letterSpacing": "0px"
       }
+    },
+    "calendarIconColor": {
+      "type": "string",
+      "default": ""
+    },
+    "calendarIconColorHover": {
+      "type": "string",
+      "default": ""
+    },
+    "calendarIconSize": {
+      "type": "string"
+    },
+    "calendarIconPositionX": {
+      "type": "string"
+    },
+    "calendarIconPositionY": {
+      "type": "string"
+    },
+    "calendarIconPositionXTablet": {
+      "type": "string"
+    },
+    "calendarIconPositionYTablet": {
+      "type": "string"
+    },
+    "calendarIconPositionXMobile": {
+      "type": "string"
+    },
+    "calendarIconPositionYMobile": {
+      "type": "string"
     }
   }
 }

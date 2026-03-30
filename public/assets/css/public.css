@@ -847,6 +847,31 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 .eshb-search .eshb-search-form .eshb-form-submit-btn {
   margin-top: 40px;
 }
+.eshb-search .eshb-search-form.eshb-has-calendar-icon .date-pickers-wrapper input,
+.eshb-search .eshb-search-form.eshb-has-calendar-icon .date-pickers-wrapper textarea {
+  padding: 10px 40px 10px 10px;
+}
+.eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-input-wrapper {
+  position: relative;
+}
+.eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-calendar-icon {
+  position: absolute;
+  top: 48%;
+  right: 50px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--eshb-white-color);
+}
+@media (max-width: 991px) {
+  .eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-calendar-icon {
+    right: 10px;
+  }
+}
+@media (max-width: 767px) {
+  .eshb-search .eshb-search-form.eshb-has-calendar-icon .eshb-calendar-icon {
+    right: 40%;
+  }
+}
 .eshb-search {
   background-color: var(--eshb-dark-color);
 }
@@ -1227,6 +1252,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .eshb-form-groups .eshb-form-group .booking-date-picker {
   margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
 }
 .eshb-booking .eshb-booking-form .time-slots-wrapper {
   display: contents;
@@ -1285,6 +1313,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .eshb-form-group {
   margin-bottom: 20px;
+  position: relative;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group p.capacity-status {
   margin: 8px 0 0 0;
@@ -1305,6 +1334,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 .eshb-booking .eshb-booking-form .eshb-form-group label {
   color: var(--eshb-dark-color);
   font-size: 14px;
+}
+.eshb-booking .eshb-booking-form .eshb-form-group .eshb-input-wrapper {
+  position: relative;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group input,
 .eshb-booking .eshb-booking-form .eshb-form-group textarea {
@@ -1498,6 +1530,19 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .eshb-form-group .staying-type-list li label {
   display: flex;
+}
+.eshb-booking .eshb-booking-form.eshb-has-calendar-icon .date-pickers-wrapper input,
+.eshb-booking .eshb-booking-form.eshb-has-calendar-icon .date-pickers-wrapper textarea {
+  padding: 10px 40px 10px 10px;
+  text-align: left;
+}
+.eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 14px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-err {
   display: none;
@@ -1857,4 +1902,8 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
   align-items: flex-end;
   margin: 0;
   gap: 5px;
+}
+
+.elementor-widget-eshb-room-grid {
+  width: 100%;
 }/*# sourceMappingURL=public.css.map */

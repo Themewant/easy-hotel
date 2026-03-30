@@ -76,19 +76,30 @@ class ESHB_View extends ESHB_MAIN{
          $string_adult = isset($eshb_settings['string_adult']) && !empty($eshb_settings['string_adult']) ? $eshb_settings['string_adult'] : 'Adult';
          $string_children = isset($eshb_settings['string_children']) && !empty($eshb_settings['string_children']) ? $eshb_settings['string_children'] : 'Children';
          $string_room = isset($eshb_settings['string_room']) && !empty($eshb_settings['string_room']) ? $eshb_settings['string_room'] : 'Room';
- 
+         $has_search_calendar_icon = isset($eshb_settings['search-form-calendar-icon']) && !empty($eshb_settings['search-form-calendar-icon']) ? true : false;
+
         ?>
         <div class="eshb-search style-one">
-            <form action="<?php echo esc_url($search_result_page_url); ?>" method="get" class="eshb-search-form">
+            <form action="<?php echo esc_url($search_result_page_url); ?>" method="get" class="eshb-search-form <?php echo esc_attr($has_search_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>">
                 <?php ESHB_Helper::eshb_nonce_field('eshb_global_nonce_action', 'nonce', true); ?>
                 <div class="eshb-form-group dates-wrapper">
                     <div class="eshb-form-group">
                         <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_in));?></h6>
-                        <input type="text" id="date-picker_start_date" class="search-date-picker form-control" name="start_date" value="<?php echo esc_attr( $start_date ) ?>">
+                        <div class="eshb-input-wrapper">
+                            <input type="text" id="date-picker_start_date" class="search-date-picker form-control" name="start_date" value="<?php echo esc_attr( $start_date ) ?>">
+                            <?php if($has_search_calendar_icon){ ?>
+                                <i class="eshb-calendar-icon far fa-calendar-alt"></i>
+                            <?php } ?>
+                        </div>
                     </div>
                     <div class="eshb-form-group">
                         <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_out));?></h6>
-                        <input type="text" id="date-picker_end_date" class="search-date-picker form-control" name="end_date" value="<?php echo esc_attr( $end_date ) ?>">
+                        <div class="eshb-input-wrapper">
+                            <input type="text" id="date-picker_end_date" class="search-date-picker form-control" name="end_date" value="<?php echo esc_attr( $end_date ) ?>">
+                            <?php if($has_search_calendar_icon){ ?>
+                                <i class="eshb-calendar-icon far fa-calendar-alt"></i>
+                            <?php } ?>
+                        </div>
                     </div>
                 </div>
                 <?php 
@@ -317,9 +328,12 @@ class ESHB_View extends ESHB_MAIN{
         $available_times = ESHB_Helper::get_available_times_by_date($accomodation_id, $start->format('Y-m-d'));
         $price_html = $available_rooms < 1 ? $hotel_core->eshb_price(0) : $price_html;
         $defaultExtraServicePrice = 0;
+
+        $has_calendar_icon = isset($eshb_settings['booking-form-calendar-icon']) && !empty($eshb_settings['booking-form-calendar-icon']) ? true : false;
+
         ?>
         <div class="eshb-booking">
-            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" <?php echo $form_attr; ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
+            <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get" <?php echo $form_attr; ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?> <?php echo esc_attr($has_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
                 
                 <div class="hidden-fields">
                     <input type="hidden" name="subtotal_price" id="eshb-subtotal-price" value="<?php echo esc_html($price);?>"> 
@@ -354,11 +368,21 @@ class ESHB_View extends ESHB_MAIN{
                         <?php }
                             ?>
                         </h6>
-                        <input type="text" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="start_date" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
+                        <div class="eshb-input-wrapper">
+                            <input type="text" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="start_date" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
+                            <?php if($has_calendar_icon){ ?>
+                                <i class="eshb-calendar-icon far fa-calendar-alt"></i>
+                            <?php } ?>
+                        </div>
                     </div>
                     <div class="eshb-form-group end-date-pickers-wrapper">
                         <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_check_out) );?></h6>
-                        <input type="text" id="booking-date-picker_end_date" class="booking-date-picker form-control" name="end_date" value="<?php echo esc_attr( $end_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
+                        <div class="eshb-input-wrapper">
+                            <input type="text" id="booking-date-picker_end_date" class="booking-date-picker form-control" name="end_date" value="<?php echo esc_attr( $end_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
+                            <?php if($has_calendar_icon){ ?>
+                                <i class="eshb-calendar-icon far fa-calendar-alt"></i>
+                            <?php } ?>
+                        </div>
                     </div>
                     
                 </div>

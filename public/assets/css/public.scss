@@ -748,6 +748,38 @@ nav.eshb-pagination {
             margin-top: 40px;
         }
 
+        &.eshb-has-calendar-icon {
+            .date-pickers-wrapper {
+
+                input,
+                textarea {
+                    padding: 10px 40px 10px 10px;
+                }
+            }
+
+
+            .eshb-input-wrapper {
+                position: relative;
+            }
+
+            .eshb-calendar-icon {
+                position: absolute;
+                top: 48%;
+                right: 50px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: var(--eshb-white-color);
+
+                @media (max-width: 991px) {
+                    right: 10px;
+                }
+
+                @media (max-width: 767px) {
+                    right: 40%;
+                }
+            }
+        }
+
     }
 
     background-color: var(--eshb-dark-color);
@@ -1177,6 +1209,9 @@ nav.eshb-pagination {
 
                 .booking-date-picker {
                     margin-bottom: 0;
+                    position: relative;
+                    z-index: 2;
+                    cursor: pointer;
                 }
             }
 
@@ -1256,6 +1291,7 @@ nav.eshb-pagination {
 
         .eshb-form-group {
             margin-bottom: 20px;
+            position: relative;
 
             p.capacity-status {
                 margin: 8px 0 0 0;
@@ -1281,6 +1317,10 @@ nav.eshb-pagination {
             label {
                 color: var(--eshb-dark-color);
                 font-size: 14px;
+            }
+
+            .eshb-input-wrapper {
+                position: relative;
             }
 
             input,
@@ -1522,6 +1562,27 @@ nav.eshb-pagination {
                         display: flex;
                     }
                 }
+            }
+        }
+
+        &.eshb-has-calendar-icon {
+
+            .date-pickers-wrapper {
+
+                input,
+                textarea {
+                    padding: 10px 40px 10px 10px;
+                    text-align: left;
+                }
+            }
+
+            .eshb-calendar-icon {
+                position: absolute;
+                top: 50%;
+                right: 13px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                font-size: 14px;
             }
         }
 
@@ -1978,4 +2039,8 @@ body.rtl {
         margin: 0;
         gap: 5px;
     }
+}
+
+.elementor-widget-eshb-room-grid {
+    width: 100%;
 }

@@ -5,14 +5,18 @@ import {
     __experimentalHeading as Heading,
     BoxControl,
     __experimentalDivider as Divider,
-    TabPanel
+    TabPanel,
+    __experimentalNumberControl as NumberControl
 } from '@wordpress/components';
+import { useEffect } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
 import metadata from './block.json';
 import './editor.scss';
 import BoxShadowControls from '../../../custom-components/BoxShadowControls';
 import TypographyControls from '../../../custom-components/TypographyControls';
 import ColorPopover from '../../../custom-components/ColorPopover';
+import ResponsiveWrapper from '../../../custom-components/ResponsiveWrapper';
+import RangeControlWithUnit from '../../../custom-components/RangeControlWithUnit';
 
 export default function Edit({ attributes, setAttributes }) {
     const {
@@ -37,8 +41,21 @@ export default function Edit({ attributes, setAttributes }) {
         submitBtnBackgroundColorHover,
         submitBtnTextColorHover,
         submitBtnPadding,
-        submitBtnMargin
+        submitBtnMargin,
+        calendarIconColor,
+        calendarIconColorHover,
+        calendarIconSize
     } = attributes;
+
+    useEffect(() => {
+        const id = 'eshb-' + Math.random().toString(36).substr(2, 5);
+        setAttributes({ blockId: id });
+    }, []);
+
+    const getAttrKey = (base, device) => {
+        if (device === 'desktop') return base;
+        return `${base}${device.charAt(0).toUpperCase() + device.slice(1)}`;
+    };
 
     return (
         <div {...useBlockProps()}>
@@ -177,6 +194,67 @@ export default function Edit({ attributes, setAttributes }) {
                         attributeKey="fieldTextTypography"
                         nextDefaultSize={true}
                     />
+                </PanelBody>
+
+                <PanelBody title={__('Calendar Icon', 'easy-hotel')} initialOpen={false}>
+                    <TabPanel
+                        className="eshb-tab-panel"
+                        tabs={[
+                            { name: 'normal', title: __('Normal', 'easy-hotel') },
+                            { name: 'hover', title: __('Hover', 'easy-hotel') },
+                        ]}
+                    >
+                        {(tab) => {
+                            const isHover = tab.name === 'hover';
+                            return (
+                                <div style={{ marginTop: '15px' }}>
+                                    <ColorPopover
+                                        label={isHover ? __('Color (Hover)', 'easy-hotel') : __('Color', 'easy-hotel')}
+                                        color={isHover ? calendarIconColorHover : calendarIconColor}
+                                        defaultColor={isHover ? '' : ''}
+                                        onChange={(value) => {
+                                            const hex = (value && typeof value === 'object') ? value.hex : value;
+                                            setAttributes({ [isHover ? 'calendarIconColorHover' : 'calendarIconColor']: hex });
+                                        }}
+                                    />
+                                </div>
+                            );
+                        }}
+                    </TabPanel>
+                    <Divider />
+                    <NumberControl
+                        label={__('Size (px)', 'easy-hotel')}
+                        value={calendarIconSize}
+                        onChange={(value) => setAttributes({ calendarIconSize: value })}
+                        __nextDefaultSize={true}
+                        __nextHasNoMarginBottom={true}
+                    />
+                    <ResponsiveWrapper label={__('Position', 'easy-hotel')}>
+                        {(device) => (
+                            <>
+                                <RangeControlWithUnit
+                                    attributes={attributes}
+                                    setAttributes={setAttributes}
+                                    attributeKey={getAttrKey('calendarIconPositionX', device)}
+                                    label={__('Position X', 'easy-hotel')}
+                                    units={['%', 'px']}
+                                    min={-100}
+                                    max={100}
+                                    step={1}
+                                />
+                                <RangeControlWithUnit
+                                    attributes={attributes}
+                                    setAttributes={setAttributes}
+                                    attributeKey={getAttrKey('calendarIconPositionY', device)}
+                                    label={__('Position Y', 'easy-hotel')}
+                                    units={['%', 'px']}
+                                    min={-100}
+                                    max={100}
+                                    step={1}
+                                />
+                            </>
+                        )}
+                    </ResponsiveWrapper>
                 </PanelBody>
 
                 <PanelBody title={__('Plus Minus Button', 'easy-hotel')} initialOpen={false}>

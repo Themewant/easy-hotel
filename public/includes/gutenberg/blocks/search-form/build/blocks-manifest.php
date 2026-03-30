@@ -41,6 +41,10 @@ return array(
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
 		'attributes' => array(
+			'blockId' => array(
+				'type' => 'string',
+				'default' => ''
+			),
 			'customBackgroundColor' => array(
 				'type' => 'string',
 				'default' => 'var(--eshb-dark-color)'
@@ -256,6 +260,35 @@ return array(
 					'textTransform' => 'none',
 					'letterSpacing' => '0px'
 				)
+			),
+			'calendarIconColor' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'calendarIconColorHover' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'calendarIconSize' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionX' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionY' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionXTablet' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionYTablet' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionXMobile' => array(
+				'type' => 'string'
+			),
+			'calendarIconPositionYMobile' => array(
+				'type' => 'string'
 			)
 		)
 	)

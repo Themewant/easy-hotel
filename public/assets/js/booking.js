@@ -2033,12 +2033,13 @@
               childrenCapacity != "" &&
               totalCapacity != ""
             ) {
-              maxCount = totalCapacity - childrenCapacity;
-              maxCount = maxCount * rooms;
+              // Both are per-room values — subtract before multiplying
+              maxCount = (totalCapacity - childrenCapacity) * rooms;
               errMsg = translations.maximumCapacity;
             } else if (totalCapacity != "") {
-              maxCount = totalCapacity - childrenQuantity;
-              maxCount = maxCount * rooms;
+              // totalCapacity is per-room; childrenQuantity is total — convert to same unit
+              maxCount = (totalCapacity * rooms) - childrenQuantity;
+              maxCount = Math.max(0, maxCount);
               errMsg = translations.maximumCapacity;
             }
             if (childrenQuantity < 1) {
@@ -2056,12 +2057,13 @@
             errMsg = translations.maximumCapacity;
           } else {
             if (adultCapacity && adultCapacity != "" && totalCapacity != "") {
-              maxCount = totalCapacity - adultCapacity;
-              maxCount = maxCount * rooms;
+              // Both are per-room values — subtract before multiplying
+              maxCount = (totalCapacity - adultCapacity) * rooms;
               errMsg = translations.maximumCapacity;
             } else if (totalCapacity != "") {
-              maxCount = totalCapacity - adultQuantity;
-              maxCount = maxCount * rooms;
+              // totalCapacity is per-room; adultQuantity is total — convert to same unit
+              maxCount = (totalCapacity * rooms) - adultQuantity;
+              maxCount = Math.max(0, maxCount);
               errMsg = translations.maximumCapacity;
             }
             if (adultQuantity < 1) {
@@ -2749,6 +2751,12 @@
           message: customerMessage,
         };
       }
+
+      console.log('adult qty', adultQuantity);
+      console.log('children qty', childrenQuantity);
+      console.log('room qty', roomQuantity);
+      console.log('extra bed qty', extraBedQuantity);
+
 
       $.post(
         eshb_ajax.ajaxurl,
