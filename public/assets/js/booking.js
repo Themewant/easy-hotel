@@ -1347,15 +1347,23 @@
     ) {
       if (!accomodationId) return;
 
+      const startDate = $(startDateInput).val();
+      const endDate = $(endDateInput).val();
+
       $.post(
         eshb_ajax.ajaxurl,
         {
           action: "eshb_get_disabled_dates_by_accomodation_id",
           accomodation_id: accomodationId,
+          start_date: startDate,
+          end_date: endDate,
           nonce: eshb_ajax.nonce,
         },
         function (response) {
           if (response.success) {
+            console.log('data', response.data);
+
+
             checkedInOutDates = response.data.checked_in_out_dates;
             bookedDates = response.data.booked_dates;
             holiDayDates = response.data.holiday_dates;

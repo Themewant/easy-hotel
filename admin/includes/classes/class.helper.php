@@ -849,4 +849,83 @@ class ESHB_Helper {
                 ]
         );
     }
+
+    public static function get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date) {
+        $metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
+        $min_stay_night = 0;
+       
+
+        // Get all sessions
+        $qargs = array(
+            'post_type'      => 'eshb_session',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+        );
+        $query = new WP_Query($qargs);
+
+        $sessions = [];
+        
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $post_id = get_the_ID();
+                $metaboxes = maybe_unserialize(get_post_meta($post_id, 'eshb_session_metaboxes', true));
+
+                if (empty($metaboxes['start_date']) || empty($metaboxes['end_date'])) continue;
+
+                $sessions[] = [
+                    'id'                 => $post_id,
+                    'start_date'         => $metaboxes['start_date'],
+                    'end_date'           => $metaboxes['end_date'],
+                    'min_nights'         => $metaboxes['min_nights'] ?? 0,
+                    'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
+                    'days'               => $metaboxes['days'] ?? [],
+                ];
+            }
+            wp_reset_postdata();
+        }
+
+        // Create date range (exclude checkout date if multi-day)
+        $period = new DatePeriod(
+            new DateTime($start_date),
+            new DateInterval('P1D'),
+            (new DateTime($start_date) == new DateTime($end_date))
+                ? (new DateTime($end_date))->modify('+1 day') // same-day booking
+                : new DateTime($end_date) // exclude checkout
+        );
+
+        $total_nights = iterator_count($period);
+        $per_day_prices = [];
+
+
+        foreach ($period as $day) {
+            $current_date = $day->format('Y-m-d');
+            $current_day_name = strtolower($day->format('l'));
+
+            foreach ($sessions as $session) {
+
+
+                if(empty($session['accomodation_ids'])){
+                    continue;
+                }
+
+                if (!empty($session['accomodation_ids']) && !in_array($accomodation_id, $session['accomodation_ids'])) {
+                    continue;
+                }
+
+                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                if(in_array('all', $session_days)){
+                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                }
+
+                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
+         
+                    // 1. Get min night
+                    $min_stay_night = $session['min_nights'];
+                    break;
+                }
+            }
+        }
+        return $min_stay_night;
+    }
 }

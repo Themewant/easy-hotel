@@ -1439,6 +1439,8 @@ class ESHB_Booking {
 			$string_required_maximum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel' );
 			$pricing_periodicity = apply_filters( 'eshb_pricing_periodicity', false, $accomodation_id, $accomodation_metaboxes );
 			
+			$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
+
 			// Validate booking type
 			if ( $booking_type == 'woocommerce' && ! class_exists( 'WooCommerce' ) ) {
 				$error = array(
@@ -1562,7 +1564,22 @@ class ESHB_Booking {
 			if(!empty($allowed_check_in_day) && $allowed_check_in_day != 'all'){
 				$days_count = 1;
 			}
-			
+
+			// validate min stay night by session
+			if(class_exists('ESHB_ADVANCED_PRICING') && !empty($min_stay_night_by_session) && $days_count < $min_stay_night_by_session){
+				$error = array(
+					'code'    => 'min_stay_night_by_session',
+					'message' => sprintf(
+						/* translators: 1: minimum nights message text, 2: required minimum nights */
+						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
+						esc_html( $string_required_minimum_nights_msg ),
+						esc_html( $min_stay_night_by_session )
+					),
+				);
+				wp_send_json_error([
+					'error' => $error,
+				]);
+			}
 			
 			if(!empty($required_min_nights) && $days_count < $required_min_nights){
 				$error = array(
@@ -1592,6 +1609,8 @@ class ESHB_Booking {
 					'error' => $error,
 				]);
 			}
+
+			
 			
 			// validate capacities
 			$adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 0;
@@ -1621,14 +1640,14 @@ class ESHB_Booking {
 			$children_capacity = $children_capacity * $room_quantity;
 			$extra_bed_capacity = $extra_bed_capacity * $room_quantity;
 
-			if($adult_quantity > 0 && $adult_capacity < $adult_quantity){
+			if(!empty($adult_capacity) && $adult_quantity > 0 && $adult_capacity < $adult_quantity){
 				$error = array('code' => 'adult_capacity_not_enough', 'message' => esc_html__('Maximum Adult Capacity', 'easy-hotel') . ' ' . $adult_capacity);
 				wp_send_json_error([
 					'error' => $error,
 				]);
 			}
 
-			if($children_quantity > 0 && $children_capacity < $children_quantity){
+			if(!empty($children_capacity) && $children_quantity > 0 && $children_capacity < $children_quantity){
 				$error = array('code' => 'children_capacity_not_enough', 'message' => esc_html__('Maximum Children Capacity', 'easy-hotel') . ' ' . $children_capacity);
 				wp_send_json_error([
 					'error' => $error,
