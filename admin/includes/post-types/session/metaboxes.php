@@ -51,7 +51,6 @@ add_action( 'plugins_loaded', function(){
                 'title' => 'Days',
                 'function' => 'eshb_days_pricing_settings_fallback_sm',
             ),
-            
             array(
                 'id'    => 'start_date',
                 'type'  => 'datetime',
@@ -70,6 +69,7 @@ add_action( 'plugins_loaded', function(){
                     'dateFormat' => 'Y-m-d',
                 ),
             ),
+            
             array(
                 'id'          => 'accomodation_ids',
                 'type'        => 'select',

@@ -123,6 +123,12 @@ class ESHB_Search {
 
         $min_max_nights_settings = apply_filters('eshb_min_max_nights_settings_before_search', $min_max_nights_settings, $accomodation_id, $accomodation_metas);
         
+        // Get min stay night by session
+        $min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
+        if(class_exists('ESHB_ADVANCED_PRICING') && $min_stay_night_by_session > 0){
+            $min_max_nights_settings['required_min_nights'] = $min_stay_night_by_session;
+        }
+
         // Find all bookings for this accommodation
         $bookings_args = [
             'post_type'      => 'eshb_booking',
