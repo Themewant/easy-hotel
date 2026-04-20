@@ -25,6 +25,9 @@ function eshb_dynamic_css() {
     $active_color = !empty($calendar_colors['active-color']) ? $calendar_colors['active-color'] : '#fff';
     $inrange_color = !empty($calendar_colors['inrange-color']) ? $calendar_colors['inrange-color'] : '#fff';
 
+    $reserved_bg_color = !empty($calendar_colors['reserved-bg-color']) ? $calendar_colors['reserved-bg-color'] : '#70533a';
+    $reserved_color = !empty($calendar_colors['reserved-color']) ? $calendar_colors['reserved-color'] : '#fff';
+
     $page_padding = !empty($eshb_settings['page-spacing']) ? $eshb_settings['page-spacing'] : '';
     $page_container_size = !empty($eshb_settings['page-container-size']) ? $eshb_settings['page-container-size'] : '';
 
@@ -55,10 +58,11 @@ function eshb_dynamic_css() {
             --eshb-booked-color: " . esc_attr($booked_color) . ";
             --eshb-active-color: " . esc_attr($active_color) . ";
             --eshb-inrange-color: " . esc_attr($inrange_color) . ";
+            --eshb-reserved-bg-color: " . esc_attr($reserved_bg_color) . ";
+            --eshb-reserved-color: " . esc_attr($reserved_color) . ";
         }
         ";
     }
-
 
     if(!empty($page_padding)) {
         $custom_css .= "

@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -249,6 +249,13 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 1.9.2 =
+* Added direct checkout page option
+* Added calendar legend
+* Added calendar reservation blocking countdown timer
+* Added string translation option for EHB Deposit extension
+
 
 = 1.9.1 =
 * Fixed capacity calculation issue for empty accommodation data
