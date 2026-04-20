@@ -741,7 +741,11 @@ class ESHB_Helper {
 
     public static function eshb_set_accomodation_localize($accomodation_id = null) {
         $cart_url = site_url('/cart');
-        if(class_exists('woocommerce')) $cart_url = wc_get_cart_url();
+        $checkout_url = site_url('/checkout');
+        if(class_exists('woocommerce')) {
+            $cart_url     = wc_get_cart_url();
+            $checkout_url = wc_get_checkout_url();
+        }
         
         $min_max_settings = [
             'calendar_start_date_buffer' => 0,
@@ -831,6 +835,8 @@ class ESHB_Helper {
                     'ajaxurl'          => admin_url( 'admin-ajax.php' ),
                     'adminURL'         => admin_url(),
                     'wooCartUrl'       => $cart_url,
+                    'wooCheckoutUrl'   => $checkout_url,
+                    'direct_booking'   => !empty($eshb_settings['direct-booking']),
                     'is_admin'         => is_admin(),
                     'nonce'            => wp_create_nonce($nonce_action),
                     'eshb_add_to_cart_reservation_nonce' => wp_create_nonce('eshb_eshb_add_to_cart_reservation_nonce'),
@@ -845,7 +851,11 @@ class ESHB_Helper {
                     'currentAccomodationMeta' => $eshb_accomodation_metaboxes,
                     'search_capacities' => $search_capacity_settings,
                     'booking_capacities' => $booking_capacity_settings,
-                    'translations' => $eshb_translations
+                    'translations'              => $eshb_translations,
+                    'cart_blocking_enabled'     => ! empty( $eshb_settings['cart-blocking-switcher'] ),
+                    'cart_blocking_time'        => ! empty( $eshb_settings['cart-blocking-time'] ) ? (int) $eshb_settings['cart-blocking-time'] : 5,
+                    'cart_blocking_color'       => ! empty( $eshb_settings['cart-blocking-color'] ) ? esc_attr( $eshb_settings['cart-blocking-color'] ) : '#720eec',
+                    'cart_blocking_notice_msg'  => ! empty( $eshb_settings['cart-blocking-notice-msg'] ) ? esc_html( $eshb_settings['cart-blocking-notice-msg'] ) : esc_html__( 'Your reservation is held for', 'easy-hotel' ),
                 ]
         );
     }

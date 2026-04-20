@@ -378,6 +378,13 @@ add_action( 'plugins_loaded', function(){
                     'dependency' => array( 'booking-type', '==', 'external' ) 
                   ),
                   array(
+                    'id'    => 'direct-booking',
+                    'type'  => 'switcher',
+                    'title' => 'Direct Booking',
+                    'desc'  => 'Enable for redirect to checkout page after adding room to cart.',
+                    'default' => false,
+                  ),
+                  array(
                     'id'    => 'recipent_email',
                     'type'  => 'text',
                     'title' => 'Recipent Email Address',
@@ -580,6 +587,8 @@ add_action( 'plugins_loaded', function(){
                         'active-color' => 'Active Color',
                         'inrange-bg-color' => 'Inrange Background',
                         'inrange-color' => 'Inrange Color',
+                        'reserved-bg-color' => 'Reserved Background',
+                        'reserved-color' => 'Reserved Color',
                       )
                     ),
                     array(
@@ -853,9 +862,73 @@ add_action( 'plugins_loaded', function(){
                   'title' => 'Related Title Change Here',
                   //'desc'  => 'Related Title Change Here'
                 ),
+                array(
+                  'id'    => 'string_pay_later_due',
+                  'type'  => 'text',
+                  'title' => 'Pay Later (Due)',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Pay Later (Due)',
+                ),
+                array(
+                  'id'    => 'string_pay_now',
+                  'type'  => 'text',
+                  'title' => 'Pay Now',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Pay Now',
+                ),
+                array(
+                  'id'    => 'string_deposit_amount',
+                  'type'  => 'text',
+                  'title' => 'Deposit Amount',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Deposit Amount',
+                ),
+                array(
+                  'id'    => 'string_pay_deposit',
+                  'type'  => 'text',
+                  'title' => 'Pay Deposit',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Pay Deposit',
+                ),
+                array(
+                  'id'    => 'string_pay_full_amount',
+                  'type'  => 'text',
+                  'title' => 'Pay Full Amount',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Pay Full Amount',
+                ),
           )
         )
       );
+
+      ESHB::createSection( $prefix, array(
+        'title'  => 'Cart Blocking',
+        'fields' => array(
+          array(
+            'id'      => 'cart-blocking-switcher',
+            'type'    => 'switcher',
+            'title'   => 'Enable Cart Blocking',
+            'desc'    => 'Temporarily block calendar dates when a user adds to cart.',
+            'default' => false,
+          ),
+          array(
+            'id'         => 'cart-blocking-time',
+            'type'       => 'number',
+            'title'      => 'Blocking Duration (minutes)',
+            'desc'       => 'How long dates are held after a user adds to cart.',
+            'default'    => 5,
+            'dependency' => array( 'cart-blocking-switcher', '==', true ),
+          ),
+          array(
+            'id'         => 'cart-blocking-notice-msg',
+            'type'       => 'text',
+            'title'      => 'Checkout Countdown Message',
+            'desc'       => 'Text shown before the countdown timer on the cart/checkout page.',
+            'default'    => 'Your reservation is held for',
+            'dependency' => array( 'cart-blocking-switcher', '==', true ),
+          ),
+        ),
+      ) );
 
       // Create a section
       ESHB::createSection( $prefix, array(
@@ -1139,6 +1212,11 @@ add_action('init', function() {
       'string_cancel',
       'string_related_sub_title',
       'string_related__title',
+      'string_pay_later_due',
+      'string_deposit_amount',
+      'string_pay_deposit',
+      'string_pay_now',
+      'string_pay_full_amount',
   ];
 
   eshb_register_string_translations($fields, 'eshb_settings');

@@ -32,11 +32,13 @@ class ESHB_Booking {
 			add_action( 'woocommerce_before_calculate_totals', [ $this, 'apply_custom_price_to_cart_item' ], 20, 1 );
 			add_action( 'woocommerce_checkout_create_order_line_item', [ $this, 'save_custom_meta_to_order' ], 10, 4 );
 			add_filter( 'woocommerce_get_item_data', [ $this, 'display_custom_meta_in_cart_and_order' ], 10, 2 );
-			
+
 			add_action(	'woocommerce_thankyou', [$this, 'create_woocommerce_booking_on_checkout'], 10, 1 );
 			add_action(	'woocommerce_thankyou', [$this, 'capture_payment_after_checkout'], 20, 1 );
 			add_filter(	'woocommerce_hidden_order_itemmeta', [$this, 'hide_meta_from_display'] );
 			add_filter(	'woocommerce_order_item_get_formatted_meta_data', [$this, 'unset_specific_order_item_meta_data'], 10, 2 );
+			add_action( 'woocommerce_cart_item_removed', [ $this, 'eshb_clear_cart_block_on_removal' ], 10, 2 );
+			add_action( 'woocommerce_thankyou', [ $this, 'eshb_clear_session_cart_blocks_on_order' ], 5, 1 );
 		}
 		
 		add_action(	'woocommerce_order_status_changed', [$this, 'update_booking_status_on_woocommerce_order_status_change'], 10, 4 );
@@ -56,6 +58,19 @@ class ESHB_Booking {
         add_action( 'wp_ajax_eshb_get_accomodation_available_capacity_counts', [ $this, 'eshb_get_accomodation_available_capacity_counts' ] );
 		add_action( 'wp_ajax_nopriv_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
         add_action( 'wp_ajax_eshb_get_available_rooms_counts_data', [ $this, 'eshb_get_available_rooms_counts_data' ] );
+		add_action( 'wp_ajax_nopriv_eshb_get_cart_blocks', [ $this, 'eshb_get_cart_blocks_ajax' ] );
+		add_action( 'wp_ajax_eshb_get_cart_blocks', [ $this, 'eshb_get_cart_blocks_ajax' ] );
+		add_action( 'wp_ajax_nopriv_eshb_clear_cart_on_block_expiry', [ $this, 'eshb_clear_cart_on_block_expiry' ] );
+		add_action( 'wp_ajax_eshb_clear_cart_on_block_expiry', [ $this, 'eshb_clear_cart_on_block_expiry' ] );
+		add_action( 'wp_ajax_nopriv_eshb_check_my_session_blocks', [ $this, 'eshb_check_my_session_blocks' ] );
+		add_action( 'wp_ajax_eshb_check_my_session_blocks', [ $this, 'eshb_check_my_session_blocks' ] );
+		add_filter( 'eshb_get_disabled_dates_in_search', [ $this, 'eshb_add_blocked_dates_to_calendar' ], 10, 3 );
+		// Inline notice: classic themes
+		add_action( 'woocommerce_before_cart',          [ $this, 'eshb_render_cart_block_notice_inline' ] );
+		add_action( 'woocommerce_before_checkout_form', [ $this, 'eshb_render_cart_block_notice_inline' ] );
+		// Inline notice: block themes (woocommerce/cart and woocommerce/checkout blocks)
+		add_filter( 'render_block', [ $this, 'eshb_prepend_notice_to_woo_block' ], 10, 2 );
+		add_action( 'eshb_before_availability_calendar', [ $this, 'eshb_render_calendar_legend' ], 10, 1 );
 
 		add_action('rest_api_init', function() {
 			register_rest_route('eshb/v1', '/booking-prices', [
@@ -465,6 +480,7 @@ class ESHB_Booking {
 			$string_required_minimum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Minumum', 'easy-hotel' );
 			$string_required_maximum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel' );
 
+			$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
 			
 			// get booked dates in the range
 			$actual_booked_dates = $this->get_actual_booked_dates_in_date_ranges($accomodation_id, $start_date, $end_date);
@@ -557,6 +573,22 @@ class ESHB_Booking {
 			if(!empty($allowed_check_in_day) && $allowed_check_in_day != 'all'){
 				$days_count = 1;
 			}
+
+			// validate min stay night by session
+			if(class_exists('ESHB_ADVANCED_PRICING') && !empty($min_stay_night_by_session) && $days_count < $min_stay_night_by_session){
+				$error = array(
+					'code'    => 'min_stay_night_by_session',
+					'message' => sprintf(
+						/* translators: 1: minimum nights message text, 2: required minimum nights */
+						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
+						esc_html( $string_required_minimum_nights_msg ),
+						esc_html( $min_stay_night_by_session )
+					),
+				);
+				wp_send_json_error([
+					'error' => $error,
+				]);
+			}
 			
 			// validate minimum nights
 			if(!empty($required_min_nights) && $days_count < $required_min_nights){
@@ -589,6 +621,8 @@ class ESHB_Booking {
 					'error' => $error,
 				]);
 			}
+
+
 			
 
 			if (get_post_type($accomodation_id) === 'eshb_accomodation') {
@@ -1522,6 +1556,13 @@ class ESHB_Booking {
 				]);
 			}
 
+			// Check cart blocking (temporary holds by other users)
+			$cart_block_msg = $this->eshb_check_cart_block($accomodation_id, $start_date, $end_date);
+			if (!empty($cart_block_msg)) {
+				$error = array('code' => 'cart_blocked', 'message' => esc_html($cart_block_msg));
+				wp_send_json_error(['error' => $error]);
+			}
+
 			// check rooms capacity
 			if(!$is_valid_time && isset($_POST['roomQuantity']) && !empty($_POST['roomQuantity'])){
 				$roomQuantity = isset( $_POST['roomQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['roomQuantity'] ) ) : 1;
@@ -1800,15 +1841,22 @@ class ESHB_Booking {
 					update_post_meta($product_id, '_accomodation_id', $accomodation_id);
 					$this->update_product_price_by_id($product_id, $subtotal_price);
 
+					$cart_item_data['unique_key'] = uniqid( '', true );
 					$cart_item_key = WC()->cart->add_to_cart($product_id, $quantity, 0, [], $cart_item_data);
-					
+
 					if ( $cart_item_key ) {
 
+						$blocked_until = $this->eshb_set_cart_block($accomodation_id, $start_date, $end_date, $room_quantity);
+
 						wp_send_json_success([
-							'booking-type'   => $booking_type,
-							'message'        => esc_html( $string_booking_success_msg ),
-							'cart_item_key'  => $cart_item_key,
-							'cart_count'     => WC()->cart->get_cart_contents_count(),
+							'booking-type'    => $booking_type,
+							'message'         => esc_html( $string_booking_success_msg ),
+							'cart_item_key'   => $cart_item_key,
+							'cart_count'      => WC()->cart->get_cart_contents_count(),
+							'blocked_until'   => $blocked_until,
+							'accomodation_id' => $accomodation_id,
+							'start_date'      => $start_date,
+							'end_date'        => $end_date,
 						]);
 
 					} else {
@@ -2448,6 +2496,281 @@ class ESHB_Booking {
 					break;
 			}
 
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Cart Blocking Methods
+	// -------------------------------------------------------------------------
+
+	private function eshb_get_session_token() {
+		if ( class_exists( 'WooCommerce' ) && WC()->session ) {
+			return (string) WC()->session->get_customer_id();
+		}
+		return '';
+	}
+
+	private function eshb_dates_overlap( $s1, $e1, $s2, $e2 ) {
+		return $s1 < $e2 && $s2 < $e1;
+	}
+
+	private function eshb_get_blocking_settings() {
+		$eshb_settings   = get_option( 'eshb_settings', [] );
+		$enabled         = ! empty( $eshb_settings['cart-blocking-switcher'] );
+		$blocking_time   = ! empty( $eshb_settings['cart-blocking-time'] ) ? (int) $eshb_settings['cart-blocking-time'] : 5;
+		return [ 'enabled' => $enabled, 'minutes' => $blocking_time ];
+	}
+
+	private function eshb_set_cart_block( $accom_id, $start_date, $end_date, $room_qty ) {
+		$cfg = $this->eshb_get_blocking_settings();
+		if ( ! $cfg['enabled'] ) return 0;
+
+		$session = $this->eshb_get_session_token();
+		if ( empty( $session ) ) return 0;
+
+		$key   = 'eshb_cart_holds_' . (int) $accom_id;
+		$holds = get_transient( $key );
+		if ( ! is_array( $holds ) ) $holds = [];
+
+		$now   = time();
+		$until = $now + ( $cfg['minutes'] * 60 );
+
+		// Clean expired entries
+		foreach ( $holds as $token => $hold ) {
+			if ( $hold['until'] < $now ) unset( $holds[ $token ] );
+		}
+
+		$holds[ $session ] = [
+			'start_date' => $start_date,
+			'end_date'   => $end_date,
+			'qty'        => (int) $room_qty,
+			'until'      => $until,
+		];
+
+		set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
+		return $until;
+	}
+
+	private function eshb_check_cart_block( $accom_id, $start_date, $end_date ) {
+		$cfg = $this->eshb_get_blocking_settings();
+		if ( ! $cfg['enabled'] ) return '';
+
+		$key   = 'eshb_cart_holds_' . (int) $accom_id;
+		$holds = get_transient( $key );
+		if ( ! is_array( $holds ) ) return '';
+
+		$session = $this->eshb_get_session_token();
+		$now     = time();
+
+		foreach ( $holds as $token => $hold ) {
+			if ( $token === $session ) continue;
+			if ( $hold['until'] < $now ) continue;
+			if ( $this->eshb_dates_overlap( $start_date, $end_date, $hold['start_date'], $hold['end_date'] ) ) {
+				$remaining = (int) ceil( ( $hold['until'] - $now ) / 60 );
+				/* translators: %d: remaining minutes */
+				return sprintf( __( 'These dates are temporarily reserved by another user. Please try again in %d minute(s).', 'easy-hotel' ), $remaining );
+			}
+		}
+		return '';
+	}
+
+	public function eshb_add_blocked_dates_to_calendar( $all_dates, $accom_id, $accom_metas ) {
+		$key   = 'eshb_cart_holds_' . (int) $accom_id;
+		$holds = get_transient( $key );
+
+		$blocked_ranges = [];
+		if ( is_array( $holds ) ) {
+			$session = $this->eshb_get_session_token();
+			$now     = time();
+			foreach ( $holds as $token => $hold ) {
+				if ( $token === $session ) continue;
+				if ( $hold['until'] < $now ) continue;
+				$blocked_ranges[] = [
+					'start_date' => $hold['start_date'],
+					'end_date'   => $hold['end_date'],
+					'until'      => $hold['until'],
+				];
+			}
+		}
+
+		$all_dates['blocked_dates'] = $blocked_ranges;
+		return $all_dates;
+	}
+
+	public function eshb_get_cart_blocks_ajax() {
+		check_ajax_referer( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ), 'nonce' );
+
+		$accom_id = isset( $_POST['accomodation_id'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['accomodation_id'] ) ) : 0;
+		if ( ! $accom_id ) {
+			wp_send_json_error( [ 'message' => 'Invalid accommodation ID' ] );
+			return;
+		}
+
+		$key   = 'eshb_cart_holds_' . $accom_id;
+		$holds = get_transient( $key );
+
+		$blocked_ranges = [];
+		if ( is_array( $holds ) ) {
+			$session = $this->eshb_get_session_token();
+			$now     = time();
+			foreach ( $holds as $token => $hold ) {
+				if ( $token === $session ) continue;
+				if ( $hold['until'] < $now ) continue;
+				$blocked_ranges[] = [
+					'start_date' => $hold['start_date'],
+					'end_date'   => $hold['end_date'],
+					'until'      => $hold['until'],
+				];
+			}
+		}
+
+		wp_send_json_success( [ 'blocked_ranges' => $blocked_ranges ] );
+	}
+
+	public function eshb_clear_cart_block_on_removal( $cart_item_key, $cart ) {
+		$removed = isset( $cart->removed_cart_contents[ $cart_item_key ] ) ? $cart->removed_cart_contents[ $cart_item_key ] : null;
+		if ( ! $removed ) return;
+
+		$accom_id = isset( $removed['accomodation_id'] ) ? (int) $removed['accomodation_id'] : 0;
+		if ( ! $accom_id ) return;
+
+		$session = $this->eshb_get_session_token();
+		if ( empty( $session ) ) return;
+
+		$key   = 'eshb_cart_holds_' . $accom_id;
+		$holds = get_transient( $key );
+		if ( ! is_array( $holds ) ) return;
+
+		unset( $holds[ $session ] );
+		if ( empty( $holds ) ) {
+			delete_transient( $key );
+		} else {
+			$cfg = $this->eshb_get_blocking_settings();
+			set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
+		}
+	}
+
+	public function eshb_render_calendar_legend( $accomodation_id = 0 ) {
+		static $rendered = false;
+		if ( $rendered || is_admin() ) return;
+		$rendered = true;
+
+		$eshb_settings       = get_option( 'eshb_settings', [] );
+		$cart_blocking_on    = ! empty( $eshb_settings['cart-blocking-switcher'] );
+
+		$items = [
+			'available'     => [ 'class' => 'eshb-legend-available',  'label' => __( 'Available',    'easy-hotel' ) ],
+			'selected'      => [ 'class' => 'eshb-legend-selected',   'label' => __( 'Selected',     'easy-hotel' ) ],
+			'booked'        => [ 'class' => 'eshb-legend-booked',     'label' => __( 'Booked',       'easy-hotel' ) ],
+			'holiday'       => [ 'class' => 'eshb-legend-holiday',    'label' => __( 'Holiday',      'easy-hotel' ) ],
+		];
+
+		if ( $cart_blocking_on ) {
+			$items['reserved'] = [ 'class' => 'eshb-legend-reserved', 'label' => __( 'Reserved', 'easy-hotel' ) ];
+		}
+
+		$items = apply_filters( 'eshb_calendar_legend_items', $items, $accomodation_id );
+		?>
+		<div class="eshb-calendar-legend">
+			<?php foreach ( $items as $item ) : ?>
+			<div class="eshb-legend-item">
+				<span class="eshb-legend-swatch <?php echo esc_attr( $item['class'] ); ?>"></span>
+				<span class="eshb-legend-label"><?php echo esc_html( $item['label'] ); ?></span>
+			</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	private function eshb_get_blocking_notice_html( $mode = 'fixed' ) {
+		$eshb_settings = get_option( 'eshb_settings', [] );
+		if ( empty( $eshb_settings['cart-blocking-switcher'] ) ) return '';
+
+		$msg = ! empty( $eshb_settings['cart-blocking-notice-msg'] ) ? esc_html( $eshb_settings['cart-blocking-notice-msg'] ) : esc_html__( 'Your reservation is held for', 'easy-hotel' );
+
+		$class = $mode === 'inline'
+			? 'woocommerce-info eshb-cart-block-notice eshb-cart-block-notice--inline'
+			: 'eshb-cart-block-notice eshb-cart-block-notice--fixed';
+
+		return '<div id="eshb-cart-block-notice" class="' . $class . '" data-mode="' . esc_attr( $mode ) . '" style="display:none;" aria-live="polite">'
+			. '&#x23F3; <span class="eshb-block-msg">' . $msg . '</span> <span class="eshb-block-timer">0:00</span>'
+			. '</div>';
+	}
+
+	public function eshb_render_cart_block_notice_inline() {
+		static $done = false;
+		if ( $done || is_admin() ) return;
+		$done = true;
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->eshb_get_blocking_notice_html( 'inline' );
+	}
+
+	public function eshb_prepend_notice_to_woo_block( $block_content, $block ) {
+		static $done = false;
+		if ( $done || is_admin() ) return $block_content;
+		if ( ! in_array( $block['blockName'], [ 'woocommerce/cart', 'woocommerce/checkout' ], true ) ) return $block_content;
+		$html = $this->eshb_get_blocking_notice_html( 'inline' );
+		if ( ! $html ) return $block_content;
+		$done = true;
+		return $html . $block_content;
+	}
+
+	public function eshb_clear_cart_on_block_expiry() {
+		check_ajax_referer( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ), 'nonce' );
+		if ( class_exists( 'WooCommerce' ) && WC()->cart ) {
+			WC()->cart->empty_cart();
+		}
+		wp_send_json_success( [ 'cleared' => true ] );
+	}
+
+	public function eshb_check_my_session_blocks() {
+		check_ajax_referer( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ), 'nonce' );
+
+		$accom_ids = isset( $_POST['accom_ids'] ) ? array_map( 'intval', (array) $_POST['accom_ids'] ) : [];
+		if ( empty( $accom_ids ) ) {
+			wp_send_json_success( [ 'active_ids' => [] ] );
+			return;
+		}
+
+		$session    = $this->eshb_get_session_token();
+		$now        = time();
+		$active_ids = [];
+
+		foreach ( $accom_ids as $accom_id ) {
+			if ( ! $accom_id ) continue;
+			$holds = get_transient( 'eshb_cart_holds_' . $accom_id );
+			if ( is_array( $holds ) && isset( $holds[ $session ] ) && $holds[ $session ]['until'] > $now ) {
+				$active_ids[] = $accom_id;
+			}
+		}
+
+		wp_send_json_success( [ 'active_ids' => $active_ids ] );
+	}
+
+	public function eshb_clear_session_cart_blocks_on_order( $order_id ) {
+		if ( ! $order_id ) return;
+
+		$session = $this->eshb_get_session_token();
+		if ( empty( $session ) ) return;
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order ) return;
+
+		foreach ( $order->get_items() as $item ) {
+			$accom_id = (int) $item->get_meta( 'accomodation_id' );
+			if ( ! $accom_id ) continue;
+
+			$key   = 'eshb_cart_holds_' . $accom_id;
+			$holds = get_transient( $key );
+			if ( ! is_array( $holds ) ) continue;
+
+			unset( $holds[ $session ] );
+			if ( empty( $holds ) ) {
+				delete_transient( $key );
+			} else {
+				$cfg = $this->eshb_get_blocking_settings();
+				set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
+			}
 		}
 	}
 }

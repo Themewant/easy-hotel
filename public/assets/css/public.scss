@@ -214,8 +214,20 @@
 
         // Date range
         &.in-range {
-            background-color: var(--eshb-inrange-bg-color);
+            background-color: var(--eshb-inrange-bg-color) !important;
             color: var(--eshb-active-color) !important;
+        }
+
+        &.reserved-date,
+        &.reserved-date.available {
+            background-color: var(--eshb-reserved-bg-color) !important;
+            color: var(--eshb-reserved-color) !important;
+            cursor: not-allowed !important;
+        }
+
+        &.reserved-date:hover {
+            background-color: var(--eshb-reserved-bg-color) !important;
+            color: var(--eshb-reserved-color) !important;
         }
     }
 }
@@ -1857,6 +1869,94 @@ div#easy-hotel-booking-modal {
             width: auto;
             height: calc(100vh - 80px);
             overflow-y: auto;
+        }
+    }
+}
+
+// cart blocking notice
+#eshb-cart-block-notice {
+    position: fixed;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    background-color: var(--eshb-primary-color);
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    z-index: 100000;
+    font-size: 14px;
+    font-weight: 600;
+
+    &.eshb-cart-block-notice--inline {
+        position: relative !important;
+        border: none;
+
+        &::before {
+            display: none;
+        }
+    }
+}
+
+// Calendar Legend
+.eshb-calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 0;
+    margin-bottom: 8px;
+
+    .eshb-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: inherit;
+    }
+
+    .eshb-legend-swatch {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        flex-shrink: 0;
+
+        &.eshb-legend-available {
+            background-color: #fff;
+        }
+
+        &.eshb-legend-selected {
+            background-color: var(--eshb-active-bg-color, #ab8965);
+            border-color: var(--eshb-active-bg-color, #ab8965);
+        }
+
+        &.eshb-legend-inrange {
+            background-color: var(--eshb-inrange-bg-color, #181818);
+            border-color: var(--eshb-inrange-bg-color, #181818);
+        }
+
+        &.eshb-legend-booked {
+            background-color: var(--eshb-booked-bg-color, #bebcbb);
+            border-color: var(--eshb-booked-bg-color, #bebcbb);
+        }
+
+        &.eshb-legend-checkin {
+            background-image: linear-gradient(135deg, transparent 50%, var(--eshb-booked-bg-color, #bebcbb) 50%);
+        }
+
+        &.eshb-legend-checkout {
+            background-image: linear-gradient(135deg, var(--eshb-booked-bg-color, #bebcbb) 50%, transparent 50%);
+        }
+
+        &.eshb-legend-holiday {
+            background-color: #fff;
+            border-color: rgb(255, 0, 0);
+            box-shadow: inset 0 0 0 2px rgba(255, 0, 0, 0.25);
+        }
+
+        &.eshb-legend-reserved {
+            background-color: var(--eshb-territory-color, #720eec);
+            border-color: var(--eshb-territory-color, #720eec);
         }
     }
 }

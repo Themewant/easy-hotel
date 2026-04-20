@@ -716,6 +716,7 @@ class ESHB_View extends ESHB_MAIN{
             <div class="eshb-availability-calendars">
                 <input type="hidden" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="available_date_picker" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
             </div>
+            <?php do_action( 'eshb_before_availability_calendar', $accomodation_id ); ?>
             <p class="eshb-availability-calendars-err eshb-calendar-msg"></p>
             <?php 
                 if(!empty($calendar_start_date_buffer)) {

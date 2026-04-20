@@ -101,6 +101,20 @@
       // add elements to booking metaboxes form
       ESHBPUBLICBOOKING.addElementsToBookingMetaboxes();
 
+      // restore countdown timer if a cart block is still active
+      ESHBPUBLICBOOKING.eshbInitCartBlockCountdown();
+
+      // instantly hide notice when any cart item remove button is clicked
+      $(document.body).on("click", "a.remove, .wc-block-cart-item__remove-link", function () {
+        ESHBPUBLICBOOKING.eshbHideCartBlockNotice();
+      });
+
+      // sync blocks after WooCommerce finishes removing (covers AJAX + fragment refresh)
+      $(document.body).on(
+        "removed_from_cart wc_fragments_refreshed",
+        ESHBPUBLICBOOKING.eshbSyncCartBlocksAfterRemoval
+      );
+
       // bind events for accomodation metaboxes
       ESHBPUBLICBOOKING.bindEventsForAccomodationMetas();
 
@@ -799,7 +813,8 @@
       allowedDays = "",
       allowSingleDate = false,
       minNights = 1,
-      maxNights = 365
+      maxNights = 365,
+      blockedRanges = []
     ) {
       let options = this.calendarDefaultsOps;
       options.startDate = $(startDateInput).val();
@@ -850,6 +865,15 @@
       }
 
       options.isInvalidDate = function (date) {
+        // Disable reserved dates (held by another user)
+        if (Array.isArray(blockedRanges) && blockedRanges.length > 0) {
+          let fd = date.format("YYYY-MM-DD");
+          let isBlocked = blockedRanges.some(function (range) {
+            return fd >= range.start_date && fd < range.end_date;
+          });
+          if (isBlocked) return true;
+        }
+
         // Disable the booked dates
         if (ESHBPUBLICBOOKING.isDateBooked(date, bookedDates)) {
           // Match format with bookedDates
@@ -889,6 +913,15 @@
       };
 
       options.isCustomDate = function (date) {
+        // reserved dates (held by another user)
+        if (Array.isArray(blockedRanges) && blockedRanges.length > 0) {
+          let fd = date.format("YYYY-MM-DD");
+          let isBlocked = blockedRanges.some(function (range) {
+            return fd >= range.start_date && fd < range.end_date;
+          });
+          if (isBlocked) return "reserved-date";
+        }
+
         let isCheckIn = ESHBPUBLICBOOKING.isDateCheckIn(
           date,
           checkedInOutDates
@@ -1374,6 +1407,7 @@
             allowedDays = response.data.allowed_check_in_day;
             allowedDaysArray = [];
             availableTimeSlots = response.data.available_slots;
+            let blockedRanges = Array.isArray(response.data.blocked_dates) ? response.data.blocked_dates : [];
 
             let isRenderTimeSlots = false;
 
@@ -1421,7 +1455,8 @@
               allowedDaysArray,
               allowSingleDate,
               minNights,
-              maxNights
+              maxNights,
+              blockedRanges
             );
             $(".holiday-date").attr("title", "Holiday");
             ESHBPUBLICBOOKING.updateEshbCalendar(
@@ -2793,6 +2828,30 @@
               .find(".status-success")
               .css("display", "flex");
 
+            // Store blocking hold in localStorage and start countdown
+            if (
+              response.data.blocked_until &&
+              response.data.blocked_until > 0 &&
+              typeof eshb_ajax !== "undefined" &&
+              eshb_ajax.cart_blocking_enabled
+            ) {
+              let blockInfo = {
+                accomodation_id: response.data.accomodation_id,
+                start_date: response.data.start_date,
+                end_date: response.data.end_date,
+                blocked_until: response.data.blocked_until * 1000,
+              };
+              let blocks = JSON.parse(
+                localStorage.getItem("eshb_cart_blocks") || "[]"
+              );
+              blocks = blocks.filter(
+                (b) => b.accomodation_id != blockInfo.accomodation_id
+              );
+              blocks.push(blockInfo);
+              localStorage.setItem("eshb_cart_blocks", JSON.stringify(blocks));
+              ESHBPUBLICBOOKING.eshbShowCartBlockCountdown(blockInfo);
+            }
+
             let timeoutDuration = 2000;
             if (bookingType == "booking_request") {
               timeoutDuration = 20000;
@@ -2810,7 +2869,10 @@
               });
 
               if (bookingType == "woocommerce") {
-                location.replace(carUrl);
+                let redirectUrl = (eshb_ajax.direct_booking == 1 && eshb_ajax.wooCheckoutUrl)
+                  ? eshb_ajax.wooCheckoutUrl
+                  : carUrl;
+                location.replace(redirectUrl);
               } else if (bookingType == "surecart") {
                 location.replace(response.data.checkout_url);
               }
@@ -3026,6 +3088,123 @@
     },
     updateCustomFieldsInShortcodedForm: function () {
       ESHBPUBLICBOOKING.addCustomFieldsToShortcodedForm();
+    },
+    eshbShowCartBlockCountdown: function (blockInfo) {
+      let notice = document.getElementById("eshb-cart-block-notice");
+      if (!notice) return;
+
+      // Stop any existing countdown
+      if (notice._eshbCountdown) {
+        clearInterval(notice._eshbCountdown);
+      }
+
+      let isInline = notice.dataset.mode === "inline";
+      let existingPad = 0;
+
+      if (!isInline) {
+        // Position fixed banner below WP admin bar
+        let adminBar = document.getElementById("wpadminbar");
+        let adminBarHeight = adminBar ? adminBar.offsetHeight : 0;
+        notice.style.top = adminBarHeight + "px";
+        notice.style.display = "block";
+        // Push body content down by notice height
+        existingPad = parseInt(getComputedStyle(document.body).paddingTop) || 0;
+        document.body.style.paddingTop = (existingPad + notice.offsetHeight) + "px";
+      } else {
+        notice.style.display = "block";
+      }
+
+      let timer = notice.querySelector(".eshb-block-timer");
+
+      let intervalId = setInterval(function () {
+        let remaining = Math.floor((blockInfo.blocked_until - Date.now()) / 1000);
+        if (remaining <= 0) {
+          clearInterval(intervalId);
+          if (timer) timer.textContent = "0:00";
+          localStorage.removeItem("eshb_cart_blocks");
+          $.post(
+            eshb_ajax.ajaxurl,
+            { action: "eshb_clear_cart_on_block_expiry", nonce: eshb_ajax.nonce },
+            function () {
+              notice.style.display = "none";
+              if (!isInline) document.body.style.paddingTop = existingPad ? existingPad + "px" : "";
+              location.reload();
+            }
+          );
+          return;
+        }
+        let mins = Math.floor(remaining / 60);
+        let secs = remaining % 60;
+        if (timer) timer.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+      }, 1000);
+
+      notice._eshbCountdown = intervalId;
+    },
+    eshbInitCartBlockCountdown: function () {
+      if (typeof eshb_ajax === "undefined" || !eshb_ajax.cart_blocking_enabled) return;
+
+      let now = Date.now();
+      let blocks = JSON.parse(localStorage.getItem("eshb_cart_blocks") || "[]");
+      let active = blocks.filter(function (b) { return b.blocked_until > now; });
+      if (active.length !== blocks.length) {
+        localStorage.setItem("eshb_cart_blocks", JSON.stringify(active));
+      }
+      if (active.length === 0) return;
+
+      // Verify blocks against server before showing notice (handles page reload after cart removal)
+      let accomIds = active.map(function (b) { return b.accomodation_id; });
+      $.post(
+        eshb_ajax.ajaxurl,
+        { action: "eshb_check_my_session_blocks", nonce: eshb_ajax.nonce, accom_ids: accomIds },
+        function (response) {
+          let serverActiveIds = (response && response.success && response.data.active_ids) ? response.data.active_ids : [];
+          let verified = active.filter(function (b) {
+            return serverActiveIds.indexOf(b.accomodation_id) !== -1;
+          });
+          localStorage.setItem("eshb_cart_blocks", JSON.stringify(verified));
+          if (verified.length > 0) {
+            ESHBPUBLICBOOKING.eshbShowCartBlockCountdown(verified[verified.length - 1]);
+          }
+        }
+      );
+    },
+    eshbHideCartBlockNotice: function () {
+      localStorage.removeItem("eshb_cart_blocks");
+      let notice = document.getElementById("eshb-cart-block-notice");
+      if (notice) {
+        if (notice._eshbCountdown) {
+          clearInterval(notice._eshbCountdown);
+          notice._eshbCountdown = null;
+        }
+        notice.style.display = "none";
+      }
+    },
+    eshbSyncCartBlocksAfterRemoval: function () {
+      if (typeof eshb_ajax === "undefined" || !eshb_ajax.cart_blocking_enabled) return;
+
+      let blocks = JSON.parse(localStorage.getItem("eshb_cart_blocks") || "[]");
+      if (blocks.length === 0) return;
+
+      let accomIds = blocks.map(function (b) { return b.accomodation_id; });
+
+      $.post(
+        eshb_ajax.ajaxurl,
+        { action: "eshb_check_my_session_blocks", nonce: eshb_ajax.nonce, accom_ids: accomIds },
+        function (response) {
+          if (!response || !response.success) return;
+
+          let activeIds = response.data.active_ids || [];
+          let remaining = blocks.filter(function (b) {
+            return activeIds.indexOf(b.accomodation_id) !== -1;
+          });
+
+          localStorage.setItem("eshb_cart_blocks", JSON.stringify(remaining));
+
+          if (remaining.length === 0) {
+            ESHBPUBLICBOOKING.eshbHideCartBlockNotice();
+          }
+        }
+      );
     }
   };
 
