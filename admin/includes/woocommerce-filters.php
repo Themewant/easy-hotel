@@ -130,8 +130,97 @@ function eshb_remove_related_products_with_accommodation_id($related_posts, $pro
     return $filtered;
 }
 
+// Remove default WooCommerce coupon form and render a custom inline coupon field
+// inside the order review (no nested <form> — uses a plain button + JS AJAX)
+add_action( 'init', function() {
+    remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
+} );
+add_action( 'woocommerce_review_order_before_payment', function() {
+    $archive_url = get_post_type_archive_link( 'eshb_accomodation' );
+    ?>
+    <div class="eshb-order-review-actions">
+        <div class="eshb-order-review-actions__left">
+            <?php if ( $archive_url ) : ?>
+            <a href="<?php echo esc_url( $archive_url ); ?>" class="button eshb-add-more-btn">
+                <?php esc_html_e( 'Add more accommodation', 'easy-hotel' ); ?>
+            </a>
+            <?php endif; ?>
+        </div>
+        <div class="eshb-order-review-actions__right">
+            <?php if ( wc_coupons_enabled() ) : ?>
+            <div class="eshb-coupon-wrap">
+                <p class="eshb-coupon-toggle">
+                    <?php esc_html_e( 'Have a coupon?', 'easy-hotel' ); ?>
+                    <a href="#" class="eshb-showcoupon"><?php esc_html_e( 'Click here to enter your code', 'easy-hotel' ); ?></a>
+                </p>
+                <div class="eshb-coupon-fields" style="display:none;">
+                    <p class="form-row">
+                        <input type="text" class="eshb-coupon-code input-text" placeholder="<?php esc_attr_e( 'Coupon code', 'easy-hotel' ); ?>" />
+                        <button type="button" class="eshb-apply-coupon button"><?php esc_html_e( 'Apply coupon', 'easy-hotel' ); ?></button>
+                    </p>
+                    <div class="eshb-coupon-message"></div>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
+}, 10 );
+
 // Remove "Order again" button from WooCommerce Thank You page
 add_action( 'woocommerce_thankyou', function( $order_id ) {
     remove_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_again_button', 10 );
 }, 1 );
+
+// Hide the entire Additional Information section heading/wrapper when disabled
+add_filter( 'woocommerce_enable_order_notes_field', function( $enabled ) {
+    $settings = get_option( 'eshb_settings', array() );
+    if ( empty( $settings['checkout-additional-fields'] ) ) {
+        return false;
+    }
+    return $enabled;
+} );
+
+// Filter checkout fields based on plugin settings
+add_filter( 'woocommerce_checkout_fields', function( $fields ) {
+    $settings = get_option( 'eshb_settings', array() );
+
+    // Rename address labels
+    if ( isset( $fields['billing']['billing_address_1']['label'] ) ) {
+        $fields['billing']['billing_address_1']['label'] = __( 'Address', 'easy-hotel' );
+    }
+    if ( isset( $fields['shipping']['shipping_address_1']['label'] ) ) {
+        $fields['shipping']['shipping_address_1']['label'] = __( 'Address', 'easy-hotel' );
+    }
+
+    // Billing fields
+    $allowed_billing = isset( $settings['checkout-billing-fields'] ) ? (array) $settings['checkout-billing-fields'] : null;
+    if ( is_array( $allowed_billing ) && ! empty( $allowed_billing ) ) {
+        foreach ( array_keys( $fields['billing'] ?? array() ) as $key ) {
+            if ( ! in_array( $key, $allowed_billing, true ) ) {
+                unset( $fields['billing'][ $key ] );
+            }
+        }
+    }
+
+    // Shipping fields
+    $allowed_shipping = isset( $settings['checkout-shipping-fields'] ) ? (array) $settings['checkout-shipping-fields'] : null;
+    if ( is_array( $allowed_shipping ) && ! empty( $allowed_shipping ) ) {
+        foreach ( array_keys( $fields['shipping'] ?? array() ) as $key ) {
+            if ( ! in_array( $key, $allowed_shipping, true ) ) {
+                unset( $fields['shipping'][ $key ] );
+            }
+        }
+    }
+
+    // Additional information section
+    $additional_enabled = ! empty( $settings['checkout-additional-fields'] );
+    if ( ! $additional_enabled ) {
+        $fields['order'] = array();
+    } elseif ( isset( $settings['checkout-order-notes'] ) && ! $settings['checkout-order-notes'] ) {
+        unset( $fields['order']['order_comments'] );
+    }
+
+    return $fields;
+}, 20 );
 

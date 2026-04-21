@@ -70,6 +70,11 @@ class ESHB_Booking {
 		add_action( 'woocommerce_before_checkout_form', [ $this, 'eshb_render_cart_block_notice_inline' ] );
 		// Inline notice: block themes (woocommerce/cart and woocommerce/checkout blocks)
 		add_filter( 'render_block', [ $this, 'eshb_prepend_notice_to_woo_block' ], 10, 2 );
+		// Quantity input in checkout order review table (classic themes)
+		add_filter( 'woocommerce_checkout_cart_item_quantity', [ $this, 'eshb_checkout_order_review_qty_input' ], 10, 3 );
+		// Cart quantity update via AJAX on checkout
+		add_action( 'wp_ajax_nopriv_eshb_update_cart_item_qty', [ $this, 'eshb_update_cart_item_qty' ] );
+		add_action( 'wp_ajax_eshb_update_cart_item_qty', [ $this, 'eshb_update_cart_item_qty' ] );
 		add_action( 'eshb_before_availability_calendar', [ $this, 'eshb_render_calendar_legend' ], 10, 1 );
 
 		add_action('rest_api_init', function() {
@@ -2772,6 +2777,23 @@ class ESHB_Booking {
 				set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
 			}
 		}
+	}
+
+	public function eshb_checkout_order_review_qty_input( $qty_html, $cart_item, $cart_item_key ) {
+		if ( ! is_checkout() ) return $qty_html;
+		$nonce   = wp_create_nonce( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ) );
+		$ajaxurl = esc_url( admin_url( 'admin-ajax.php' ) );
+		return '<input type="number" class="eshb-cart-qty-input input-text qty text" value="' . esc_attr( $cart_item['quantity'] ) . '" min="1" step="1" data-cart-key="' . esc_attr( $cart_item_key ) . '" data-nonce="' . esc_attr( $nonce ) . '" data-ajaxurl="' . esc_attr( $ajaxurl ) . '" />';
+	}
+
+	public function eshb_update_cart_item_qty() {
+		check_ajax_referer( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ), 'nonce' );
+		$cart_item_key = sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ?? '' ) );
+		$quantity      = absint( $_POST['quantity'] ?? 1 );
+		if ( $cart_item_key && class_exists( 'WooCommerce' ) && WC()->cart ) {
+			WC()->cart->set_quantity( $cart_item_key, max( 1, $quantity ), true );
+		}
+		wp_send_json_success();
 	}
 }
 ESHB_Booking::instance();

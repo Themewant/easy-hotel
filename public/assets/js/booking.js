@@ -63,6 +63,8 @@
    */
   let ESHBPUBLICBOOKING = {
     init: function () {
+      $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
+
       let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
       let startDateInput = eshbCalVars.startDateInput;
       let endDateInput = eshbCalVars.endDateInput;
@@ -132,7 +134,13 @@
         .on(
           "click.ESHBPUBLICBOOKING",
           '.eshb-booking-form .service-item input[name="extra_services[]"]',
-          this.calculateExtraServicesPricing
+          function (e) {
+            if ($(this).attr("is_mandatory") == "1") {
+              $(this).prop("checked", true).attr("checked", "checked");
+              return false;
+            }
+            ESHBPUBLICBOOKING.calculateExtraServicesPricing.call(this, e);
+          }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
@@ -157,7 +165,10 @@
         .on(
           "change.ESHBPUBLICBOOKING",
           '.eshb-booking-form input[name="room_quantity"], .eshb-booking-form input[name="extra_bed_quantity"], .eshb-booking-form input[name="adult_quantity"], .eshb-booking-form input[name="children_quantity"]',
-          this.updatePricingTable
+          function () {
+            //$('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
+            ESHBPUBLICBOOKING.updatePricingTable();
+          }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
@@ -328,7 +339,16 @@
     },
     updateServicesChecked: function () {
       $('.eshb-booking-form .service-item input[name="extra_services[]"]').each(function (index, element) {
-        $(element).on("change", function () {
+        var $el = $(element);
+        if ($el.attr("is_mandatory") == "1") {
+          $el.prop("checked", true).attr("checked", "checked").prop("disabled", true);
+          $el.closest(".service-item").css("opacity", "0.7").attr("title", "This service is mandatory and cannot be removed.");
+        }
+        $el.on("change", function () {
+          if ($(this).attr("is_mandatory") == "1") {
+            $(this).prop("checked", true).attr("checked", "checked");
+            return false;
+          }
           if ($(this).is(":checked")) {
             $(this).attr("checked", "checked");
           } else {
@@ -1027,6 +1047,7 @@
 
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
+        $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1127,6 +1148,7 @@
 
       // Event listener for the second date range picker
       $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
+        $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1229,6 +1251,7 @@
         "apply.daterangepicker",
         function (ev, picker) {
           if (startDateInput.length) {
+            $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
 
@@ -1394,9 +1417,6 @@
         },
         function (response) {
           if (response.success) {
-            console.log('data', response.data);
-
-
             checkedInOutDates = response.data.checked_in_out_dates;
             bookedDates = response.data.booked_dates;
             holiDayDates = response.data.holiday_dates;
@@ -1875,7 +1895,7 @@
         '.eshb-booking-form .eshb-time-slot.selected input[name="end_time"]'
       ).val();
 
-      resultEl.empty();
+
 
       $.post(
         eshb_ajax.ajaxurl,
@@ -2399,108 +2419,10 @@
       $form
         .find(".cost-calculator-wrapper .pricing-values")
         .css("display", "none");
-      // const start = performance.now();
-      // $.post(
-      //   eshb_ajax.ajaxurl,
-      //   {
-      //     action: "eshb_get_booking_prices",
-      //     selectedServices: JSON.stringify(selectedServices),
-      //     roomQuantity,
-      //     adultQuantity,
-      //     childrenQuantity,
-      //     extraBedQuantity,
-      //     accomodationId,
-      //     startDate,
-      //     endDate,
-      //     startTime,
-      //     endTime,
-      //     nonce: eshb_ajax.nonce,
-      //   },
-      //   function (response) {
-      //      const end = performance.now();
-      //     console.log(`Response time: ${end - start} ms`);
-      //     if (response.success) {
-      //       let prices = response.data;
-      //       let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
-      //       let subtotalPrice = parseFloat(prices.subtotalPrice);
-      //       let totalPrice = parseFloat(prices.totalPrice);
-      //       let regularTotalPrice = parseFloat(prices.regularTotalPrice);
-      //       let extraServicesPrice = parseFloat(prices.extraServicesPrice);
-      //       let extraBedPrice = parseFloat(prices.extraBedPrice);
-      //       let basePrice = parseFloat(prices.basePrice);
-      //       let currencySymbol = prices.currencySymbol;
-      //       let currencyPosition = prices.currencyPosition;
 
-      //       // show discounted pricing
-      //       if (
-      //         totalPrice < regularTotalPrice &&
-      //         totalPrice != regularTotalPrice
-      //       ) {
-      //         $form
-      //           .find(".cost-calculator-wrapper")
-      //           .addClass("has-discounted-price");
-      //       } else {
-      //         $form
-      //           .find(".cost-calculator-wrapper")
-      //           .removeClass("has-discounted-price");
 
-      //       }
-
-      //       // Conditional DOM updates
-      //       let updateIfChanged = function ($el, value) {
-      //         if (value && $el.text() !== value) {
-      //           $el.text(value);
-      //         }
-      //       };
-
-      //       regularTotalPrice = regularTotalPrice != totalPrice && totalPrice > regularTotalPrice ? totalPrice : regularTotalPrice;
-
-      //       $form.find("#eshb-subtotal-price").val(regularTotalPrice);
-      //       $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
-      //       $form.find("#eshb-default-extra-service-price").val(extraServicesPrice);
-
-      //       // update admin booking metaboxes pricing
-      //       if (
-      //         typeof eshb_ajax.is_admin !== "undefined" &&
-      //         eshb_ajax.is_admin
-      //       ) {
-      //         $('input[name="eshb_booking_metaboxes[total_price]"]').val(
-      //           totalPrice
-      //         );
-      //         $('input[name="eshb_booking_metaboxes[subtotal_price]"]').val(
-      //           subtotalPrice
-      //         );
-      //         $('input[name="eshb_booking_metaboxes[base_price]"]').val(
-      //           basePrice
-      //         );
-      //         $(
-      //           'input[name="eshb_booking_metaboxes[extra_service_price]"]'
-      //         ).val(extraServicesPrice);
-      //         $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(
-      //           extraBedPrice
-      //         );
-      //       }
-
-      //       if (currencyPosition == "right") {
-      //         totalPrice = totalPrice + currencySymbol;
-      //         regularTotalPrice = regularTotalPrice + currencySymbol;
-      //       } else {
-      //         totalPrice = currencySymbol + totalPrice;
-      //         regularTotalPrice = currencySymbol + regularTotalPrice;
-      //       }
-
-      //       updateIfChanged(
-      //         $form.find("#eshb-booking-discounted-price"),
-      //         totalPrice
-      //       );
-      //       updateIfChanged(
-      //         $form.find("#eshb-booking-total-price"),
-      //         regularTotalPrice
-      //       );
-      //     }
-      //   }
-      // );
-
+      const $submitBtn = $form.find(".eshb-form-submit-btn");
+      $submitBtn.prop("disabled", true);
       const start = performance.now();
 
       fetch(`${eshb_rest.root}eshb/v1/booking-prices`, {
@@ -2587,9 +2509,11 @@
 
           updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
           updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
+          $submitBtn.prop("disabled", false);
         })
         .catch((err) => {
           console.error("REST API request failed:", err);
+          $submitBtn.prop("disabled", false);
         });
 
 
@@ -2611,6 +2535,11 @@
       extraServicesPrice = parseFloat($form.find('input[name="default_extra_service_price"]').val()) || 0;
 
       return extraServicesPrice;
+    },
+
+    selectService: function () {
+
+
     },
 
     calculateExtraServicesPricing: function () {
@@ -3209,5 +3138,94 @@
   };
 
   ESHBPUBLICBOOKING.init();
+
+  // Checkout order review: inject Qty column into the review table
+  function eshbBuildCheckoutQtyColumn() {
+    var $table = $('table.woocommerce-checkout-review-order-table');
+    if ( ! $table.length ) return;
+
+    // Add header only once
+    if ( ! $table.find('thead th.eshb-product-quantity').length ) {
+      $table.find('thead tr th.product-name').after(
+        '<th class="product-total eshb-product-quantity">Qty</th>'
+      );
+    }
+
+    // Move each qty input into its own <td>
+    $table.find('tbody tr.cart_item').each(function () {
+      var $row   = $(this);
+      if ( $row.find('td.eshb-product-quantity').length ) return; // already done
+      var $input = $row.find('.eshb-cart-qty-input').detach();
+      if ( $input.length ) {
+        $row.find('td.product-name').after(
+          $('<td class="product-total eshb-product-quantity"></td>').append($input)
+        );
+      }
+    });
+
+    // Span the footer <th> across the first two columns (Product + Qty)
+    $table.find('tfoot tr').each(function () {
+      var $th = $(this).find('th').first();
+      if ( $th.length && !$th.attr('colspan') ) {
+        $th.attr('colspan', 2);
+      }
+    });
+  }
+
+  if ( $('body').hasClass('woocommerce-checkout') ) {
+    eshbBuildCheckoutQtyColumn();
+    $(document.body).on('updated_checkout', eshbBuildCheckoutQtyColumn);
+
+    // Coupon toggle
+    $(document).on( 'click', '.eshb-showcoupon', function(e) {
+      e.preventDefault();
+      $('.eshb-coupon-fields').slideToggle();
+    } );
+
+    // Apply coupon via AJAX (no nested form — uses plain button)
+    $(document).on( 'click', '.eshb-apply-coupon', function(e) {
+      e.preventDefault();
+      var code = $('.eshb-coupon-code').val().trim();
+      var $msg = $('.eshb-coupon-message');
+      if ( ! code ) return;
+      $msg.html('');
+      $.ajax({
+        type: 'POST',
+        url:  wc_checkout_params.ajax_url,
+        data: {
+          action:      'woocommerce_apply_coupon',
+          coupon_code: code,
+          security:    wc_checkout_params.apply_coupon_nonce
+        },
+        success: function( response ) {
+          if ( response ) {
+            $msg.html( response );
+          }
+          $( document.body ).trigger( 'update_checkout' );
+        }
+      });
+    } );
+  }
+
+  // Checkout order review: quantity input update
+  var eshbQtyTimer;
+  $(document).on('change', '.eshb-cart-qty-input', function () {
+    var $input  = $(this);
+    var qty     = parseInt($input.val(), 10) || 1;
+    var cartKey = $input.data('cart-key');
+    var nonce   = $input.data('nonce');
+    var ajaxurl = $input.data('ajaxurl');
+    clearTimeout(eshbQtyTimer);
+    eshbQtyTimer = setTimeout(function () {
+      $.post(ajaxurl, {
+        action:        'eshb_update_cart_item_qty',
+        cart_item_key: cartKey,
+        quantity:      qty,
+        nonce:         nonce
+      }, function () {
+        $(document.body).trigger('update_checkout');
+      });
+    }, 400);
+  });
 
 })(jQuery);

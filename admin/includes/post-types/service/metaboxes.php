@@ -61,7 +61,14 @@ if( class_exists( 'ESHB' ) ) {
             'title'      => 'Checked by Default',
             'default'    => false
             ),
-        )
+        array(
+            'id'         => 'is_mandatory', // field id
+            'type'       => 'switcher',
+            'title'      => 'Mandatory',
+            'default'    => false
+        ),
+
+        ),
     ) );
 
 }
