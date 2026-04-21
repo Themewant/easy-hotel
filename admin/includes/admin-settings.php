@@ -382,8 +382,65 @@ add_action( 'plugins_loaded', function(){
                     'type'  => 'switcher',
                     'title' => 'Direct Booking',
                     'desc'  => 'Enable for redirect to checkout page after adding room to cart.',
-                    'default' => false,
+                    'default' => true,
                   ),
+                  array(
+              'id'          => 'checkout-billing-fields',
+              'type'        => 'select',
+              'title'       => 'Billing Fields',
+              'desc'        => 'Select which billing fields to display on the checkout page. Unselected fields will be hidden.',
+              'multiple'    => true,
+              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+              'placeholder' => 'Select fields to show',
+              'options'     => array(
+                'billing_first_name' => 'First Name',
+                'billing_last_name'  => 'Last Name',
+                'billing_company'    => 'Company',
+                'billing_email'      => 'Email Address',
+                'billing_phone'      => 'Phone',
+                'billing_address_1'  => 'Address Line 1',
+                'billing_address_2'  => 'Address Line 2',
+                'billing_city'       => 'City',
+                'billing_postcode'   => 'Postcode / ZIP',
+                'billing_country'    => 'Country',
+                'billing_state'      => 'State / County',
+              ),
+              'default' => array(
+                'billing_first_name', 'billing_last_name',
+                'billing_email', 'billing_phone', 'billing_address_1',
+              ),
+            ),
+            array(
+              'id'          => 'checkout-shipping-fields',
+              'type'        => 'select',
+              'title'       => 'Shipping Fields',
+              'desc'        => 'Select which shipping fields to display on the checkout page. Unselected fields will be hidden.',
+              'multiple'    => true,
+              'placeholder' => 'Select fields to show',
+              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+              'options'     => array(
+                'shipping_first_name' => 'First Name',
+                'shipping_last_name'  => 'Last Name',
+                'shipping_company'    => 'Company',
+                'shipping_address_1'  => 'Address Line 1',
+                'shipping_address_2'  => 'Address Line 2',
+                'shipping_city'       => 'City',
+                'shipping_postcode'   => 'Postcode / ZIP',
+                'shipping_country'    => 'Country',
+                'shipping_state'      => 'State / County',
+              ),
+              'default' => array(
+                'shipping_first_name', 'shipping_last_name', 'shipping_address_1',
+              ),
+            ),
+            array(
+              'id'      => 'checkout-additional-fields',
+              'type'    => 'switcher',
+              'title'   => 'Additional Information',
+              'desc'    => 'Enable or disable the entire Additional Information section on the checkout page.',
+              'default' => false,
+              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+            ),
                   array(
                     'id'    => 'recipent_email',
                     'type'  => 'text',
@@ -558,8 +615,7 @@ add_action( 'plugins_loaded', function(){
           )
         );
 
-        
-
+      
         ESHB::createSection( $prefix, array(
           'title'  => 'Design',
           'fields' => array(

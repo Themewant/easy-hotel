@@ -463,7 +463,7 @@ class ESHB_View extends ESHB_MAIN{
                             <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_rooms) );?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
-                                <input type="text" value="<?php echo $available_rooms > 0 ? esc_html($available_rooms) : 0 ?>" name="room_quantity">
+                                <input type="text" value="<?php echo $available_rooms > 0 ? 1 : 0 ?>" name="room_quantity">
                                 <span class="d-plus" max="5"><?php echo esc_html('+')?></span>
                             </div>
                             <p class="capacity-status room-capacity-status"><?php echo esc_html( eshb_get_translated_string($string_available_rooms) ) . ' '; ?><span class="room-capacity-number"><?php echo esc_html( abs($available_rooms) ); ?></span></p>
@@ -514,11 +514,12 @@ class ESHB_View extends ESHB_MAIN{
                                     }
 
                                     $is_checked = $service_metaboxes['is_checked'] ?? false;
+                                    $is_mandatory = $service_metaboxes['is_mandatory'] ?? false;
 
                                     ?>
                                     <li class="service-item">
                                         <label for="eshb-service-message-<?php echo esc_attr( $service_id )?>" class="label-checkbox">
-                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" title="<?php echo esc_attr($service_name) ?>" <?php checked( $is_checked ); ?>>
+                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" is_mandatory="<?php echo esc_attr( $is_mandatory ) ?>" title="<?php echo esc_attr($service_name) ?>" <?php checked( $is_checked ); ?>>
                                             <div class="eshb-styled-checkbox"></div>
                                             <span class="service-name"><?php echo esc_html($service_name, 'easy-hotel'); ?></span>
                                         </label>
