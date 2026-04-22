@@ -62,7 +62,24 @@
    * @property {function} updateCustomFieldsInShortcodedForm - Updates custom fields in shortcoded forms.
    */
   let ESHBPUBLICBOOKING = {
+    eshbInjectCartNotice: function () {
+      if ( typeof eshb_cart_notice === 'undefined' || eshb_cart_notice.enabled !== '1' ) return;
+      if ( document.getElementById('eshb-cart-block-notice') ) return;
+      var div = document.createElement('div');
+      div.id            = 'eshb-cart-block-notice';
+      div.className     = 'woocommerce-info eshb-cart-block-notice eshb-cart-block-notice--inline';
+      div.dataset.mode  = 'inline';
+      div.style.display = 'none';
+      div.setAttribute('aria-live', 'polite');
+      div.innerHTML     = '&#x23F3; <span class="eshb-block-msg">' + eshb_cart_notice.msg + '</span> <span class="eshb-block-timer">0:00</span>';
+      var blockCheckout = document.querySelector('.wp-block-woocommerce-checkout');
+      var blockCart     = document.querySelector('.wp-block-woocommerce-cart');
+      var target        = blockCheckout || blockCart;
+      if ( ! target ) return; // shortcode — PHP hook handles it
+      target.parentNode.insertBefore( div, target );
+    },
     init: function () {
+      ESHBPUBLICBOOKING.eshbInjectCartNotice();
       $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
       let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();

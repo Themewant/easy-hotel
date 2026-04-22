@@ -257,6 +257,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 * Fixed: Default room quantity is now set to 1 in the booking form.
 * Added: Checkout fields enable/disable option in admin settings.
 * Improved: Redesign checkout page.
+* Fixed: Adjust availability calendar height.
 
 = 1.9.2 =
 * Added direct checkout page option

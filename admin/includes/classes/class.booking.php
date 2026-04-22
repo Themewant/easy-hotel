@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Booking {
 
     private static $_instance = null;
+    private $eshb_notice_printed = false;
 	
 	public static function instance() {
 
@@ -65,11 +66,9 @@ class ESHB_Booking {
 		add_action( 'wp_ajax_nopriv_eshb_check_my_session_blocks', [ $this, 'eshb_check_my_session_blocks' ] );
 		add_action( 'wp_ajax_eshb_check_my_session_blocks', [ $this, 'eshb_check_my_session_blocks' ] );
 		add_filter( 'eshb_get_disabled_dates_in_search', [ $this, 'eshb_add_blocked_dates_to_calendar' ], 10, 3 );
-		// Inline notice: classic themes
+		// Inline notice: shortcode-based cart/checkout (block themes use JS injection instead)
 		add_action( 'woocommerce_before_cart',          [ $this, 'eshb_render_cart_block_notice_inline' ] );
 		add_action( 'woocommerce_before_checkout_form', [ $this, 'eshb_render_cart_block_notice_inline' ] );
-		// Inline notice: block themes (woocommerce/cart and woocommerce/checkout blocks)
-		add_filter( 'render_block', [ $this, 'eshb_prepend_notice_to_woo_block' ], 10, 2 );
 		// Quantity input in checkout order review table (classic themes)
 		add_filter( 'woocommerce_checkout_cart_item_quantity', [ $this, 'eshb_checkout_order_review_qty_input' ], 10, 3 );
 		// Cart quantity update via AJAX on checkout
@@ -2703,21 +2702,32 @@ class ESHB_Booking {
 	}
 
 	public function eshb_render_cart_block_notice_inline() {
-		static $done = false;
-		if ( $done || is_admin() ) return;
-		$done = true;
+		if ( $this->eshb_notice_printed || is_admin() ) return;
+		$this->eshb_notice_printed = true;
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->eshb_get_blocking_notice_html( 'inline' );
 	}
 
 	public function eshb_prepend_notice_to_woo_block( $block_content, $block ) {
-		static $done = false;
-		if ( $done || is_admin() ) return $block_content;
+		if ( $this->eshb_notice_printed || is_admin() ) return $block_content;
 		if ( ! in_array( $block['blockName'], [ 'woocommerce/cart', 'woocommerce/checkout' ], true ) ) return $block_content;
 		$html = $this->eshb_get_blocking_notice_html( 'inline' );
 		if ( ! $html ) return $block_content;
-		$done = true;
-		return $html . $block_content;
+		$this->eshb_notice_printed = true;
+		// Append for checkout to avoid breaking React hydration; prepend for cart
+		return $block['blockName'] === 'woocommerce/checkout'
+			? $block_content . $html
+			: $html . $block_content;
+	}
+
+	public function eshb_footer_notice_fallback() {
+		if ( $this->eshb_notice_printed || is_admin() ) return;
+		if ( ! is_cart() && ! is_checkout() ) return;
+		$html = $this->eshb_get_blocking_notice_html( 'inline' );
+		if ( ! $html ) return;
+		$this->eshb_notice_printed = true;
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	public function eshb_clear_cart_on_block_expiry() {

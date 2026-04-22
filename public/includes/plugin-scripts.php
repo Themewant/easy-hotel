@@ -26,6 +26,15 @@ function eshb_wp_enqueue_scripts (){
     
     ESHB_Helper::eshb_set_accomodation_localize();
 
+    // Cart blocking notice config for JS injection
+    $eshb_notice_msg = ! empty( $eshb_settings['cart-blocking-notice-msg'] )
+        ? esc_html( $eshb_settings['cart-blocking-notice-msg'] )
+        : esc_html__( 'Your reservation is held for', 'easy-hotel' );
+    wp_localize_script( 'eshb-booking-script', 'eshb_cart_notice', [
+        'enabled' => ! empty( $eshb_settings['cart-blocking-switcher'] ) ? '1' : '0',
+        'msg'     => $eshb_notice_msg,
+    ] );
+
     wp_localize_script('eshb-public-script', 'eshb_rest', [
         'root'  => esc_url(rest_url()),
         'nonce' => wp_create_nonce('wp_rest')
