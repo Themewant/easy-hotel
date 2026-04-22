@@ -1836,7 +1836,6 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
 }
 .eshb-availability-calendars-area .eshb-availability-calendars {
   position: relative;
-  height: 400px;
 }
 @media (max-width: 1024px) {
   .eshb-availability-calendars-area .eshb-availability-calendars {
@@ -1854,9 +1853,13 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
 }
 .eshb-availability-calendars-area .eshb-availability-calendars .daterangepicker.show-calendar {
   display: block !important;
-  position: absolute;
+  position: relative;
   left: 0 !important;
   top: 0 !important;
+  width: max-content;
+}
+.eshb-availability-calendars-area .eshb-availability-calendars .ranges {
+  display: block;
 }
 .eshb-availability-calendars-area .eshb-availability-calendars-err {
   color: var(--eshb-danger-color);
