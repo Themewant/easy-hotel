@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 ?>
 <div class="easy-hotel">
-    <div class="eshb-archive-wrapper eshb-container">
+    <div class="eshb-archive-wrapper eshb-search-result-wrapper eshb-container">
         <?php
             $search = new ESHB_Search();
             $default_start_end_date = ESHB_Helper::get_eshb_default_start_end_date();
@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
             }else {
                 ?>
-                    <p class="eshb-search-error"><?php esc_html__( 'No available accommodations found for the selected dates.', 'easy-hotel' ) ?></p>
+                    <p class="eshb-search-error"><?php echo esc_html__( 'No available accommodations found for the selected dates.', 'easy-hotel' ) ?></p>
                 <?php
             }
         ?>

@@ -662,6 +662,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   background: var(--eshb-dark-color);
 }
 
+.eshb-archive-wrapper {
+  min-height: 500px;
+}
+
 .no-customize-support .eshb-container.eshb-archive-wrapper {
   padding-top: 0;
   padding-bottom: 0;

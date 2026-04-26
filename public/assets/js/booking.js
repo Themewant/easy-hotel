@@ -63,20 +63,20 @@
    */
   let ESHBPUBLICBOOKING = {
     eshbInjectCartNotice: function () {
-      if ( typeof eshb_cart_notice === 'undefined' || eshb_cart_notice.enabled !== '1' ) return;
-      if ( document.getElementById('eshb-cart-block-notice') ) return;
+      if (typeof eshb_cart_notice === 'undefined' || eshb_cart_notice.enabled !== '1') return;
+      if (document.getElementById('eshb-cart-block-notice')) return;
       var div = document.createElement('div');
-      div.id            = 'eshb-cart-block-notice';
-      div.className     = 'woocommerce-info eshb-cart-block-notice eshb-cart-block-notice--inline';
-      div.dataset.mode  = 'inline';
+      div.id = 'eshb-cart-block-notice';
+      div.className = 'woocommerce-info eshb-cart-block-notice eshb-cart-block-notice--inline';
+      div.dataset.mode = 'inline';
       div.style.display = 'none';
       div.setAttribute('aria-live', 'polite');
-      div.innerHTML     = '&#x23F3; <span class="eshb-block-msg">' + eshb_cart_notice.msg + '</span> <span class="eshb-block-timer">0:00</span>';
+      div.innerHTML = '&#x23F3; <span class="eshb-block-msg">' + eshb_cart_notice.msg + '</span> <span class="eshb-block-timer">0:00</span>';
       var blockCheckout = document.querySelector('.wp-block-woocommerce-checkout');
-      var blockCart     = document.querySelector('.wp-block-woocommerce-cart');
-      var target        = blockCheckout || blockCart;
-      if ( ! target ) return; // shortcode — PHP hook handles it
-      target.parentNode.insertBefore( div, target );
+      var blockCart = document.querySelector('.wp-block-woocommerce-cart');
+      var target = blockCheckout || blockCart;
+      if (!target) return; // shortcode — PHP hook handles it
+      target.parentNode.insertBefore(div, target);
     },
     init: function () {
       ESHBPUBLICBOOKING.eshbInjectCartNotice();
@@ -2410,11 +2410,13 @@
     updatePricingTable: function () {
       const eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
 
+      let accomodationId = eshbCalVars.accomodationId;
+
+      if (!accomodationId) return;
+
       let $form = eshbCalVars.bookingFormEl;
 
       if ($form.length === 0) return;
-
-      let accomodationId = eshbCalVars.accomodationId;
 
       let roomQuantity = 1;
       let adultQuantity = 1;
@@ -3159,10 +3161,10 @@
   // Checkout order review: inject Qty column into the review table
   function eshbBuildCheckoutQtyColumn() {
     var $table = $('table.woocommerce-checkout-review-order-table');
-    if ( ! $table.length ) return;
+    if (!$table.length) return;
 
     // Add header only once
-    if ( ! $table.find('thead th.eshb-product-quantity').length ) {
+    if (!$table.find('thead th.eshb-product-quantity').length) {
       $table.find('thead tr th.product-name').after(
         '<th class="product-total eshb-product-quantity">Qty</th>'
       );
@@ -3170,10 +3172,10 @@
 
     // Move each qty input into its own <td>
     $table.find('tbody tr.cart_item').each(function () {
-      var $row   = $(this);
-      if ( $row.find('td.eshb-product-quantity').length ) return; // already done
+      var $row = $(this);
+      if ($row.find('td.eshb-product-quantity').length) return; // already done
       var $input = $row.find('.eshb-cart-qty-input').detach();
-      if ( $input.length ) {
+      if ($input.length) {
         $row.find('td.product-name').after(
           $('<td class="product-total eshb-product-quantity"></td>').append($input)
         );
@@ -3183,62 +3185,62 @@
     // Span the footer <th> across the first two columns (Product + Qty)
     $table.find('tfoot tr').each(function () {
       var $th = $(this).find('th').first();
-      if ( $th.length && !$th.attr('colspan') ) {
+      if ($th.length && !$th.attr('colspan')) {
         $th.attr('colspan', 2);
       }
     });
   }
 
-  if ( $('body').hasClass('woocommerce-checkout') ) {
+  if ($('body').hasClass('woocommerce-checkout')) {
     eshbBuildCheckoutQtyColumn();
     $(document.body).on('updated_checkout', eshbBuildCheckoutQtyColumn);
 
     // Coupon toggle
-    $(document).on( 'click', '.eshb-showcoupon', function(e) {
+    $(document).on('click', '.eshb-showcoupon', function (e) {
       e.preventDefault();
       $('.eshb-coupon-fields').slideToggle();
-    } );
+    });
 
     // Apply coupon via AJAX (no nested form — uses plain button)
-    $(document).on( 'click', '.eshb-apply-coupon', function(e) {
+    $(document).on('click', '.eshb-apply-coupon', function (e) {
       e.preventDefault();
       var code = $('.eshb-coupon-code').val().trim();
       var $msg = $('.eshb-coupon-message');
-      if ( ! code ) return;
+      if (!code) return;
       $msg.html('');
       $.ajax({
         type: 'POST',
-        url:  wc_checkout_params.ajax_url,
+        url: wc_checkout_params.ajax_url,
         data: {
-          action:      'woocommerce_apply_coupon',
+          action: 'woocommerce_apply_coupon',
           coupon_code: code,
-          security:    wc_checkout_params.apply_coupon_nonce
+          security: wc_checkout_params.apply_coupon_nonce
         },
-        success: function( response ) {
-          if ( response ) {
-            $msg.html( response );
+        success: function (response) {
+          if (response) {
+            $msg.html(response);
           }
-          $( document.body ).trigger( 'update_checkout' );
+          $(document.body).trigger('update_checkout');
         }
       });
-    } );
+    });
   }
 
   // Checkout order review: quantity input update
   var eshbQtyTimer;
   $(document).on('change', '.eshb-cart-qty-input', function () {
-    var $input  = $(this);
-    var qty     = parseInt($input.val(), 10) || 1;
+    var $input = $(this);
+    var qty = parseInt($input.val(), 10) || 1;
     var cartKey = $input.data('cart-key');
-    var nonce   = $input.data('nonce');
+    var nonce = $input.data('nonce');
     var ajaxurl = $input.data('ajaxurl');
     clearTimeout(eshbQtyTimer);
     eshbQtyTimer = setTimeout(function () {
       $.post(ajaxurl, {
-        action:        'eshb_update_cart_item_qty',
+        action: 'eshb_update_cart_item_qty',
         cart_item_key: cartKey,
-        quantity:      qty,
-        nonce:         nonce
+        quantity: qty,
+        nonce: nonce
       }, function () {
         $(document.body).trigger('update_checkout');
       });
