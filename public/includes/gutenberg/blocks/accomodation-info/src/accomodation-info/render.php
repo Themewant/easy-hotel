@@ -3,6 +3,9 @@
  * PHP file to use when rendering the `easy-hotel/accomodationgrid` block on the front-end.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 $attributes = $attributes ?? [];
 

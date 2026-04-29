@@ -2743,12 +2743,6 @@
         };
       }
 
-      console.log('adult qty', adultQuantity);
-      console.log('children qty', childrenQuantity);
-      console.log('room qty', roomQuantity);
-      console.log('extra bed qty', extraBedQuantity);
-
-
       $.post(
         eshb_ajax.ajaxurl,
         {
@@ -2827,7 +2821,6 @@
             }, timeoutDuration);
           } else if (response.success == false) {
             erroMsg = response.data.error.message;
-            console.log('response', response);
 
             $(errWrapper).find(".status-failed .status-msg").html(erroMsg);
             $(errWrapper)
@@ -2878,9 +2871,6 @@
         .catch((err) => {
           console.log("country fetch error " + err);
         });
-
-      console.log('currienciesData', currienciesData);
-      console.log('countriesData', countriesData);
 
 
       const currencySelect = document.querySelector(

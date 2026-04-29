@@ -206,8 +206,8 @@ class ESHB_Templates {
         $template->id          = 'easyhotel-accomodation//single-eshb_accomodation';
         $template->theme       = get_stylesheet();
         $template->slug        = 'single-eshb_accomodation';
-        $template->title       = __( 'Accommodation Single', 'eshb' );
-        $template->description = __( 'Single template for Accommodation CPT', 'eshb' );
+        $template->title       = __( 'Accommodation Single', 'easy-hotel' );
+        $template->description = __( 'Single template for Accommodation CPT', 'easy-hotel' );
         $template->content     = $content;
         $template->source      = 'plugin';
         $template->type        = 'wp_template';
@@ -235,8 +235,8 @@ class ESHB_Templates {
         $template->id          = 'easyhotel-accomodation//archive-eshb_accomodation';
         $template->theme       = get_stylesheet();
         $template->slug        = 'archive-eshb_accomodation';
-        $template->title       = __( 'Accommodation Archive', 'eshb' );
-        $template->description = __( 'Archive template for Accommodation CPT', 'eshb' );
+        $template->title       = __( 'Accommodation Archive', 'easy-hotel' );
+        $template->description = __( 'Archive template for Accommodation CPT', 'easy-hotel' );
         $template->content     = $content;
         $template->source      = 'plugin';
         $template->type        = 'wp_template';
