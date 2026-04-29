@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 // register category
 function eshb_block_categories( $block_categories, $editor_context ) {
     ///if ( ! empty( $editor_context->post ) ) {

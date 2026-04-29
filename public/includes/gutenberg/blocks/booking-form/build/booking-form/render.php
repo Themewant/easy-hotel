@@ -5,6 +5,9 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/#render
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 $attributes = $attributes ?? [];
 

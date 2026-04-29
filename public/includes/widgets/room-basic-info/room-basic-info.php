@@ -66,10 +66,10 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
         $this->add_control(
 			'show_price',
 			[
-				'label' => esc_html__( 'Show Price', 'textdomain' ),
+				'label' => esc_html__( 'Show Price', 'easy-hotel' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
-				'label_on' => esc_html__( 'Show', 'textdomain' ),
-				'label_off' => esc_html__( 'Hide', 'textdomain' ),
+				'label_on' => esc_html__( 'Show', 'easy-hotel' ),
+				'label_off' => esc_html__( 'Hide', 'easy-hotel' ),
 				'return_value' => 'yes',
 				'default' => 'yes',
 			]
@@ -302,7 +302,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
         $this->add_control(
 			'pricing_label',
 			[
-				'label' => esc_html__( 'Label', 'textdomain' ),
+				'label' => esc_html__( 'Label', 'easy-hotel' ),
 				'type' => \Elementor\Controls_Manager::HEADING,
 				'separator' => 'before',
 			]
@@ -363,7 +363,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
         $output .= '</div>';
         $output .= '</div>';
 
-        echo $output;
-        
+        echo wp_kses_post( $output );
+
     }
 }
