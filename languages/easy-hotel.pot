@@ -509,6 +509,10 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
+#: public/includes/classes/class.view.php:348
+msgid "Please Wait"
+msgstr ""
+
 #: admin/includes/classes/class.booking.php:1020
 msgid "Hour"
 msgstr ""

@@ -2791,6 +2791,8 @@ class ESHB_Booking {
 
 	public function eshb_checkout_order_review_qty_input( $qty_html, $cart_item, $cart_item_key ) {
 		if ( ! is_checkout() ) return $qty_html;
+		$eshb_settings = get_option( 'eshb_settings', [] );
+		if ( empty( $eshb_settings['direct-booking'] ) ) return $qty_html;
 		$nonce   = wp_create_nonce( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ) );
 		$ajaxurl = esc_url( admin_url( 'admin-ajax.php' ) );
 		return '<input type="number" class="eshb-cart-qty-input input-text qty text" value="' . esc_attr( $cart_item['quantity'] ) . '" min="1" step="1" data-cart-key="' . esc_attr( $cart_item_key ) . '" data-nonce="' . esc_attr( $nonce ) . '" data-ajaxurl="' . esc_attr( $ajaxurl ) . '" />';

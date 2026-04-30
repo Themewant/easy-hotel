@@ -327,6 +327,8 @@ class ESHB_View extends ESHB_MAIN{
         $string_room = isset($eshb_settings['string_room']) && !empty($eshb_settings['string_room']) ? $eshb_settings['string_room'] : 'room';
         $string_guest = isset($eshb_settings['string_guest']) && !empty($eshb_settings['string_guest']) ? $eshb_settings['string_guest'] : 'guest';
         $string_time_slots = isset($eshb_settings['string_time_slots']) && !empty($eshb_settings['string_time_slots']) ? $eshb_settings['string_time_slots'] : 'Available Time Slots';
+        $string_please_wait = isset($eshb_settings['string_please_wait']) && !empty($eshb_settings['string_please_wait']) ? $eshb_settings['string_please_wait'] : 'Please Wait';
+        
         $included_service_ids = !empty($accomodation_metaboxes['accomodation_services']) ? $accomodation_metaboxes['accomodation_services'] : [];
         $total_rooms = !empty($accomodation_metaboxes['total_rooms']) ? $accomodation_metaboxes['total_rooms'] : 0; 
         $eshb_bookings = new ESHB_Booking();
@@ -341,7 +343,11 @@ class ESHB_View extends ESHB_MAIN{
         ?>
         <div class="eshb-booking">
             <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get"<?php echo $form_attr_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes are escaped per key/value above. ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?> <?php echo esc_attr($has_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
-                
+
+                <div class="eshb-form-loader">
+                    <span class="eshb-form-loader__text"><?php echo esc_html( eshb_get_translated_string( $string_please_wait ) ); ?></span>
+                </div>
+
                 <div class="hidden-fields">
                     <input type="hidden" name="subtotal_price" id="eshb-subtotal-price" value="<?php echo esc_html($price);?>"> 
                     <input type="hidden" name="subtotal_price" id="eshb-discounted-subtotal-price" value="<?php echo esc_html($discountedPrice);?>"> 
@@ -435,8 +441,6 @@ class ESHB_View extends ESHB_MAIN{
                         <p class="time-err-msg err-msg"></p>
                     </div>
                 <?php } ?>
-                
-               
                 
                 <div class="eshb-form-groups">
                     <?php 
@@ -586,7 +590,6 @@ class ESHB_View extends ESHB_MAIN{
                <?php }
                 ?>
                
-
                 <div class="eshb-form-group cost-calculator-wrapper">
                     <h3 class="field-label total-cost-label eshb-booking-total-pricing">
                         <?php echo esc_html(eshb_get_translated_string($string_total_cost));?>

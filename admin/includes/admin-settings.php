@@ -953,6 +953,13 @@ add_action( 'plugins_loaded', function(){
                   //'desc'  => 'Add URL if you select External Booking'
                   'default' => 'Pay Full Amount',
                 ),
+                array(
+                  'id'    => 'string_please_wait',
+                  'type'  => 'text',
+                  'title' => 'Please Wait',
+                  //'desc'  => 'Add URL if you select External Booking'
+                  'default' => 'Please Wait',
+                ),
           )
         )
       );
