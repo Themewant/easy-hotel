@@ -3154,47 +3154,14 @@
 
   ESHBPUBLICBOOKING.init();
 
-  // Checkout order review: inject Qty column into the review table
-  function eshbBuildCheckoutQtyColumn() {
-    if (typeof eshb_ajax === 'undefined' || eshb_ajax.direct_booking != 1) return;
-    var $table = $('table.woocommerce-checkout-review-order-table');
-    if (!$table.length) return;
-
-    // Add header only once
-    if (!$table.find('thead th.eshb-product-quantity').length) {
-      $table.find('thead tr th.product-name').after(
-        '<th class="product-total eshb-product-quantity">Qty</th>'
-      );
-    }
-
-    // Move each qty input into its own <td>
-    $table.find('tbody tr.cart_item').each(function () {
-      var $row = $(this);
-      if ($row.find('td.eshb-product-quantity').length) return; // already done
-      var $input = $row.find('.eshb-cart-qty-input').detach();
-      if ($input.length) {
-        $row.find('td.product-name').after(
-          $('<td class="product-total eshb-product-quantity"></td>').append($input)
-        );
-      }
-    });
-
-    // Span the footer <th> across the first two columns (Product + Qty)
-    $table.find('tfoot tr').each(function () {
-      var $th = $(this).find('th').first();
-      if ($th.length && !$th.attr('colspan')) {
-        $th.attr('colspan', 2);
-      }
-    });
-  }
-
-  // Block checkout: inject editable qty inputs into order summary items via Store API
+  // Block checkout: inject remove button into order summary items via Store API
   var eshbBlockNonce = '';
   function eshbBlockInjectQty() {
     if (typeof eshb_ajax === 'undefined' || eshb_ajax.direct_booking != 1) return;
     var $items = $('.wc-block-components-order-summary-item');
     if (!$items.length) return;
-    fetch('/wp-json/wc/store/v1/cart', { credentials: 'include' })
+    var restRoot = (typeof eshb_rest !== 'undefined' && eshb_rest.root) ? eshb_rest.root : '/wp-json/';
+    fetch(restRoot + 'wc/store/v1/cart', { credentials: 'include' })
       .then(function (res) {
         eshbBlockNonce = res.headers.get('Nonce') || eshbBlockNonce;
         return res.json();
@@ -3203,14 +3170,14 @@
         if (!cart || !cart.items) return;
         $('.wc-block-components-order-summary-item').each(function (i) {
           var $item = $(this);
-          if ($item.find('.eshb-block-qty-input').length) return;
+          if ($item.find('.eshb-block-remove-btn').length) return;
           var cartItem = cart.items[i];
           if (!cartItem) return;
           var $name = $item.find('.wc-block-components-product-name').first();
           if (!$name.length) return;
-          var $input = $('<input type="number" class="eshb-block-qty-input" min="1" step="1" />');
-          $input.val(cartItem.quantity).attr('data-key', cartItem.key);
-          $name.after($input);
+          var $remove = $('<button type="button" class="eshb-block-remove-btn" aria-label="Remove"><i class="fas fa-times" aria-hidden="true"></i></button>');
+          $remove.attr('data-key', cartItem.key);
+          $name.after($remove);
         });
       });
   }
@@ -3226,60 +3193,46 @@
     });
   }
 
-  // Block qty change → update via wc/store/cart data store (block auto-refreshes)
-  var eshbBlockQtyTimer;
-  $(document).on('change input', '.eshb-block-qty-input', function () {
-    var $input = $(this);
-    var key = $input.attr('data-key');
-    var qty = parseInt($input.val(), 10) || 1;
+  // Block checkout: remove cart item via wc/store/cart dispatch
+  $(document).on('click', '.eshb-block-remove-btn', function (e) {
+    e.preventDefault();
+    var key = $(this).attr('data-key');
     if (!key) return;
-    clearTimeout(eshbBlockQtyTimer);
-    eshbBlockQtyTimer = setTimeout(function () {
-      // 1. Try wc/store/cart data store dispatch (auto-refreshes block UI)
-      if (window.wp && window.wp.data) {
-        var cartDispatch = window.wp.data.dispatch('wc/store/cart');
-        if (cartDispatch) {
-          var fn = cartDispatch.changeCartItemQuantity || cartDispatch.setItemQuantity || cartDispatch.changeQuantity;
-          if (typeof fn === 'function') {
-            fn.call(cartDispatch, key, qty);
-            return;
-          }
-        }
-      }
-      // 2. Fallback: wp.apiFetch (WC blocks register cart-token middleware on it)
-      if (window.wp && window.wp.apiFetch) {
-        window.wp.apiFetch({
-          path: '/wc/store/v1/cart/update-item',
-          method: 'POST',
-          data: { key: key, quantity: qty }
-        }).then(function () {
-          // Trigger block to re-fetch cart state
-          if (window.wp.data && window.wp.data.dispatch('wc/store/cart')) {
-            var d = window.wp.data.dispatch('wc/store/cart');
-            if (d.invalidateResolutionForStore) d.invalidateResolutionForStore();
-          }
-        });
+    if (window.wp && window.wp.data) {
+      var cartDispatch = window.wp.data.dispatch('wc/store/cart');
+      if (cartDispatch && typeof cartDispatch.removeItemFromCart === 'function') {
+        cartDispatch.removeItemFromCart(key);
         return;
       }
-      // 3. Last resort: raw fetch (likely fails without cart-token)
-      fetch('/wp-json/wc/store/v1/cart/update-item', {
+    }
+    // Fallback: Store API
+    if (window.wp && window.wp.apiFetch) {
+      window.wp.apiFetch({
+        path: '/wc/store/v1/cart/remove-item',
         method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Nonce': eshbBlockNonce
-        },
-        body: JSON.stringify({ key: key, quantity: qty })
-      }).then(function (res) {
-        eshbBlockNonce = res.headers.get('Nonce') || eshbBlockNonce;
+        data: { key: key }
       });
-    }, 400);
+    }
+  });
+
+  // Shortcode checkout: remove cart item via AJAX
+  $(document).on('click', '.eshb-cart-remove-btn', function (e) {
+    e.preventDefault();
+    var $btn = $(this);
+    var cartKey = $btn.data('cart-key');
+    var nonce = $btn.data('nonce');
+    var ajaxurl = $btn.data('ajaxurl');
+    if (!cartKey) return;
+    $.post(ajaxurl, {
+      action: 'eshb_remove_cart_item',
+      cart_item_key: cartKey,
+      nonce: nonce
+    }, function () {
+      $(document.body).trigger('update_checkout');
+    });
   });
 
   if ($('body').hasClass('woocommerce-checkout')) {
-    eshbBuildCheckoutQtyColumn();
-    $(document.body).on('updated_checkout', eshbBuildCheckoutQtyColumn);
-
     // Coupon toggle
     $(document).on('click', '.eshb-showcoupon', function (e) {
       e.preventDefault();
@@ -3310,26 +3263,5 @@
       });
     });
   }
-
-  // Checkout order review: quantity input update
-  var eshbQtyTimer;
-  $(document).on('change', '.eshb-cart-qty-input', function () {
-    var $input = $(this);
-    var qty = parseInt($input.val(), 10) || 1;
-    var cartKey = $input.data('cart-key');
-    var nonce = $input.data('nonce');
-    var ajaxurl = $input.data('ajaxurl');
-    clearTimeout(eshbQtyTimer);
-    eshbQtyTimer = setTimeout(function () {
-      $.post(ajaxurl, {
-        action: 'eshb_update_cart_item_qty',
-        cart_item_key: cartKey,
-        quantity: qty,
-        nonce: nonce
-      }, function () {
-        $(document.body).trigger('update_checkout');
-      });
-    }, 400);
-  });
 
 })(jQuery);

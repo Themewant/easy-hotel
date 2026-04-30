@@ -383,6 +383,7 @@ add_action( 'plugins_loaded', function(){
                     'title' => 'Direct Booking',
                     'desc'  => 'Enable for redirect to checkout page after adding room to cart.',
                     'default' => true,
+                    'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
                   ),
                   array(
               'id'          => 'checkout-billing-fields',
