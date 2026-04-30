@@ -104,6 +104,20 @@
         padding: 3px;
         background: transparent;
         border-radius: 0px !important;
+        width: 40px !important;
+        max-width: 100%;
+
+        @media (max-width: 1200px) {
+            width: 40px !important;
+        }
+
+        @media (max-width: 1100px) {
+            width: 35px !important;
+        }
+
+        @media (max-width: 768px) {
+            width: 74px !important;
+        }
     }
 
     th.available {
@@ -609,6 +623,7 @@ nav.eshb-pagination {
 
         @media (max-width: 1200px) {
             padding: 0 15px;
+            justify-content: start;
         }
 
         @media (max-width: 1024px) {
@@ -1109,12 +1124,42 @@ nav.eshb-pagination {
 }
 
 .eshb-booking {
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+
     .eshb-booking-form {
         background-color: var(--eshb-white-color);
         padding: 35px 45px 35px;
         border: 1px solid var(--eshb-border-color);
         transition: opacity 0.3s;
         max-width: -webkit-fill-available;
+        position: relative;
+
+        .eshb-form-loader {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+
+            &.is-active {
+                display: flex;
+            }
+
+            &__text {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--eshb-text-color);
+                background-color: var(--eshb-white-color);
+                padding: 10px 20px;
+                border-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
 
         @media (max-width: 767px) {
             padding: 30px 15px;
@@ -1958,18 +2003,7 @@ div#easy-hotel-booking-modal {
     .eshb-availability-calendars {
         position: relative;
 
-        @media (max-width: 1024px) {
-            height: 580px;
-        }
 
-        @media (max-width: 768px) {
-            height: 650px;
-
-            .daterangepicker.show-calendar {
-                width: 100%;
-                max-width: -webkit-fill-available;
-            }
-        }
 
         .daterangepicker.show-calendar {
             display: block !important;
@@ -1977,6 +2011,17 @@ div#easy-hotel-booking-modal {
             left: 0 !important;
             top: 0 !important;
             width: max-content;
+
+        }
+
+        @media (max-width: 768px) {
+
+            .daterangepicker.show-calendar {
+                width: 100%;
+                max-width: -webkit-fill-available;
+                display: flex !important;
+                flex-direction: column;
+            }
         }
 
         .ranges {
@@ -2067,9 +2112,9 @@ body.woocommerce-cart {
         }
     }
 
-    .wc-block-cart-item__quantity .wc-block-components-quantity-selector {
-        display: none;
-    }
+    // .wc-block-cart-item__quantity .wc-block-components-quantity-selector {
+    //     display: none;
+    // }
 
     table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__wrap>* {
         margin-bottom: 5px;
@@ -2465,6 +2510,24 @@ a.wc-block-components-button.wp-element-button,
             color: var(--eshb-territory-color);
         }
     }
+
+    // wc block
+    .wc-block-components-order-summary {
+        h3.wc-block-components-product-name {
+            padding: 0 !important;
+            margin: 0;
+        }
+
+        input.eshb-block-qty-input {
+            width: 60px !important;
+            padding: 2px 6px !important;
+            border: 1px solid #ccc !important;
+            border-radius: 3px !important;
+            text-align: center !important;
+            height: 24px;
+        }
+    }
+
 }
 
 body.rtl {

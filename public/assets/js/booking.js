@@ -1064,6 +1064,7 @@
 
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
+        $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
         $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
@@ -1165,6 +1166,7 @@
 
       // Event listener for the second date range picker
       $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
+        $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
         $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
@@ -1268,6 +1270,7 @@
         "apply.daterangepicker",
         function (ev, picker) {
           if (startDateInput.length) {
+            $('.eshb-booking-form .eshb-form-loader').addClass('is-active');
             $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
@@ -2529,10 +2532,12 @@
           updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
           updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
           $submitBtn.prop("disabled", false);
+          $form.find('.eshb-form-loader').removeClass('is-active');
         })
         .catch((err) => {
           console.error("REST API request failed:", err);
           $submitBtn.prop("disabled", false);
+          $form.find('.eshb-form-loader').removeClass('is-active');
         });
 
 
@@ -2681,7 +2686,7 @@
           .val();
       }
 
-      $(submitBtn).addClass("show-loader");
+      form.find('.eshb-form-loader').addClass('is-active');
 
       let customer = {};
 
@@ -2716,7 +2721,7 @@
             .find(".status-failed")
             .css("display", "flex");
           // ajax loader remove
-          $(submitBtn).removeClass("show-loader");
+          form.find('.eshb-form-loader').removeClass('is-active');
 
           // hide error class and message after 2 seconds
           setTimeout(() => {
@@ -2835,7 +2840,8 @@
             }, 5000);
           }
 
-          $(submitBtn).removeClass("show-loader");
+          // ajax loader remove
+          form.find('.eshb-form-loader').removeClass('is-active');
         }
       );
     },
@@ -3150,6 +3156,7 @@
 
   // Checkout order review: inject Qty column into the review table
   function eshbBuildCheckoutQtyColumn() {
+    if (typeof eshb_ajax === 'undefined' || eshb_ajax.direct_booking != 1) return;
     var $table = $('table.woocommerce-checkout-review-order-table');
     if (!$table.length) return;
 
@@ -3180,6 +3187,94 @@
       }
     });
   }
+
+  // Block checkout: inject editable qty inputs into order summary items via Store API
+  var eshbBlockNonce = '';
+  function eshbBlockInjectQty() {
+    if (typeof eshb_ajax === 'undefined' || eshb_ajax.direct_booking != 1) return;
+    var $items = $('.wc-block-components-order-summary-item');
+    if (!$items.length) return;
+    fetch('/wp-json/wc/store/v1/cart', { credentials: 'include' })
+      .then(function (res) {
+        eshbBlockNonce = res.headers.get('Nonce') || eshbBlockNonce;
+        return res.json();
+      })
+      .then(function (cart) {
+        if (!cart || !cart.items) return;
+        $('.wc-block-components-order-summary-item').each(function (i) {
+          var $item = $(this);
+          if ($item.find('.eshb-block-qty-input').length) return;
+          var cartItem = cart.items[i];
+          if (!cartItem) return;
+          var $name = $item.find('.wc-block-components-product-name').first();
+          if (!$name.length) return;
+          var $input = $('<input type="number" class="eshb-block-qty-input" min="1" step="1" />');
+          $input.val(cartItem.quantity).attr('data-key', cartItem.key);
+          $name.after($input);
+        });
+      });
+  }
+
+  if ($('.wp-block-woocommerce-checkout').length) {
+    eshbBlockInjectQty();
+    var blockObserver = new MutationObserver(function () {
+      eshbBlockInjectQty();
+    });
+    blockObserver.observe(document.querySelector('.wp-block-woocommerce-checkout'), {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  // Block qty change → update via wc/store/cart data store (block auto-refreshes)
+  var eshbBlockQtyTimer;
+  $(document).on('change input', '.eshb-block-qty-input', function () {
+    var $input = $(this);
+    var key = $input.attr('data-key');
+    var qty = parseInt($input.val(), 10) || 1;
+    if (!key) return;
+    clearTimeout(eshbBlockQtyTimer);
+    eshbBlockQtyTimer = setTimeout(function () {
+      // 1. Try wc/store/cart data store dispatch (auto-refreshes block UI)
+      if (window.wp && window.wp.data) {
+        var cartDispatch = window.wp.data.dispatch('wc/store/cart');
+        if (cartDispatch) {
+          var fn = cartDispatch.changeCartItemQuantity || cartDispatch.setItemQuantity || cartDispatch.changeQuantity;
+          if (typeof fn === 'function') {
+            fn.call(cartDispatch, key, qty);
+            return;
+          }
+        }
+      }
+      // 2. Fallback: wp.apiFetch (WC blocks register cart-token middleware on it)
+      if (window.wp && window.wp.apiFetch) {
+        window.wp.apiFetch({
+          path: '/wc/store/v1/cart/update-item',
+          method: 'POST',
+          data: { key: key, quantity: qty }
+        }).then(function () {
+          // Trigger block to re-fetch cart state
+          if (window.wp.data && window.wp.data.dispatch('wc/store/cart')) {
+            var d = window.wp.data.dispatch('wc/store/cart');
+            if (d.invalidateResolutionForStore) d.invalidateResolutionForStore();
+          }
+        });
+        return;
+      }
+      // 3. Last resort: raw fetch (likely fails without cart-token)
+      fetch('/wp-json/wc/store/v1/cart/update-item', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Nonce': eshbBlockNonce
+        },
+        body: JSON.stringify({ key: key, quantity: qty })
+      }).then(function (res) {
+        eshbBlockNonce = res.headers.get('Nonce') || eshbBlockNonce;
+      });
+    }, 400);
+  });
 
   if ($('body').hasClass('woocommerce-checkout')) {
     eshbBuildCheckoutQtyColumn();

@@ -9,3 +9,7 @@ node_modules/
 
 # Ignore all zip file
 *.zip
+
+# include claude config
+.claude
+.claudeignore
