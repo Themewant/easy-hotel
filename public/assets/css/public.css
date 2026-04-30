@@ -2119,14 +2119,6 @@ a.wc-block-components-button.wp-element-button,
   text-align: right !important;
   padding-right: 0 !important;
 }
-.woocommerce-checkout form.checkout table.shop_table tbody tr td .eshb-cart-qty-input {
-  width: 60px !important;
-  padding: 4px 6px !important;
-  border: 1px solid #ccc !important;
-  border-radius: 3px !important;
-  text-align: center !important;
-  height: 30px;
-}
 .woocommerce-checkout form.checkout table.shop_table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -2296,6 +2288,7 @@ a.wc-block-components-button.wp-element-button,
   border-radius: 3px !important;
   text-align: center !important;
   height: 24px;
+  margin: 0;
 }
 
 body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .daterangepicker {
@@ -2332,16 +2325,28 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
   width: 100%;
 }
 
-.eshb-cart-qty-input {
-  width: 60px;
-  padding: 4px 6px;
+.eshb-cart-remove-btn,
+.eshb-block-remove-btn {
+  background: transparent !important;
   border: 1px solid #ccc;
   border-radius: 3px;
-  text-align: center;
+  color: var(--eshb-danger-color, #e41749) !important;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  height: 24px;
+  padding: 0 10px !important;
+}
+.eshb-cart-remove-btn i,
+.eshb-block-remove-btn i {
+  font-size: 12px;
+}
+.eshb-cart-remove-btn:hover,
+.eshb-block-remove-btn:hover {
+  background-color: var(--eshb-danger-color, #e41749) !important;
+  color: var(--eshb-white-color) !important;
+  border-color: var(--eshb-danger-color, #e41749) !important;
 }
 
-.woocommerce-checkout-review-order-table th.eshb-product-quantity,
-.woocommerce-checkout-review-order-table td.eshb-product-quantity {
-  text-align: center;
-  width: 80px;
+.eshb-cart-remove-btn {
+  margin-left: 4px;
 }/*# sourceMappingURL=public.css.map */

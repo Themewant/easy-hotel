@@ -69,11 +69,11 @@ class ESHB_Booking {
 		// Inline notice: shortcode-based cart/checkout (block themes use JS injection instead)
 		add_action( 'woocommerce_before_cart',          [ $this, 'eshb_render_cart_block_notice_inline' ] );
 		add_action( 'woocommerce_before_checkout_form', [ $this, 'eshb_render_cart_block_notice_inline' ] );
-		// Quantity input in checkout order review table (classic themes)
-		add_filter( 'woocommerce_checkout_cart_item_quantity', [ $this, 'eshb_checkout_order_review_qty_input' ], 10, 3 );
-		// Cart quantity update via AJAX on checkout
-		add_action( 'wp_ajax_nopriv_eshb_update_cart_item_qty', [ $this, 'eshb_update_cart_item_qty' ] );
-		add_action( 'wp_ajax_eshb_update_cart_item_qty', [ $this, 'eshb_update_cart_item_qty' ] );
+		// Cart item remove via AJAX on checkout (NOTE: woocommerce_checkout_cart_item_quantity filter
+		// is registered once at file load, not in the constructor — see bottom of file. Constructor
+		// runs each time `new ESHB_Booking()` is called, which would duplicate the filter.)
+		add_action( 'wp_ajax_nopriv_eshb_remove_cart_item', [ $this, 'eshb_remove_cart_item' ] );
+		add_action( 'wp_ajax_eshb_remove_cart_item', [ $this, 'eshb_remove_cart_item' ] );
 		add_action( 'eshb_before_availability_calendar', [ $this, 'eshb_render_calendar_legend' ], 10, 1 );
 
 		add_action('rest_api_init', function() {
@@ -2795,17 +2795,21 @@ class ESHB_Booking {
 		if ( empty( $eshb_settings['direct-booking'] ) ) return $qty_html;
 		$nonce   = wp_create_nonce( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ) );
 		$ajaxurl = esc_url( admin_url( 'admin-ajax.php' ) );
-		return '<input type="number" class="eshb-cart-qty-input input-text qty text" value="' . esc_attr( $cart_item['quantity'] ) . '" min="1" step="1" data-cart-key="' . esc_attr( $cart_item_key ) . '" data-nonce="' . esc_attr( $nonce ) . '" data-ajaxurl="' . esc_attr( $ajaxurl ) . '" />';
+		return $qty_html
+			. ' <button type="button" class="eshb-cart-remove-btn" aria-label="' . esc_attr__( 'Remove', 'easy-hotel' ) . '" data-cart-key="' . esc_attr( $cart_item_key ) . '" data-nonce="' . esc_attr( $nonce ) . '" data-ajaxurl="' . esc_attr( $ajaxurl ) . '"><i class="fas fa-times" aria-hidden="true"></i></button>';
 	}
 
-	public function eshb_update_cart_item_qty() {
+	public function eshb_remove_cart_item() {
 		check_ajax_referer( ESHB_Helper::generate_secure_nonce_action( 'eshb_global_nonce_action' ), 'nonce' );
 		$cart_item_key = sanitize_text_field( wp_unslash( $_POST['cart_item_key'] ?? '' ) );
-		$quantity      = absint( $_POST['quantity'] ?? 1 );
 		if ( $cart_item_key && class_exists( 'WooCommerce' ) && WC()->cart ) {
-			WC()->cart->set_quantity( $cart_item_key, max( 1, $quantity ), true );
+			WC()->cart->remove_cart_item( $cart_item_key );
 		}
 		wp_send_json_success();
 	}
+
 }
 ESHB_Booking::instance();
+
+// Registered once on the singleton (constructor runs multiple times due to `new ESHB_Booking()` calls elsewhere)
+add_filter( 'woocommerce_checkout_cart_item_quantity', [ ESHB_Booking::instance(), 'eshb_checkout_order_review_qty_input' ], 10, 3 );
