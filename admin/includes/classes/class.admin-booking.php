@@ -30,7 +30,6 @@ class ESHB_Admin_Booking {
     }
 
     function create_woocommerce_order($product_id, $subtotal, $total_paid = 0, $address = '', $status = 'processing', $item_meta = []) {
-
         // 1. Create the order
         $order = wc_create_order();
 
@@ -92,7 +91,6 @@ class ESHB_Admin_Booking {
     }
 
     function update_woocommerce_order($order_id, $subtotal = '', $total_paid = '', $status = 'processing', $product_id = '', $address = '', $item_meta = []) {
-
         // 1. Get the order
         $order = wc_get_order( $order_id );
 
@@ -272,6 +270,13 @@ class ESHB_Admin_Booking {
                 'Extra Services IDs' => $extra_services,
                 'Extra Services' => $extra_services_html,
             ];
+
+            error_log(print_r('Booking update_meta_data', true));
+            error_log('booking id : '. print_r($booking_id, true));
+            error_log('accomodation id : '. print_r($accomodation_id, true));
+            error_log('order id : '. print_r($order_id, true));
+
+            error_log('meta_data : '. print_r($meta_data, true));
 
             $eshb_booking_metaboxes['extra_services_html'] = $extra_services_html; 
 
