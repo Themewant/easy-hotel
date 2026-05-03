@@ -1,4 +1,4 @@
-=== Easy Hotel ===
+=== Easy Hotel - Powerful Hotel Booking ===
 Contributors: themewant
 Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
