@@ -1371,6 +1371,20 @@ class ESHB_Booking {
 		$single_day_price = apply_filters( 'eshb_apply_currency_converter_on_pricing_calculation', $single_day_price, $currency_converter);
 		$discount = apply_filters( 'eshb_apply_currency_converter_on_pricing_calculation', $discount, $currency_converter);
 
+
+		$single_day_price_html = $hotel_core->eshb_price( $single_day_price );
+		$regular_base_price_html = $hotel_core->eshb_price( $regular_base_price );
+		$base_price_html = $hotel_core->eshb_price( $base_price );
+		$extra_bed_price_html = $hotel_core->eshb_price( $extra_bed_price );
+		$extra_services_charge_html = $hotel_core->eshb_price( $extra_services_charge );
+		$subtotal_price_html = $hotel_core->eshb_price( $subtotal_price );
+		$regular_subtotal_price_html = $hotel_core->eshb_price( $regular_subtotal_price );
+		$total_price_html = $hotel_core->eshb_price( $total_price );
+		$regular_total_price_html = $hotel_core->eshb_price( $regular_total_price );
+		$discount_html = $hotel_core->eshb_price( $discount );
+		
+		$is_wc_price = ($booking_type === 'woocommerce' && class_exists('WooCommerce')) ? true : false;
+
 		return [
 			'startDate'           => $start_date,
 			'endDate'             => $end_date,
@@ -1388,7 +1402,20 @@ class ESHB_Booking {
 			'regularTotalPrice'   => $regular_total_price,
 			'discount'   		  => $discount,
 			'currencySymbol'      => $currency_symbol,
-			'currencyPosition'    => $currency_position
+			'currencyPosition'    => $currency_position,
+
+			'singleDayPriceHtml'      => $single_day_price_html,
+			'extraServicesPriceHtml'  => $extra_services_charge_html,
+			'extraBedPriceHtml'       => $extra_bed_price_html,
+			'basePriceHtml'           => $base_price_html,
+			'regularBasePriceHtml'    => $regular_base_price_html,
+			'subtotalPriceHtml'       => $subtotal_price_html,
+			'regularSubtotalPriceHtml'=> $regular_subtotal_price_html,
+			'totalPriceHtml'          => $total_price_html,
+			'regularTotalPriceHtml'   => $regular_total_price_html,
+			'discountHtml'   		  => $discount_html,
+
+			'isWcPrice'               => $is_wc_price
 		];
 	}
 

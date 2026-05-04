@@ -1990,10 +1990,6 @@ div#easy-hotel-booking-modal {
     z-index: 2;
     position: relative;
 
-    @media (max-width: 567px) {
-        margin-bottom: 200px;
-    }
-
     .calendar-title {
         font-weight: 300;
         font-size: 26px;
