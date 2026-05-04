@@ -2488,6 +2488,7 @@
           let basePrice = parseFloat(prices.basePrice);
           let currencySymbol = prices.currencySymbol;
           let currencyPosition = prices.currencyPosition;
+          let isWcPrice = prices.isWcPrice;
 
           // show discounted pricing
           if (totalPrice < regularTotalPrice && totalPrice != regularTotalPrice) {
@@ -2497,9 +2498,17 @@
           }
 
           // Conditional DOM updates
-          const updateIfChanged = ($el, value) => {
-            if (value && $el.text() !== value) {
-              $el.text(value);
+          const updateIfChanged = ($el, value, isHTML = true) => {
+            if (!value) return;
+
+            if (isHTML) {
+              if ($el.html() !== value) {
+                $el.html(value); // HTML render করবে
+              }
+            } else {
+              if ($el.text() !== value) {
+                $el.text(value); // plain text
+              }
             }
           };
 
@@ -2521,13 +2530,19 @@
             $('input[name="eshb_booking_metaboxes[extra_bed_price]"]').val(extraBedPrice);
           }
 
-          if (currencyPosition === "right") {
-            totalPrice = totalPrice + currencySymbol;
-            regularTotalPrice = regularTotalPrice + currencySymbol;
+          if (!isWcPrice) {
+            if (currencyPosition === "right") {
+              totalPrice = totalPrice + currencySymbol;
+              regularTotalPrice = regularTotalPrice + currencySymbol;
+            } else {
+              totalPrice = currencySymbol + totalPrice;
+              regularTotalPrice = currencySymbol + regularTotalPrice;
+            }
           } else {
-            totalPrice = currencySymbol + totalPrice;
-            regularTotalPrice = currencySymbol + regularTotalPrice;
+            totalPrice = prices.totalPriceHtml;
+            regularTotalPrice = prices.regularTotalPriceHtml;
           }
+
 
           updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
           updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
@@ -2543,12 +2558,13 @@
 
     },
     formatPrice: function (totalPrice, currencySymbol = "$") {
-      // Check if number has decimal part
-      if (totalPrice % 1 === 0) {
-        return currencySymbol + totalPrice; // No decimal needed
-      } else {
-        return currencySymbol + totalPrice.toFixed(2); // Keep 2 decimals
-      }
+      return currencySymbol + ESHBPUBLICBOOKING.formatAmount(totalPrice);
+    },
+    formatAmount: function (totalPrice) {
+      // Match wc_price() default: 2 decimals + thousand separators (e.g. 1,359.00)
+      return Number(totalPrice)
+        .toFixed(2)
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     getDefaultExtraServicesPrice: function () {
       let $form = $(".eshb-booking-form");
@@ -2565,7 +2581,22 @@
 
 
     },
-
+    updateAmountOnly: function ($el, amount) {
+      const formatted = ESHBPUBLICBOOKING.formatAmount(amount);
+      const $bdi = $el.find('bdi').first();
+      if ($bdi.length) {
+        const $symbol = $bdi.find('.woocommerce-Price-currencySymbol');
+        $bdi.contents().filter(function () { return this.nodeType === 3; }).remove();
+        if ($symbol.length) {
+          $symbol.after(document.createTextNode(formatted));
+        } else {
+          $bdi.append(document.createTextNode(formatted));
+        }
+      } else {
+        const sym = $el.attr('currency_symbol') || '';
+        $el.text(sym + formatted);
+      }
+    },
     calculateExtraServicesPricing: function () {
       let $form = $(".eshb-booking-form");
       if ($form.length === 0) return;
@@ -2632,17 +2663,17 @@
       let totalPrice = currentPrice + extraServicesPrice;
       let discountedPrice = currentDiscountedPrice + extraServicesPrice;
 
-      let formattedTotalPrice = ESHBPUBLICBOOKING.formatPrice(
-        totalPrice,
-        currencySymbol
-      );
-      let formattedDiscountedPrice = ESHBPUBLICBOOKING.formatPrice(
-        discountedPrice,
-        currencySymbol
-      );
+      // let formattedTotalPrice = ESHBPUBLICBOOKING.formatPrice(
+      //   totalPrice,
+      //   currencySymbol
+      // );
+      // let formattedDiscountedPrice = ESHBPUBLICBOOKING.formatPrice(
+      //   discountedPrice,
+      //   currencySymbol
+      // );
 
-      $form.find("#eshb-booking-total-price").html(formattedTotalPrice);
-      $form.find("#eshb-booking-discounted-price").html(formattedDiscountedPrice);
+      ESHBPUBLICBOOKING.updateAmountOnly($form.find("#eshb-booking-total-price"), totalPrice);
+      ESHBPUBLICBOOKING.updateAmountOnly($form.find("#eshb-booking-discounted-price"), discountedPrice);
     },
     addToCartReservation: function (that) {
       let form = $(this).parent().parent(),

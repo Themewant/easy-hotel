@@ -391,15 +391,22 @@ class ESHB_Core {
         // Prepare the price HTML, with or without currency symbol
         $currency_position = $this->get_eshb_currency_position();
 
-        if(!empty($price)){
-            $price = number_format($price,2);
-        }
+        $eshb_settings = get_option('eshb_settings');
+        $booking_type = isset($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
         
-        $price_html = $currency_symbol . $price;
-        if($currency_position == 'right') {
-            $price_html = $price . $currency_symbol;
+        
+        if($booking_type == 'woocommerce' && class_exists('WooCommerce')){
+            $price = wc_price($price, []);
+            return $price;
+        }else{
+            if(!empty($price)){
+                $price = number_format($price,2);
+            }
+            $price_html = $currency_symbol . $price;
+            if($currency_position == 'right') {
+                $price_html = $price . $currency_symbol;
+            }
         }
-
         return $price_html;
     }
     
@@ -411,6 +418,13 @@ class ESHB_Core {
             $end_date = $dates['end_date'];
         }
 
+        $eshb_settings = get_option('eshb_settings');
+        $booking_type = isset($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
+        
+        $is_wc_price = false;
+        if($booking_type == 'woocommerce' && class_exists('WooCommerce')){
+            $is_wc_price = true;
+        }
     
         // Get the currency symbol
         $currency_symbol = $this->get_eshb_currency_symbol();
@@ -474,7 +488,7 @@ class ESHB_Core {
             $regular_price = $price['regular_price'];
             $sale_price    = $price['sale_price'];
 
-            if ( $show_currency ) {
+            if ( $show_currency && !$is_wc_price ) {
                 if ( $currency_position == 'right' ) {
                     $regular_price = $regular_price . $currency_symbol;
                     $sale_price    = $sale_price . $currency_symbol;
@@ -482,6 +496,11 @@ class ESHB_Core {
                     $regular_price = $currency_symbol . $regular_price;
                     $sale_price    = $currency_symbol . $sale_price;
                 }
+            }
+
+            if($is_wc_price){
+                $regular_price = wc_price($regular_price, []);
+                $sale_price = wc_price($sale_price, []);
             }
 
             $price_html  = '<span class="eshb-price">';
@@ -495,7 +514,7 @@ class ESHB_Core {
             // Single Price (No Sale)
             $single_price = $price;
 
-            if ( $show_currency ) {
+            if ( $show_currency && !$is_wc_price) {
                 if ( $currency_position == 'right' ) {
                     $single_price = $single_price . $currency_symbol;
                 } else {
@@ -503,6 +522,9 @@ class ESHB_Core {
                 }
             }
 
+            if($is_wc_price){
+                $single_price = wc_price($single_price, []);
+            }
             $price_html  = '<span class="eshb-price">';
             $price_html .= '<span class="eshb-price-amount amount"><bdi>' . $single_price . '</bdi></span>';
             $price_html .= '</span>';
