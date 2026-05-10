@@ -2181,10 +2181,8 @@
 
           if (chargeType == "room") {
             maxCount = rooms;
-            //errMsg = translations.availableRoom;
           } else {
             maxCount = adultQuantity + childrenQuantity;
-            //errMsg = translations.maximumCapacity;
           }
         }
 
@@ -2445,7 +2443,6 @@
 
       const $submitBtn = $form.find(".eshb-form-submit-btn");
       $submitBtn.prop("disabled", true);
-      const start = performance.now();
 
       fetch(`${eshb_rest.root}eshb/v1/booking-prices`, {
         method: "POST",
@@ -2469,8 +2466,6 @@
       })
         .then((res) => res.json())
         .then((response) => {
-          const end = performance.now();
-          //console.log(`Response time: ${end - start} ms`);
 
           if (!response || response.code) {
             // REST API error
@@ -2479,7 +2474,6 @@
           }
 
           let prices = response;
-          let regularSubtotalPrice = parseFloat(prices.regularSubtotalPrice);
           let subtotalPrice = parseFloat(prices.subtotalPrice);
           let totalPrice = parseFloat(prices.totalPrice);
           let regularTotalPrice = parseFloat(prices.regularTotalPrice);
@@ -2503,7 +2497,7 @@
 
             if (isHTML) {
               if ($el.html() !== value) {
-                $el.html(value); // HTML render করবে
+                $el.html(value); // HTML render
               }
             } else {
               if ($el.text() !== value) {
@@ -2512,10 +2506,10 @@
             }
           };
 
-          regularTotalPrice =
-            regularTotalPrice != totalPrice && totalPrice > regularTotalPrice
-              ? totalPrice
-              : regularTotalPrice;
+          if (regularTotalPrice != totalPrice && totalPrice > regularTotalPrice) {
+            regularTotalPrice = totalPrice;
+            prices.regularTotalPriceHtml = prices.totalPriceHtml;
+          }
 
           $form.find("#eshb-subtotal-price").val(regularTotalPrice);
           $form.find("#eshb-discounted-subtotal-price").val(subtotalPrice);
@@ -2542,7 +2536,6 @@
             totalPrice = prices.totalPriceHtml;
             regularTotalPrice = prices.regularTotalPriceHtml;
           }
-
 
           updateIfChanged($form.find("#eshb-booking-discounted-price"), totalPrice);
           updateIfChanged($form.find("#eshb-booking-total-price"), regularTotalPrice);
@@ -2662,15 +2655,6 @@
       // Update total price
       let totalPrice = currentPrice + extraServicesPrice;
       let discountedPrice = currentDiscountedPrice + extraServicesPrice;
-
-      // let formattedTotalPrice = ESHBPUBLICBOOKING.formatPrice(
-      //   totalPrice,
-      //   currencySymbol
-      // );
-      // let formattedDiscountedPrice = ESHBPUBLICBOOKING.formatPrice(
-      //   discountedPrice,
-      //   currencySymbol
-      // );
 
       ESHBPUBLICBOOKING.updateAmountOnly($form.find("#eshb-booking-total-price"), totalPrice);
       ESHBPUBLICBOOKING.updateAmountOnly($form.find("#eshb-booking-discounted-price"), discountedPrice);
