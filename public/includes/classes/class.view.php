@@ -233,7 +233,7 @@ class ESHB_View extends ESHB_MAIN{
         $children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? $accomodation_metaboxes['children_capacity'] : 0; 
         $min_adult_quantity = !empty($eshb_settings['booking-min-adult-capacity']) ? $eshb_settings['booking-min-adult-capacity'] : 1;
         $min_children_quantity = !empty($eshb_settings['booking-min-children-capacity']) ? $eshb_settings['booking-min-children-capacity'] : 0;
-        
+        $room_capacity = !empty($accomodation_metaboxes['total_rooms']) ? $accomodation_metaboxes['total_rooms'] : 1; 
         
         
         $is_single_day_plugin_active = get_option('eshb_single_day_activated');
@@ -253,11 +253,15 @@ class ESHB_View extends ESHB_MAIN{
             $children_quantity = isset( $_GET['children_quantity'] ) && !empty($_GET['children_quantity']) ? sanitize_text_field( wp_unslash($_GET['children_quantity'] )) : 0;
             $adult_quantity = $adult_quantity > $adult_capacity ? $adult_capacity : $adult_quantity;
             $children_quantity = $children_quantity > $children_capacity ? $children_capacity : $children_quantity;
+            $room_quantity = isset( $_GET['room_quantity'] ) && !empty($_GET['room_quantity']) ? sanitize_text_field( wp_unslash($_GET['room_quantity'] )) : 1;
+            $room_quantity = $room_quantity > $room_capacity ? $room_capacity : $room_quantity;
+            
         }else{
             $start_date = $today_date;
             $end_date = $tomorrow;
             $adult_quantity = 1;
             $children_quantity = 0;
+            $room_quantity = 1;
         }
 
         $adult_quantity = $adult_quantity > $adult_capacity ? $adult_capacity : $adult_quantity;
@@ -305,6 +309,10 @@ class ESHB_View extends ESHB_MAIN{
         $discountedPrice = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, false, true, true, true);
         $discountedPrice = !empty($discountedPrice) ? $discountedPrice : 0;
 
+
+        
+
+
         $booking_form_fileds = $eshb_settings['booking-form-fields'];
         $external_booking_link = isset($eshb_settings['external-booking-link']) && !empty($eshb_settings['external-booking-link']) ? $eshb_settings['external-booking-link'] : false;
 
@@ -339,6 +347,32 @@ class ESHB_View extends ESHB_MAIN{
         $defaultExtraServicePrice = 0;
 
         $has_calendar_icon = isset($eshb_settings['booking-form-calendar-icon']) && !empty($eshb_settings['booking-form-calendar-icon']) ? true : false;
+
+        $checked_services = [];
+        foreach($included_service_ids as $service_id){
+            $service_metaboxes = get_post_meta($service_id, 'eshb_service_metaboxes', true);
+            $is_checked = isset($service_metaboxes['is_checked']) && !empty($service_metaboxes['is_checked']) ? true : false;
+            if($is_checked){
+                $checked_services[] = $service_id;
+            }
+        }
+
+        $pricing = $eshb_bookings->calculate_booking_pricing(
+			$accomodation_id,
+			$start_date,
+			$end_date,
+			$room_quantity,
+			0,
+			$adult_quantity,
+			$children_quantity,
+			$checked_services,
+			true,
+			'',
+			''
+		);
+
+        $price_html = $pricing['totalPriceHtml'];
+        $regular_total_price_html = $pricing['regularTotalPriceHtml'];
 
         ?>
         <div class="eshb-booking">

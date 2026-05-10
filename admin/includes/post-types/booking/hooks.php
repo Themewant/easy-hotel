@@ -292,14 +292,14 @@ function eshb_get_booking_data_tables() {
                        
                         <tr>
                             <td><?php esc_html_e('Base Price', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html($hotel_core->eshb_price($base_price)); ?></td>
+                            <td><?php echo wp_kses_post($hotel_core->eshb_price($base_price)); ?></td>
                         </tr>
                         <?php 
                             if(!empty($extra_bed_price)){
                                 ?>
                                     <tr>
                                         <td><?php esc_html_e('Extra Bed Price', 'easy-hotel') ?></td>
-                                        <td><?php echo esc_html($hotel_core->eshb_price($extra_bed_price)); ?></td>
+                                        <td><?php echo wp_kses_post($hotel_core->eshb_price($extra_bed_price)); ?></td>
                                     </tr>
                                 <?php
                             }
@@ -307,14 +307,14 @@ function eshb_get_booking_data_tables() {
                                 ?>
                                     <tr>
                                         <td><?php esc_html_e('Service Charge', 'easy-hotel') ?></td>
-                                        <td><?php echo esc_html($hotel_core->eshb_price($extra_services_charge)); ?></td>
+                                        <td><?php echo wp_kses_post($hotel_core->eshb_price($extra_services_charge)); ?></td>
                                     </tr>
                                 <?php
                             }
                         ?>
                          <tr>
                             <td><?php esc_html_e('SubTotal', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html($hotel_core->eshb_price($subtotal_price)); ?></td>
+                            <td><?php echo wp_kses_post($hotel_core->eshb_price($subtotal_price)); ?></td>
                         </tr>
                         
                         
@@ -324,7 +324,7 @@ function eshb_get_booking_data_tables() {
                             ?>
                                 <tr>
                                     <td><?php esc_html_e('Initial Deposit', 'easy-hotel') ?></td>
-                                    <td><?php echo esc_html($hotel_core->eshb_price($deposit_amount)); ?></td>
+                                    <td><?php echo wp_kses_post($hotel_core->eshb_price($deposit_amount)); ?></td>
                                 </tr>
                             <?php
                         }
@@ -332,14 +332,14 @@ function eshb_get_booking_data_tables() {
                             ?>
                              <tr>
                                 <td><?php esc_html_e('Due', 'easy-hotel') ?></td>
-                                <td><?php echo esc_html($hotel_core->eshb_price($due_amount)); ?></td>
+                                <td><?php echo wp_kses_post($hotel_core->eshb_price($due_amount)); ?></td>
                             </tr>
                             <?php
                         }
                         ?>
                         <tr>
                             <td><?php esc_html_e('Total Paid', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html($hotel_core->eshb_price($total_paid)); ?></td>
+                            <td><?php echo wp_kses_post($hotel_core->eshb_price($total_paid)); ?></td>
                         </tr> 
                         
                     </tbody>

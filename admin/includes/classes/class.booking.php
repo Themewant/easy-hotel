@@ -1318,9 +1318,13 @@ class ESHB_Booking {
 	
 		if (!empty($selected_services) && is_array($selected_services)) {
 			$extra_services_charge = array_reduce($selected_services, function ($carry, $service) use ($days_count, $room_quantity, $total_guest_quantity) {
-				$service_id = $service['id'];
-				$service_quantity = $service['quantity'];
-	
+				$service_id = !empty($service['id']) ? $service['id'] : 0;
+				$service_quantity = !empty($service['quantity']) ? $service['quantity'] : 0;
+
+				if(empty($service_id) || empty($service_quantity)) {
+					return $carry;
+				}
+
 				$meta = get_post_meta($service_id, 'eshb_service_metaboxes', true);
 				$price = $meta['service_price'] ?? 0;
 				$periodicity = $meta['service_periodicity'] ?? 'once';
