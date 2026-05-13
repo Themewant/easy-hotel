@@ -393,16 +393,18 @@ class ESHB_View extends ESHB_MAIN{
 
                 <div class="eshb-form-group form-title-wrapper">
                     <h3 class="form-title"><?php echo esc_html( eshb_get_translated_string($string_reserve) );?></h3>
-                    <span class="pricing"><?php echo esc_html(eshb_get_translated_string($string_from));?> 
-                        <h4 class="base-price"><?php echo wp_kses_post($per_night_price_html);?> / </h4>
-                        <?php 
-                        if($pricing_periodicity && $pricing_periodicity == 'per_hour'){
-                            echo esc_html( eshb_get_translated_string($string_hour) );
-                        }else{
-                            echo esc_html( eshb_get_translated_string($string_night) );
-                        }
-                        ?>
-                    </span>
+                    <?php if( $price > 0 ):?>
+                        <span class="pricing"><?php echo esc_html(eshb_get_translated_string($string_from));?> 
+                            <h4 class="base-price"><?php echo wp_kses_post($per_night_price_html);?> / </h4>
+                            <?php 
+                            if($pricing_periodicity && $pricing_periodicity == 'per_hour'){
+                                echo esc_html( eshb_get_translated_string($string_hour) );
+                            }else{
+                                echo esc_html( eshb_get_translated_string($string_night) );
+                            }
+                            ?>
+                        </span>
+                    <?php endif; ?>
                 </div>
                 <div class="eshb-form-groups date-pickers-wrapper">
                     <div class="eshb-form-group start-date-pickers-wrapper">
