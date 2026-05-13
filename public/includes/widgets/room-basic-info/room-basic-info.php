@@ -356,7 +356,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
                 $output .= "<div class='info'>{$icon}{$img}<span class='info-title'>{$title}</span></div>";
             }
         }
-        if ($show_price == 'yes') {
+        if ($show_price == 'yes' && !empty($price)) {
             $output .= '<h3 class="price">' . wp_kses_post($price) . '<div class="label"> / ' . esc_html( eshb_get_translated_string($perodicity_string) ) . '</div></h3>';
         }
 
