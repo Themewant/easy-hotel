@@ -794,19 +794,17 @@
 
       var diff = picker.endDate.diff(picker.startDate, "days");
 
-      let isValid = true;
       if (!document.querySelector('.date-err-msg')) return;
       document.querySelector('.date-err-msg').innerHTML = '';
       if (minNights > 1 && diff < minNights) {
         document.querySelector('.date-err-msg').innerHTML = translations.minNightsErrorMsgAvCal + minNights;
-        isValid = false;
       } else if (maxNights !== 0 && diff > maxNights) {
-        isValid = false;
         document.querySelector('.date-err-msg').innerHTML = translations.maxNightsErrorMsgAvCal + maxNights;
       }
-      if (isValid !== true) {
-        ESHBPUBLICBOOKING.resetCalendar(minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
-      }
+      // Note: end date is adjusted relative to the picked start in the apply
+      // handlers below (end = start + minNights/maxNights), preserving the user's
+      // chosen start date. We intentionally do not call resetCalendar here, which
+      // would discard the picked start and reset to today.
 
       setTimeout(() => {
 
@@ -1062,6 +1060,53 @@
       );
       availableDatePickerInput.trigger("click");
 
+      // Mirror the picked start date to the visible inputs on every calendar click,
+      // before apply fires. The bundled daterangepicker does not emit a
+      // setStartDate event and its clickDate handler calls stopPropagation on
+      // mousedown — so we must bind on the same .calendar elements it does and
+      // rely on registration-order execution. We read picker.startDate after
+      // clickDate has updated state (deferred via setTimeout). The second click
+      // is still gated by the existing apply.daterangepicker validation
+      // (autoApply fires it automatically).
+      function eshbBindInstantStartMirror($input) {
+        let picker = $input.data("daterangepicker");
+        if (!picker || !picker.container) return;
+        $(picker.container).find(".calendar")
+          .off("mousedown.eshbInstant")
+          .on("mousedown.eshbInstant", "td.available", function () {
+            setTimeout(function () {
+              if (!picker.startDate) return;
+              let startDate = picker.startDate.format("YYYY-MM-DD");
+              $(startDateInput).val(startDate);
+              $(availableDatePickerInput).val(startDate);
+              // First click: picker.endDate is null until the user picks the
+              // second date. Clear the end input so it doesn't show a stale value.
+              if (!picker.endDate) {
+                $(endDateInput).val("");
+              }
+            }, 0);
+          });
+
+        // Restore the inputs from picker state on hide. When the user clicks
+        // outside the calendar after only picking a start, the library reverts
+        // picker.startDate / picker.endDate to their previous values in hide()
+        // — mirroring them back to the inputs brings the cleared end date back.
+        // On the apply path the apply handler runs after hide and overwrites
+        // these values with the validated dates, so this is a no-op there.
+        $input.off("hide.eshbInstant")
+          .on("hide.daterangepicker.eshbInstant", function (ev, p) {
+            if (p && p.startDate) {
+              $(startDateInput).val(p.startDate.format("YYYY-MM-DD"));
+            }
+            if (p && p.endDate) {
+              $(endDateInput).val(p.endDate.format("YYYY-MM-DD"));
+            }
+          });
+      }
+      eshbBindInstantStartMirror($(startDateInput));
+      eshbBindInstantStartMirror($(endDateInput));
+      eshbBindInstantStartMirror($(availableDatePickerInput));
+
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
@@ -1152,7 +1197,7 @@
         $(availableDatePickerInput).val(endDate);
 
         // Update all calendar
-        if (!accomodationId || accomodationId == "") return;
+        //if (!accomodationId || accomodationId == "") return;
         ESHBPUBLICBOOKING.updateEshbCalendar(
           startDateInput,
           endDateInput,
@@ -1161,6 +1206,7 @@
           accomodationId,
           form
         );
+        if (!accomodationId || accomodationId == "") return;
         ESHBPUBLICBOOKING.updatePricingTable();
       });
 
