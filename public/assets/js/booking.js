@@ -2883,6 +2883,8 @@
                 location.replace(redirectUrl);
               } else if (bookingType == "surecart") {
                 location.replace(response.data.checkout_url);
+              } else if (bookingType == "native_checkout" && response.data.redirect_url) {
+                location.replace(response.data.redirect_url);
               }
             }, timeoutDuration);
           } else if (response.success == false) {

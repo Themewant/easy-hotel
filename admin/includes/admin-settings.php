@@ -343,6 +343,7 @@ add_action( 'plugins_loaded', function(){
                     'options'     => array(
                       'woocommerce'    => 'Woocoommerce Booking',
                       'surecart'    => 'SurecCart Booking',
+                      'native_checkout' => 'Native Checkout',
                       'external'    => 'External Booking',
                       'booking_request'    => 'Booking Request',
                       'disable'    => 'Disable Booking',
@@ -448,7 +449,41 @@ add_action( 'plugins_loaded', function(){
                     'title' => 'Recipent Email Address',
                     'desc'  => 'Add recipent email address for getting Booking Request.',
                     'default' => $admin_email,
-                    'dependency' => array( ['booking-type', '==', 'booking_request'], ['booking-form-type', '==', 'default'] ) 
+                    'dependency' => array( ['booking-type', '==', 'booking_request'], ['booking-form-type', '==', 'default'] )
+                  ),
+                  array(
+                    'id'    => 'native-checkout-tax-rate',
+                    'type'  => 'number',
+                    'title' => 'Native Checkout Tax Rate (%)',
+                    'desc'  => 'Optional tax percentage applied on the native checkout total.',
+                    'default' => 0,
+                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
+                  ),
+                  array(
+                    'id'          => 'paypal-mode',
+                    'type'        => 'select',
+                    'title'       => 'PayPal Mode',
+                    'desc'        => 'Use "Sandbox" while testing and "Live" for real payments.',
+                    'options'     => array(
+                      'sandbox' => 'Sandbox',
+                      'live'    => 'Live',
+                    ),
+                    'default'     => 'sandbox',
+                    'dependency'  => array( 'booking-type', '==', 'native_checkout' ),
+                  ),
+                  array(
+                    'id'    => 'paypal-client-id',
+                    'type'  => 'text',
+                    'title' => 'PayPal Client ID',
+                    'desc'  => 'PayPal REST API client ID. Required for the PayPal gateway.',
+                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
+                  ),
+                  array(
+                    'id'    => 'paypal-client-secret',
+                    'type'  => 'text',
+                    'title' => 'PayPal Client Secret',
+                    'desc'  => 'PayPal REST API client secret. Required for the PayPal gateway.',
+                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
                   ),
                   array(
                     'id'    => 'currency_symbol',

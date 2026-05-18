@@ -670,6 +670,8 @@ class ESHB_View extends ESHB_MAIN{
                                     <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
                                 <?php }else if($booking_type == 'surecart'){ ?>
                                     <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </button>
+                                <?php }else if($booking_type == 'native_checkout'){ ?>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
                                 <?php }else if($booking_type == 'booking_request'){ ?>
                                     <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
                                 <?php }else{ ?>
