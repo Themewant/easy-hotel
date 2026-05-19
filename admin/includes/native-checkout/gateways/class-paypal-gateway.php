@@ -213,7 +213,11 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
         $status = $body['status'] ?? '';
 
         if ( $status !== 'COMPLETED' ) {
-            $msg = $body['message'] ?? sprintf( __( 'PayPal capture failed (%s).', 'easy-hotel' ), $status );
+            $msg = $body['message'] ?? sprintf(
+                /* translators: %s: PayPal capture status code returned by the Orders v2 API */
+                __( 'PayPal capture failed (%s).', 'easy-hotel' ),
+                $status
+            );
             return [ 'success' => false, 'message' => $msg, 'raw' => $body ];
         }
 

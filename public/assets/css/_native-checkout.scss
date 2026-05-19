@@ -155,7 +155,23 @@
                 border-color: var(--eshb-primary-color);
                 outline: 2px solid rgba(171, 137, 101, 0.15);
             }
+
+            // Marked by JS when a required field is empty at submit
+            // time. Cleared on the next input/change so the red
+            // border only lingers while the field is still wrong.
+            &.eshb-error-input,
+            &.eshb-error-input:focus {
+                border-color: var(--eshb-danger-color);
+                outline: 2px solid rgba(228, 23, 73, 0.18);
+            }
         }
+    }
+
+    // Same error treatment for the terms checkbox so a missed accept
+    // is highlighted alongside the field errors.
+    .eshb-terms-container input.eshb-error-input {
+        outline: 2px solid var(--eshb-danger-color);
+        outline-offset: 2px;
     }
 
     .eshb-choice-option {
@@ -332,12 +348,13 @@
 
     .eshb-price-table {
         width: 100%;
+        border: none;
         border-collapse: collapse;
 
         td {
             padding: 8px 0;
             font-size: 14px;
-            border-bottom: 1px solid #e5e7eb;
+            border: none;
         }
 
         tr:last-child td {

@@ -64,13 +64,21 @@ class ESHB_Native_Email_Handler {
         $first_name         = $customer['first_name'] ?? '';
 
         $heading = ( $context === 'customer' )
-            ? sprintf( __( 'Hi %s, thank you for your booking!', 'easy-hotel' ), esc_html( $first_name ) )
-            : sprintf( __( 'New booking #%d received', 'easy-hotel' ), (int) $booking_id );
+            ? sprintf(
+                /* translators: %s: customer first name */
+                __( 'Hi %s, thank you for your booking!', 'easy-hotel' ),
+                esc_html( $first_name )
+            )
+            : sprintf(
+                /* translators: %d: booking ID */
+                __( 'New booking #%d received', 'easy-hotel' ),
+                (int) $booking_id
+            );
 
         ob_start();
         ?>
         <div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;color:#333;">
-            <div style="background:#0f766e;color:#fff;padding:20px 24px;">
+            <div style="background:#212121;color:#fff;padding:20px 24px;">
                 <h2 style="margin:0;font-size:20px;"><?php echo esc_html( $heading ); ?></h2>
             </div>
             <div style="padding:24px;background:#fff;border:1px solid #e5e7eb;border-top:none;">

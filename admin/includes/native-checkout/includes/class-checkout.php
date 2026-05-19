@@ -100,14 +100,24 @@ class ESHB_Native_Checkout {
             wp_send_json_error( [ 'error' => [ 'code' => 'pricing_failed', 'message' => __( 'Unable to calculate price.', 'easy-hotel' ) ] ] );
         }
 
-        eshb_native_checkout_set_reservation( $reservation );
+        $token = eshb_native_checkout_set_reservation( $reservation );
 
-        $checkout_url = eshb_native_checkout_url();
+        // Pass the reservation token in the redirect URL — cookies are
+        // unreliable on some live hosts (Set-Cookie stripped from AJAX
+        // responses, edge caches, etc.) so the URL is the source of
+        // truth and the cookie is a best-effort backup. Force a
+        // trailing slash before adding the query arg so WP's canonical
+        // redirect can't bounce the URL and drop the param.
+        $checkout_url = trailingslashit( eshb_native_checkout_url() );
+        if ( $token ) {
+            $checkout_url = add_query_arg( eshb_native_checkout_request_param(), $token, $checkout_url );
+        }
 
         wp_send_json_success( [
             'booking-type'    => 'native_checkout',
             'message'         => __( 'Redirecting to checkout…', 'easy-hotel' ),
             'redirect_url'    => $checkout_url,
+            'token'           => $token,
             'accomodation_id' => $reservation['accomodation_id'],
             'start_date'      => $reservation['start_date'],
             'end_date'        => $reservation['end_date'],
@@ -155,7 +165,10 @@ class ESHB_Native_Checkout {
     }
 
     private function collect_reservation_from_request() {
-
+        // Nonce verified in maybe_handle_reservation() before this helper
+        // is called; the static analyzer can't trace that, so we silence
+        // its complaint on the $_POST reads below.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         $today    = gmdate( 'Y-m-d' );
         $tomorrow = gmdate( 'Y-m-d', strtotime( '+1 day' ) );
 
@@ -174,7 +187,7 @@ class ESHB_Native_Checkout {
             }
         }
 
-        return [
+        $payload = [
             'accomodation_id'     => isset( $_POST['accomodationId'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['accomodationId'] ) ) : 0,
             'start_date'          => isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash( $_POST['startDate'] ) ) : $today,
             'end_date'            => isset( $_POST['endDate'] ) ? sanitize_text_field( wp_unslash( $_POST['endDate'] ) ) : $tomorrow,
@@ -186,6 +199,8 @@ class ESHB_Native_Checkout {
             'children_quantity'   => isset( $_POST['childrenQuantity'] ) ? (int) sanitize_text_field( wp_unslash( $_POST['childrenQuantity'] ) ) : 0,
             'extra_services'      => $selected_services,
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        return $payload;
     }
 
     public function enqueue_assets() {
@@ -225,15 +240,27 @@ class ESHB_Native_Checkout {
                 'currency'  => $data['currency'],
                 'intent'    => 'capture',
             ], 'https://www.paypal.com/sdk/js' );
+            // The PayPal SDK validates its querystring strictly and
+            // returns 400 if WordPress appends `?ver=...` to the URL,
+            // so we pass null (no version) instead of ESHB_VERSION.
+            // The SDK is a third-party hosted script with its own
+            // versioning at the CDN edge.
+            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
             wp_enqueue_script( 'eshb-native-paypal-sdk', $sdk_url, [], null, true );
         }
 
         wp_localize_script( 'eshb-native-checkout', 'eshbNativeCheckout', [
-            'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-            'nonce'       => wp_create_nonce( 'eshb_native_checkout' ),
-            'reservation' => $reservation_view,
-            'pricing'     => $pricing,
-            'gateways'    => $gateways,
+            'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+            'nonce'            => wp_create_nonce( 'eshb_native_checkout' ),
+            'countriesJsonUrl' => ESHB_PL_URL . 'public/assets/lib/countries.json',
+            'tokenParam'       => eshb_native_checkout_request_param(),
+            // The token resolved for the current page render. JS sends
+            // it back on every AJAX call so reservation lookups don't
+            // depend on the cookie surviving.
+            'token'            => eshb_native_checkout_token_from_request(),
+            'reservation'      => $reservation_view,
+            'pricing'          => $pricing,
+            'gateways'         => $gateways,
             'i18n'        => [
                 'missingTerms'         => __( 'Please accept the terms and conditions.', 'easy-hotel' ),
                 'missingFields'        => __( 'Please fill in all required fields.', 'easy-hotel' ),
@@ -262,15 +289,53 @@ class ESHB_Native_Checkout {
     }
 
     public function render_shortcode() {
+        // The checkout page is per-visitor (reservation transient keyed
+        // by cookie). On a live server with page caching enabled (WP
+        // Rocket, W3TC, Cloudflare APO, hosting-level caches, etc.) the
+        // page can otherwise be served from cache as the "no
+        // reservation found" view to every visitor. Disable caching for
+        // this page so the cookie/transient is always read fresh.
+        nocache_headers();
+        if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+            define( 'DONOTCACHEPAGE', true );
+        }
+        if ( ! defined( 'DONOTCACHEOBJECT' ) ) {
+            define( 'DONOTCACHEOBJECT', true );
+        }
+        if ( ! defined( 'DONOTCACHEDB' ) ) {
+            define( 'DONOTCACHEDB', true );
+        }
+
+        ob_start();
+
+        // Thank-you flow takes priority. Once payment captures, we
+        // intentionally clear the reservation transient — so by the time
+        // the browser arrives at ?booking=<id> the session is empty.
+        // Render the template (which has its own thank-you branch) as
+        // long as the booking exists, regardless of reservation state.
+        // Read-only GET parameter used purely as a post lookup; no
+        // state-changing action depends on it, so a nonce isn't required.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $booking_id_param = isset( $_GET['booking'] ) ? absint( $_GET['booking'] ) : 0;
+        if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' ) {
+            $reservation_view = [];
+            $pricing          = [];
+            $gateways         = [];
+            $template = ESHB_PL_PATH . 'admin/includes/native-checkout/templates/checkout-page.php';
+            if ( file_exists( $template ) ) {
+                include $template;
+            }
+            return ob_get_clean();
+        }
+
         $reservation = eshb_native_checkout_get_reservation();
         $pricing     = is_array( $reservation ) ? ESHB_Native_Pricing::calculate( $reservation ) : [];
 
         $manager  = ESHB_Native_Gateway_Manager::instance();
         $gateways = $manager->get_gateways( true );
 
-        ob_start();
-
         if ( empty( $reservation ) ) {
+            $token_param = eshb_native_checkout_request_param();
             ?>
             <div class="eshb-native-checkout eshb-native-checkout--empty">
                 <div class="eshb-container">
@@ -280,6 +345,25 @@ class ESHB_Native_Checkout {
                     </div>
                 </div>
             </div>
+            <script>
+            // Self-healing fallback: if the booking-form submit stored
+            // a reservation token in sessionStorage but a CDN / security
+            // plugin / canonical redirect dropped it from the URL,
+            // reload once with the token appended so the server can
+            // find the reservation.
+            (function () {
+                try {
+                    var token = sessionStorage.getItem('eshb_native_checkout_token');
+                    if (!token) return;
+                    if (sessionStorage.getItem('eshb_native_checkout_recovered') === token) return;
+                    var url = new URL(window.location.href);
+                    if (url.searchParams.get('<?php echo esc_js( $token_param ); ?>') === token) return;
+                    url.searchParams.set('<?php echo esc_js( $token_param ); ?>', token);
+                    sessionStorage.setItem('eshb_native_checkout_recovered', token);
+                    window.location.replace(url.toString());
+                } catch (e) { /* ignore */ }
+            })();
+            </script>
             <?php
             return ob_get_clean();
         }
@@ -368,10 +452,16 @@ class ESHB_Native_Checkout {
     public function ajax_apply_coupon() {
         $this->verify_native_nonce();
 
-        $coupon = isset( $_POST['coupon'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon'] ) ) : '';
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        $coupon         = isset( $_POST['coupon'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon'] ) ) : '';
+        // Customer email may be empty here (user hasn't typed it yet
+        // when applying the coupon). Per-user check is then skipped and
+        // re-enforced server-side during create_payment / complete.
+        $customer_email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $reservation = $this->reservation_from_post();
 
-        $pricing = ESHB_Native_Pricing::calculate( $reservation, $coupon );
+        $pricing = ESHB_Native_Pricing::calculate( $reservation, $coupon, $customer_email );
         if ( ! empty( $coupon ) && empty( $pricing['couponValid'] ) ) {
             wp_send_json_error( [ 'message' => $pricing['couponMessage'] ?: __( 'Invalid coupon.', 'easy-hotel' ), 'pricing' => $pricing ] );
         }
@@ -382,8 +472,10 @@ class ESHB_Native_Checkout {
     public function ajax_create_payment() {
         $this->verify_native_nonce();
 
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         $gateway_id = isset( $_POST['gateway'] ) ? sanitize_key( wp_unslash( $_POST['gateway'] ) ) : '';
         $coupon     = isset( $_POST['coupon'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon'] ) ) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $customer   = $this->customer_from_post();
         $reservation = $this->reservation_from_post();
 
@@ -397,8 +489,16 @@ class ESHB_Native_Checkout {
             wp_send_json_error( [ 'message' => __( 'Selected payment method is not available.', 'easy-hotel' ) ] );
         }
 
-        $pricing = ESHB_Native_Pricing::calculate( $reservation, $coupon );
-        $result  = $gateway->create_payment( $reservation, $customer, $pricing );
+        $pricing = ESHB_Native_Pricing::calculate( $reservation, $coupon, $customer['email'] ?? '' );
+
+        // Block payment creation if the coupon was rejected by the
+        // per-user / global limit checks; otherwise the discount would
+        // silently zero out at the strict re-validation step below.
+        if ( ! empty( $coupon ) && empty( $pricing['couponValid'] ) ) {
+            wp_send_json_error( [ 'message' => $pricing['couponMessage'] ?: __( 'Coupon is no longer valid.', 'easy-hotel' ) ] );
+        }
+
+        $result = $gateway->create_payment( $reservation, $customer, $pricing );
 
         if ( empty( $result['success'] ) ) {
             wp_send_json_error( [ 'message' => $result['message'] ?? __( 'Could not initiate payment.', 'easy-hotel' ) ] );
@@ -410,8 +510,10 @@ class ESHB_Native_Checkout {
     public function ajax_complete_checkout() {
         $this->verify_native_nonce();
 
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         $gateway_id = isset( $_POST['gateway'] ) ? sanitize_key( wp_unslash( $_POST['gateway'] ) ) : '';
         $coupon     = isset( $_POST['coupon'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon'] ) ) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $customer   = $this->customer_from_post();
         $reservation = $this->reservation_from_post();
 
@@ -425,9 +527,13 @@ class ESHB_Native_Checkout {
             wp_send_json_error( [ 'message' => __( 'Selected payment method is not available.', 'easy-hotel' ) ] );
         }
 
-        // 1. Capture / verify payment
+        // 1. Capture / verify payment. Nonce is verified at the top of
+        // this method; the loop sanitizes each value, so the outer raw
+        // $_POST access is safe.
         $gateway_params = [];
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
         if ( ! empty( $_POST['gatewayParams'] ) && is_array( $_POST['gatewayParams'] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             foreach ( wp_unslash( $_POST['gatewayParams'] ) as $key => $val ) {
                 $gateway_params[ sanitize_key( $key ) ] = sanitize_text_field( $val );
             }
@@ -439,7 +545,9 @@ class ESHB_Native_Checkout {
         }
 
         // 2. Re-calculate pricing server-side; never trust client total.
-        $pricing  = ESHB_Native_Pricing::calculate( $reservation, $coupon );
+        // Pass the customer email so the coupon's per-user limit is
+        // enforced one more time before the discount is applied.
+        $pricing  = ESHB_Native_Pricing::calculate( $reservation, $coupon, $customer['email'] ?? '' );
 
         // 3. Insert booking with status 'on-hold' (per spec)
         $customer['gateway'] = $gateway->get_id();
@@ -463,9 +571,45 @@ class ESHB_Native_Checkout {
         // 5. Update booking status on-hold -> processing
         ESHB_Native_Booking_Handler::update_status( $booking_id, 'processing' );
 
-        // 6. Send emails
-        ESHB_Native_Email_Handler::send_customer_confirmation( $booking_id, $customer );
-        ESHB_Native_Email_Handler::send_admin_notification( $booking_id, $customer );
+        // 5b. Record coupon usage if one was applied. Increments the
+        // usage count and appends this customer to the used-by log via
+        // ESHB_Native_Checkout_Coupon.
+        $coupon_id_used = (int) ( $pricing['couponId'] ?? 0 );
+        if ( $coupon_id_used > 0 && ! empty( $pricing['couponValid'] ) ) {
+            $coupon_obj = new ESHB_Native_Checkout_Coupon( $coupon_id_used );
+            $coupon_obj->set_usage_count( (int) $coupon_obj->get_usage_count() + 1 );
+
+            $used_by = $coupon_obj->get_used_by();
+            if ( ! is_array( $used_by ) ) {
+                $used_by = [];
+            }
+            $used_by[] = [
+                'booking_id' => $booking_id,
+                'name'       => trim( ( $customer['first_name'] ?? '' ) . ' ' . ( $customer['last_name'] ?? '' ) ),
+                'email'      => $customer['email'] ?? '',
+                'code'       => $pricing['couponCode'] ?? '',
+                'discount'   => (float) ( $pricing['couponDiscount'] ?? 0 ),
+                'used_at'    => current_time( 'mysql' ),
+            ];
+            $coupon_obj->set_used_by( $used_by );
+        }
+
+        // 6. Send emails. A misconfigured SMTP / mail server must not
+        // bubble up as a 500 — payment has already been captured and the
+        // booking exists, so we swallow failures silently. The booking
+        // record itself is the source of truth if an email is missed.
+        try {
+            ESHB_Native_Email_Handler::send_customer_confirmation( $booking_id, $customer );
+        } catch ( \Throwable $e ) {
+            // Intentional no-op: see comment above.
+            unset( $e );
+        }
+        try {
+            ESHB_Native_Email_Handler::send_admin_notification( $booking_id, $customer );
+        } catch ( \Throwable $e ) {
+            // Intentional no-op: see comment above.
+            unset( $e );
+        }
 
         // 7. Clear the reservation transient — no double-bookings on refresh.
         eshb_native_checkout_clear_reservation();
@@ -489,6 +633,8 @@ class ESHB_Native_Checkout {
     }
 
     private function reservation_from_post() {
+        // Nonce verified in the calling ajax_* method.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
         $session = eshb_native_checkout_get_reservation();
         if ( ! is_array( $session ) ) {
             wp_send_json_error( [ 'message' => __( 'Your reservation has expired. Please start again.', 'easy-hotel' ) ] );
@@ -511,22 +657,33 @@ class ESHB_Native_Checkout {
                 eshb_native_checkout_set_reservation( $session );
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $session;
     }
 
     private function customer_from_post() {
-        return [
+        // Nonce verified in the calling ajax_* method.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        $customer = [
             'first_name' => isset( $_POST['firstName'] ) ? sanitize_text_field( wp_unslash( $_POST['firstName'] ) ) : '',
             'last_name'  => isset( $_POST['lastName'] ) ? sanitize_text_field( wp_unslash( $_POST['lastName'] ) ) : '',
             'email'      => isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '',
             'phone'      => isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '',
             'country'    => isset( $_POST['country'] ) ? sanitize_text_field( wp_unslash( $_POST['country'] ) ) : '',
+            'state'      => isset( $_POST['state'] ) ? sanitize_text_field( wp_unslash( $_POST['state'] ) ) : '',
+            'city'       => isset( $_POST['city'] ) ? sanitize_text_field( wp_unslash( $_POST['city'] ) ) : '',
             'notes'      => isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '',
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        return $customer;
     }
 
     private function validate_customer( array $customer ) {
-        $required = [ 'first_name', 'last_name', 'email', 'phone', 'country' ];
+        // City and country are always required. State is conditional —
+        // some countries (e.g. Vatican City) have no states in the JSON,
+        // so the JS layer disables the field and we mirror that here by
+        // skipping the state requirement when it's absent.
+        $required = [ 'first_name', 'last_name', 'email', 'phone', 'country', 'city' ];
         foreach ( $required as $key ) {
             if ( empty( $customer[ $key ] ) ) {
                 return new WP_Error( 'missing_field', __( 'Please fill in all required fields.', 'easy-hotel' ) );

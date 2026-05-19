@@ -23,7 +23,6 @@
     include 'admin/includes/classes/class.helper.php';
     include 'admin/includes/admin-init.php';
     include 'admin/includes/activation.php';
-    include 'admin/includes/notice.php';
 
     include 'public/includes/widgets/widgets.php';
     include 'public/includes/gutenberg/blocks/blocks.php';

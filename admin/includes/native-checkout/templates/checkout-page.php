@@ -16,6 +16,9 @@ if ( ! isset( $reservation_view, $pricing, $gateways ) ) {
     return;
 }
 
+// Read-only thank-you lookup; no state change happens here, so a nonce
+// is not required. The id is cast through absint() before use.
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $booking_id_param = isset( $_GET['booking'] ) ? absint( $_GET['booking'] ) : 0;
 if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' ) {
     $booking_meta = get_post_meta( $booking_id_param, 'eshb_booking_metaboxes', true );
@@ -224,13 +227,27 @@ $nights           = (int) ( $pricing['daysCount'] ?? 0 );
                         <input type="text" name="phone" required>
                     </div>
                 </div>
+                <div class="eshb-grid-2">
+                    <div class="eshb-form-group">
+                        <label><?php esc_html_e( 'Country / Region', 'easy-hotel' ); ?> *</label>
+                        <select name="country" id="eshbCountrySelect" required>
+                            <option value=""><?php esc_html_e( 'Select a country…', 'easy-hotel' ); ?></option>
+                        </select>
+                    </div>
+                    <div class="eshb-form-group" id="eshbStateGroup">
+                        <label><?php esc_html_e( 'State', 'easy-hotel' ); ?> *</label>
+                        <select name="state" id="eshbStateSelect" required disabled>
+                            <option value=""><?php esc_html_e( 'Select a state…', 'easy-hotel' ); ?></option>
+                        </select>
+                    </div>
+                </div>
                 <div class="eshb-form-group">
-                    <label><?php esc_html_e( 'Country / Region', 'easy-hotel' ); ?> *</label>
-                    <input type="text" name="country" required>
+                    <label><?php esc_html_e( 'City', 'easy-hotel' ); ?> *</label>
+                    <input type="text" name="city" required>
                 </div>
                 <div class="eshb-form-group">
                     <label><?php esc_html_e( 'Notes', 'easy-hotel' ); ?></label>
-                    <textarea rows="4" name="notes" placeholder="<?php esc_attr_e( 'Special requests, dietary requirements, etc.', 'easy-hotel' ); ?>"></textarea>
+                    <textarea rows="2" name="notes" placeholder="<?php esc_attr_e( 'Special requests, dietary requirements, etc.', 'easy-hotel' ); ?>"></textarea>
                 </div>
             </div>
 

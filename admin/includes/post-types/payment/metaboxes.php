@@ -109,8 +109,8 @@ if( class_exists( 'ESHB' ) ) {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         $booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
         $current_booking_customer_metadata = ESHB_Helper::get_current_booking_customer_metadata($booking_id, '', '');
-        $saved_state_name = $current_booking_customer_metadata['state'];
-        $saved_city_name = $current_booking_customer_metadata['city'];
+        $saved_state_name = $current_booking_customer_metadata['state'] ?? '';
+        $saved_city_name = $current_booking_customer_metadata['city'] ?? '';
     }
 
     

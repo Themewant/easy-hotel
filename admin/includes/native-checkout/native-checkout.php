@@ -17,6 +17,7 @@ if ( ! defined( 'ESHB_NATIVE_CHECKOUT_URL' ) ) {
 }
 
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/helpers.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-coupon.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-pricing.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-booking-handler.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-email-handler.php';
@@ -31,6 +32,33 @@ add_action( 'plugins_loaded', function () {
     ESHB_Native_Checkout::instance();
 }, 15 );
 
+/* -----------------------------------------------------------------------
+ * Abandoned-reservation cleanup
+ *
+ * Reservations live in wp_options keyed by the per-visitor token. A
+ * customer who lands on the checkout page and then closes the tab or
+ * cancels payment never triggers the on-success delete path, so we
+ * need a janitor to keep wp_options from accumulating stale rows.
+ * -------------------------------------------------------------------- */
+
+add_action( 'eshb_native_checkout_cleanup_cron', 'eshb_native_checkout_cleanup_stale_reservations' );
+
+add_action( 'init', function () {
+    if ( ! wp_next_scheduled( 'eshb_native_checkout_cleanup_cron' ) ) {
+        wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', 'eshb_native_checkout_cleanup_cron' );
+    }
+} );
+
+register_deactivation_hook( ESHB_PL_ROOT, 'eshb_native_checkout_unschedule_cleanup' );
+if ( ! function_exists( 'eshb_native_checkout_unschedule_cleanup' ) ) {
+    function eshb_native_checkout_unschedule_cleanup() {
+        $timestamp = wp_next_scheduled( 'eshb_native_checkout_cleanup_cron' );
+        if ( $timestamp ) {
+            wp_unschedule_event( $timestamp, 'eshb_native_checkout_cleanup_cron' );
+        }
+    }
+}
+
 /**
  * Auto-create the checkout page on plugin activation when Native Checkout
  * is in use, so the shortcode is always reachable from a known URL.
@@ -43,6 +71,7 @@ if ( ! function_exists( 'eshb_native_checkout_create_page' ) ) {
 
         $page_id = wp_insert_post( [
             'post_title'   => __( 'Easy Hotel Checkout', 'easy-hotel' ),
+            'post_name'    => 'eshb-checkout',
             'post_content' => '[eshb_native_checkout]',
             'post_status'  => 'publish',
             'post_type'    => 'page',

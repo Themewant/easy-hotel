@@ -163,6 +163,24 @@
   border-color: var(--eshb-primary-color);
   outline: 2px solid rgba(171, 137, 101, 0.15);
 }
+.eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input, .eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input:focus {
+  border-color: var(--eshb-danger-color);
+  outline: 2px solid rgba(228, 23, 73, 0.18);
+}
+.eshb-native-checkout .eshb-terms-container input.eshb-error-input {
+  outline: 2px solid var(--eshb-danger-color);
+  outline-offset: 2px;
+}
 .eshb-native-checkout .eshb-choice-option {
   display: flex;
   flex-wrap: wrap;
@@ -311,12 +329,13 @@
 }
 .eshb-native-checkout .eshb-price-table {
   width: 100%;
+  border: none;
   border-collapse: collapse;
 }
 .eshb-native-checkout .eshb-price-table td {
   padding: 8px 0;
   font-size: 14px;
-  border-bottom: 1px solid #e5e7eb;
+  border: none;
 }
 .eshb-native-checkout .eshb-price-table tr:last-child td {
   border-bottom: none;

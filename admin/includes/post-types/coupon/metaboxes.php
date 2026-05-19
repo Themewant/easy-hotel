@@ -100,7 +100,20 @@ if( class_exists( 'ESHB' ) ) {
                                         'posts_per_page' => -1,
                                     ),
                   ),
-                  
+                  array(
+                    'id'    => 'used-by',
+                    'type'  => 'textarea',
+                    'title' => 'Used By',
+                    'desc'  => 'Leave empty for unlimited.',
+                    //'readonly' => true,
+                  ),
+                  array(
+                    'id'    => 'usage-count',
+                    'type'  => 'text',
+                    'title' => 'Usage Count',
+                    'desc'  => 'Leave empty for unlimited.',
+                    //'readonly' => true,
+                  ),
                   
               
                 ),
@@ -122,15 +135,22 @@ function eshb_add_custom_columns_coupon_post($columns) {
 add_filter('manage_eshb_coupon_posts_columns', 'eshb_add_custom_columns_coupon_post');
 
 function eshb_custom_column_content_coupon_post($column, $post_id) {
-
+    $eshb_settings = get_option('eshb_settings', []);
+    $booking_type = $eshb_settings['booking-type'] ?? 'woocommerce';
     $eshb_coupon_metaboxes = get_post_meta($post_id, 'eshb_coupon_metaboxes', true);
     $hotel_core = new ESHB_Core();
     $currency_symbol = $hotel_core->get_eshb_currency_symbol();
     $coupon_type = $eshb_coupon_metaboxes['discount-type'];	
 
-    $wc_coupon_id = get_post_meta( $post_id, 'eshb_coupon_wc_id', true );
-    $wc_coupon = new WC_Coupon( $wc_coupon_id );
+    $usage_count = $eshb_coupon_metaboxes['usage-count'];
+    $coupon_limit = $eshb_coupon_metaboxes['usage-limit'];
 
+    if( $booking_type == 'woocommerce' && class_exists( 'WC_Coupon' )) {
+        $wc_coupon_id = get_post_meta( $post_id, 'eshb_coupon_wc_id', true );
+        $wc_coupon = new WC_Coupon( $wc_coupon_id );
+        $usage_count = $wc_coupon->get_usage_count();
+        $coupon_limit = $wc_coupon->get_usage_limit();
+    }
 
     if($coupon_type == 'percent') {
         $coupon_amount = $eshb_coupon_metaboxes['coupon-amount'] . '%';
@@ -152,7 +172,7 @@ function eshb_custom_column_content_coupon_post($column, $post_id) {
             echo esc_html($coupon_type_text_map[$coupon_type]);
             break;
         case 'usages-limit':
-            echo esc_html($wc_coupon->get_usage_count()) . ' / ' . esc_html($wc_coupon->get_usage_limit());
+            echo esc_html($usage_count) . ' / ' . esc_html($coupon_limit);
             break;
         case 'expiry-date':
             echo esc_html($eshb_coupon_metaboxes['expiry-date']);

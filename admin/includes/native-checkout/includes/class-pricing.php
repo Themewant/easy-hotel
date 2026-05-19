@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ESHB_Native_Pricing {
 
-    public static function calculate( array $reservation, $coupon_code = '' ) {
+    public static function calculate( array $reservation, $coupon_code = '', $customer_email = '' ) {
 
         $accomodation_id   = (int) ( $reservation['accomodation_id'] ?? 0 );
         $start_date        = sanitize_text_field( $reservation['start_date'] ?? '' );
@@ -72,18 +72,19 @@ class ESHB_Native_Pricing {
         }
 
         $tax_amount = self::calculate_tax( (float) ( $pricing['totalPrice'] ?? 0 ) );
-        $coupon     = self::evaluate_coupon( $coupon_code, $pricing, $accomodation_id );
+        $coupon     = self::evaluate_coupon( $coupon_code, $pricing, $accomodation_id, $customer_email );
 
         $subtotal_after_coupon = max( 0, (float) ( $pricing['totalPrice'] ?? 0 ) - (float) $coupon['discount'] );
         $grand_total           = $subtotal_after_coupon + $tax_amount;
 
         $core = new ESHB_Core();
 
-        $pricing['couponCode']      = $coupon['code'];
-        $pricing['couponDiscount']  = $coupon['discount'];
+        $pricing['couponCode']         = $coupon['code'];
+        $pricing['couponId']           = (int) ( $coupon['coupon_id'] ?? 0 );
+        $pricing['couponDiscount']     = $coupon['discount'];
         $pricing['couponDiscountHtml'] = $core->eshb_price( $coupon['discount'] );
-        $pricing['couponMessage']   = $coupon['message'];
-        $pricing['couponValid']     = $coupon['valid'];
+        $pricing['couponMessage']      = $coupon['message'];
+        $pricing['couponValid']        = $coupon['valid'];
         $pricing['taxRate']         = self::tax_rate();
         $pricing['taxAmount']       = $tax_amount;
         $pricing['taxAmountHtml']   = $core->eshb_price( $tax_amount );
@@ -138,40 +139,75 @@ class ESHB_Native_Pricing {
         return round( ( $amount * $rate ) / 100, 2 );
     }
 
-    public static function evaluate_coupon( $code, array $pricing, $accomodation_id ) {
+    public static function evaluate_coupon( $code, array $pricing, $accomodation_id, $customer_email = '' ) {
         $code = strtoupper( trim( (string) $code ) );
         $result = [
-            'code'     => '',
-            'discount' => 0,
-            'message'  => '',
-            'valid'    => false,
+            'code'      => '',
+            'coupon_id' => 0,
+            'discount'  => 0,
+            'message'   => '',
+            'valid'     => false,
         ];
 
         if ( empty( $code ) ) return $result;
 
+        // Coupons are a small set in practice — iterate them in PHP so
+        // we don't hit a slow LIKE on a serialized meta field.
         $coupons = get_posts( [
             'post_type'      => 'eshb_coupon',
             'post_status'    => 'publish',
-            'posts_per_page' => 1,
-            'meta_query'     => [
-                [
-                    'key'     => 'eshb_coupon_metaboxes',
-                    'value'   => $code,
-                    'compare' => 'LIKE',
-                ],
-            ],
+            'posts_per_page' => -1,
+            'no_found_rows'  => true,
+            'fields'         => 'ids',
         ] );
 
-        if ( empty( $coupons ) ) {
+        $details        = null;
+        $matched_coupon_id = 0;
+        foreach ( $coupons as $coupon_id ) {
+            $candidate = get_post_meta( $coupon_id, 'eshb_coupon_metaboxes', true );
+            if ( is_array( $candidate ) && strtoupper( (string) ( $candidate['coupon-code'] ?? '' ) ) === $code ) {
+                $details           = $candidate;
+                $matched_coupon_id = (int) $coupon_id;
+                break;
+            }
+        }
+
+        if ( empty( $details ) ) {
             $result['message'] = __( 'Invalid coupon code.', 'easy-hotel' );
             return $result;
         }
 
-        $coupon  = $coupons[0];
-        $details = get_post_meta( $coupon->ID, 'eshb_coupon_metaboxes', true );
-        if ( empty( $details ) || strtoupper( (string) ( $details['coupon-code'] ?? '' ) ) !== $code ) {
-            $result['message'] = __( 'Invalid coupon code.', 'easy-hotel' );
+        // Usage-limit guard delegated to ESHB_Native_Checkout_Coupon so
+        // the validity rules live in one place. We check explicitly
+        // here for both the global limit and the per-user limit (when
+        // an email is available) so a regression in is_valid() can't
+        // silently let an over-used coupon through.
+        $coupon_obj    = new ESHB_Native_Checkout_Coupon( $matched_coupon_id );
+        $usage_limit   = (int) $coupon_obj->get_usage_limit();
+        $usage_count   = (int) $coupon_obj->get_usage_count();
+
+        if ( $usage_limit > 0 && $usage_count >= $usage_limit ) {
+            $result['message'] = __( 'Coupon usage limit reached.', 'easy-hotel' );
             return $result;
+        }
+
+        // Per-user limit guard. When the coupon caps usage per customer
+        // and the buyer's email isn't on the request yet (Apply is the
+        // first interaction, the customer-info section sits below), the
+        // count cannot be computed — so refuse instead of falling back
+        // silently. The customer-info section asks them to type the
+        // email and try again.
+        $per_user_limit = (int) $coupon_obj->get_usage_limit_per_user();
+        if ( $per_user_limit > 0 ) {
+            if ( $customer_email === '' ) {
+                $result['message'] = __( 'Please enter your email address above before applying this coupon.', 'easy-hotel' );
+                return $result;
+            }
+            $per_user_count = (int) $coupon_obj->get_usage_count_for_user( $customer_email );
+            if ( $per_user_count >= $per_user_limit ) {
+                $result['message'] = __( 'You have already used this coupon the maximum number of times.', 'easy-hotel' );
+                return $result;
+            }
         }
 
         $allowed_ids = $details['accomodation-ids'] ?? [];
@@ -197,6 +233,8 @@ class ESHB_Native_Pricing {
 
         $discount = ( $type === 'percent' ) ? ( $base * $amount / 100 ) : $amount;
         $discount = round( min( $discount, $base ), 2 );
+
+        $result['coupon_id'] = $matched_coupon_id;
 
         $result['code']     = $code;
         $result['discount'] = $discount;

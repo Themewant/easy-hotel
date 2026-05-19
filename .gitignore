@@ -13,3 +13,6 @@ node_modules/
 # include claude config
 .claude
 .claudeignore
+
+# markdown files
+*.md

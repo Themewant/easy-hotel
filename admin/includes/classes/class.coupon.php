@@ -171,7 +171,6 @@ class ESHB_Coupon {
 		$this->create_coupon($post_id);
 		
 	}
-
 }
 // Initialize the class
 $eshb_coupon = new ESHB_Coupon();

@@ -222,12 +222,22 @@
             $apply.prop('disabled', true);
             $msg.removeClass('eshb-msg-error eshb-msg-success').text(state.config.i18n.couponApplying);
 
-            $.post(state.config.ajaxUrl, {
+            var couponPayload = {
                 action: 'eshb_native_apply_coupon',
                 nonce: state.config.nonce,
                 coupon: code,
+                // Send email so the per-user limit is checked at apply
+                // time when possible — empty is fine, the server falls
+                // back to the global limit check.
+                email: ($('#eshbNativeCheckoutForm [name="email"]').val() || ''),
                 extraServices: JSON.stringify(state.selectedServices)
-            }).done(function (resp) {
+            };
+            // Reservation token: cookie-less fallback for hosts that
+            // strip Set-Cookie from AJAX responses.
+            if (state.config.token && state.config.tokenParam) {
+                couponPayload[state.config.tokenParam] = state.config.token;
+            }
+            $.post(state.config.ajaxUrl, couponPayload).done(function (resp) {
                 if (resp && resp.success && resp.data && resp.data.pricing && resp.data.pricing.couponValid) {
                     state.coupon.code = resp.data.pricing.couponCode;
                     state.coupon.discount = parseFloat(resp.data.pricing.couponDiscount) || 0;
@@ -241,6 +251,16 @@
                     var err = (resp && resp.data && resp.data.message) || 'Invalid coupon';
                     $msg.text(err).addClass('eshb-msg-error').removeClass('eshb-msg-success');
                     state.coupon = { code: '', discount: 0, valid: false };
+                    // If the server is asking for the email (per-user
+                    // coupon, email empty), scroll the field into view
+                    // and focus it so the next step is obvious.
+                    if (/email/i.test(err)) {
+                        var $emailInput = $('#eshbNativeCheckoutForm [name="email"]');
+                        if ($emailInput.length) {
+                            $emailInput[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(function () { $emailInput.trigger('focus'); }, 350);
+                        }
+                    }
                     recalcLocal();
                 }
             }).fail(function () {
@@ -270,7 +290,16 @@
             state.gateway = $(this).val();
             $('#eshbGatewayMount > div').hide();
             $('#eshbGatewayMount [data-gateway="' + state.gateway + '"]').show();
-            if (state.gateway === 'paypal') initPayPalButtons();
+
+            // PayPal renders its own buttons inside the mount, so the
+            // generic "Book Now" submit button is redundant there.
+            // Hide it for PayPal and restore for other gateways.
+            if (state.gateway === 'paypal') {
+                $('#eshbCheckoutSubmit').hide();
+                initPayPalButtons();
+            } else {
+                $('#eshbCheckoutSubmit').show();
+            }
         });
     }
 
@@ -282,29 +311,72 @@
     function getCustomer() {
         var $form = $('#eshbNativeCheckoutForm');
         return {
-            firstName: $form.find('input[name="firstName"]').val(),
-            lastName: $form.find('input[name="lastName"]').val(),
-            email: $form.find('input[name="email"]').val(),
-            phone: $form.find('input[name="phone"]').val(),
-            country: $form.find('input[name="country"]').val(),
+            firstName: $form.find('[name="firstName"]').val(),
+            lastName: $form.find('[name="lastName"]').val(),
+            email: $form.find('[name="email"]').val(),
+            phone: $form.find('[name="phone"]').val(),
+            country: $form.find('[name="country"]').val(),
+            state: $form.find('[name="state"]').val(),
+            city: $form.find('[name="city"]').val(),
             notes: $form.find('textarea[name="notes"]').val()
         };
     }
 
+    function clearFieldErrors() {
+        $('#eshbNativeCheckoutForm .eshb-error-input').removeClass('eshb-error-input');
+    }
+
+    function markFieldError(selector) {
+        var $field = $('#eshbNativeCheckoutForm').find(selector).first();
+        if (!$field.length) return null;
+        $field.addClass('eshb-error-input');
+        // Auto-clear the error styling on the next user edit.
+        $field.one('input change', function () {
+            $(this).removeClass('eshb-error-input');
+        });
+        return $field;
+    }
+
     function validateForm() {
+        clearFieldErrors();
+
         var customer = getCustomer();
-        var required = ['firstName', 'lastName', 'email', 'phone', 'country'];
-        for (var i = 0; i < required.length; i++) {
-            if (!customer[required[i]]) {
-                showError(state.config.i18n.missingFields);
-                return null;
+        var requiredFields = [
+            { key: 'firstName', selector: '[name="firstName"]' },
+            { key: 'lastName',  selector: '[name="lastName"]' },
+            { key: 'email',     selector: '[name="email"]' },
+            { key: 'phone',     selector: '[name="phone"]' },
+            { key: 'country',   selector: '[name="country"]' },
+            { key: 'city',      selector: '[name="city"]' }
+        ];
+
+        var firstInvalid = null;
+        for (var i = 0; i < requiredFields.length; i++) {
+            if (!customer[requiredFields[i].key]) {
+                var $marked = markFieldError(requiredFields[i].selector);
+                if (!firstInvalid && $marked) firstInvalid = $marked;
             }
         }
+        // State is only required when the country actually has states,
+        // mirrored on the server in validate_customer().
+        if (!$('#eshbStateSelect').prop('disabled') && !customer.state) {
+            var $stateMarked = markFieldError('[name="state"]');
+            if (!firstInvalid && $stateMarked) firstInvalid = $stateMarked;
+        }
+
+        if (firstInvalid) {
+            showError(state.config.i18n.missingFields);
+            firstInvalid.trigger('focus');
+            return null;
+        }
+
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
+            markFieldError('[name="email"]').trigger('focus');
             showError(state.config.i18n.invalidEmail);
             return null;
         }
         if (!$('#eshbTerms').prop('checked')) {
+            markFieldError('#eshbTerms');
             showError(state.config.i18n.missingTerms);
             return null;
         }
@@ -317,7 +389,7 @@
 
     function ajaxData(extra) {
         var customer = getCustomer();
-        return $.extend({
+        var payload = {
             nonce: state.config.nonce,
             gateway: state.gateway,
             coupon: state.coupon.valid ? state.coupon.code : '',
@@ -326,9 +398,66 @@
             email: customer.email,
             phone: customer.phone,
             country: customer.country,
+            state: customer.state,
+            city: customer.city,
             notes: customer.notes,
             extraServices: JSON.stringify(state.selectedServices)
-        }, extra || {});
+        };
+        // Reservation token: cookies can be stripped or unreliable on
+        // some live hosts, so always carry it in the request body.
+        if (state.config.token && state.config.tokenParam) {
+            payload[state.config.tokenParam] = state.config.token;
+        }
+        return $.extend(payload, extra || {});
+    }
+
+    function initLocationSelects() {
+        var $country = $('#eshbCountrySelect');
+        var $stateSel = $('#eshbStateSelect');
+        var $stateGroup = $('#eshbStateGroup');
+        if (!$country.length || !state.config.countriesJsonUrl) return;
+
+        // Cache the parsed JSON across page interactions. The file is
+        // ~450KB so we fetch once and reuse for the country → state
+        // cascade.
+        $.getJSON(state.config.countriesJsonUrl).done(function (data) {
+            if (!Array.isArray(data)) return;
+            state.countries = data.slice().sort(function (a, b) {
+                return (a.name || '').localeCompare(b.name || '');
+            });
+            state.countries.forEach(function (c) {
+                $country.append($('<option/>', { value: c.name, text: c.name }));
+            });
+        }).fail(function () {
+            // Fail open — if the JSON can't load, fall back to free text
+            // inputs so the user can still complete checkout.
+            var $fallback = $('<input type="text" name="country" required>');
+            $country.replaceWith($fallback);
+            $stateSel.replaceWith($('<input type="text" name="state">'));
+        });
+
+        $country.on('change', function () {
+            var name = $country.val();
+            $stateSel.empty().append($('<option/>', { value: '', text: ($stateSel.find('option').first().text() || 'Select a state…') }));
+
+            var match = (state.countries || []).find(function (c) { return c.name === name; });
+            var hasStates = match && Array.isArray(match.states) && match.states.length > 0;
+
+            if (hasStates) {
+                match.states.slice()
+                    .sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); })
+                    .forEach(function (s) {
+                        $stateSel.append($('<option/>', { value: s.name, text: s.name }));
+                    });
+                $stateSel.prop('disabled', false);
+                $stateGroup.show();
+            } else {
+                $stateSel.prop('disabled', true).val('');
+                // Hide the entire state field for stateless countries so
+                // the user isn't staring at a disabled select.
+                $stateGroup.hide();
+            }
+        });
     }
 
     function completeCheckout(gatewayParams) {
@@ -400,6 +529,7 @@
         bindCouponEvents();
         bindGatewaySelection();
         bindFormSubmit();
+        initLocationSelects();
         applyPricingToDOM();
     });
 })(jQuery);

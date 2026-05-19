@@ -452,40 +452,6 @@ add_action( 'plugins_loaded', function(){
                     'dependency' => array( ['booking-type', '==', 'booking_request'], ['booking-form-type', '==', 'default'] )
                   ),
                   array(
-                    'id'    => 'native-checkout-tax-rate',
-                    'type'  => 'number',
-                    'title' => 'Native Checkout Tax Rate (%)',
-                    'desc'  => 'Optional tax percentage applied on the native checkout total.',
-                    'default' => 0,
-                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
-                  ),
-                  array(
-                    'id'          => 'paypal-mode',
-                    'type'        => 'select',
-                    'title'       => 'PayPal Mode',
-                    'desc'        => 'Use "Sandbox" while testing and "Live" for real payments.',
-                    'options'     => array(
-                      'sandbox' => 'Sandbox',
-                      'live'    => 'Live',
-                    ),
-                    'default'     => 'sandbox',
-                    'dependency'  => array( 'booking-type', '==', 'native_checkout' ),
-                  ),
-                  array(
-                    'id'    => 'paypal-client-id',
-                    'type'  => 'text',
-                    'title' => 'PayPal Client ID',
-                    'desc'  => 'PayPal REST API client ID. Required for the PayPal gateway.',
-                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
-                  ),
-                  array(
-                    'id'    => 'paypal-client-secret',
-                    'type'  => 'text',
-                    'title' => 'PayPal Client Secret',
-                    'desc'  => 'PayPal REST API client secret. Required for the PayPal gateway.',
-                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
-                  ),
-                  array(
                     'id'    => 'currency_symbol',
                     'type'  => 'text',
                     'title' => 'Currency Symbol',
@@ -649,6 +615,50 @@ add_action( 'plugins_loaded', function(){
                   
             )
           )
+        );
+
+         ESHB::createSection( $prefix, array(
+          'title'  => 'Payment Gateways',
+          'fields' => array(
+                // A Notice
+                array(
+                  'type'    => 'notice',
+                  'style'   => 'info',
+                  'content' => 'This payment gateway option is only for native checkout.',
+                ),
+
+                array(
+                    'id'          => 'paypal-mode',
+                    'type'        => 'select',
+                    'title'       => 'PayPal Mode',
+                    'desc'        => 'Use "Sandbox" while testing and "Live" for real payments.',
+                    'options'     => array(
+                      'sandbox' => 'Sandbox',
+                      'live'    => 'Live',
+                    ),
+                    'default'     => 'sandbox',
+                  ),
+                  array(
+                    'id'    => 'paypal-client-id',
+                    'type'  => 'text',
+                    'title' => 'PayPal Client ID',
+                    'desc'  => 'PayPal REST API client ID. Required for the PayPal gateway.',
+                  ),
+                  array(
+                    'id'    => 'paypal-client-secret',
+                    'type'  => 'text',
+                    'title' => 'PayPal Client Secret',
+                    'desc'  => 'PayPal REST API client secret. Required for the PayPal gateway.',
+                  ),
+                  array(
+                    'id'    => 'native-checkout-tax-rate',
+                    'type'  => 'number',
+                    'title' => 'Native Checkout Tax Rate (%)',
+                    'desc'  => 'Optional tax percentage applied on the native checkout total.',
+                    'default' => 0,
+                  ),
+            
+          ))
         );
 
       
