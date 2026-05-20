@@ -1071,7 +1071,7 @@
       function eshbBindInstantStartMirror($input) {
         let picker = $input.data("daterangepicker");
         if (!picker || !picker.container) return;
-        $(picker.container).find(".calendar")
+        $(picker.container).find(".drp-calendar")
           .off("mousedown.eshbInstant")
           .on("mousedown.eshbInstant", "td.available", function () {
             setTimeout(function () {
