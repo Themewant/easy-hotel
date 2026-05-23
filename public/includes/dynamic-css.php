@@ -93,6 +93,14 @@ function eshb_dynamic_css() {
         ";
     }
 
+    if(defined('ELEMENTOR_VERSION')) {
+        $custom_css .= "
+        body.single .accomodation-gallery .swiper-button-prev svg {
+            rotate: 180deg;
+        }
+        ";
+    }
+
     wp_add_inline_style('eshb-style', $custom_css);
 }
 
