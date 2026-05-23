@@ -58,6 +58,29 @@ class ESHB_View extends ESHB_MAIN{
 
         $eshb_settings = get_option( 'eshb_settings' );
         $search_result_page_id = $eshb_settings['search-result-page'];
+
+        if(empty($search_result_page_id)) {
+            // get id by page slug
+            $search_result_page = get_page_by_path('easy-hotel-search-result');
+            if($search_result_page){
+                $search_result_page_id = $search_result_page->ID;
+            }
+        }
+
+        if ( ! empty( $search_result_page_id ) ) {
+            if ( function_exists( 'pll_get_post' ) ) {
+                $translated_id = pll_get_post( $search_result_page_id );
+                if ( ! empty( $translated_id ) ) {
+                    $search_result_page_id = $translated_id;
+                }
+            } elseif ( function_exists( 'icl_object_id' ) ) {
+                $translated_id = icl_object_id( $search_result_page_id, 'page', true );
+                if ( ! empty( $translated_id ) ) {
+                    $search_result_page_id = $translated_id;
+                }
+            }
+        }
+
         $search_result_page_url = !empty($search_result_page_id) ? get_the_permalink( $search_result_page_id ) : site_url( '/easy-hotel-search-result' );
         $seach_form_fileds = isset($eshb_settings['search-form-fields']) && !empty($eshb_settings['search-form-fields']) ? $eshb_settings['search-form-fields'] : [];
        
