@@ -37,6 +37,19 @@ class ESHB_NoticeDashboard {
 
     private static $instance = null;
 
+    /**
+     * Notice IDs this instance has claimed for its dashboard widget. Set at
+     * wp_dashboard_setup time; consumed by the widget callback so we only
+     * render notices that another consuming plugin hasn't already taken.
+     */
+    private $my_widget_notice_ids = array();
+
+    /**
+     * Cached widget-screen API response so we don't hit the API twice (once
+     * to decide whether to register the widget, once to render it).
+     */
+    private $cached_widget_notices = null;
+
     public static function get_instance() {
         if ( self::$instance === null ) {
             self::$instance = new self();
@@ -153,6 +166,48 @@ class ESHB_NoticeDashboard {
         return wp_remote_retrieve_body( $response );
     }
 
+    /**
+     * Per-request dedup: when more than one ThemeWant plugin ships this
+     * NoticeDashboard, each makes its own API call and gets back the same
+     * global/multi-targeted notices. We claim each notice_id once across
+     * plugins so it's only rendered by whichever instance reaches it first.
+     *
+     * Two separate pools because notice-bar and widget use different screen
+     * contexts on the API and never share IDs.
+     */
+    private function claim_noticebar_id( $notice_id ) {
+        if ( empty( $notice_id ) ) {
+            return false;
+        }
+        if ( ! isset( $GLOBALS['thewtmc_noticebar_claims'] ) ) {
+            $GLOBALS['thewtmc_noticebar_claims'] = array();
+        }
+        if ( isset( $GLOBALS['thewtmc_noticebar_claims'][ $notice_id ] ) ) {
+            return false;
+        }
+        $GLOBALS['thewtmc_noticebar_claims'][ $notice_id ] = true;
+        return true;
+    }
+
+    /**
+     * Fetch widget-screen notices once per request and cache. Called from
+     * both the wp_dashboard_setup phase (to decide whether to register the
+     * widget at all) and from the widget callback (to render).
+     */
+    private function fetch_widget_notices_once() {
+        if ( $this->cached_widget_notices !== null ) {
+            return $this->cached_widget_notices;
+        }
+        $body = $this->ESHB_notice_get_notices( array( 'screen' => 'in-widget' ) );
+        if ( empty( $body ) ) {
+            $this->cached_widget_notices = array();
+            return $this->cached_widget_notices;
+        }
+        $decoded = json_decode( $body, true );
+        $this->cached_widget_notices = is_array( $decoded ) ? $decoded : array();
+        return $this->cached_widget_notices;
+    }
+
     public function expire_notice_by_date( $notice_id, $expire_timestamp ) {
 
         $today_date      = gmdate( 'Y-m-d' );
@@ -195,7 +250,7 @@ class ESHB_NoticeDashboard {
 
             $notice_ignore_status = $this->get_notice_status( $notice_id );
 
-            if ( $notice_ignore_status !== 'true' && $today_timestamp <= $expire_timestamp ) :
+            if ( $notice_ignore_status !== 'true' && $today_timestamp <= $expire_timestamp && $this->claim_noticebar_id( $notice_id ) ) :
                 ?>
                 <div data-notice_id="<?php echo esc_attr( $notice_id ); ?>" id="eshb-notice-<?php echo esc_attr( $notice_id ); ?>" class="eshb-notice notice is-dismissible">
 
@@ -242,6 +297,37 @@ class ESHB_NoticeDashboard {
 
     public function ESHB_notice_add_to_dashboard_widget() {
 
+        // Pre-claim renderable notice IDs so two consuming plugins don't both
+        // register a "ThemeWant Stories" widget when one of them would end up
+        // empty after dedup. If nothing is left for us to render, skip
+        // registering the widget entirely.
+        if ( ! isset( $GLOBALS['thewtmc_widget_claims'] ) ) {
+            $GLOBALS['thewtmc_widget_claims'] = array();
+        }
+
+        $notices         = $this->fetch_widget_notices_once();
+        $today_timestamp = strtotime( gmdate( 'Y-m-d' ) );
+
+        foreach ( $notices as $notice ) {
+            $id = isset( $notice['notice_id'] ) ? $notice['notice_id'] : '';
+            if ( empty( $id ) || isset( $GLOBALS['thewtmc_widget_claims'][ $id ] ) ) {
+                continue;
+            }
+            $expire_ts = isset( $notice['expire_date'] ) ? strtotime( $notice['expire_date'] ) : 0;
+            if ( $today_timestamp > $expire_ts ) {
+                continue;
+            }
+            if ( $this->get_notice_status( $id ) === 'true' ) {
+                continue;
+            }
+            $GLOBALS['thewtmc_widget_claims'][ $id ] = true;
+            $this->my_widget_notice_ids[ $id ]       = true;
+        }
+
+        if ( empty( $this->my_widget_notice_ids ) ) {
+            return;
+        }
+
         // Register into the 'high' priority bucket — WP renders dashboard
         // widgets in order: high → core → default → low. Putting ours in
         // 'high' guarantees it appears above any widget registered with
@@ -276,23 +362,19 @@ class ESHB_NoticeDashboard {
 
     public function ESHB_notice_widget_callback() {
 
-        $args = array( 'screen' => 'in-widget' );
+        // Use the cached payload populated during wp_dashboard_setup. We only
+        // render notice IDs this instance claimed there — any IDs claimed by
+        // a sibling consuming plugin are rendered by that plugin's widget
+        // instead.
+        $all_notice = $this->fetch_widget_notices_once();
 
-        $all_notice = $this->ESHB_notice_get_notices( $args );
-
-        if ( empty( $all_notice ) ) {
+        if ( empty( $all_notice ) || empty( $this->my_widget_notice_ids ) ) {
             echo '<p class="eshb-notice-widget-empty">No stories available right now.</p>';
             return;
         }
 
         $today_date      = gmdate( 'Y-m-d' );
         $today_timestamp = strtotime( $today_date );
-        $all_notice      = json_decode( $all_notice, true );
-
-        if ( ! is_array( $all_notice ) ) {
-            echo '<p class="eshb-notice-widget-empty">No stories available right now.</p>';
-            return;
-        }
 
         echo '<div class="eshb-notice-widget">';
 
@@ -311,6 +393,10 @@ class ESHB_NoticeDashboard {
             }
 
             $this->expire_notice_by_date( $notice_id, $expire_timestamp );
+
+            if ( ! isset( $this->my_widget_notice_ids[ $notice_id ] ) ) {
+                continue;
+            }
 
             $notice_ignore_status = $this->get_notice_status( $notice_id );
 
