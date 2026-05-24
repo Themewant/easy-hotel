@@ -91,7 +91,19 @@ class ESHB_Native_Pricing {
         $pricing['grandTotal']      = $grand_total;
         $pricing['grandTotalHtml']  = $core->eshb_price( $grand_total );
 
-        return $pricing;
+        /**
+         * Final-stage filter for the native checkout pricing payload.
+         *
+         * Extensions (e.g. the EHB Deposit add-on) use this to inject
+         * deposit / due / payment-option fields and, when the buyer has
+         * chosen to pay only a deposit, to override grandTotal so the
+         * gateway charges that lower amount. Keep new keys additive so
+         * the JS layer's `[data-eshb-price]` rebinding continues to work.
+         *
+         * @param array $pricing     The computed pricing array.
+         * @param array $reservation The raw reservation payload.
+         */
+        return apply_filters( 'eshb_native_checkout_pricing', $pricing, $reservation );
     }
 
     /**

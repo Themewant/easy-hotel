@@ -249,7 +249,7 @@ class ESHB_Native_Checkout {
             wp_enqueue_script( 'eshb-native-paypal-sdk', $sdk_url, [], null, true );
         }
 
-        wp_localize_script( 'eshb-native-checkout', 'eshbNativeCheckout', [
+        $localized = [
             'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
             'nonce'            => wp_create_nonce( 'eshb_native_checkout' ),
             'countriesJsonUrl' => ESHB_PL_URL . 'public/assets/lib/countries.json',
@@ -274,7 +274,20 @@ class ESHB_Native_Checkout {
                 'doneEditingServices'  => __( 'Done', 'easy-hotel' ),
                 'noServicesSelected'   => __( 'None selected', 'easy-hotel' ),
             ],
-        ] );
+        ];
+
+        /**
+         * Filter the data localized to the checkout page. Extensions
+         * (e.g. the EHB Deposit add-on) use this to inject their own
+         * config blocks under custom keys without overwriting core fields.
+         *
+         * @param array $localized   The data passed to wp_localize_script.
+         * @param array $pricing     The pricing payload.
+         * @param array|null $reservation_view The reservation view-model.
+         */
+        $localized = apply_filters( 'eshb_native_checkout_localized_data', $localized, $pricing, $reservation_view );
+
+        wp_localize_script( 'eshb-native-checkout', 'eshbNativeCheckout', $localized );
     }
 
     /**
@@ -568,8 +581,17 @@ class ESHB_Native_Checkout {
         ];
         ESHB_Native_Booking_Handler::record_payment( $booking_id, $payment_meta, $customer );
 
-        // 5. Update booking status on-hold -> processing
-        ESHB_Native_Booking_Handler::update_status( $booking_id, 'processing' );
+        // 5. Update booking status on-hold -> processing (or a custom
+        //    status injected by an extension, e.g. 'deposit-payment'
+        //    when only a partial deposit was captured).
+        $completed_status = apply_filters(
+            'eshb_native_checkout_completed_status',
+            'processing',
+            $booking_id,
+            $reservation,
+            $pricing
+        );
+        ESHB_Native_Booking_Handler::update_status( $booking_id, $completed_status );
 
         // 5b. Record coupon usage if one was applied. Increments the
         // usage count and appends this customer to the used-by log via

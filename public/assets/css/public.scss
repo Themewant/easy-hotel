@@ -2026,7 +2026,8 @@ div#easy-hotel-booking-modal {
     margin-top: 40px;
     z-index: 2;
     position: relative;
-
+    display: flex;
+    flex-direction: column;
     .calendar-title {
         font-weight: 300;
         font-size: 26px;

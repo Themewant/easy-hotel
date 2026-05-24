@@ -426,7 +426,7 @@
                 return (a.name || '').localeCompare(b.name || '');
             });
             state.countries.forEach(function (c) {
-                $country.append($('<option/>', { value: c.name, text: c.name }));
+                $country.append($('<option/>', { value: c.code2.trim(), text: c.name }));
             });
         }).fail(function () {
             // Fail open — if the JSON can't load, fall back to free text
@@ -440,7 +440,7 @@
             var name = $country.val();
             $stateSel.empty().append($('<option/>', { value: '', text: ($stateSel.find('option').first().text() || 'Select a state…') }));
 
-            var match = (state.countries || []).find(function (c) { return c.name === name; });
+            var match = (state.countries || []).find(function (c) { return c.code2.trim() === name; });
             var hasStates = match && Array.isArray(match.states) && match.states.length > 0;
 
             if (hasStates) {

@@ -36,11 +36,27 @@ if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' 
                             (int) $booking_id_param
                         );
                     ?></p>
+                    <?php
+                    // total_paid is what the gateway actually captured.
+                    // For a full-payment booking it equals total_price;
+                    // for a deposit booking it's the deposit amount and
+                    // we surface the remaining balance separately so the
+                    // customer can see what's still owed.
+                    $thankyou_total_price = (float) ( $booking_meta['total_price'] ?? 0 );
+                    $thankyou_total_paid  = isset( $booking_meta['total_paid'] )
+                        ? (float) $booking_meta['total_paid']
+                        : $thankyou_total_price;
+                    $thankyou_due = max( 0, round( $thankyou_total_price - $thankyou_total_paid, 2 ) );
+                    ?>
                     <ul class="eshb-thankyou-meta">
                         <li><strong><?php esc_html_e( 'Accommodation:', 'easy-hotel' ); ?></strong> <?php echo esc_html( get_the_title( (int) ( $booking_meta['booking_accomodation_id'] ?? 0 ) ) ); ?></li>
                         <li><strong><?php esc_html_e( 'Check-in:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $booking_meta['booking_start_date'] ?? '' ); ?></li>
                         <li><strong><?php esc_html_e( 'Check-out:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $booking_meta['booking_end_date'] ?? '' ); ?></li>
-                        <li><strong><?php esc_html_e( 'Total paid:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( (float) ( $booking_meta['total_price'] ?? 0 ) ) ); ?></li>
+                        <li><strong><?php esc_html_e( 'Total paid:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $thankyou_total_paid ) ); ?></li>
+                        <?php if ( $thankyou_due > 0 ) : ?>
+                            <li><strong><?php esc_html_e( 'Due balance:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $thankyou_due ) ); ?></li>
+                            <li><strong><?php esc_html_e( 'Booking total:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $thankyou_total_price ) ); ?></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
@@ -182,6 +198,17 @@ $nights           = (int) ( $pricing['daysCount'] ?? 0 );
                         <td><?php esc_html_e( 'Total', 'easy-hotel' ); ?></td>
                         <td class="eshb-value-col" data-eshb-price="grandTotalHtml"><?php echo wp_kses_post( $pricing['grandTotalHtml'] ?? '' ); ?></td>
                     </tr>
+                    <?php
+                    /**
+                     * Fires inside the price-breakdown table just after
+                     * the Total row. Use this to append extra <tr> rows
+                     * (deposit, due, etc.) without forking the template.
+                     *
+                     * @param array $pricing          Server-computed pricing payload.
+                     * @param array $reservation_view View-model for the reservation.
+                     */
+                    do_action( 'eshb_native_checkout_after_price_total', $pricing, $reservation_view );
+                    ?>
                 </table>
 
                 <?php
@@ -250,6 +277,18 @@ $nights           = (int) ( $pricing['daysCount'] ?? 0 );
                     <textarea rows="2" name="notes" placeholder="<?php esc_attr_e( 'Special requests, dietary requirements, etc.', 'easy-hotel' ); ?>"></textarea>
                 </div>
             </div>
+
+            <?php
+            /**
+             * Fires before the Payment Method card. Extensions use this
+             * to inject extra UI (e.g. the EHB Deposit add-on renders
+             * the "Pay Deposit / Pay Full" radio selector here).
+             *
+             * @param array $pricing          Server-computed pricing payload.
+             * @param array $reservation_view View-model for the reservation.
+             */
+            do_action( 'eshb_native_checkout_payment_option', $pricing, $reservation_view );
+            ?>
 
             <div class="eshb-card">
                 <h2><?php esc_html_e( 'Payment Method', 'easy-hotel' ); ?></h2>

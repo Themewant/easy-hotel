@@ -48,13 +48,8 @@ class ESHB_Core {
         // Remove filter to avoid conflicts
         remove_filter('wp_mail_content_type', 'eshb_html_email_filter_calback');
         
-
-        if (!$sent) {
-            //error_log('Email sending failed: ' . print_r(error_get_last(), true));
-        }
-    
         //return $sent; // Returns true if sent, false if failed
-        return $sent ? 'Email Sent!' : 'Failed to Send!';
+        return $sent;
     }
 
     public function get_eshb_currency_symbol(){

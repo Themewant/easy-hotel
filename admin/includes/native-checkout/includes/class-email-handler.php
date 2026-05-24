@@ -13,18 +13,13 @@ class ESHB_Native_Email_Handler {
     public static function send_customer_confirmation( $booking_id, array $customer ) {
         if ( ! $booking_id || empty( $customer['email'] ) ) return false;
 
-        $core    = new ESHB_Core();
-        $subject = sprintf(
-            /* translators: %s: site name */
-            __( 'Your booking confirmation - %s', 'easy-hotel' ),
-            get_bloginfo( 'name' )
+        return self::send_templated_email( $booking_id, $customer, 'customer', 'customer_processing_order', $customer['email'],
+            sprintf(
+                /* translators: %s: site name */
+                __( 'Your booking confirmation - %s', 'easy-hotel' ),
+                get_bloginfo( 'name' )
+            )
         );
-        $message = self::build_email_body( $booking_id, $customer, 'customer' );
-
-        $from_name = get_bloginfo( 'name' );
-        $from_email = self::get_from_email();
-
-        return $core->eshb_send_html_email( $customer['email'], $subject, $message, $from_name, $from_email );
     }
 
     public static function send_admin_notification( $booking_id, array $customer ) {
@@ -33,13 +28,59 @@ class ESHB_Native_Email_Handler {
         $settings = get_option( 'eshb_settings', [] );
         $to = ! empty( $settings['recipent_email'] ) ? $settings['recipent_email'] : get_option( 'admin_email' );
 
-        $core    = new ESHB_Core();
-        $subject = sprintf(
-            /* translators: %d: booking ID */
-            __( 'New booking received - #%d', 'easy-hotel' ),
-            $booking_id
+        return self::send_templated_email( $booking_id, $customer, 'admin', 'new_order', $to,
+            sprintf(
+                /* translators: %d: booking ID */
+                __( 'New booking received - #%d', 'easy-hotel' ),
+                $booking_id
+            )
         );
-        $message = self::build_email_body( $booking_id, $customer, 'admin' );
+    }
+
+    /**
+     * Build and dispatch an email, exposing the subject and body through
+     * filters so extensions (e.g. the EHB Email Template add-on) can
+     * swap in their own templates without forking this class.
+     *
+     * @param int    $booking_id      Booking post id.
+     * @param array  $customer        Customer details captured at checkout.
+     * @param string $context         'customer' or 'admin'.
+     * @param string $email_id        Logical email id used to look up a
+     *                                custom template ('customer_processing_order',
+     *                                'new_order', etc.).
+     * @param string $to              Recipient address.
+     * @param string $default_subject Subject used if no extension overrides it.
+     */
+    private static function send_templated_email( $booking_id, array $customer, $context, $email_id, $to, $default_subject ) {
+        $core         = new ESHB_Core();
+        $default_body = self::build_email_body( $booking_id, $customer, $context );
+
+        $args = [
+            'context'    => $context,
+            'email_id'   => $email_id,
+            'booking_id' => $booking_id,
+            'customer'   => $customer,
+        ];
+
+        /**
+         * Filter the subject of a native-checkout email. Extensions can
+         * return a string sourced from a custom template; the default
+         * is the static subject built in send_customer_confirmation /
+         * send_admin_notification.
+         *
+         * @param string $default_subject
+         * @param array  $args Context, email_id, booking_id, customer.
+         */
+        $subject = apply_filters( 'eshb_native_checkout_email_subject', $default_subject, $args );
+
+        /**
+         * Filter the HTML body of a native-checkout email. Extensions
+         * can return a fully-rendered builder template here.
+         *
+         * @param string $default_body
+         * @param array  $args Context, email_id, booking_id, customer.
+         */
+        $message = apply_filters( 'eshb_native_checkout_email_body', $default_body, $args );
 
         $from_name  = get_bloginfo( 'name' );
         $from_email = self::get_from_email();

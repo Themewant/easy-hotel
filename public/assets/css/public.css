@@ -2327,6 +2327,8 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   margin-top: 40px;
   z-index: 2;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .eshb-availability-calendars-area .calendar-title {
   font-weight: 300;

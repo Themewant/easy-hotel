@@ -348,7 +348,7 @@ add_action( 'plugins_loaded', function(){
                       'booking_request'    => 'Booking Request',
                       'disable'    => 'Disable Booking',
                     ),
-                    'default'     => 'woocommerce'
+                    'default'     => 'native_checkout'
                   ),
                   array(
                     'id'          => 'booking-form-type',
