@@ -15,5 +15,6 @@ include 'classes/class.pro-add-ons.php';
 include 'post-types/init.php';
 include 'shortcodes.php';
 include 'classes/class.admin-view.php';
+include 'NoticeDashboard/NoticeDashboard.php';
 include 'plugin-scripts.php';
 include 'native-checkout/native-checkout.php';

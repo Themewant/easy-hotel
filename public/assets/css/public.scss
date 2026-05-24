@@ -38,8 +38,12 @@
 }
 
 .daterangepicker {
-
-    /* Bootstrap Table Styles */
+    &.single {
+        .ranges,
+        .drp-calendar {
+            float: none !important;
+        }
+    }
     &.dropdown-menu {
         z-index: 10000;
     }
@@ -52,9 +56,17 @@
         display: none;
     }
 
-    .range_inputs {
-        button {
-            padding: 5px 20px;
+    .drp-buttons {
+        border-top: 1px solid #eee;
+        padding-top: 14px;
+        margin-top: 10px;
+        .drp-selected {
+        font-weight: 600;
+        color: #444;
+        }
+        .btn {
+            font-size: 0.875rem !important;
+            padding: 6px 10px !important;
             cursor: pointer;
             width: auto;
 
@@ -92,32 +104,31 @@
     }
 
     table {
-        width: 100%;
-        margin-bottom: 1rem;
         color: var(--eshb-text-color);
-        border-collapse: collapse;
         border: none !important;
-    }
-
-    table th,
-    table td {
-        vertical-align: top;
-        padding: 3px;
-        background: transparent;
-        border-radius: 0px !important;
-        width: 40px !important;
-        max-width: 100%;
-
-        @media (max-width: 1200px) {
+        tr {
+            display: block;
+            margin-top: 8px;
+        }
+        th, td {
+            vertical-align: top;
+            padding: 3px;
+            background: transparent;
+            border-radius: 0px !important;
             width: 40px !important;
-        }
+            max-width: 100%;
 
-        @media (max-width: 1100px) {
-            width: 35px !important;
-        }
+            @media (max-width: 1200px) {
+                width: 40px !important;
+            }
 
-        @media (max-width: 768px) {
-            width: 74px !important;
+            @media (max-width: 1100px) {
+                width: 35px !important;
+            }
+
+            @media (max-width: 768px) {
+                width: 74px !important;
+            }
         }
     }
 
@@ -125,6 +136,9 @@
         &:hover {
             background-color: var(--eshb-active-bg-color) !important;
             color: var(--eshb-active-color) !important;
+            span {
+                border-color: var(--eshb-active-color) !important;
+            }
         }
     }
 
@@ -132,20 +146,21 @@
         border-block-start: unset;
     }
 
-    table {
-        tr {
-            display: block;
-            margin-top: 8px;
-        }
-    }
-
     td {
         text-decoration: none !important;
         border: none;
-
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        transition: all 0.25s ease;
+        font-size: 14px;
+        font-weight: 500;
+        position: relative;
         &:hover {
             background-color: var(--eshb-active-bg-color) !important;
             color: var(--eshb-active-color) !important;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
         }
 
         // Booked date styling
@@ -197,13 +212,20 @@
         &.start-date.active {
             background-color: var(--eshb-active-bg-color) !important;
             color: var(--eshb-active-color) !important;
+            &:hover {
+                transform: scale(1.08);
+            }
         }
 
         &.end-date.active,
         &.end-date.active:hover {
             background-color: var(--eshb-active-bg-color) !important;
             color: var(--eshb-active-color) !important;
+            
         }
+        &.end-date.active:hover {
+            transform: scale(1.08);
+         }
 
 
 
@@ -224,6 +246,20 @@
             background-color: var(--eshb-reserved-bg-color) !important;
             color: var(--eshb-reserved-color) !important;
         }
+    }
+    th {
+        color: #888;
+        font-size: 13px;
+        font-weight: 600;
+        padding-bottom: 10px;
+    }
+    .drp-calendar {
+        padding: 10px;
+    }
+    .month {
+        font-size: 14px !important;
+        color: #222;
+        padding: 12px 0;
     }
 }
 
@@ -1990,7 +2026,8 @@ div#easy-hotel-booking-modal {
     margin-top: 40px;
     z-index: 2;
     position: relative;
-
+    display: flex;
+    flex-direction: column;
     .calendar-title {
         font-weight: 300;
         font-size: 26px;
