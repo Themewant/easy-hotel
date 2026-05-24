@@ -455,10 +455,15 @@ body.single .accomodation-gallery .swiper-button-next {
 }
 body.single .accomodation-gallery .swiper-button-prev .swiper-navigation-icon,
 body.single .accomodation-gallery .swiper-button-next .swiper-navigation-icon {
-  display: none;
+  width: 10px;
+}
+body.single .accomodation-gallery .swiper-button-prev .swiper-navigation-icon path,
+body.single .accomodation-gallery .swiper-button-next .swiper-navigation-icon path {
+  fill: #ffffff;
 }
 body.single .accomodation-gallery .swiper-button-prev::after,
 body.single .accomodation-gallery .swiper-button-next::after {
+  display: none;
   color: #ffffff;
   font-size: 18px;
   background: none !important;
@@ -666,8 +671,9 @@ body.single .accomodation-gallery .swiper-button-next::after {
   font-family: "Marcellus";
   src: url("../fonts/Marcellus-Regular.ttf");
 }
-.daterangepicker {
-  /* Bootstrap Table Styles */
+.daterangepicker.single .ranges,
+.daterangepicker.single .drp-calendar {
+  float: none !important;
 }
 .daterangepicker.dropdown-menu {
   z-index: 10000;
@@ -678,44 +684,54 @@ body.single .accomodation-gallery .swiper-button-next::after {
 .daterangepicker .daterangepicker_input {
   display: none;
 }
-.daterangepicker .range_inputs button {
-  padding: 5px 20px;
+.daterangepicker .drp-buttons {
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+  margin-top: 10px;
+}
+.daterangepicker .drp-buttons .drp-selected {
+  font-weight: 600;
+  color: #444;
+}
+.daterangepicker .drp-buttons .btn {
+  font-size: 0.875rem !important;
+  padding: 6px 10px !important;
   cursor: pointer;
   width: auto;
 }
-.daterangepicker .range_inputs button.applyBtn {
+.daterangepicker .drp-buttons .btn.applyBtn {
   background-color: var(--eshb-primary-color);
   border: 1px solid var(--eshb-primary-color);
   color: var(--eshb-white-color);
 }
-.daterangepicker .range_inputs button.applyBtn:hover {
+.daterangepicker .drp-buttons .btn.applyBtn:hover {
   background-color: transparent;
   color: var(--eshb-text-color);
   border: 1px solid var(--eshb-primary-color);
 }
-.daterangepicker .range_inputs button.cancelBtn {
+.daterangepicker .drp-buttons .btn.cancelBtn {
   background-color: transparent;
   color: var(--eshb-text-color);
   border: 1px solid var(--eshb-primary-color);
 }
-.daterangepicker .range_inputs button.cancelBtn:hover {
+.daterangepicker .drp-buttons .btn.cancelBtn:hover {
   color: var(--eshb-white-color);
   background-color: var(--eshb-primary-color);
   border: 1px solid var(--eshb-primary-color);
 }
-.daterangepicker .range_inputs.disabled button {
+.daterangepicker .drp-buttons.disabled button {
   background-color: gray;
   opacity: 0.4;
 }
 .daterangepicker table {
-  width: 100%;
-  margin-bottom: 1rem;
   color: var(--eshb-text-color);
-  border-collapse: collapse;
   border: none !important;
 }
-.daterangepicker table th,
-.daterangepicker table td {
+.daterangepicker table tr {
+  display: block;
+  margin-top: 8px;
+}
+.daterangepicker table th, .daterangepicker table td {
   vertical-align: top;
   padding: 3px;
   background: transparent;
@@ -724,20 +740,17 @@ body.single .accomodation-gallery .swiper-button-next::after {
   max-width: 100%;
 }
 @media (max-width: 1200px) {
-  .daterangepicker table th,
-  .daterangepicker table td {
+  .daterangepicker table th, .daterangepicker table td {
     width: 40px !important;
   }
 }
 @media (max-width: 1100px) {
-  .daterangepicker table th,
-  .daterangepicker table td {
+  .daterangepicker table th, .daterangepicker table td {
     width: 35px !important;
   }
 }
 @media (max-width: 768px) {
-  .daterangepicker table th,
-  .daterangepicker table td {
+  .daterangepicker table th, .daterangepicker table td {
     width: 74px !important;
   }
 }
@@ -745,20 +758,28 @@ body.single .accomodation-gallery .swiper-button-next::after {
   background-color: var(--eshb-active-bg-color) !important;
   color: var(--eshb-active-color) !important;
 }
+.daterangepicker th.available:hover span {
+  border-color: var(--eshb-active-color) !important;
+}
 .daterangepicker thead:first-child tr:first-child th {
   border-block-start: unset;
-}
-.daterangepicker table tr {
-  display: block;
-  margin-top: 8px;
 }
 .daterangepicker td {
   text-decoration: none !important;
   border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
 }
 .daterangepicker td:hover {
   background-color: var(--eshb-active-bg-color) !important;
   color: var(--eshb-active-color) !important;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
 }
 .daterangepicker td.booked-date {
   color: var(--eshb-booked-color) !important;
@@ -795,9 +816,15 @@ body.single .accomodation-gallery .swiper-button-next::after {
   background-color: var(--eshb-active-bg-color) !important;
   color: var(--eshb-active-color) !important;
 }
+.daterangepicker td.start-date.active:hover {
+  transform: scale(1.08);
+}
 .daterangepicker td.end-date.active, .daterangepicker td.end-date.active:hover {
   background-color: var(--eshb-active-bg-color) !important;
   color: var(--eshb-active-color) !important;
+}
+.daterangepicker td.end-date.active:hover {
+  transform: scale(1.08);
 }
 .daterangepicker td.in-range {
   background-color: var(--eshb-inrange-bg-color) !important;
@@ -811,6 +838,20 @@ body.single .accomodation-gallery .swiper-button-next::after {
 .daterangepicker td.reserved-date:hover {
   background-color: var(--eshb-reserved-bg-color) !important;
   color: var(--eshb-reserved-color) !important;
+}
+.daterangepicker th {
+  color: #888;
+  font-size: 13px;
+  font-weight: 600;
+  padding-bottom: 10px;
+}
+.daterangepicker .drp-calendar {
+  padding: 10px;
+}
+.daterangepicker .month {
+  font-size: 14px !important;
+  color: #222;
+  padding: 12px 0;
 }
 
 .accomodation-gallery .swiper-slide {
