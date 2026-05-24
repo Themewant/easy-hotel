@@ -25,8 +25,13 @@ class ESHB_Core {
             return false;
         }
 
-        function eshb_html_email_filter_calback(){
-            return 'text/html';
+        // Guard the global function declaration. Without this, calling
+        // this method twice in the same request (e.g. customer + admin
+        // emails) raises a fatal "Cannot redeclare function" error.
+        if ( ! function_exists( 'eshb_html_email_filter_calback' ) ) {
+            function eshb_html_email_filter_calback(){
+                return 'text/html';
+            }
         }
 
         // Set content type to HTML

@@ -2883,6 +2883,17 @@
                 location.replace(redirectUrl);
               } else if (bookingType == "surecart") {
                 location.replace(response.data.checkout_url);
+              } else if (bookingType == "native_checkout" && response.data.redirect_url) {
+                // Save the token to sessionStorage too so the checkout
+                // page can recover it if a CDN, security plugin or
+                // canonical redirect strips the ?eshb_chk param from
+                // the URL between this navigation and the page load.
+                try {
+                  if (response.data.token) {
+                    sessionStorage.setItem("eshb_native_checkout_token", response.data.token);
+                  }
+                } catch (e) { /* sessionStorage unavailable — ignore */ }
+                location.replace(response.data.redirect_url);
               }
             }, timeoutDuration);
           } else if (response.success == false) {

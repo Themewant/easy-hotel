@@ -1,0 +1,471 @@
+/* ============================================================
+ * Native Checkout
+ * Bundled into public.scss. Uses the existing plugin CSS
+ * variables (defined in public.scss :root) — no new variables
+ * are introduced here.
+ * ============================================================ */
+
+.eshb-native-checkout {
+    color: var(--eshb-text-color);
+    padding: 40px 0;
+    font-family: var(--eshb-body-font);
+
+    .eshb-container {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .eshb-card {
+        background: #f1f5f9c7;
+        border: 1px solid #e5eaef;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 10px 2px rgb(217 217 217 / 22%);
+
+        h2 {
+            margin: 0 0 16px;
+            font-size: 20px;
+            font-weight: 600;
+            font-family: var(--eshb-title-font);
+        }
+
+        h3 {
+            margin: 24px 0 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: var(--eshb-title-font);
+        }
+    }
+
+    .eshb-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        @media (max-width: 600px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .eshb-meta-label {
+        font-size: 12px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .eshb-meta-value {
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 4px;
+
+        small {
+            color: #6b7280;
+            font-weight: 400;
+        }
+    }
+
+    .eshb-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+        margin-bottom: 0;
+
+        >div {
+            font-size: 14px;
+        }
+
+        strong {
+            color: #6b7280;
+            font-weight: 500;
+            margin-right: 6px;
+        }
+    }
+
+    .eshb-services-summary-cell {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed #e5e7eb;
+        margin-top: 4px;
+
+        #eshbServicesSummaryList {
+            flex: 1;
+            color: var(--eshb-text-color);
+        }
+    }
+
+    .eshb-edit-link {
+        color: var(--eshb-primary-color);
+        font-size: 13px;
+        text-decoration: underline;
+        cursor: pointer;
+        margin-left: auto;
+
+        &:hover {
+            color: var(--eshb-territory-color);
+        }
+    }
+
+    .eshb-services-editor {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px dashed #e5e7eb;
+
+        &[hidden] {
+            display: none;
+        }
+
+        h3 {
+            margin: 0 0 12px !important;
+        }
+    }
+
+    .eshb-form-group {
+        margin-bottom: 14px;
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--eshb-white-color);
+            box-sizing: border-box;
+
+            &:focus {
+                border-color: var(--eshb-primary-color);
+                outline: 2px solid rgba(171, 137, 101, 0.15);
+            }
+
+            // Marked by JS when a required field is empty at submit
+            // time. Cleared on the next input/change so the red
+            // border only lingers while the field is still wrong.
+            &.eshb-error-input,
+            &.eshb-error-input:focus {
+                border-color: var(--eshb-danger-color);
+                outline: 2px solid rgba(228, 23, 73, 0.18);
+            }
+        }
+    }
+
+    // Same error treatment for the terms checkbox so a missed accept
+    // is highlighted alongside the field errors.
+    .eshb-terms-container input.eshb-error-input {
+        outline: 2px solid var(--eshb-danger-color);
+        outline-offset: 2px;
+    }
+
+    .eshb-choice-option {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        transition: border-color 150ms;
+
+        &:hover {
+            border-color: var(--eshb-primary-color);
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+        }
+
+        label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 14px;
+        }
+    }
+
+    .eshb-choice-title {
+        font-weight: 500;
+    }
+
+    .eshb-choice-meta {
+        color: #6b7280;
+        margin-left: 8px;
+        font-size: 13px;
+    }
+
+    .eshb-choice-desc {
+        flex-basis: 100%;
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 6px;
+        margin-left: 30px;
+    }
+
+    .eshb-service-qty {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+
+        .eshb-qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            background: var(--eshb-white-color);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: normal;
+            color: currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input {
+            width: 50px;
+            height: 36px;
+            text-align: center;
+            padding: 4px;
+            background: var(--eshb-white-color);
+            border: 1px solid #e5e7eb;
+            border-radius: 4px !important;
+            margin: 0;
+        }
+    }
+
+    .eshb-coupon-section {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px dashed #e5e7eb;
+    }
+
+    .eshb-coupon-prompt {
+        margin: 0;
+        font-size: 14px;
+        color: #6b7280;
+
+        &[hidden] {
+            display: none;
+        }
+
+        a {
+            color: var(--eshb-primary-color);
+            font-weight: 500;
+            text-decoration: underline;
+            margin-left: 4px;
+
+            &:hover {
+                color: var(--eshb-territory-color);
+            }
+        }
+    }
+
+    .eshb-coupon-panel {
+        margin-top: 12px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .eshb-coupon-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px !important;
+            font-size: 14px;
+            margin: 0;
+            height: 43px;
+        }
+
+        button {
+            height: 43px;
+            line-height: 1;
+        }
+    }
+
+    .eshb-btn-secondary {
+        padding: 10px 16px;
+        border: 1px solid var(--eshb-primary-color);
+        background: var(--eshb-white-color);
+        color: var(--eshb-primary-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+
+        &:hover {
+            background: var(--eshb-primary-color);
+            color: var(--eshb-white-color);
+        }
+    }
+
+    .eshb-btn-link {
+        background: none;
+        border: none;
+        color: var(--eshb-primary-color);
+        cursor: pointer;
+        font-size: 13px;
+        text-decoration: underline;
+    }
+
+    .eshb-coupon-message {
+        margin: 8px 0 0;
+        font-size: 13px;
+
+        &.eshb-msg-error {
+            color: var(--eshb-danger-color);
+        }
+
+        &.eshb-msg-success {
+            color: var(--eshb-success-color);
+        }
+    }
+
+    .eshb-price-table {
+        width: 100%;
+        border: none;
+        border-collapse: collapse;
+
+        td {
+            padding: 8px 0;
+            font-size: 14px;
+            border: none;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .eshb-label-col {
+            color: #6b7280;
+        }
+
+        .eshb-value-col {
+            text-align: right;
+            font-weight: 500;
+        }
+    }
+
+    .eshb-total-row td {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        color: var(--eshb-text-color);
+        padding-top: 14px !important;
+        border-top: 2px solid var(--eshb-text-color);
+    }
+
+    .eshb-terms-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding: 0 4px;
+
+        input {
+            width: 18px;
+            height: 18px;
+        }
+
+        label {
+            font-size: 14px;
+        }
+
+        a {
+            color: var(--eshb-primary-color);
+            text-decoration: underline;
+        }
+    }
+
+    .eshb-checkout-error {
+        background: #fee2e2;
+        color: var(--eshb-danger-color);
+        border: 1px solid #fca5a5;
+        padding: 10px 14px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+        font-size: 14px;
+    }
+
+    .eshb-btn-submit {
+        width: 100%;
+        padding: 14px 20px;
+        background: var(--eshb-primary-color);
+        color: var(--eshb-white-color);
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 150ms;
+
+        &:hover {
+            background: var(--eshb-territory-color);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+    }
+
+    .eshb-gateway-mount {
+        margin-top: 16px;
+
+        >div {
+            min-height: 40px;
+        }
+    }
+
+    .eshb-no-gateways {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .eshb-card--success {
+        border-color: var(--eshb-primary-color);
+        background: var(--eshb-secondary-color);
+
+        h2 {
+            color: var(--eshb-primary-color);
+        }
+    }
+
+    .eshb-thankyou-meta {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+
+        li {
+            padding: 4px 0;
+            font-size: 14px;
+        }
+    }
+}

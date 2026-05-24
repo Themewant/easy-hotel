@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   --eshb-primary-color: #ab8965;
   --eshb-secondary-color: #fff5ed;
@@ -17,6 +18,416 @@
   --eshb-title-font: "Marcellus", Helvetica, Arial, sans-serif;
   --eshb-title-font-weight: "Marcellus", Helvetica, Arial, sans-serif;
   --eshb-body-font: "Jost", Helvetica, Arial, sans-serif;
+}
+
+/* ============================================================
+ * Native Checkout
+ * Bundled into public.scss. Uses the existing plugin CSS
+ * variables (defined in public.scss :root) — no new variables
+ * are introduced here.
+ * ============================================================ */
+.eshb-native-checkout {
+  color: var(--eshb-text-color);
+  padding: 40px 0;
+  font-family: var(--eshb-body-font);
+}
+.eshb-native-checkout .eshb-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.eshb-native-checkout .eshb-card {
+  background: rgba(241, 245, 249, 0.7803921569);
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-native-checkout .eshb-card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-native-checkout .eshb-card h3 {
+  margin: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-native-checkout .eshb-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .eshb-native-checkout .eshb-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-native-checkout .eshb-meta-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.eshb-native-checkout .eshb-meta-value {
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.eshb-native-checkout .eshb-meta-value small {
+  color: #6b7280;
+  font-weight: 400;
+}
+.eshb-native-checkout .eshb-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-bottom: 0;
+}
+.eshb-native-checkout .eshb-meta-grid > div {
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-meta-grid strong {
+  color: #6b7280;
+  font-weight: 500;
+  margin-right: 6px;
+}
+.eshb-native-checkout .eshb-services-summary-cell {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 4px;
+}
+.eshb-native-checkout .eshb-services-summary-cell #eshbServicesSummaryList {
+  flex: 1;
+  color: var(--eshb-text-color);
+}
+.eshb-native-checkout .eshb-edit-link {
+  color: var(--eshb-primary-color);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: auto;
+}
+.eshb-native-checkout .eshb-edit-link:hover {
+  color: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-services-editor {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-native-checkout .eshb-services-editor[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-services-editor h3 {
+  margin: 0 0 12px !important;
+}
+.eshb-native-checkout .eshb-form-group {
+  margin-bottom: 14px;
+}
+.eshb-native-checkout .eshb-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.eshb-native-checkout .eshb-form-group input[type=text],
+.eshb-native-checkout .eshb-form-group input[type=email],
+.eshb-native-checkout .eshb-form-group input[type=tel],
+.eshb-native-checkout .eshb-form-group input[type=number],
+.eshb-native-checkout .eshb-form-group select,
+.eshb-native-checkout .eshb-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+}
+.eshb-native-checkout .eshb-form-group input[type=text]:focus,
+.eshb-native-checkout .eshb-form-group input[type=email]:focus,
+.eshb-native-checkout .eshb-form-group input[type=tel]:focus,
+.eshb-native-checkout .eshb-form-group input[type=number]:focus,
+.eshb-native-checkout .eshb-form-group select:focus,
+.eshb-native-checkout .eshb-form-group textarea:focus {
+  border-color: var(--eshb-primary-color);
+  outline: 2px solid rgba(171, 137, 101, 0.15);
+}
+.eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input, .eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input:focus {
+  border-color: var(--eshb-danger-color);
+  outline: 2px solid rgba(228, 23, 73, 0.18);
+}
+.eshb-native-checkout .eshb-terms-container input.eshb-error-input {
+  outline: 2px solid var(--eshb-danger-color);
+  outline-offset: 2px;
+}
+.eshb-native-checkout .eshb-choice-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: border-color 150ms;
+}
+.eshb-native-checkout .eshb-choice-option:hover {
+  border-color: var(--eshb-primary-color);
+}
+.eshb-native-checkout .eshb-choice-option input[type=checkbox],
+.eshb-native-checkout .eshb-choice-option input[type=radio] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}
+.eshb-native-checkout .eshb-choice-option label {
+  cursor: pointer;
+  flex: 1;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-choice-title {
+  font-weight: 500;
+}
+.eshb-native-checkout .eshb-choice-meta {
+  color: #6b7280;
+  margin-left: 8px;
+  font-size: 13px;
+}
+.eshb-native-checkout .eshb-choice-desc {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 6px;
+  margin-left: 30px;
+}
+.eshb-native-checkout .eshb-service-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.eshb-native-checkout .eshb-service-qty .eshb-qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: var(--eshb-white-color);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: normal;
+  color: currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eshb-native-checkout .eshb-service-qty input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  padding: 4px;
+  background: var(--eshb-white-color);
+  border: 1px solid #e5e7eb;
+  border-radius: 4px !important;
+  margin: 0;
+}
+.eshb-native-checkout .eshb-coupon-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-native-checkout .eshb-coupon-prompt {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+.eshb-native-checkout .eshb-coupon-prompt[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-coupon-prompt a {
+  color: var(--eshb-primary-color);
+  font-weight: 500;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+.eshb-native-checkout .eshb-coupon-prompt a:hover {
+  color: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-coupon-panel {
+  margin-top: 12px;
+}
+.eshb-native-checkout .eshb-coupon-panel[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-coupon-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.eshb-native-checkout .eshb-coupon-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px !important;
+  font-size: 14px;
+  margin: 0;
+  height: 43px;
+}
+.eshb-native-checkout .eshb-coupon-row button {
+  height: 43px;
+  line-height: 1;
+}
+.eshb-native-checkout .eshb-btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid var(--eshb-primary-color);
+  background: var(--eshb-white-color);
+  color: var(--eshb-primary-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-btn-secondary:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-native-checkout .eshb-btn-link {
+  background: none;
+  border: none;
+  color: var(--eshb-primary-color);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+}
+.eshb-native-checkout .eshb-coupon-message {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.eshb-native-checkout .eshb-coupon-message.eshb-msg-error {
+  color: var(--eshb-danger-color);
+}
+.eshb-native-checkout .eshb-coupon-message.eshb-msg-success {
+  color: var(--eshb-success-color);
+}
+.eshb-native-checkout .eshb-price-table {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+}
+.eshb-native-checkout .eshb-price-table td {
+  padding: 8px 0;
+  font-size: 14px;
+  border: none;
+}
+.eshb-native-checkout .eshb-price-table tr:last-child td {
+  border-bottom: none;
+}
+.eshb-native-checkout .eshb-price-table .eshb-label-col {
+  color: #6b7280;
+}
+.eshb-native-checkout .eshb-price-table .eshb-value-col {
+  text-align: right;
+  font-weight: 500;
+}
+.eshb-native-checkout .eshb-total-row td {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--eshb-text-color);
+  padding-top: 14px !important;
+  border-top: 2px solid var(--eshb-text-color);
+}
+.eshb-native-checkout .eshb-terms-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+.eshb-native-checkout .eshb-terms-container input {
+  width: 18px;
+  height: 18px;
+}
+.eshb-native-checkout .eshb-terms-container label {
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-terms-container a {
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-native-checkout .eshb-checkout-error {
+  background: #fee2e2;
+  color: var(--eshb-danger-color);
+  border: 1px solid #fca5a5;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-btn-submit {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.eshb-native-checkout .eshb-btn-submit:hover {
+  background: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.eshb-native-checkout .eshb-gateway-mount {
+  margin-top: 16px;
+}
+.eshb-native-checkout .eshb-gateway-mount > div {
+  min-height: 40px;
+}
+.eshb-native-checkout .eshb-no-gateways {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-card--success {
+  border-color: var(--eshb-primary-color);
+  background: var(--eshb-secondary-color);
+}
+.eshb-native-checkout .eshb-card--success h2 {
+  color: var(--eshb-primary-color);
+}
+.eshb-native-checkout .eshb-thankyou-meta {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.eshb-native-checkout .eshb-thankyou-meta li {
+  padding: 4px 0;
+  font-size: 14px;
 }
 
 body.single .accomodation-gallery .swiper-wrapper {
