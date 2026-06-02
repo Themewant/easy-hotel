@@ -6,7 +6,7 @@ function eshb_admin_enqueue_scripts (){
     wp_enqueue_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), ESHB_VERSION );
     wp_enqueue_style( 'eshb-admin-style', ESHB_PL_URL . 'admin/assets/css/admin.min.css', array(), ESHB_VERSION);
     wp_enqueue_script('moment');
-    wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'1.0.0',true );
+    wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'3.1',true );
     wp_enqueue_script( 'eshb-admin-script', ESHB_PL_URL . 'admin/assets/js/admin.js', array('jquery'), ESHB_VERSION, true );
     wp_enqueue_script( 'eshb-admin-booking-script', ESHB_PL_URL . 'public/assets/js/booking.js', array('jquery'), ESHB_VERSION, true );
 

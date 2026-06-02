@@ -1,6 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
-add_action( 'plugins_loaded', function(){
+add_action( 'init', function(){
     if( class_exists( 'ESHB' ) ) {
     
         // A Callback function for diposit details
@@ -705,4 +705,4 @@ add_action( 'plugins_loaded', function(){
         ) );
         
     }
-} );
+}, 5 );

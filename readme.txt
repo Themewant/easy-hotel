@@ -2,9 +2,9 @@
 Contributors: themewant
 Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.9.7
+Stable tag: 1.9.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -250,7 +250,15 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 == Changelog ==
 
+= 1.9.9 =
+* Fixed: separate multiple booking form input on-change events for same page
+
+= 1.9.8 =
+* Fixed: multi language translation issue for search result page
+
 = 1.9.7 =
+* Made Compatible with WordPress 7.0
+* Improved: Updated external libraries
 * Improved: Date selection UX in calendar.
 
 = 1.9.6 =

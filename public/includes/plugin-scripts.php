@@ -8,12 +8,12 @@ function eshb_wp_enqueue_scripts (){
     wp_enqueue_style( 'dashicons' );
     wp_enqueue_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), $css_version );
     wp_enqueue_style( 'eshb-style', ESHB_PL_URL . 'public/assets/css/public.css', array(), $css_version );
-    wp_enqueue_style( 'eshb-fontawesome-style', ESHB_PL_URL . 'public/assets/css/fontawesome-5.13-all.css', array(), '5.13.0', 'all' );
+    wp_enqueue_style( 'eshb-fontawesome-style', ESHB_PL_URL . 'public/assets/css/fontawesome.all.min.css', array(), '7.2.0', 'all' );
     wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), $css_version, 'all' );
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'moment' );
-    wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'1.0.0',true );
-    wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.0.3',false );
+    wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'3.1',true );
+    wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.1.4',false );
     wp_enqueue_script( 'eshb-public-script', ESHB_PL_URL . 'public/assets/js/public.js', array(),'1.0.0',true );
     wp_enqueue_script( 'eshb-booking-script', ESHB_PL_URL . 'public/assets/js/booking.js', array(), ESHB_VERSION, true );
   
