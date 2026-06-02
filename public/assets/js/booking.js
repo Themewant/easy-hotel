@@ -1118,7 +1118,7 @@
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
+        if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1222,7 +1222,7 @@
       // Event listener for the second date range picker
       $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
+        if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
