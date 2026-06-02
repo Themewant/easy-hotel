@@ -100,8 +100,8 @@
           startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form
         );
       } else {
-        // Frontend: initialize each booking form independently so they don't share state
-        $('.eshb-booking-form').each(function () {
+        // Frontend: initialize each booking/search form independently so they don't share state
+        $('.eshb-booking-form, .eshb-search-form').each(function () {
           let $form = $(this);
           let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars($form);
           let startDateInput = eshbCalVars.startDateInput;
@@ -1118,7 +1118,7 @@
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
+        if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1222,7 +1222,7 @@
       // Event listener for the second date range picker
       $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
+        if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
