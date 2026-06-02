@@ -100,8 +100,8 @@
           startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form
         );
       } else {
-        // Frontend: initialize each booking form independently so they don't share state
-        $('.eshb-booking-form').each(function () {
+        // Frontend: initialize each booking/search form independently so they don't share state
+        $('.eshb-booking-form, .eshb-search-form').each(function () {
           let $form = $(this);
           let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars($form);
           let startDateInput = eshbCalVars.startDateInput;
