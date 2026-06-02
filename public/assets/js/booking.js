@@ -82,40 +82,43 @@
       ESHBPUBLICBOOKING.eshbInjectCartNotice();
       $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
 
-      let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
-      let startDateInput = eshbCalVars.startDateInput;
-      let endDateInput = eshbCalVars.endDateInput;
-      let availableDatePickerInput = eshbCalVars.availableDatePickerInput;
-      let accomodationId = eshbCalVars.accomodationId;
-      let form = eshbCalVars.bookingFormEl;
-      let roomQuantityInput = eshbCalVars.roomQuantityInput;
+      if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
+        // Admin: single metabox form
+        let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
+        let startDateInput = eshbCalVars.startDateInput;
+        let endDateInput = eshbCalVars.endDateInput;
+        let availableDatePickerInput = eshbCalVars.availableDatePickerInput;
+        let accomodationId = eshbCalVars.accomodationId;
+        let form = eshbCalVars.bookingFormEl;
+        let roomQuantityInput = eshbCalVars.roomQuantityInput;
 
-      // initialize calendar
-      ESHBPUBLICBOOKING.setEshbFormCalendar(
-        startDateInput,
-        endDateInput,
-        availableDatePickerInput,
-        roomQuantityInput,
-        accomodationId,
-        form,
-        "",
-        "",
-        "",
-        "",
-        "",
-        eshb_ajax.requiredMinNights,
-        eshb_ajax.requiredMaxNights
-      );
+        ESHBPUBLICBOOKING.setEshbFormCalendar(
+          startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form,
+          "", "", "", "", "", eshb_ajax.requiredMinNights, eshb_ajax.requiredMaxNights
+        );
+        ESHBPUBLICBOOKING.setBookingFormCalendar(
+          startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form
+        );
+      } else {
+        // Frontend: initialize each booking form independently so they don't share state
+        $('.eshb-booking-form').each(function () {
+          let $form = $(this);
+          let eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars($form);
+          let startDateInput = eshbCalVars.startDateInput;
+          let endDateInput = eshbCalVars.endDateInput;
+          let availableDatePickerInput = eshbCalVars.availableDatePickerInput;
+          let accomodationId = eshbCalVars.accomodationId;
+          let roomQuantityInput = eshbCalVars.roomQuantityInput;
 
-      // update & set as booking calendar
-      ESHBPUBLICBOOKING.setBookingFormCalendar(
-        startDateInput,
-        endDateInput,
-        availableDatePickerInput,
-        roomQuantityInput,
-        accomodationId,
-        form
-      );
+          ESHBPUBLICBOOKING.setEshbFormCalendar(
+            startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, $form,
+            "", "", "", "", "", eshb_ajax.requiredMinNights, eshb_ajax.requiredMaxNights
+          );
+          ESHBPUBLICBOOKING.setBookingFormCalendar(
+            startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, $form
+          );
+        });
+      }
 
       // add elements to booking metaboxes form
       ESHBPUBLICBOOKING.addElementsToBookingMetaboxes();
@@ -167,12 +170,12 @@
         .on(
           "keyup.ESHBPUBLICBOOKING",
           "#eshb_booking_metaboxes .booking-requirement-extra-services-fields input",
-          this.updatePricingTable
+          function () { ESHBPUBLICBOOKING.updatePricingTable(); }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
           "#eshb_booking_metaboxes .booking-requirement-extra-services-fields .csf-cloneable-item",
-          this.updatePricingTable
+          function () { ESHBPUBLICBOOKING.updatePricingTable(); }
         )
         .on(
           "keyup.ESHBPUBLICBOOKING",
@@ -183,14 +186,13 @@
           "change.ESHBPUBLICBOOKING",
           '.eshb-booking-form input[name="room_quantity"], .eshb-booking-form input[name="extra_bed_quantity"], .eshb-booking-form input[name="adult_quantity"], .eshb-booking-form input[name="children_quantity"]',
           function () {
-            //$('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
-            ESHBPUBLICBOOKING.updatePricingTable();
+            ESHBPUBLICBOOKING.updatePricingTable($(this).closest('.eshb-booking-form'));
           }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
           'input[name="eshb_booking_metaboxes[room_quantity]"], input[name="eshb_booking_metaboxes[extra_bed_quantity]"], input[name="eshb_booking_metaboxes[adult_quantity]"], input[name="eshb_booking_metaboxes[children_quantity]"]',
-          this.updatePricingTable
+          function () { ESHBPUBLICBOOKING.updatePricingTable(); }
         )
         .on(
           "click.ESHBPUBLICBOOKING",
@@ -236,15 +238,15 @@
         .on(
           "change.ESHBPUBLICBOOKING",
           '.eshb-booking-form input[name="start_date"], .eshb-booking-form input[name="end_date"]',
-          this.updateEshbCalendar.bind(
-            this,
-            startDateInput,
-            endDateInput,
-            availableDatePickerInput,
-            roomQuantityInput,
-            accomodationId,
-            form,
-          )
+          function (e) {
+            let $thisForm = $(e.target).closest('.eshb-booking-form');
+            if (!$thisForm.length) return;
+            let vars = ESHBPUBLICBOOKING.eshbCalVars($thisForm);
+            ESHBPUBLICBOOKING.updateEshbCalendar(
+              vars.startDateInput, vars.endDateInput, vars.availableDatePickerInput,
+              vars.roomQuantityInput, vars.accomodationId, $thisForm
+            );
+          }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
@@ -269,12 +271,12 @@
         .on(
           "change.ESHBPUBLICBOOKING",
           ".time-slots-wrapper .eshb-time-slot",
-          this.updatePricingTable
+          function () { ESHBPUBLICBOOKING.updatePricingTable($(this).closest('.eshb-booking-form')); }
         )
         .on(
           "change.ESHBPUBLICBOOKING",
           ".time-slots-wrapper .eshb-time-slot .booking-time-picker",
-          this.updatePricingTable
+          function () { ESHBPUBLICBOOKING.updatePricingTable($(this).closest('.eshb-booking-form')); }
         )
         .on(
           "click.ESHBPUBLICBOOKING",
@@ -295,57 +297,60 @@
         .on(
           "change.ESHBPUBLICBOOKING",
           ".time-slots-wrapper .eshb-time-slot .booking-time-picker",
-          this.updateAvailabilityNotice.bind(
-            this,
-            form,
-            startDateInput,
-            endDateInput,
-            roomQuantityInput,
-            accomodationId
-          )
+          function (e) {
+            let $thisForm = $(e.target).closest('.eshb-booking-form');
+            let vars = ESHBPUBLICBOOKING.eshbCalVars($thisForm.length ? $thisForm : null);
+            ESHBPUBLICBOOKING.updateAvailabilityNotice(
+              $thisForm.length ? $thisForm : vars.bookingFormEl,
+              vars.startDateInput, vars.endDateInput,
+              vars.roomQuantityInput, vars.accomodationId
+            );
+          }
         );
 
 
 
     },
-    eshbCalVars: function () {
+    eshbCalVars: function ($form) {
       if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
         accomodationId = $(
           'select[name="eshb_booking_metaboxes[booking_accomodation_id]"]'
         ).val();
       } else {
-        accomodationId = $('input[name="accomodation_id"]').val();
+        accomodationId = $form
+          ? $form.find('input[name="accomodation_id"]').val()
+          : $('input[name="accomodation_id"]').first().val();
       }
 
       let vars = {
-        bookingFormEl: $(
-          "#eshb_booking_metaboxes, .eshb-booking-form, .eshb-search-form"
-        ),
-        startDateInput: $(
-          '.eshb-booking-form input[name="start_date"], .eshb-search-form input[name="start_date"], input[name="eshb_booking_metaboxes[booking_start_date]"]'
-        ),
-        endDateInput: $(
-          '.eshb-booking-form input[name="end_date"], .eshb-search-form input[name="end_date"], input[name="eshb_booking_metaboxes[booking_end_date]"]'
-        ),
-        startTimeInput: $(
-          '#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_start_time]"], .eshb-time-slot.selected input[name="start_time"]'
-        ),
-        endTimeInput: $(
-          '#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_end_time]"], .eshb-time-slot.selected input[name="end_time"]'
-        ),
+        bookingFormEl: $form
+          ? $form
+          : $("#eshb_booking_metaboxes, .eshb-booking-form, .eshb-search-form"),
+        startDateInput: $form
+          ? $form.find('input[name="start_date"]')
+          : $('.eshb-booking-form input[name="start_date"], .eshb-search-form input[name="start_date"], input[name="eshb_booking_metaboxes[booking_start_date]"]'),
+        endDateInput: $form
+          ? $form.find('input[name="end_date"]')
+          : $('.eshb-booking-form input[name="end_date"], .eshb-search-form input[name="end_date"], input[name="eshb_booking_metaboxes[booking_end_date]"]'),
+        startTimeInput: $form
+          ? $form.find('.eshb-time-slot.selected input[name="start_time"]')
+          : $('#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_start_time]"], .eshb-time-slot.selected input[name="start_time"]'),
+        endTimeInput: $form
+          ? $form.find('.eshb-time-slot.selected input[name="end_time"]')
+          : $('#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_end_time]"], .eshb-time-slot.selected input[name="end_time"]'),
         availableDatePickerInput: $('input[name="available_date_picker"]'),
-        adultQuantityInput: $(
-          '.eshb-booking-form input[name="adult_quantity"], .eshb-search-form input[name="adult_quantity"], input[name="eshb_booking_metaboxes[adult_quantity]"]'
-        ),
-        childrenQuantityInput: $(
-          '.eshb-booking-form input[name="children_quantity"], .eshb-search-form input[name="children_quantity"], input[name="eshb_booking_metaboxes[children_quantity]"]'
-        ),
-        roomQuantityInput: $(
-          'input[name="room_quantity"], input[name="eshb_booking_metaboxes[room_quantity]"]'
-        ),
-        extraBedQuantityInput: $(
-          'input[name="extra_bed_quantity"], input[name="eshb_booking_metaboxes[extra_bed_quantity]"]'
-        ),
+        adultQuantityInput: $form
+          ? $form.find('input[name="adult_quantity"]')
+          : $('.eshb-booking-form input[name="adult_quantity"], .eshb-search-form input[name="adult_quantity"], input[name="eshb_booking_metaboxes[adult_quantity]"]'),
+        childrenQuantityInput: $form
+          ? $form.find('input[name="children_quantity"]')
+          : $('.eshb-booking-form input[name="children_quantity"], .eshb-search-form input[name="children_quantity"], input[name="eshb_booking_metaboxes[children_quantity]"]'),
+        roomQuantityInput: $form
+          ? $form.find('input[name="room_quantity"]')
+          : $('input[name="room_quantity"], input[name="eshb_booking_metaboxes[room_quantity]"]'),
+        extraBedQuantityInput: $form
+          ? $form.find('input[name="extra_bed_quantity"]')
+          : $('input[name="extra_bed_quantity"], input[name="eshb_booking_metaboxes[extra_bed_quantity]"]'),
         accomodationId: accomodationId,
       };
       return vars;
@@ -636,7 +641,8 @@
           ESHBPUBLICBOOKING.updateTimeSlotsHtml(
             accomodationId,
             newStartDate,
-            newEndDate
+            newEndDate,
+            form
           );
           // show available rooms count
           ESHBPUBLICBOOKING.updateAvailabilityNotice(
@@ -768,15 +774,17 @@
       allowedDays,
       selectedDay,
       optionsDate,
-      defaultDate
+      defaultDate,
+      $form
     ) {
       // check seleceted day in allowedDays
       if (allowedDays != "" && !allowedDays.includes(selectedDay)) {
-        $(".eshb-booking-form .date-err-msg").html(
-          eshb_ajax.checkInDayErrorMsg + " " + allowedDays[0]
-        );
+        let $errEl = $form
+          ? $form.find(".date-err-msg")
+          : $(".eshb-booking-form .date-err-msg");
+        $errEl.html(eshb_ajax.checkInDayErrorMsg + " " + allowedDays[0]);
         setTimeout(() => {
-          $(".eshb-booking-form .date-err-msg").html("");
+          $errEl.html("");
         }, 3000);
 
         // Update the input field manually
@@ -794,12 +802,13 @@
 
       var diff = picker.endDate.diff(picker.startDate, "days");
 
-      if (!document.querySelector('.date-err-msg')) return;
-      document.querySelector('.date-err-msg').innerHTML = '';
+      let $errEl = form ? $(form).find('.date-err-msg') : $('.date-err-msg').first();
+      if (!$errEl.length) return;
+      $errEl.html('');
       if (minNights > 1 && diff < minNights) {
-        document.querySelector('.date-err-msg').innerHTML = translations.minNightsErrorMsgAvCal + minNights;
+        $errEl.html(translations.minNightsErrorMsgAvCal + minNights);
       } else if (maxNights !== 0 && diff > maxNights) {
-        document.querySelector('.date-err-msg').innerHTML = translations.maxNightsErrorMsgAvCal + maxNights;
+        $errEl.html(translations.maxNightsErrorMsgAvCal + maxNights);
       }
       // Note: end date is adjusted relative to the picked start in the apply
       // handlers below (end = start + minNights/maxNights), preserving the user's
@@ -807,8 +816,7 @@
       // would discard the picked start and reset to today.
 
       setTimeout(() => {
-
-        document.querySelector('.date-err-msg').innerHTML = '';
+        $errEl.html('');
       }, 4000);
     },
     resetCalendar: function (minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) {
@@ -1110,7 +1118,7 @@
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
+        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1125,7 +1133,8 @@
           allowedDays,
           selectedDay,
           options.startDate,
-          startDate
+          startDate,
+          form
         );
 
         // set closest next checkout date as start date if start date is same as end date and booked
@@ -1207,13 +1216,13 @@
           form
         );
         if (!accomodationId || accomodationId == "") return;
-        ESHBPUBLICBOOKING.updatePricingTable();
+        ESHBPUBLICBOOKING.updatePricingTable(form);
       });
 
       // Event listener for the second date range picker
       $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
+        $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
         ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
@@ -1227,7 +1236,8 @@
           allowedDays,
           selectedDay,
           options.startDate,
-          startDate
+          startDate,
+          form
         );
 
         // set closest next checkout date as start date if start date is same as end date and booked
@@ -1316,8 +1326,8 @@
         "apply.daterangepicker",
         function (ev, picker) {
           if (startDateInput.length) {
-            $('.eshb-booking-form .eshb-form-loader').addClass('is-active');
-            $('.eshb-booking-form .eshb-form-submit-btn').prop("disabled", true);
+            $('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
+            $('.eshb-booking-form').find('.eshb-form-submit-btn').prop("disabled", true);
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
 
@@ -1347,7 +1357,8 @@
               allowedDays,
               selectedDay,
               options.startDate,
-              startDate
+              startDate,
+              form
             );
 
             // set closest next checkout date as start date if start date is same as end date and booked
@@ -1410,21 +1421,19 @@
               }
             }
 
-            $(startDateInput).val(startDate);
-            $(endDateInput).val(endDate);
             $(availableDatePickerInput).val(startDate);
 
-            $(endDateInput).attr("value", startDate);
-            $(endDateInput).attr("value", endDate);
-
-            ESHBPUBLICBOOKING.updateEshbCalendar(
-              startDateInput,
-              endDateInput,
-              availableDatePickerInput,
-              roomQuantityInput,
-              accomodationId,
-              form
-            );
+            // Broadcast selected dates to every booking form on the page
+            $('.eshb-booking-form').each(function () {
+              let $thisForm = $(this);
+              let vars = ESHBPUBLICBOOKING.eshbCalVars($thisForm);
+              vars.startDateInput.val(startDate);
+              vars.endDateInput.val(endDate);
+              ESHBPUBLICBOOKING.updateEshbCalendar(
+                vars.startDateInput, vars.endDateInput, availableDatePickerInput,
+                vars.roomQuantityInput, vars.accomodationId, $thisForm
+              );
+            });
 
             const element = document.getElementById("eshb-aside");
             if (element) {
@@ -1579,6 +1588,7 @@
       );
     },
     selectTimeSlot: function () {
+      let $thisForm = $(this).closest('.eshb-booking-form');
       $(this).parent().parent().find(".eshb-time-slot").removeClass("selected");
       $(this).parent().addClass("selected");
       $(this).find('input[name="time-slot"]').prop("checked", true);
@@ -1604,9 +1614,9 @@
         }, 1000);
       }
 
-      ESHBPUBLICBOOKING.updatePricingTable();
+      ESHBPUBLICBOOKING.updatePricingTable($thisForm.length ? $thisForm : null);
     },
-    updateTimeSlotsHtml: function (accomodationId, startDate, endDate) {
+    updateTimeSlotsHtml: function (accomodationId, startDate, endDate, $form) {
       let bookingStartTime = $(
         '#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_start_time]"]'
       ).val();
@@ -1638,15 +1648,12 @@
           const availableTimeSlots =
             response?.data?.available_times?.available_slots || [];
 
-          ESHBPUBLICBOOKING.renderTimeSlotsList(availableTimeSlots);
+          ESHBPUBLICBOOKING.renderTimeSlotsList(availableTimeSlots, $form);
 
 
-          let selecetedStartTime = $(
-            '.eshb-time-slot.selected input[name="start_time"]'
-          ).val();
-          let selecetedEndTime = $(
-            '.eshb-time-slot.selected input[name="end_time"]'
-          ).val();
+          let $slotCtx = ($form && $form.length) ? $form : $(document);
+          let selecetedStartTime = $slotCtx.find('.eshb-time-slot.selected input[name="start_time"]').val();
+          let selecetedEndTime = $slotCtx.find('.eshb-time-slot.selected input[name="end_time"]').val();
 
           // update actual time fields metabox input for admin booking
           if (
@@ -1665,7 +1672,7 @@
               ).val(selecetedEndTime);
             }, 1000);
           }
-          ESHBPUBLICBOOKING.updatePricingTable();
+          ESHBPUBLICBOOKING.updatePricingTable($form);
         }
       );
     },
@@ -1801,11 +1808,13 @@
       });
     },
     renderTimeSlotsList: function (
-      availableTimeSlots = []
+      availableTimeSlots = [],
+      $form
     ) {
-      let timeSlotElWrapper = $(".time-slots-wrapper");
+      let $ctx = ($form && $form.length) ? $form : $(document);
+      let timeSlotElWrapper = $ctx.find(".time-slots-wrapper");
       let timeSlotEl = $(timeSlotElWrapper).find(".time-slots");
-      let timeSlotsErrContainer = $('.time-slots-wrapper .empty-slot-msg');
+      let timeSlotsErrContainer = $ctx.find('.time-slots-wrapper .empty-slot-msg');
       let timeSlotHtml = "";
 
       if (availableTimeSlots != "") {
@@ -1954,12 +1963,9 @@
       let startDate = startDateInput.val();
       let endDate = endDateInput.val();
 
-      let startTime = $(
-        '.eshb-booking-form .eshb-time-slot.selected input[name="start_time"]'
-      ).val();
-      let endTime = $(
-        '.eshb-booking-form .eshb-time-slot.selected input[name="end_time"]'
-      ).val();
+      let $formCtx = (form && $(form).length) ? $(form) : $(document);
+      let startTime = $formCtx.find('.eshb-time-slot.selected input[name="start_time"]').val();
+      let endTime = $formCtx.find('.eshb-time-slot.selected input[name="end_time"]').val();
 
 
 
@@ -2002,7 +2008,7 @@
             if (current < 1) {
               roomQuantityInput.val(1);
             }
-            ESHBPUBLICBOOKING.updatePricingTable();
+            ESHBPUBLICBOOKING.updatePricingTable(form && $(form).length ? $(form) : null);
           }
         }
       );
@@ -2393,7 +2399,7 @@
       $(".service-quantity-selector").removeClass("show-dropdown");
       $(e.currentTarget).addClass("show-dropdown");
     },
-    getExtraServices: function (selectedServices = []) {
+    getExtraServices: function (selectedServices = [], $form) {
       let serviceID, quantity, title, chargeType;
 
       if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
@@ -2418,7 +2424,8 @@
           }
         });
       } else {
-        $('.eshb-booking-form input[name="extra_services[]"]:checked').each(
+        let $ctx = ($form && $form.length) ? $form : $(document);
+        $ctx.find('input[name="extra_services[]"]:checked').each(
           function () {
             serviceID = $(this).attr("service_id");
             quantity = 1; // Default quantity
@@ -2454,14 +2461,16 @@
 
       return selectedServices;
     },
-    updatePricingTable: function () {
-      const eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars();
+    updatePricingTable: function ($form) {
+      // $form may be a jQuery form element (frontend) or undefined (admin / fallback)
+      let $passedForm = ($form && $form.jquery) ? $form : null;
+      const eshbCalVars = ESHBPUBLICBOOKING.eshbCalVars($passedForm);
 
       let accomodationId = eshbCalVars.accomodationId;
 
       if (!accomodationId) return;
 
-      let $form = eshbCalVars.bookingFormEl;
+      $form = eshbCalVars.bookingFormEl;
 
       if ($form.length === 0) return;
 
@@ -2480,7 +2489,7 @@
       childrenQuantity = eshbCalVars.childrenQuantityInput.val();
       extraBedQuantity = eshbCalVars.extraBedQuantityInput.val();
 
-      let selectedServices = ESHBPUBLICBOOKING.getExtraServices(); // send only IDs
+      let selectedServices = ESHBPUBLICBOOKING.getExtraServices([], $form); // send only IDs
 
       $form
         .find(".cost-calculator-wrapper .pricing-values")
@@ -2605,8 +2614,8 @@
         .toFixed(2)
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    getDefaultExtraServicesPrice: function () {
-      let $form = $(".eshb-booking-form");
+    getDefaultExtraServicesPrice: function ($form) {
+      if (!$form || !$form.length) $form = $(".eshb-booking-form").first();
       if ($form.length === 0) return 0;
 
       let extraServicesPrice = 0;
@@ -2637,7 +2646,8 @@
       }
     },
     calculateExtraServicesPricing: function () {
-      let $form = $(".eshb-booking-form");
+      let $form = $(this).closest('.eshb-booking-form');
+      if (!$form.length) $form = $(".eshb-booking-form").first();
       if ($form.length === 0) return;
 
       const getInputVal = (selector) => $form.find(selector).val();
@@ -2694,8 +2704,8 @@
       });
 
       // Subtract default extra services price
-      if (0 < ESHBPUBLICBOOKING.getDefaultExtraServicesPrice()) {
-        extraServicesPrice = extraServicesPrice - ESHBPUBLICBOOKING.getDefaultExtraServicesPrice();
+      if (0 < ESHBPUBLICBOOKING.getDefaultExtraServicesPrice($form)) {
+        extraServicesPrice = extraServicesPrice - ESHBPUBLICBOOKING.getDefaultExtraServicesPrice($form);
       }
 
       // Update total price
@@ -3015,8 +3025,8 @@
 
       countrySelect.dispatchEvent(new Event("change"));
     },
-    addCustomFieldsToShortcodedForm: function () {
-      let form = $(".eshb-booking-form");
+    addCustomFieldsToShortcodedForm: function ($form) {
+      let form = ($form && $form.length) ? $form : $(".eshb-booking-form").first();
       if (form.length === 0) return;
 
       let bookingFormType = $(form).attr("data-booking-form-type");
@@ -3092,7 +3102,7 @@
       }
     },
     updateCustomFieldsInShortcodedForm: function () {
-      ESHBPUBLICBOOKING.addCustomFieldsToShortcodedForm();
+      ESHBPUBLICBOOKING.addCustomFieldsToShortcodedForm($(this).closest('.eshb-booking-form'));
     },
     eshbShowCartBlockCountdown: function (blockInfo) {
       let notice = document.getElementById("eshb-cart-block-notice");
