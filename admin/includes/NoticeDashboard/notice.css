@@ -147,43 +147,87 @@
     text-decoration: none;
 }
 
-/* ===== Top Notice Bar ===== */
+/* ===========================================================
+   Top Notice Bar — World-Class Design
+   =========================================================== */
 .eshb-notice.notice {
+    position: relative;
     display: flex;
     align-items: stretch;
     gap: 0;
     padding: 0;
-    margin: 16px 20px 16px 2px;
-    border: 1px solid #e5e7eb;
-    border-left-width: 4px;
-    border-left-color: #2271b1;
-    border-radius: 8px;
+    margin: 20px 20px 20px 2px;
+    border: 0;
+    border-radius: 14px;
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    background:
+        radial-gradient(1200px 220px at 100% 0%, rgba(236, 72, 153, 0.06), transparent 60%),
+        radial-gradient(900px 200px at 0% 100%, rgba(99, 102, 241, 0.07), transparent 60%),
+        linear-gradient(135deg, #ffffff 0%, #fbfaff 100%);
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 8px 24px -8px rgba(99, 102, 241, 0.18),
+        0 0 0 1px rgba(99, 102, 241, 0.10);
+    animation: eshbNoticeSlideIn .55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    isolation: isolate;
 }
+@keyframes eshbNoticeSlideIn {
+    from { opacity: 0; transform: translateY(-10px) scale(.995); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+/* Premium gradient accent strip (left) */
+.eshb-notice.notice::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 45%, #ec4899 100%);
+    z-index: 2;
+}
+/* Decorative ambient glow */
+.eshb-notice.notice::after {
+    content: "";
+    position: absolute;
+    top: -90px;
+    right: -90px;
+    width: 260px;
+    height: 260px;
+    background:
+        radial-gradient(circle, rgba(139, 92, 246, 0.14) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ---------- Thumbnail (optional) ---------- */
 .eshb-notice .notice-logo-link,
 .eshb-notice > .notice-logo {
     flex-shrink: 0;
     display: block;
-    width: 250px;
+    width: 240px;
     align-self: stretch;
-    background: #0f0f10;
+    background:
+        linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
     line-height: 0;
     box-shadow: none;
     text-decoration: none;
     overflow: hidden;
     position: relative;
+    z-index: 1;
 }
 .eshb-notice .notice-logo-link {
-    transition: opacity .15s ease;
+    transition: transform .35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.eshb-notice .notice-logo-link:hover {
-    opacity: 0.92;
+.eshb-notice .notice-logo-link img {
+    transition: transform .5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.eshb-notice .notice-logo-link:hover img {
+    transform: scale(1.04);
 }
 .eshb-notice .notice-logo-link:focus {
     outline: none;
-    box-shadow: inset 0 0 0 2px #2271b1;
+    box-shadow: inset 0 0 0 2px #8b5cf6;
 }
 .eshb-notice .notice-logo {
     width: 100%;
@@ -193,139 +237,279 @@
     border-radius: 0;
 }
 .eshb-notice .notice-logo-link::after {
-    content: "\f504"; /* dashicons-external */
+    content: "\f504";
     font-family: dashicons;
     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 26px;
-    height: 26px;
-    line-height: 26px;
+    bottom: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
     text-align: center;
     font-size: 14px;
     color: #fff;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 50%;
     opacity: 0;
-    transition: opacity .2s ease;
+    transform: translateY(4px);
+    transition: opacity .25s ease, transform .25s ease;
 }
 .eshb-notice .notice-logo-link:hover::after,
 .eshb-notice .notice-logo-link:focus::after {
     opacity: 1;
+    transform: translateY(0);
 }
+
+/* ---------- Content area ---------- */
 .eshb-notice .notice-right-container {
+    position: relative;
+    z-index: 1;
     flex: 1;
     min-width: 0;
-    padding: 14px 38px 14px 18px;
+    padding: 20px 48px 20px 26px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 .eshb-notice .notice-sub-title {
-    margin: 0 0 4px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #1d2327;
-    line-height: 1.3;
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6366f1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
 }
 .eshb-notice .notice-contents {
-    color: #3c434a;
-    font-size: 13px;
-    line-height: 1.55;
+    color: #3f3f55;
+    font-size: 13.5px;
+    line-height: 1.6;
 }
 .eshb-notice .notice-contents p {
     margin: 0 0 6px;
+}
+.eshb-notice .notice-contents p:first-child {
+    font-size: 15px;
+    color: #1e1b4b;
+    line-height: 1.5;
 }
 .eshb-notice .notice-contents p:last-child {
     margin-bottom: 0;
 }
 .eshb-notice .notice-contents strong,
 .eshb-notice .notice-contents b {
-    color: #1d2327;
+    color: #1e1b4b;
     font-weight: 700;
-    background: linear-gradient(180deg, transparent 65%, rgba(115, 75, 230, 0.18) 65%);
-    padding: 0 2px;
+    background: linear-gradient(180deg, transparent 62%, rgba(139, 92, 246, 0.22) 62%, rgba(236, 72, 153, 0.18) 100%);
+    padding: 0 3px;
     border-radius: 2px;
 }
+.eshb-notice .notice-contents .emoji,
+.eshb-notice .notice-contents img.emoji {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin: 0 1px;
+    vertical-align: -3px;
+    filter: drop-shadow(0 1px 1px rgba(15, 23, 42, 0.08));
+}
+
+/* Reuse text-highlight style for the widget too */
 .eshb-notice-widget-content strong,
 .eshb-notice-widget-content b {
-    color: #1d2327;
+    color: #1e1b4b;
     font-weight: 700;
-    background: linear-gradient(180deg, transparent 65%, rgba(115, 75, 230, 0.18) 65%);
-    padding: 0 2px;
+    background: linear-gradient(180deg, transparent 62%, rgba(139, 92, 246, 0.22) 62%, rgba(236, 72, 153, 0.18) 100%);
+    padding: 0 3px;
     border-radius: 2px;
 }
+
+/* ---------- Action buttons ---------- */
 .eshb-notice .eshb-notice-action-buttons {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 14px;
 }
 .eshb-notice .eshb-notice-button {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    background: #2271b1;
-    color: #fff;
-    border: 1px solid #2271b1;
-    border-radius: 5px;
-    font-size: 12px;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #ffffff;
+    color: #4338ca;
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    border-radius: 8px;
+    font-size: 12.5px;
     font-weight: 600;
-    line-height: 1.5;
+    line-height: 1.4;
     text-decoration: none;
-    transition: all .15s ease;
-    box-shadow: 0 1px 2px rgba(91, 61, 245, 0.2);
+    transition: transform .18s ease, box-shadow .25s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     min-height: auto;
     text-shadow: none;
     height: auto;
+    overflow: hidden;
+}
+.eshb-notice .eshb-notice-button .emoji,
+.eshb-notice .eshb-notice-button img.emoji {
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
 }
 .eshb-notice .eshb-notice-button:hover,
 .eshb-notice .eshb-notice-button:focus {
-    background: #2271b1;
-    border-color: #2271b1;
-    color: #fff;
-    box-shadow: 0 2px 5px rgba(91, 61, 245, 0.3);
+    background: #ffffff;
+    color: #312e81;
+    border-color: rgba(99, 102, 241, 0.55);
+    box-shadow:
+        0 6px 14px -6px rgba(99, 102, 241, 0.45),
+        0 2px 4px rgba(15, 23, 42, 0.06);
     text-decoration: none;
     transform: translateY(-1px);
 }
+
+/* Primary CTA — first button in the row */
+.eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow:
+        0 4px 10px -2px rgba(139, 92, 246, 0.45),
+        0 2px 4px rgba(236, 72, 153, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
+    transform: skewX(-20deg);
+    transition: left .7s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+.eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child:hover,
+.eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child:focus {
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow:
+        0 10px 22px -6px rgba(139, 92, 246, 0.55),
+        0 4px 8px rgba(236, 72, 153, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+.eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child:hover::before {
+    left: 125%;
+}
+
+/* Maybe later — quiet text button */
 .eshb-notice .eshb-notice-maybe-later {
     display: inline-flex;
     align-items: center;
-    padding: 4px 2px;
+    padding: 8px 10px;
+    margin-left: auto;
     background: transparent;
-    color: #50575e;
+    color: #6b7280;
     border: 0;
     box-shadow: none;
     font-size: 12px;
     font-weight: 500;
-    line-height: 1.5;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    line-height: 1.4;
+    text-decoration: none;
     cursor: pointer;
-    transition: color .15s ease;
+    border-radius: 6px;
+    transition: color .18s ease, background-color .18s ease;
+}
+.eshb-notice .eshb-notice-maybe-later::before {
+    content: "\f534";
+    font-family: dashicons;
+    font-size: 14px;
+    line-height: 1;
+    margin-right: 4px;
+    opacity: 0.65;
 }
 .eshb-notice .eshb-notice-maybe-later:hover,
 .eshb-notice .eshb-notice-maybe-later:focus {
-    color: #1d2327;
-    background: transparent;
+    color: #1e1b4b;
+    background: rgba(99, 102, 241, 0.08);
     outline: none;
     box-shadow: none;
 }
+
+/* ---------- WP core dismiss ----------
+   z-index sits above .notice-right-container (z-index: 1) so clicks reach
+   the absolutely-positioned WP dismiss button instead of being absorbed
+   by the right container's box. */
 .eshb-notice .notice-dismiss {
-    top: 8px;
-    right: 4px;
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    z-index: 3;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color .18s ease;
+}
+.eshb-notice .notice-dismiss:hover {
+    background: rgba(99, 102, 241, 0.10);
+}
+.eshb-notice .notice-dismiss::before {
+    color: #6b7280;
+    transition: color .18s ease;
+}
+.eshb-notice .notice-dismiss:hover::before {
+    color: #1e1b4b;
 }
 
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+    .eshb-notice .notice-right-container {
+        padding: 18px 44px 18px 22px;
+    }
+    .eshb-notice .notice-logo-link,
+    .eshb-notice > .notice-logo {
+        width: 200px;
+    }
+}
 @media (max-width: 782px) {
     .eshb-notice.notice {
         flex-direction: column;
+        margin: 16px 12px 16px 2px;
     }
     .eshb-notice .notice-logo-link,
     .eshb-notice > .notice-logo {
         width: 100%;
-        max-height: 180px;
+        max-height: 160px;
+    }
+    .eshb-notice .notice-right-container {
+        padding: 18px 44px 18px 20px;
+    }
+    .eshb-notice .eshb-notice-action-buttons {
+        gap: 8px;
+    }
+    .eshb-notice .eshb-notice-button {
+        padding: 7px 13px;
+        font-size: 12px;
+    }
+    .eshb-notice .eshb-notice-maybe-later {
+        margin-left: 0;
+    }
+}
+
+/* ---------- Motion-reduced fallback ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .eshb-notice.notice,
+    .eshb-notice .eshb-notice-button,
+    .eshb-notice .eshb-notice-action-buttons .eshb-notice-button:first-child::before,
+    .eshb-notice .notice-logo-link img {
+        animation: none !important;
+        transition: none !important;
     }
 }

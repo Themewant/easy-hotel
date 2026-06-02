@@ -1,14 +1,18 @@
 (function ($) {
     'use strict';
 
-    var DATA = window.eshbNoticeData || {};
+    // Must match wp_localize_script object name in NoticeDashboard.php
+    // (ESHBNoticeData). Case matters — a mismatch silently breaks the
+    // dismiss AJAX call.
+    var DATA = window.ESHBNoticeData || {};
 
     function persistDismiss(noticeId) {
         if (!noticeId || !DATA.ajaxUrl || !DATA.nonce) {
             return;
         }
+        // Action name must match wp_ajax_<name> in NoticeDashboard.php.
         $.post(DATA.ajaxUrl, {
-            action: 'eshb_notice_ignore_plugin_notice',
+            action: 'ESHB_notice_ignore_plugin_notice',
             nonce: DATA.nonce,
             notice_id: noticeId
         });
