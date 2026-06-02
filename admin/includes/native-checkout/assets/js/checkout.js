@@ -174,9 +174,12 @@
         });
 
         $('.eshb-service-option').on('input change', 'input[data-service-qty]', function () {
+            console.log('pricing updated');
             syncSelectionsFromDOM();
             refreshServicesSummary();
             recalcLocal();
+            
+            
         });
 
         // Toggle the services editor open/closed. The link text flips
