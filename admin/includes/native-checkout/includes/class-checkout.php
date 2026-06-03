@@ -270,6 +270,7 @@ class ESHB_Native_Checkout {
                 'bookingSuccess'       => __( 'Booking confirmed! Redirecting…', 'easy-hotel' ),
                 'couponApplying'       => __( 'Applying coupon…', 'easy-hotel' ),
                 'couponRemoved'        => __( 'Coupon removed.', 'easy-hotel' ),
+                'processing'           => __( 'Processing…', 'easy-hotel' ),
                 'editServices'         => __( 'Edit', 'easy-hotel' ),
                 'doneEditingServices'  => __( 'Done', 'easy-hotel' ),
                 'noServicesSelected'   => __( 'None selected', 'easy-hotel' ),
@@ -581,12 +582,16 @@ class ESHB_Native_Checkout {
         ];
         ESHB_Native_Booking_Handler::record_payment( $booking_id, $payment_meta, $customer );
 
-        // 5. Update booking status on-hold -> processing (or a custom
+        // 5. Update booking status on-hold -> completed (per spec). The booking is already paid at this point, so we skip any
         //    status injected by an extension, e.g. 'deposit-payment'
         //    when only a partial deposit was captured).
+
+        $eshb_settings = get_option( 'eshb_settings', [] );
+        $new_status = ! empty( $eshb_settings['booking-auto-approval'] ) ? 'completed' : 'processing';
+
         $completed_status = apply_filters(
             'eshb_native_checkout_completed_status',
-            'processing',
+            $new_status,
             $booking_id,
             $reservation,
             $pricing

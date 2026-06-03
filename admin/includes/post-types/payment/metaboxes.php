@@ -325,10 +325,8 @@ if( class_exists( 'ESHB' ) ) {
                 'id'          => 'address_1',
                 'type'        => 'text',
                 'title'       => 'Address line one',
-                'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
                 'default' => $current_booking_customer_metadata['address_1'] ?? '',
-                'class'    => 'required-field',
             ),
             array(
                 'id'          => 'address_2',
@@ -340,10 +338,8 @@ if( class_exists( 'ESHB' ) ) {
                 'id'          => 'postcode',
                 'type'        => 'text',
                 'title'       => 'Postcode / ZIP',
-                'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
                 'default' => $current_booking_customer_metadata['postcode'] ?? '',
-                'class'    => 'required-field',
             ),
         )
     ) );

@@ -919,6 +919,10 @@ body.post-type-eshb_booking.eshb-has-manual-booking .page-title-action,
 body.post-type-eshb_payment.eshb-has-manual-booking .page-title-action {
   display: inline-block !important;
 }
+body.post-type-eshb_booking #major-publishing-actions,
+body.post-type-eshb_payment #major-publishing-actions {
+  padding: 10px 9px;
+}
 body.post-type-eshb_booking #major-publishing-actions #delete-action,
 body.post-type-eshb_payment #major-publishing-actions #delete-action {
   margin-right: 10px;
@@ -931,9 +935,10 @@ body.post-type-eshb_booking #major-publishing-actions #publishing-action .spinne
 body.post-type-eshb_payment #major-publishing-actions #publishing-action .spinner {
   float: right;
 }
-body.post-type-eshb_booking #major-publishing-actions .eshb-error-message,
-body.post-type-eshb_payment #major-publishing-actions .eshb-error-message {
+body.post-type-eshb_booking .eshb-error-message,
+body.post-type-eshb_payment .eshb-error-message {
   display: none;
+  padding: 0 10px;
 }
 body.post-type-eshb_booking .input-error,
 body.post-type-eshb_payment .input-error {

@@ -40,7 +40,13 @@
     function formatPrice(value) {
         var n = Number(value) || 0;
         var symbol = state.pricing.currencySymbol || '$';
-        var formatted = n.toFixed(2);
+        // Mirror PHP's number_format($price, 2): two decimals, '.' as the
+        // decimal separator and ',' as the thousands separator, so the
+        // client-side recalc matches the server-rendered prices exactly
+        // (e.g. 1500 -> "1,500.00", not "1500.00").
+        var parts = n.toFixed(2).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        var formatted = parts.join('.');
         return state.pricing.currencyPosition === 'right'
             ? formatted + symbol
             : symbol + formatted;
@@ -513,6 +519,28 @@
         }).render('#eshbPayPalButtons');
     }
 
+    // Offline / direct gateways (e.g. Cash on Delivery) have no client-side
+    // payment step — the booking is created straight away on the server.
+    function submitOfflineCheckout() {
+        var $btn = $('#eshbCheckoutSubmit');
+        if ($btn.prop('disabled')) return;
+        var originalText = $btn.text();
+        $btn.prop('disabled', true).text(state.config.i18n.processing || 'Processing…');
+
+        completeCheckout({}).done(function (resp) {
+            if (resp && resp.success && resp.data && resp.data.redirect_url) {
+                window.location.href = resp.data.redirect_url;
+            } else {
+                var msg = (resp && resp.data && resp.data.message) || state.config.i18n.paymentFailed;
+                showError(msg);
+                $btn.prop('disabled', false).text(originalText);
+            }
+        }).fail(function () {
+            showError(state.config.i18n.paymentFailed);
+            $btn.prop('disabled', false).text(originalText);
+        });
+    }
+
     function bindFormSubmit() {
         $('#eshbNativeCheckoutForm').on('submit', function (e) {
             e.preventDefault();
@@ -523,7 +551,11 @@
             // button just nudges the user toward the right control.
             if (state.gateway === 'paypal') {
                 showError($('<div/>').text('Please use the PayPal button above to complete your payment.').text());
+                return;
             }
+
+            // Any other (offline) gateway: complete the booking server-side.
+            submitOfflineCheckout();
         });
     }
 
@@ -534,5 +566,10 @@
         bindFormSubmit();
         initLocationSelects();
         applyPricingToDOM();
+
+        // Initialise the pre-selected gateway (server marks one radio as
+        // checked) so state.gateway is set and the correct UI — submit
+        // button vs. PayPal buttons — is shown without the user clicking.
+        $('input[name="eshbPaymentMethod"]:checked').trigger('change');
     });
 })(jQuery);

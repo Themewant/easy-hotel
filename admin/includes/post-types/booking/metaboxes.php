@@ -617,9 +617,7 @@ add_action( 'init', function(){
                     'id'          => 'address_1',
                     'type'        => 'text',
                     'title'       => 'Address line one',
-                    'validate' => 'eshb_validate_for_required', // Required validation
                     'required' => true,
-                    'class'    => 'required-field'
                 ),
                 array(
                     'id'          => 'address_2',
@@ -630,9 +628,7 @@ add_action( 'init', function(){
                     'id'          => 'postcode',
                     'type'        => 'text',
                     'title'       => 'Postcode / ZIP',
-                    'validate' => 'eshb_validate_for_required', // Required validation
                     'required' => true,
-                    'class'    => 'required-field'
                 ),
                 array(
                     'type'     => 'callback',

@@ -66,10 +66,13 @@ if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' 
     endif;
 }
 
+$eshb_settings    = get_option( 'eshb_settings', [] );
 $core             = new ESHB_Core();
 $currency_symbol  = $core->get_eshb_currency_symbol();
 $currency_position = $core->get_eshb_currency_position();
 $nights           = (int) ( $pricing['daysCount'] ?? 0 );
+$terms_pid        = $eshb_settings['terms-and-conditions-page'] ?? '';
+$terms_url        = $terms_pid ? get_permalink( (int) $terms_pid ) : '#';
 ?>
 <div class="eshb-native-checkout" id="eshbNativeCheckoutRoot">
     <div class="eshb-container">
@@ -295,10 +298,24 @@ $nights           = (int) ( $pricing['daysCount'] ?? 0 );
 
                 <?php if ( empty( $gateways ) ) : ?>
                     <p class="eshb-no-gateways"><?php esc_html_e( 'No payment gateways are configured. Please contact the administrator.', 'easy-hotel' ); ?></p>
-                <?php else : ?>
+                <?php
+                else :
+                    // Decide which gateway is selected by default:
+                    //   - if only one is enabled, it is the default;
+                    //   - otherwise prefer Cash on Delivery;
+                    //   - failing that, the first enabled gateway.
+                    $eshb_gateway_ids = array_values( array_map( function ( $gw ) { return $gw->get_id(); }, $gateways ) );
+                    if ( count( $eshb_gateway_ids ) === 1 ) {
+                        $eshb_default_gateway = $eshb_gateway_ids[0];
+                    } elseif ( in_array( 'cod', $eshb_gateway_ids, true ) ) {
+                        $eshb_default_gateway = 'cod';
+                    } else {
+                        $eshb_default_gateway = $eshb_gateway_ids[0] ?? '';
+                    }
+                    ?>
                     <?php foreach ( $gateways as $gateway ) : ?>
                         <div class="eshb-choice-option eshb-payment-option">
-                            <input type="radio" id="eshb-pay-<?php echo esc_attr( $gateway->get_id() ); ?>" name="eshbPaymentMethod" value="<?php echo esc_attr( $gateway->get_id() ); ?>">
+                            <input type="radio" id="eshb-pay-<?php echo esc_attr( $gateway->get_id() ); ?>" name="eshbPaymentMethod" value="<?php echo esc_attr( $gateway->get_id() ); ?>" <?php checked( $eshb_default_gateway, $gateway->get_id() ); ?>>
                             <label for="eshb-pay-<?php echo esc_attr( $gateway->get_id() ); ?>" class="eshb-choice-title"><?php echo esc_html( $gateway->get_title() ); ?></label>
                             <?php if ( $gateway->get_description() ) : ?>
                                 <div class="eshb-choice-desc"><?php echo esc_html( $gateway->get_description() ); ?></div>
@@ -319,7 +336,7 @@ $nights           = (int) ( $pricing['daysCount'] ?? 0 );
                     printf(
                         /* translators: %s: terms link */
                         esc_html__( 'I have read and accept the %s.', 'easy-hotel' ),
-                        '<a href="' . esc_url( apply_filters( 'eshb_native_checkout_terms_url', '#' ) ) . '">' . esc_html__( 'terms and conditions', 'easy-hotel' ) . '</a>'
+                        '<a href="' . esc_url( apply_filters( 'eshb_native_checkout_terms_url', $terms_url ) ) . '" target="_blank">' . esc_html__( 'terms and conditions', 'easy-hotel' ) . '</a>'
                     );
                     ?>
                 </label>

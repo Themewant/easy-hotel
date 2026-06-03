@@ -171,11 +171,20 @@ if ( ! function_exists( 'eshb_native_checkout_cleanup_stale_reservations' ) ) {
      */
     function eshb_native_checkout_cleanup_stale_reservations() {
         global $wpdb;
+        // Direct query is unavoidable: there is no WordPress API to look up
+        // options by name pattern. Caching is intentionally skipped — this
+        // is a one-shot hourly cron sweep, not a hot read path, and it must
+        // see the live table state to delete stale rows.
+        $like = $wpdb->esc_like( '_eshb_native_chk_' ) . '%';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $rows = $wpdb->get_results(
-            "SELECT option_id, option_name, option_value
-             FROM {$wpdb->options}
-             WHERE option_name LIKE '\\_eshb\\_native\\_chk\\_%'
-             LIMIT 500"
+            $wpdb->prepare(
+                "SELECT option_id, option_name, option_value
+                 FROM {$wpdb->options}
+                 WHERE option_name LIKE %s
+                 LIMIT 500",
+                $like
+            )
         );
         if ( empty( $rows ) ) return 0;
 
@@ -273,5 +282,36 @@ if ( ! function_exists( 'eshb_native_checkout_is_enabled' ) ) {
     function eshb_native_checkout_is_enabled() {
         $settings = get_option( 'eshb_settings', [] );
         return ( isset( $settings['booking-type'] ) && $settings['booking-type'] === 'native_checkout' );
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_get_setting' ) ) {
+    /**
+     * Read a native-checkout payment-gateway setting.
+     *
+     * The payment-gateway options are grouped under the 'payment-gateways'
+     * tabbed field in the settings UI, so the framework stores them nested
+     * as $settings['payment-gateways'][ $key ]. Older installs (and the
+     * tax-rate field before it was grouped) stored them flat at the top
+     * level, so we check the nested group first and fall back to flat —
+     * keeping both layouts working.
+     *
+     * @param string $key     Setting id (e.g. 'cod-title').
+     * @param mixed  $default Returned when the key is absent everywhere.
+     * @return mixed
+     */
+    function eshb_native_checkout_get_setting( $key, $default = '' ) {
+        $settings = get_option( 'eshb_settings', [] );
+
+        if ( isset( $settings['payment-gateways'] ) && is_array( $settings['payment-gateways'] )
+            && array_key_exists( $key, $settings['payment-gateways'] ) ) {
+            return $settings['payment-gateways'][ $key ];
+        }
+
+        if ( array_key_exists( $key, (array) $settings ) ) {
+            return $settings[ $key ];
+        }
+
+        return $default;
     }
 }

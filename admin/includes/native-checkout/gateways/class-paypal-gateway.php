@@ -30,11 +30,10 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     private function get_settings() {
-        $settings = get_option( 'eshb_settings', [] );
         return [
-            'client_id'     => trim( (string) ( $settings['paypal-client-id'] ?? '' ) ),
-            'client_secret' => trim( (string) ( $settings['paypal-client-secret'] ?? '' ) ),
-            'mode'          => ( ( $settings['paypal-mode'] ?? 'sandbox' ) === 'live' ) ? 'live' : 'sandbox',
+            'client_id'     => trim( (string) eshb_native_checkout_get_setting( 'paypal-client-id', '' ) ),
+            'client_secret' => trim( (string) eshb_native_checkout_get_setting( 'paypal-client-secret', '' ) ),
+            'mode'          => ( eshb_native_checkout_get_setting( 'paypal-mode', 'sandbox' ) === 'live' ) ? 'live' : 'sandbox',
         ];
     }
 
@@ -46,8 +45,12 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     public function is_enabled() {
+        // Defaults to enabled when the switch has never been saved, so
+        // existing installs that already configured credentials keep working.
+        $switch_on = ! empty( eshb_native_checkout_get_setting( 'gateway-paypal-enable', true ) );
+
         $s = $this->get_settings();
-        return ! empty( $s['client_id'] ) && ! empty( $s['client_secret'] );
+        return $switch_on && ! empty( $s['client_id'] ) && ! empty( $s['client_secret'] );
     }
 
     public function get_frontend_data() {

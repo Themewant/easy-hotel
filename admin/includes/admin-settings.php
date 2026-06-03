@@ -88,13 +88,6 @@ function eshb_custom_submenu_page() {
 add_action( 'plugins_loaded', function(){
   // Create a section
   $general_option_fields =  array(
-            
-    array(
-      'id'      => 'booking-auto-approval',
-      'type'    => 'switcher',
-      'title'   => 'Auto Approve Booking',
-      'default' => true
-    ),
     array(
       'id'    => 'availability-calendar',
       'type'  => 'switcher',
@@ -117,15 +110,33 @@ add_action( 'plugins_loaded', function(){
       'default' => true,
     ),
     array(
+      'id'    => 'check-in-time',
+      'type'  => 'datetime',
+      'title' => 'Check in Time',
+      //'desc'  => 'Add Booking Time',
+      'settings' => array(
+        'time_24hr' => false,
+        'noCalendar' => true,
+        'enableTime' => true,
+      ),
+      'dependency' => array( 'check-in-out-time', '==', true ),
+    ),
+    array(
+      'id'    => 'check-out-time',
+      'type'  => 'datetime',
+      'title' => 'Check out Time',
+      //'desc'  => 'Add Booking Time',
+      'settings' => array(
+        'time_24hr' => false,
+        'noCalendar' => true,
+        'enableTime' => true,
+      ),
+      'dependency' => array( 'check-in-out-time', '==', true ),
+    ),
+    array(
       'id'      => 'extra-services-switcher',
       'type'    => 'switcher',
       'title'   => 'Extra Services',
-      'default' => true
-    ),
-    array(
-      'id'      => 'booking-btn-switcher',
-      'type'    => 'switcher',
-      'title'   => 'Booking Button Visibility',
       'default' => true
     ),
     array(
@@ -136,11 +147,126 @@ add_action( 'plugins_loaded', function(){
       'default' => true,
     ),
     array(
+      'id'    => 'currency_symbol',
+      'type'  => 'text',
+      'title' => 'Currency Symbol',
+      'desc'  => 'Add currency symbol here if you want to use custom currency.'
+    ),
+    array(
+      'id'          => 'currency_position',
+      'type'        => 'select',
+      'title'       => 'Currency Position',
+      'placeholder' => 'Select an option',
+      'options'     => array(
+        'left'    => 'Left',
+        'right'    => 'Right',
+      ),
+      'default'     => 'left'
+    ),
+    
+    // --- Search Options -------------------------------------
+    array(
+      'type'    => 'subheading',
+      'content' => 'Search Options',
+    ),
+    array(
+      'id'      => 'search-form-archive',
+      'type'    => 'switcher',
+      'title'   => 'Search Form at Archive Page',
+      'default' => true
+    ),
+    array(
+      'id'          => 'search-form-fields',
+      'type'        => 'select',
+      'title'       => 'Search Form Fields',
+      'multiple'    => true,
+      'placeholder' => 'Select an option',
+      'options'     => array(
+        'adults'    => 'Adults',
+        'childrens'    => 'Children',
+        'rooms'    => 'Rooms',
+      ),
+      'default'     => ['adults', 'childrens']
+    ),
+    array(
+      'id'    => 'min-adult-capacity',
+      'type'  => 'number',
+      'title' => 'Minimum Adult Capacity for Search',
+    ),
+    array(
+      'id'    => 'adult-capacity',
+      'type'  => 'number',
+      'title' => 'Maximum Adult Capacity for Search',
+    ),
+    array(
+      'id'    => 'min-children-capacity',
+      'type'  => 'number',
+      'title' => 'Minimum Children Capacity for Search',
+    ),
+    array(
+      'id'    => 'children-capacity',
+      'type'  => 'number',
+      'title' => 'Maximum Children Capacity for Search',
+    ),
+    array(
+      'id'      => 'search-form-calendar-icon',
+      'type'    => 'switcher',
+      'title'   => 'Search Form Calendar Icon',
+      'default' => false
+    ),
+    // --- Booking Options -------------------------------------
+    array(
+      'type'    => 'subheading',
+      'content' => 'Booking Options',
+    ),
+    array(
+      'id'      => 'booking-auto-approval',
+      'type'    => 'switcher',
+      'title'   => 'Auto Approve Booking',
+      'default' => true
+    ),
+    array(
       'id'    => 'booking-form',
       'type'  => 'switcher',
       'title' => 'Booking Form',
       'desc'  => 'On this switch if you want to show booking form on the accomodation page.',
       'default' => true,
+    ),
+    array(
+      'id'      => 'booking-form-calendar-icon',
+      'type'    => 'switcher',
+      'title'   => 'Booking Form Calendar Icon',
+      'default' => false
+    ),
+    array(
+      'id'      => 'booking-btn-switcher',
+      'type'    => 'switcher',
+      'title'   => 'Booking Button Visibility',
+      'default' => true
+    ),
+    array(
+      'id'    => 'booking-min-adult-capacity',
+      'type'  => 'number',
+      'title' => 'Minimum Adult Capacity for Booking',
+    ),
+    array(
+      'id'    => 'booking-min-children-capacity',
+      'type'  => 'number',
+      'title' => 'Minimum Children Capacity for Booking',
+    ),
+    array(
+      'id'          => 'booking-form-fields',
+      'type'        => 'select',
+      'title'       => 'Booking Form Fields',
+      'multiple'    => true,
+      'placeholder' => 'Select an option',
+      'options'     => array(
+        'adults'    => 'Adults',
+        'childrens'    => 'Children',
+        'rooms'    => 'Rooms',
+        'extra_beds'    => 'Extra Beds',
+      ),
+      'default'     => ['adults', 'childrens', 'rooms', 'extra_beds']
     ),
   );
   do_action( 'eshb_settings_fields_init');
@@ -264,6 +390,16 @@ add_action( 'plugins_loaded', function(){
                         'posts_per_page' => -1 // for get all pages (also it's same for posts).
                       ),
                   ),
+                  array(
+                    'id'          => 'terms-and-conditions-page',
+                    'type'        => 'select',
+                    'title'       => 'Terms and Conditions Page',
+                    'placeholder' => 'Default',
+                    'options'     => 'pages',
+                    'query_args'  => array(
+                        'posts_per_page' => -1 // for get all pages (also it's same for posts).
+                      ),
+                  ),
             )
           )
         );
@@ -338,13 +474,13 @@ add_action( 'plugins_loaded', function(){
                   array(
                     'id'          => 'booking-type',
                     'type'        => 'select',
-                    'title'       => 'Booking',
+                    'title'       => 'Checkout Method',
                     'placeholder' => 'Select an option',
                     'options'     => array(
-                      'woocommerce'    => 'Woocoommerce Booking',
-                      'surecart'    => 'SurecCart Booking',
+                      'woocommerce'    => 'Woocoommerce Checkout',
+                      'surecart'    => 'SurecCart Checkout',
                       'native_checkout' => 'Native Checkout',
-                      'external'    => 'External Booking',
+                      'external'    => 'External Checkout',
                       'booking_request'    => 'Booking Request',
                       'disable'    => 'Disable Booking',
                     ),
@@ -387,62 +523,86 @@ add_action( 'plugins_loaded', function(){
                     'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
                   ),
                   array(
-              'id'          => 'checkout-billing-fields',
-              'type'        => 'select',
-              'title'       => 'Billing Fields',
-              'desc'        => 'Select which billing fields to display on the checkout page. Unselected fields will be hidden.',
-              'multiple'    => true,
-              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
-              'placeholder' => 'Select fields to show',
-              'options'     => array(
-                'billing_first_name' => 'First Name',
-                'billing_last_name'  => 'Last Name',
-                'billing_company'    => 'Company',
-                'billing_email'      => 'Email Address',
-                'billing_phone'      => 'Phone',
-                'billing_address_1'  => 'Address Line 1',
-                'billing_address_2'  => 'Address Line 2',
-                'billing_city'       => 'City',
-                'billing_postcode'   => 'Postcode / ZIP',
-                'billing_country'    => 'Country',
-                'billing_state'      => 'State / County',
-              ),
-              'default' => array(
-                'billing_first_name', 'billing_last_name',
-                'billing_email', 'billing_phone', 'billing_address_1',
-              ),
-            ),
-            array(
-              'id'          => 'checkout-shipping-fields',
-              'type'        => 'select',
-              'title'       => 'Shipping Fields',
-              'desc'        => 'Select which shipping fields to display on the checkout page. Unselected fields will be hidden.',
-              'multiple'    => true,
-              'placeholder' => 'Select fields to show',
-              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
-              'options'     => array(
-                'shipping_first_name' => 'First Name',
-                'shipping_last_name'  => 'Last Name',
-                'shipping_company'    => 'Company',
-                'shipping_address_1'  => 'Address Line 1',
-                'shipping_address_2'  => 'Address Line 2',
-                'shipping_city'       => 'City',
-                'shipping_postcode'   => 'Postcode / ZIP',
-                'shipping_country'    => 'Country',
-                'shipping_state'      => 'State / County',
-              ),
-              'default' => array(
-                'shipping_first_name', 'shipping_last_name', 'shipping_address_1',
-              ),
-            ),
-            array(
-              'id'      => 'checkout-additional-fields',
-              'type'    => 'switcher',
-              'title'   => 'Additional Information',
-              'desc'    => 'Enable or disable the entire Additional Information section on the checkout page.',
-              'default' => false,
-              'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
-            ),
+                    'id'      => 'cart-blocking-switcher',
+                    'type'    => 'switcher',
+                    'title'   => 'Enable Cart Blocking',
+                    'desc'    => 'Temporarily block calendar dates when a user adds to cart.',
+                    'default' => false,
+                    'dependency' => array( 'booking-type', '==', 'woocommerce' ),
+                  ),
+                  array(
+                    'id'         => 'cart-blocking-time',
+                    'type'       => 'number',
+                    'title'      => 'Blocking Duration (minutes)',
+                    'desc'       => 'How long dates are held after a user adds to cart.',
+                    'default'    => 5,
+                    'dependency' => array( 'cart-blocking-switcher', '==', true ),
+                  ),
+                  array(
+                    'id'         => 'cart-blocking-notice-msg',
+                    'type'       => 'text',
+                    'title'      => 'Checkout Countdown Message',
+                    'desc'       => 'Text shown before the countdown timer on the cart/checkout page.',
+                    'default'    => 'Your reservation is held for',
+                    'dependency' => array( 'cart-blocking-switcher', '==', true ),
+                  ),
+                  array(
+                    'id'          => 'checkout-billing-fields',
+                    'type'        => 'select',
+                    'title'       => 'Billing Fields',
+                    'desc'        => 'Select which billing fields to display on the checkout page. Unselected fields will be hidden.',
+                    'multiple'    => true,
+                    'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+                    'placeholder' => 'Select fields to show',
+                    'options'     => array(
+                      'billing_first_name' => 'First Name',
+                      'billing_last_name'  => 'Last Name',
+                      'billing_company'    => 'Company',
+                      'billing_email'      => 'Email Address',
+                      'billing_phone'      => 'Phone',
+                      'billing_address_1'  => 'Address Line 1',
+                      'billing_address_2'  => 'Address Line 2',
+                      'billing_city'       => 'City',
+                      'billing_postcode'   => 'Postcode / ZIP',
+                      'billing_country'    => 'Country',
+                      'billing_state'      => 'State / County',
+                    ),
+                    'default' => array(
+                      'billing_first_name', 'billing_last_name',
+                      'billing_email', 'billing_phone', 'billing_address_1',
+                    ),
+                  ),
+                  array(
+                    'id'          => 'checkout-shipping-fields',
+                    'type'        => 'select',
+                    'title'       => 'Shipping Fields',
+                    'desc'        => 'Select which shipping fields to display on the checkout page. Unselected fields will be hidden.',
+                    'multiple'    => true,
+                    'placeholder' => 'Select fields to show',
+                    'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+                    'options'     => array(
+                      'shipping_first_name' => 'First Name',
+                      'shipping_last_name'  => 'Last Name',
+                      'shipping_company'    => 'Company',
+                      'shipping_address_1'  => 'Address Line 1',
+                      'shipping_address_2'  => 'Address Line 2',
+                      'shipping_city'       => 'City',
+                      'shipping_postcode'   => 'Postcode / ZIP',
+                      'shipping_country'    => 'Country',
+                      'shipping_state'      => 'State / County',
+                    ),
+                    'default' => array(
+                      'shipping_first_name', 'shipping_last_name', 'shipping_address_1',
+                    ),
+                  ),
+                  array(
+                    'id'      => 'checkout-additional-fields',
+                    'type'    => 'switcher',
+                    'title'   => 'Additional Information',
+                    'desc'    => 'Enable or disable the entire Additional Information section on the checkout page.',
+                    'default' => false,
+                    'dependency' => array( 'booking-type', '==', 'woocommerce' ), 
+                  ),
                   array(
                     'id'    => 'recipent_email',
                     'type'  => 'text',
@@ -451,119 +611,99 @@ add_action( 'plugins_loaded', function(){
                     'default' => $admin_email,
                     'dependency' => array( ['booking-type', '==', 'booking_request'], ['booking-form-type', '==', 'default'] )
                   ),
+                 
+                  // Payment Gateways
                   array(
-                    'id'    => 'currency_symbol',
-                    'type'  => 'text',
-                    'title' => 'Currency Symbol',
-                    'desc'  => 'Add currency symbol here if you want to use custom currency.'
-                  ),
-                  array(
-                    'id'          => 'currency_position',
-                    'type'        => 'select',
-                    'title'       => 'Currency Position',
-                    'placeholder' => 'Select an option',
-                    'options'     => array(
-                      'left'    => 'Left',
-                      'right'    => 'Right',
-                    ),
-                    'default'     => 'left'
-                  ),
-                  array(
-                    'id'      => 'search-form-archive',
-                    'type'    => 'switcher',
-                    'title'   => 'Search Form at Archive Page',
-                    'default' => true
-                  ),
-                  array(
-                    'id'          => 'search-form-fields',
-                    'type'        => 'select',
-                    'title'       => 'Search Form Fields',
-                    'multiple'    => true,
-                    'placeholder' => 'Select an option',
-                    'options'     => array(
-                      'adults'    => 'Adults',
-                      'childrens'    => 'Children',
-                      'rooms'    => 'Rooms',
-                    ),
-                    'default'     => ['adults', 'childrens']
-                  ),
-                  array(
-                    'id'    => 'min-adult-capacity',
-                    'type'  => 'number',
-                    'title' => 'Minimum Adult Capacity for Search',
-                  ),
-                  array(
-                    'id'    => 'adult-capacity',
-                    'type'  => 'number',
-                    'title' => 'Maximum Adult Capacity for Search',
-                  ),
-                  array(
-                    'id'    => 'min-children-capacity',
-                    'type'  => 'number',
-                    'title' => 'Minimum Children Capacity for Search',
-                  ),
-                  array(
-                    'id'    => 'children-capacity',
-                    'type'  => 'number',
-                    'title' => 'Maximum Children Capacity for Search',
-                  ),
-                  array(
-                    'id'    => 'booking-min-adult-capacity',
-                    'type'  => 'number',
-                    'title' => 'Minimum Adult Capacity for Booking',
-                  ),
-                  array(
-                    'id'    => 'booking-min-children-capacity',
-                    'type'  => 'number',
-                    'title' => 'Minimum Children Capacity for Booking',
-                  ),
-                  array(
-                    'id'      => 'search-form-calendar-icon',
-                    'type'    => 'switcher',
-                    'title'   => 'Search Form Calendar Icon',
-                    'default' => false
-                  ),
-                  array(
-                    'id'      => 'booking-form-calendar-icon',
-                    'type'    => 'switcher',
-                    'title'   => 'Booking Form Calendar Icon',
-                    'default' => false
-                  ),
-                  array(
-                    'id'          => 'booking-form-fields',
-                    'type'        => 'select',
-                    'title'       => 'Booking Form Fields',
-                    'multiple'    => true,
-                    'placeholder' => 'Select an option',
-                    'options'     => array(
-                      'adults'    => 'Adults',
-                      'childrens'    => 'Children',
-                      'rooms'    => 'Rooms',
-                      'extra_beds'    => 'Extra Beds',
-                    ),
-                    'default'     => ['adults', 'childrens', 'rooms', 'extra_beds']
-                  ),
-                  array(
-                    'id'    => 'check-in-time',
-                    'type'  => 'datetime',
-                    'title' => 'Check in Time',
-                    //'desc'  => 'Add Booking Time',
-                    'settings' => array(
-                      'time_24hr' => false,
-                      'noCalendar' => true,
-                      'enableTime' => true,
-                    ),
-                  ),
-                  array(
-                    'id'    => 'check-out-time',
-                    'type'  => 'datetime',
-                    'title' => 'Check out Time',
-                    //'desc'  => 'Add Booking Time',
-                    'settings' => array(
-                      'time_24hr' => false,
-                      'noCalendar' => true,
-                      'enableTime' => true,
-                    ),
+                    'id'            => 'payment-gateways',
+                    'type'          => 'tabbed',
+                    'title'         => 'Payment Gateways',
+                    'dependency' => array( 'booking-type', '==', 'native_checkout' ),
+                    'tabs'          => array(
+                      // --- Cash on Delivery -------------------------------------
+                      array(
+                        'title'     => 'Cash on Delivery',
+                        'icon'      => 'fas fa-hand-holding-usd',
+                        'fields'    => array(
+                          array(
+                            'id'      => 'gateway-cod-enable',
+                            'type'    => 'switcher',
+                            'title'   => 'Enable Cash on Delivery',
+                            'desc'    => 'Let customers reserve now and pay with cash on arrival / at the property.',
+                            'default' => true,
+                          ),
+                          array(
+                            'id'         => 'cod-title',
+                            'type'       => 'text',
+                            'title'      => 'Cash on Delivery',
+                            'desc'       => 'The label shown to customers on the checkout page.',
+                            'default'    => 'Cash on Delivery',
+                            'dependency' => array( 'gateway-cod-enable', '==', true ),
+                          ),
+                          array(
+                            'id'         => 'cod-description',
+                            'type'       => 'textarea',
+                            'title'      => 'Cash on Delivery Description',
+                            'desc'       => 'Short instructions shown under the title at checkout.',
+                            'default'    => 'Pay with cash upon arrival / at the property.',
+                            'dependency' => array( 'gateway-cod-enable', '==', true ),
+                          ),
+                        )
+                      ),
+                      array(
+                        'title'     => 'PayPal',
+                        'icon'      => 'fab fa-paypal',
+                        'fields'    => array(
+                            // --- PayPal ----------------------------------------------
+                            array(
+                              'id'      => 'gateway-paypal-enable',
+                              'type'    => 'switcher',
+                              'title'   => 'Enable PayPal',
+                              'desc'    => 'Requires a valid Client ID & Secret below.',
+                              'default' => true,
+                            ),
+                            array(
+                              'id'          => 'paypal-mode',
+                              'type'        => 'select',
+                              'title'       => 'PayPal Mode',
+                              'desc'        => 'Use "Sandbox" while testing and "Live" for real payments.',
+                              'options'     => array(
+                                'sandbox' => 'Sandbox',
+                                'live'    => 'Live',
+                              ),
+                              'default'     => 'sandbox',
+                              'dependency'  => array( 'gateway-paypal-enable', '==', true ),
+                            ),
+                            array(
+                              'id'    => 'paypal-client-id',
+                              'type'  => 'text',
+                              'title' => 'PayPal Client ID',
+                              'desc'  => 'PayPal REST API client ID. Required for the PayPal gateway.',
+                              'dependency' => array( 'gateway-paypal-enable', '==', true ),
+                            ),
+                            array(
+                              'id'    => 'paypal-client-secret',
+                              'type'  => 'text',
+                              'title' => 'PayPal Client Secret',
+                              'desc'  => 'PayPal REST API client secret. Required for the PayPal gateway.',
+                              'dependency' => array( 'gateway-paypal-enable', '==', true ),
+                            ),
+                          )
+                      ),
+                      array(
+                        'title'     => 'Tax',
+                        'icon'      => 'fas fa-percentage',
+                        'fields'    => array(
+                            // --- General ---------------------------------------------
+                            array(
+                            'id'    => 'native-checkout-tax-rate',
+                            'type'  => 'number',
+                            'title' => 'Native Checkout Tax Rate (%)',
+                            'desc'  => 'Optional tax percentage applied on the native checkout total.',
+                            'default' => 0,
+                          ),
+                        )
+                      )
+                    )
                   ),
                   array(
                     'id'        => 'holidays',
@@ -610,57 +750,10 @@ add_action( 'plugins_loaded', function(){
                   
                     ),
                   ),
-
-                  
                   
             )
           )
         );
-
-         ESHB::createSection( $prefix, array(
-          'title'  => 'Payment Gateways',
-          'fields' => array(
-                // A Notice
-                array(
-                  'type'    => 'notice',
-                  'style'   => 'info',
-                  'content' => 'This payment gateway option is only for native checkout.',
-                ),
-
-                array(
-                    'id'          => 'paypal-mode',
-                    'type'        => 'select',
-                    'title'       => 'PayPal Mode',
-                    'desc'        => 'Use "Sandbox" while testing and "Live" for real payments.',
-                    'options'     => array(
-                      'sandbox' => 'Sandbox',
-                      'live'    => 'Live',
-                    ),
-                    'default'     => 'sandbox',
-                  ),
-                  array(
-                    'id'    => 'paypal-client-id',
-                    'type'  => 'text',
-                    'title' => 'PayPal Client ID',
-                    'desc'  => 'PayPal REST API client ID. Required for the PayPal gateway.',
-                  ),
-                  array(
-                    'id'    => 'paypal-client-secret',
-                    'type'  => 'text',
-                    'title' => 'PayPal Client Secret',
-                    'desc'  => 'PayPal REST API client secret. Required for the PayPal gateway.',
-                  ),
-                  array(
-                    'id'    => 'native-checkout-tax-rate',
-                    'type'  => 'number',
-                    'title' => 'Native Checkout Tax Rate (%)',
-                    'desc'  => 'Optional tax percentage applied on the native checkout total.',
-                    'default' => 0,
-                  ),
-            
-          ))
-        );
-
       
         ESHB::createSection( $prefix, array(
           'title'  => 'Design',
@@ -1010,34 +1103,6 @@ add_action( 'plugins_loaded', function(){
         )
       );
 
-      ESHB::createSection( $prefix, array(
-        'title'  => 'Cart Blocking',
-        'fields' => array(
-          array(
-            'id'      => 'cart-blocking-switcher',
-            'type'    => 'switcher',
-            'title'   => 'Enable Cart Blocking',
-            'desc'    => 'Temporarily block calendar dates when a user adds to cart.',
-            'default' => false,
-          ),
-          array(
-            'id'         => 'cart-blocking-time',
-            'type'       => 'number',
-            'title'      => 'Blocking Duration (minutes)',
-            'desc'       => 'How long dates are held after a user adds to cart.',
-            'default'    => 5,
-            'dependency' => array( 'cart-blocking-switcher', '==', true ),
-          ),
-          array(
-            'id'         => 'cart-blocking-notice-msg',
-            'type'       => 'text',
-            'title'      => 'Checkout Countdown Message',
-            'desc'       => 'Text shown before the countdown timer on the cart/checkout page.',
-            'default'    => 'Your reservation is held for',
-            'dependency' => array( 'cart-blocking-switcher', '==', true ),
-          ),
-        ),
-      ) );
 
       // Create a section
       ESHB::createSection( $prefix, array(

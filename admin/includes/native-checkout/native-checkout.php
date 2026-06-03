@@ -23,6 +23,7 @@ require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-booking-handler.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-email-handler.php';
 
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'gateways/abstract-gateway.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'gateways/class-cod-gateway.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'gateways/class-paypal-gateway.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'gateways/class-gateway-manager.php';
 

@@ -140,8 +140,7 @@ class ESHB_Native_Pricing {
     }
 
     public static function tax_rate() {
-        $settings = get_option( 'eshb_settings', [] );
-        $rate = isset( $settings['native-checkout-tax-rate'] ) ? floatval( $settings['native-checkout-tax-rate'] ) : 0;
+        $rate = floatval( eshb_native_checkout_get_setting( 'native-checkout-tax-rate', 0 ) );
         return max( 0, $rate );
     }
 
