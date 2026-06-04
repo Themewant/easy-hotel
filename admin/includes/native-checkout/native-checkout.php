@@ -29,8 +29,17 @@ require_once ESHB_NATIVE_CHECKOUT_PATH . 'gateways/class-gateway-manager.php';
 
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-checkout.php';
 
+// Customer account area + booking cancellation system.
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-customer.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-cancellation-email.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-bookings.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-account-ajax.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-account-admin.php';
+require_once ESHB_NATIVE_CHECKOUT_PATH . 'account/class-account.php';
+
 add_action( 'plugins_loaded', function () {
     ESHB_Native_Checkout::instance();
+    ESHB_Native_Account::instance();
 }, 15 );
 
 /* -----------------------------------------------------------------------
@@ -80,6 +89,21 @@ if ( ! function_exists( 'eshb_native_checkout_create_page' ) ) {
 
         if ( ! is_wp_error( $page_id ) && $page_id ) {
             update_option( 'eshb_native_checkout_page_id', (int) $page_id );
+        }
+    }
+}
+
+/**
+ * Auto-create the customer account page on plugin activation so the
+ * [eshb_account] shortcode is reachable from a known URL.
+ */
+register_activation_hook( ESHB_PL_ROOT, 'eshb_native_account_create_page' );
+if ( ! function_exists( 'eshb_native_account_create_page' ) ) {
+    function eshb_native_account_create_page() {
+        if ( class_exists( 'ESHB_Native_Account' ) ) {
+            $account = ESHB_Native_Account::instance();
+            $account->customer->register_role();
+            $account->get_account_page_id( true );
         }
     }
 }

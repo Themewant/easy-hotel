@@ -370,6 +370,16 @@ add_action( 'plugins_loaded', function(){
                         'posts_per_page' => -1 // for get all pages (also it's same for posts).
                       ),
                   ),
+                   array(
+                    'id'          => 'archive-page-template-style',
+                    'type'        => 'select',
+                    'title'       => 'Room Archive Page Style',
+                    'options'     => array(
+                      'style-one' => 'Style One',
+                      'style-two' => 'Style Two'
+                    ),
+                    'default' => 'style-one',
+                  ),
                   array(
                     'id'          => 'single-page-template-style',
                     'type'        => 'select',
@@ -384,6 +394,16 @@ add_action( 'plugins_loaded', function(){
                     'id'          => 'search-result-page',
                     'type'        => 'select',
                     'title'       => 'Search Result Page',
+                    'placeholder' => 'Default',
+                    'options'     => 'pages',
+                    'query_args'  => array(
+                        'posts_per_page' => -1 // for get all pages (also it's same for posts).
+                      ),
+                  ),
+                  array(
+                    'id'          => 'account-page',
+                    'type'        => 'select',
+                    'title'       => 'Account Page',
                     'placeholder' => 'Default',
                     'options'     => 'pages',
                     'query_args'  => array(

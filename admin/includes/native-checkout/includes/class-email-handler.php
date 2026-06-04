@@ -148,6 +148,26 @@ class ESHB_Native_Email_Handler {
                     <tr><td style="padding:6px 0;font-weight:bold;border-top:1px solid #e5e7eb;"><?php esc_html_e( 'Total paid', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e5e7eb;"><?php echo wp_kses_post( $total_html ); ?></td></tr>
                 </table>
 
+                <?php
+                // Customer-only call to action: let them jump straight to
+                // the account area to view or manage this booking.
+                if ( $context === 'customer' && class_exists( 'ESHB_Native_Account' ) ) :
+                    $account_url = ESHB_Native_Account::instance()->get_account_url();
+                    if ( $account_url ) :
+                        ?>
+                        <p style="margin:24px 0 0;">
+                            <a href="<?php echo esc_url( $account_url ); ?>" style="display:inline-block;background:#212121;color:#ffffff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold;">
+                                <?php esc_html_e( 'Manage your booking', 'easy-hotel' ); ?>
+                            </a>
+                        </p>
+                        <p style="margin:8px 0 0;color:#6b7280;font-size:12px;">
+                            <?php esc_html_e( 'View your bookings and manage your account anytime from your account dashboard.', 'easy-hotel' ); ?>
+                        </p>
+                        <?php
+                    endif;
+                endif;
+                ?>
+
                 <?php if ( $context === 'admin' ) : ?>
                     <h3 style="font-size:16px;margin:24px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">
                         <?php esc_html_e( 'Customer', 'easy-hotel' ); ?>

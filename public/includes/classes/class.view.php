@@ -4,14 +4,14 @@ class ESHB_View extends ESHB_MAIN{
 
     private static $query = null;
 	
-    public function eshb_get_accomodation_grid($query, $adult_quantity = 1, $children_quantity = 0, $column = 3, $thumbnail_size='eshb_thumbnail', $style=1, $start_date='', $end_date='', $booked_dates = []){
+    public function eshb_get_accomodation_grid($query, $adult_quantity = 1, $children_quantity = 0, $column = 3, $thumbnail_size='eshb_thumbnail', $style='style-one', $start_date='', $end_date='', $booked_dates = []){
     
         if($query != NULL || !empty($query)){
 
              // Check if the custom template exists in your plugin directory
-            $plugin_template = ESHB_PL_PATH . 'public/templates/template-parts/grid-style-'.$style. '.php';
-            $theme_template = get_stylesheet_directory() . '/easy-hotel/templates/template-parts/grid-style-'.$style.'.php';
-            $child_theme_template = get_template_directory() . '/easy-hotel/templates/template-parts/grid-style-'.$style.'.php';
+            $plugin_template = ESHB_PL_PATH . 'public/templates/template-parts/grid-'.$style. '.php';
+            $theme_template = get_stylesheet_directory() . '/easy-hotel/templates/template-parts/grid-'.$style.'.php';
+            $child_theme_template = get_template_directory() . '/easy-hotel/templates/template-parts/grid-'.$style.'.php';
     
             if (file_exists($child_theme_template)) {
                 $template = $child_theme_template;

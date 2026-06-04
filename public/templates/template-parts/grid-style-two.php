@@ -15,7 +15,7 @@
     if ($query->have_posts()) {
 
         ?>
-        <div class="eshb-item-grid" style="grid-template-columns: repeat(<?php echo esc_attr( $column )?>, 1fr);">
+        <div class="eshb-item-grid style-two">
         <?php
 
         $animation_delay = 0.2;
@@ -33,9 +33,10 @@
             $price = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id);
             $numeric_price = $hotel_core->get_eshb_price('', '', $accomodation_id);
             $title = get_the_title($accomodation_id);
+            $excerpt = $hotel_view->eshb_custom_excerpt(60, $accomodation_id);
             $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $string_night, $accomodation_id, $eshb_settings);
             
-            $booking_url = add_query_arg( 
+            $booking_url = add_query_arg(
                 array( 
                     'nonce' => $nonce, 
                     'start_date' => $start_date, 
@@ -46,51 +47,41 @@
                 get_the_permalink($accomodation_id) 
             );
 
+            if(has_post_thumbnail($accomodation_id)) {
+                $thumbnail_url = get_the_post_thumbnail_url( $accomodation_id, 'eshb_thumbnail');
+            } else {
+                $thumbnail_url = ESHB_DIR_URL . 'public/assets/img/placeholder.png';
+            }
+
             ?>
 
             <div class="grid-item  wow fadeInUp animated" data-wow-delay="<?php echo esc_attr( $animation_delay )?>s">
                 <div class="item-inner">
-                    <?php 
-                        if(has_post_thumbnail($accomodation_id)) {
-                            $thumbnail_url = get_the_post_thumbnail_url( $accomodation_id, 'eshb_thumbnail');
-                        } else {
-                            $thumbnail_url = ESHB_DIR_URL . 'public/assets/img/placeholder.png';
-                        }
-                    ?>
-                    <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
-                    <div class="pricing-info">
-                        <?php 
-                        if(!empty($numeric_price)){
-                        ?>
-                            <div class="label">
-                                <?php if (!empty($string_from)) { ?>
-                                    <?php echo esc_html($string_from); ?>
-                                <?php } else { ?>
-                                    <?php esc_html_e('From', 'easy-hotel'); ?>
-                                <?php } ?>                           
-                            </div>
-                            <h3 class="price"><?php echo wp_kses_post($price); ?>
-                            <div class="label"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></div></h3>
-                        <?php 
-                            } 
-                        ?>
-                        <a class="details-btn" href="<?php echo esc_url( $booking_url ); ?>"><?php echo esc_html($btn_text); ?></a>
-                    </div>
-
-                    <div class="hover-bg-one"></div>
-
-                    <div class="details-info">
-                        <?php
-                            do_action( 'eshb_before_details_info_html', $accomodation_id, $eshb_settings );
-                        ?>
-                        <h3 class="title"><?php echo esc_html($title); ?></h3>
-                        <div class="capacities eshb-text-center" style="background-size: cover; background-repeat: no-repeat;">
+                    <!-- Image -->
+                    <div class="thumbnail-col col-lg-6 col-sm-12 col-12">
+                        <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
+                        <div class="pricing-info">
                             <?php 
-                                $i = 0;
+                            if(!empty($numeric_price)){
+                            ?>
+                                <h3 class="price"><?php echo wp_kses_post($price); ?>
+                                <div class="label"> / <?php echo esc_html( eshb_get_translated_string($perodicity_string) );?></div></h3>
+                            <?php 
+                                } 
+                            ?>
+                        </div>
+                    </div>
+                    <!-- Text -->
+                    <div class="contents-col col-lg-6 col-sm-12 col-12">
+                    
+                        <h3 class="p-title"><a href="<?php the_permalink(); ?>"><?php echo get_the_title($accomodation_id); ?></a></h3>
+                        <div class="capacities">
+                            <?php 
                                 if ( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0) {
-                                    foreach ($accomodation_info_group as $key => $group) { 
-                                        $i++;
-                                        if($i >= 3) break;
+                                    $x = 0;
+                                    foreach ( $accomodation_info_group as $group ) { 
+                                        $x++;
+                                        if($x >= 3) break;
                                         ?>
                                         <span class="capacity">
                                             <?php echo esc_html($group['info_title']); ?>
@@ -99,8 +90,10 @@
                                 }
                             ?>
                         </div>
+                        <p class="desc"><?php echo esc_html($excerpt) ?></p>
+                        <a class="details-btn" href="<?php echo esc_url( $booking_url ); ?>"><?php echo esc_html( $btn_text )?></a>
+                    
                     </div>
-                    <div class="hover-bg-two"></div>
                 </div>
             </div>
             

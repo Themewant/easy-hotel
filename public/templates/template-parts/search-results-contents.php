@@ -30,6 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 $posts_order_by = isset($eshb_settings['accomodation_posts_order_by']) && !empty($eshb_settings['accomodation_posts_order_by']) ? $eshb_settings['accomodation_posts_order_by'] : 'id';
                 $posts_order = isset($eshb_settings['accomodation_posts_order']) && !empty($eshb_settings['accomodation_posts_order']) ? $eshb_settings['accomodation_posts_order'] : 'DESC';
                 $paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+                $style = isset($eshb_settings['archive-page-template-style']) && !empty($eshb_settings['archive-page-template-style']) ? $eshb_settings['archive-page-template-style'] : 'style-one';
                 $available_accomodations_args = array(
                     'post_type' => 'eshb_accomodation',
                     'post__in'  => $available_accomodation_ids,
@@ -42,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 $available_accomodations = new WP_Query($available_accomodations_args);
 
                 $view = new ESHB_View();
-                $template = $view->eshb_get_accomodation_grid($available_accomodations, $adult_quantity, $children_quantity, $posts_per_row, 'eshb_thumbnail', 1, $start_date, $end_date );
+                $template = $view->eshb_get_accomodation_grid($available_accomodations, $adult_quantity, $children_quantity, $posts_per_row, 'eshb_thumbnail', 'style-two', $start_date, $end_date );
 
             }else {
                 ?>

@@ -58,6 +58,22 @@ if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' 
                             <li><strong><?php esc_html_e( 'Booking total:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $thankyou_total_price ) ); ?></li>
                         <?php endif; ?>
                     </ul>
+                    <?php
+                    // Link to the customer account dashboard so the buyer can
+                    // view or manage this booking right away.
+                    if ( class_exists( 'ESHB_Native_Account' ) ) :
+                        $eshb_account_url = ESHB_Native_Account::instance()->get_account_url();
+                        if ( $eshb_account_url ) :
+                            ?>
+                            <p class="eshb-thankyou-actions">
+                                <a href="<?php echo esc_url( $eshb_account_url ); ?>" class="eshb-btn-submit">
+                                    <?php esc_html_e( 'View your bookings', 'easy-hotel' ); ?>
+                                </a>
+                            </p>
+                            <?php
+                        endif;
+                    endif;
+                    ?>
                 </div>
             </div>
         </div>

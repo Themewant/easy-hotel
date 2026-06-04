@@ -32,7 +32,7 @@
   font-family: var(--eshb-body-font);
 }
 .eshb-native-checkout .eshb-container {
-  max-width: 760px;
+  max-width: 760px !important;
   margin: 0 auto;
   padding: 0 16px;
 }
@@ -318,6 +318,10 @@
   font-size: 13px;
   text-decoration: underline;
 }
+.eshb-native-checkout .eshb-btn-link:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
 .eshb-native-checkout .eshb-coupon-message {
   margin: 8px 0 0;
   font-size: 13px;
@@ -429,6 +433,537 @@
 .eshb-native-checkout .eshb-thankyou-meta li {
   padding: 4px 0;
   font-size: 14px;
+}
+.eshb-native-checkout .eshb-thankyou-actions {
+  margin: 20px 0 0;
+}
+.eshb-native-checkout .eshb-thankyou-actions .eshb-btn-submit {
+  display: inline-block;
+  width: auto;
+}
+
+/* ============================================================
+ * Native Checkout — Customer Account area
+ * Reuses the same CSS variables and card styling as the
+ * checkout above so the two screens feel like one product.
+ * ============================================================ */
+.eshb-account {
+  color: var(--eshb-text-color);
+  padding: 40px 0;
+  font-family: var(--eshb-body-font);
+}
+.eshb-account .eshb-card {
+  background: rgba(241, 245, 249, 0.7803921569);
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-account .eshb-card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account {
+  /* ---- Login ------------------------------------------------ */
+}
+.eshb-account--login .eshb-account-login-box {
+  max-width: 420px;
+}
+.eshb-account .eshb-account-login-intro {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px;
+}
+.eshb-account .eshb-account-login-links {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.eshb-account .eshb-account-login-links a {
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-account .eshb-account-login-links .eshb-sep {
+  color: #9ca3af;
+  margin: 0 6px;
+}
+.eshb-account {
+  /* ---- Layout ----------------------------------------------- */
+}
+.eshb-account .eshb-account-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .eshb-account .eshb-account-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-account {
+  /* ---- Sidebar nav ------------------------------------------ */
+}
+.eshb-account .eshb-account-nav {
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+  position: sticky;
+  top: 80px;
+}
+.eshb-account .eshb-account-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding-bottom: 16px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #e5e7eb;
+}
+.eshb-account .eshb-account-user img {
+  border-radius: 50%;
+}
+.eshb-account .eshb-account-username {
+  font-weight: 600;
+  font-size: 15px;
+}
+.eshb-account .eshb-account-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.eshb-account .eshb-account-menu li {
+  margin: 0 0 4px;
+}
+.eshb-account .eshb-account-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--eshb-text-color);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 150ms, color 150ms;
+  text-decoration: none !important;
+}
+.eshb-account .eshb-account-menu-item .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.eshb-account .eshb-account-menu-item:hover, .eshb-account .eshb-account-menu-item.is-active {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account {
+  /* ---- Content panels --------------------------------------- */
+}
+.eshb-account .eshb-account-content {
+  min-width: 0;
+}
+.eshb-account .eshb-account-panel {
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-account .eshb-account-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.eshb-account .eshb-account-section-head h2, .eshb-account .eshb-account-section-head h3 {
+  margin: 0;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account .eshb-account-section-head h2 {
+  font-size: 20px;
+}
+.eshb-account .eshb-account-section-head h3 {
+  font-size: 16px;
+}
+.eshb-account .eshb-account-section-head--spaced {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-account .eshb-account-viewall {
+  font-size: 13px;
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-account {
+  /* ---- Dashboard ------------------------------------------- */
+}
+.eshb-account .eshb-account-welcome {
+  margin-bottom: 20px;
+}
+.eshb-account .eshb-account-welcome h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account .eshb-account-welcome-meta {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+.eshb-account .eshb-account-welcome-meta .eshb-sep {
+  margin: 0 6px;
+}
+.eshb-account .eshb-account-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .eshb-account .eshb-account-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.eshb-account .eshb-account-stat {
+  background: var(--eshb-white-color);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 18px 16px;
+  text-align: center;
+  border-top: 3px solid var(--eshb-primary-color);
+}
+.eshb-account .eshb-account-stat--active {
+  border-top-color: var(--eshb-success-color);
+}
+.eshb-account .eshb-account-stat--upcoming {
+  border-top-color: var(--eshb-primary-color);
+}
+.eshb-account .eshb-account-stat--cancelled {
+  border-top-color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-account-stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.eshb-account .eshb-account-stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.eshb-account {
+  /* ---- Tables ----------------------------------------------- */
+}
+.eshb-account .eshb-account-table-wrap {
+  overflow-x: auto;
+}
+.eshb-account .eshb-account-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.eshb-account .eshb-account-table th, .eshb-account .eshb-account-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+.eshb-account .eshb-account-table thead th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6b7280;
+  font-weight: 600;
+}
+.eshb-account .eshb-account-actions {
+  white-space: nowrap;
+}
+.eshb-account .eshb-account-date-sep {
+  margin: 0 6px;
+  color: #9ca3af;
+}
+.eshb-account {
+  /* ---- Badges ----------------------------------------------- */
+}
+.eshb-account .eshb-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  background: #e5e7eb;
+  color: #374151;
+}
+.eshb-account .eshb-badge--processing, .eshb-account .eshb-badge--completed {
+  background: #dcfce7;
+  color: #166534;
+}
+.eshb-account .eshb-badge--pending, .eshb-account .eshb-badge--on-hold, .eshb-account .eshb-badge--deposit-payment {
+  background: #fef9c3;
+  color: #854d0e;
+}
+.eshb-account .eshb-badge--cancelled, .eshb-account .eshb-badge--failed, .eshb-account .eshb-badge--refunded {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.eshb-account {
+  /* ---- Buttons ---------------------------------------------- */
+}
+.eshb-account .eshb-btn-link {
+  background: none;
+  border: none;
+  border-radius: 3px;
+  padding: 3px 6px;
+  color: var(--eshb-primary-color);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+}
+.eshb-account .eshb-btn-link:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account .eshb-btn-link.eshb-btn-danger {
+  color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-btn-link.eshb-btn-danger:hover {
+  background: var(--eshb-danger-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account .eshb-btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid var(--eshb-primary-color);
+  background: var(--eshb-white-color);
+  color: var(--eshb-primary-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.eshb-account .eshb-btn-submit {
+  padding: 11px 20px;
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.eshb-account .eshb-btn-submit:hover {
+  background: var(--eshb-territory-color);
+}
+.eshb-account .eshb-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.eshb-account .eshb-btn-submit.eshb-btn-danger {
+  background: var(--eshb-danger-color);
+}
+.eshb-account .eshb-btn-submit.eshb-btn-danger:hover {
+  filter: brightness(0.92);
+}
+.eshb-account .eshb-account-empty {
+  color: #6b7280;
+  font-size: 14px;
+  padding: 12px 0;
+}
+.eshb-account .eshb-account-notice {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.eshb-account .eshb-account-notice[hidden] {
+  display: none;
+}
+.eshb-account .eshb-account-notice--success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.eshb-account .eshb-account-notice--info {
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #bae6fd;
+}
+.eshb-account {
+  /* ---- Forms ------------------------------------------------ */
+}
+.eshb-account .eshb-account-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .eshb-account .eshb-account-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-account .eshb-account-field {
+  margin-bottom: 14px;
+}
+.eshb-account .eshb-account-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.eshb-account .eshb-account-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+}
+.eshb-account .eshb-account-field input:focus {
+  border-color: var(--eshb-primary-color);
+  outline: 2px solid rgba(171, 137, 101, 0.15);
+}
+.eshb-account .eshb-account-form-actions {
+  margin-top: 8px;
+}
+.eshb-account .eshb-account-form-msg,
+.eshb-account .eshb-account-modal-msg {
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+.eshb-account .eshb-account-form-msg.is-error,
+.eshb-account .eshb-account-modal-msg.is-error {
+  color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-account-form-msg.is-success,
+.eshb-account .eshb-account-modal-msg.is-success {
+  color: var(--eshb-success-color);
+}
+.eshb-account {
+  /* ---- Booking detail (modal) ------------------------------- */
+}
+.eshb-account .eshb-account-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.eshb-account .eshb-account-detail-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.eshb-account .eshb-account-detail-title {
+  margin: 18px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--eshb-territory-color);
+}
+.eshb-account .eshb-account-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.eshb-account .eshb-account-detail-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 5px;
+  width: 40%;
+}
+.eshb-account .eshb-account-detail-table td {
+  text-align: right;
+  padding: 5px;
+}
+.eshb-account .eshb-account-detail-text {
+  font-size: 14px;
+  margin: 0;
+}
+.eshb-account {
+  /* ---- Cancellation form ------------------------------------ */
+}
+.eshb-account .eshb-account-cancel h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.eshb-account .eshb-account-field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 12px 0 6px;
+}
+.eshb-account .eshb-account-select,
+.eshb-account .eshb-account-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+.eshb-account .eshb-account-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ---- Modal shell (kept outside .eshb-account scroll context) -- */
+.eshb-account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eshb-account-modal[hidden] {
+  display: none;
+}
+.eshb-account-modal .eshb-account-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+}
+.eshb-account-modal .eshb-account-modal-dialog {
+  position: relative;
+  background: var(--eshb-white-color);
+  border-radius: 10px;
+  padding: 24px;
+  width: 92%;
+  max-width: 520px;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+.eshb-account-modal .eshb-account-modal-x {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--eshb-danger-color);
+  cursor: pointer;
+  box-shadow: none;
+}
+.eshb-account-modal .eshb-account-modal-loading {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px 0;
+}
+
+body.eshb-account-modal-open {
+  overflow: hidden;
 }
 
 body.single .accomodation-gallery .swiper-wrapper {
@@ -1493,13 +2028,13 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   align-items: center;
   margin: auto;
 }
-.eshb-item-grid .grid-item {
+.eshb-item-grid.style-one .grid-item {
   position: relative;
 }
-.eshb-item-grid .grid-item .overflow-hidden {
+.eshb-item-grid.style-one .grid-item .overflow-hidden {
   overflow: hidden;
 }
-.eshb-item-grid .grid-item .item-inner {
+.eshb-item-grid.style-one .grid-item .item-inner {
   background-size: cover;
   background-repeat: no-repeat;
   visibility: visible;
@@ -1510,20 +2045,20 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   outline: none;
   overflow: hidden;
 }
-.eshb-item-grid .grid-item .item-inner .accomodation-rating {
+.eshb-item-grid.style-one .grid-item .item-inner .accomodation-rating {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.eshb-item-grid .grid-item .item-inner .accomodation-rating .eshb-star-rating {
+.eshb-item-grid.style-one .grid-item .item-inner .accomodation-rating .eshb-star-rating {
   font-size: 16px;
 }
-.eshb-item-grid .grid-item .item-inner .thumbnail {
+.eshb-item-grid.style-one .grid-item .item-inner .thumbnail {
   max-width: 100%;
   height: auto;
   width: -webkit-fill-available;
 }
-.eshb-item-grid .grid-item .item-inner .pricing-info {
+.eshb-item-grid.style-one .grid-item .item-inner .pricing-info {
   opacity: 0;
   z-index: 4;
   margin-top: 40px;
@@ -1535,11 +2070,11 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   color: var(--eshb-white-color);
   text-align: center;
 }
-.eshb-item-grid .grid-item .item-inner .pricing-info .label {
+.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .label {
   font-size: 14px;
   margin-bottom: 10px;
 }
-.eshb-item-grid .grid-item .item-inner .pricing-info .price {
+.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .price {
   font-size: 40px;
   line-height: 1;
   margin-bottom: 1.5rem;
@@ -1550,7 +2085,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   width: max-content;
   margin-inline: auto;
 }
-.eshb-item-grid .grid-item .item-inner .pricing-info .details-btn {
+.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .details-btn {
   color: var(--eshb-white-color);
   border: solid 1px rgba(255, 255, 255, 0.35);
   display: inline-block;
@@ -1568,7 +2103,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   font-family: var(--eshb-body-font);
   width: max-content;
 }
-.eshb-item-grid .grid-item .item-inner .hover-bg-one {
+.eshb-item-grid.style-one .grid-item .item-inner .hover-bg-one {
   position: absolute;
   z-index: 2;
   opacity: 0;
@@ -1580,7 +2115,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   top: 0 !important;
   transition: 0.5s;
 }
-.eshb-item-grid .grid-item .item-inner .details-info {
+.eshb-item-grid.style-one .grid-item .item-inner .details-info {
   position: absolute;
   transition: 0.5s;
   z-index: 2;
@@ -1591,21 +2126,21 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center !important;
   width: 100%;
 }
-.eshb-item-grid .grid-item .item-inner .details-info .title,
-.eshb-item-grid .grid-item .item-inner .details-info .p-title {
+.eshb-item-grid.style-one .grid-item .item-inner .details-info .title,
+.eshb-item-grid.style-one .grid-item .item-inner .details-info .p-title {
   margin-bottom: 0;
   font-size: 26px;
   line-height: 1.4em;
   color: var(--eshb-white-color);
 }
-.eshb-item-grid .grid-item .item-inner .details-info .capacities {
+.eshb-item-grid.style-one .grid-item .item-inner .details-info .capacities {
   font-size: 14px;
 }
-.eshb-item-grid .grid-item .item-inner .details-info .capacities .capacity {
+.eshb-item-grid.style-one .grid-item .item-inner .details-info .capacities .capacity {
   margin-right: 0.5rem !important;
   margin-left: 0.5rem !important;
 }
-.eshb-item-grid .grid-item .item-inner .hover-bg-two {
+.eshb-item-grid.style-one .grid-item .item-inner .hover-bg-two {
   position: absolute;
   background: linear-gradient(180deg, rgba(171, 137, 101, 0) 0%, var(--eshb-primary-color) 100%);
   height: 40%;
@@ -1615,15 +2150,87 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   bottom: 0 !important;
   transition: 0.5s;
 }
-.eshb-item-grid .grid-item .item-inner:hover .pricing-info {
+.eshb-item-grid.style-one .grid-item .item-inner:hover .pricing-info {
   margin-top: 0;
   opacity: 1;
 }
-.eshb-item-grid .grid-item .item-inner:hover .hover-bg-one {
+.eshb-item-grid.style-one .grid-item .item-inner:hover .hover-bg-one {
   opacity: 1;
 }
-.eshb-item-grid .grid-item .item-inner:hover .details-info {
+.eshb-item-grid.style-one .grid-item .item-inner:hover .details-info {
   opacity: 0;
+}
+.eshb-item-grid.style-two .grid-item .item-inner {
+  display: flex;
+  position: relative;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .thumbnail-col {
+  height: 350px;
+  overflow: hidden;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .thumbnail-col img {
+  width: 100%;
+  transition: 0.35s ease-in-out;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing-info {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  background: #fff;
+  padding: 10px 15px;
+  position: absolute;
+  left: 15px;
+  top: 15px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing-info .label {
+  font-size: 14px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing-info .price {
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  width: max-content;
+  margin: 0;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .capacities {
+  margin-bottom: 10px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .capacities .capacity {
+  margin-right: 1.5rem;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .title,
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .p-title {
+  margin-bottom: 0;
+  font-size: 26px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .title a,
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .p-title a {
+  line-height: 1.4em;
+  color: var(--eshb-text-color);
+  text-decoration: none;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col a.details-btn {
+  background: var(--eshb-primary-color);
+  width: auto;
+  max-width: max-content;
+  color: var(--eshb-white-color);
+  padding: 8px 20px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-decoration: none;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col a.details-btn:hover {
+  background: var(--eshb-dark-color);
+  color: var(--eshb-white-color);
+}
+.eshb-item-grid.style-two .grid-item:hover .thumbnail-col img {
+  transform: scale(1.06);
 }
 
 .eshb-price del {
