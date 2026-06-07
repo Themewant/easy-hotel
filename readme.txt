@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -249,6 +249,10 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 2.0.1 =
+* Added: Native checkout
+* Added: List style view for archive and search result page
 
 = 2.0.0 =
 * Fixed: calendar opening issue for search form

@@ -2028,13 +2028,13 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   align-items: center;
   margin: auto;
 }
-.eshb-item-grid.style-one .grid-item {
+.eshb-item-grid .grid-item {
   position: relative;
 }
-.eshb-item-grid.style-one .grid-item .overflow-hidden {
+.eshb-item-grid .grid-item .overflow-hidden {
   overflow: hidden;
 }
-.eshb-item-grid.style-one .grid-item .item-inner {
+.eshb-item-grid .grid-item .item-inner {
   background-size: cover;
   background-repeat: no-repeat;
   visibility: visible;
@@ -2045,20 +2045,20 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   outline: none;
   overflow: hidden;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .accomodation-rating {
+.eshb-item-grid .grid-item .item-inner .accomodation-rating {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .accomodation-rating .eshb-star-rating {
+.eshb-item-grid .grid-item .item-inner .accomodation-rating .eshb-star-rating {
   font-size: 16px;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .thumbnail {
+.eshb-item-grid .grid-item .item-inner .thumbnail {
   max-width: 100%;
   height: auto;
   width: -webkit-fill-available;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .pricing-info {
+.eshb-item-grid .grid-item .item-inner .pricing-info {
   opacity: 0;
   z-index: 4;
   margin-top: 40px;
@@ -2070,11 +2070,11 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   color: var(--eshb-white-color);
   text-align: center;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .label {
+.eshb-item-grid .grid-item .item-inner .pricing-info .label {
   font-size: 14px;
   margin-bottom: 10px;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .price {
+.eshb-item-grid .grid-item .item-inner .pricing-info .price {
   font-size: 40px;
   line-height: 1;
   margin-bottom: 1.5rem;
@@ -2085,7 +2085,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   width: max-content;
   margin-inline: auto;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .pricing-info .details-btn {
+.eshb-item-grid .grid-item .item-inner .pricing-info .details-btn {
   color: var(--eshb-white-color);
   border: solid 1px rgba(255, 255, 255, 0.35);
   display: inline-block;
@@ -2103,7 +2103,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   font-family: var(--eshb-body-font);
   width: max-content;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .hover-bg-one {
+.eshb-item-grid .grid-item .item-inner .hover-bg-one {
   position: absolute;
   z-index: 2;
   opacity: 0;
@@ -2115,7 +2115,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   top: 0 !important;
   transition: 0.5s;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .details-info {
+.eshb-item-grid .grid-item .item-inner .details-info {
   position: absolute;
   transition: 0.5s;
   z-index: 2;
@@ -2126,21 +2126,21 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center !important;
   width: 100%;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .details-info .title,
-.eshb-item-grid.style-one .grid-item .item-inner .details-info .p-title {
+.eshb-item-grid .grid-item .item-inner .details-info .title,
+.eshb-item-grid .grid-item .item-inner .details-info .p-title {
   margin-bottom: 0;
   font-size: 26px;
   line-height: 1.4em;
   color: var(--eshb-white-color);
 }
-.eshb-item-grid.style-one .grid-item .item-inner .details-info .capacities {
+.eshb-item-grid .grid-item .item-inner .details-info .capacities {
   font-size: 14px;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .details-info .capacities .capacity {
+.eshb-item-grid .grid-item .item-inner .details-info .capacities .capacity {
   margin-right: 0.5rem !important;
   margin-left: 0.5rem !important;
 }
-.eshb-item-grid.style-one .grid-item .item-inner .hover-bg-two {
+.eshb-item-grid .grid-item .item-inner .hover-bg-two {
   position: absolute;
   background: linear-gradient(180deg, rgba(171, 137, 101, 0) 0%, var(--eshb-primary-color) 100%);
   height: 40%;
@@ -2150,19 +2150,29 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   bottom: 0 !important;
   transition: 0.5s;
 }
-.eshb-item-grid.style-one .grid-item .item-inner:hover .pricing-info {
+.eshb-item-grid .grid-item .item-inner:hover .pricing-info {
   margin-top: 0;
   opacity: 1;
 }
-.eshb-item-grid.style-one .grid-item .item-inner:hover .hover-bg-one {
+.eshb-item-grid .grid-item .item-inner:hover .hover-bg-one {
   opacity: 1;
 }
-.eshb-item-grid.style-one .grid-item .item-inner:hover .details-info {
+.eshb-item-grid .grid-item .item-inner:hover .details-info {
   opacity: 0;
+}
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two {
+    gap: 50px;
+  }
 }
 .eshb-item-grid.style-two .grid-item .item-inner {
   display: flex;
   position: relative;
+}
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two .grid-item .item-inner {
+    flex-direction: column;
+  }
 }
 .eshb-item-grid.style-two .grid-item .item-inner .thumbnail-col {
   height: 350px;
@@ -2172,7 +2182,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   width: 100%;
   transition: 0.35s ease-in-out;
 }
-.eshb-item-grid.style-two .grid-item .item-inner .pricing-info {
+.eshb-item-grid.style-two .grid-item .item-inner .pricing {
   display: flex;
   align-items: center;
   width: fit-content;
@@ -2182,10 +2192,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   left: 15px;
   top: 15px;
 }
-.eshb-item-grid.style-two .grid-item .item-inner .pricing-info .label {
+.eshb-item-grid.style-two .grid-item .item-inner .pricing .label {
   font-size: 14px;
 }
-.eshb-item-grid.style-two .grid-item .item-inner .pricing-info .price {
+.eshb-item-grid.style-two .grid-item .item-inner .pricing .price {
   font-size: 18px;
   line-height: 1;
   display: flex;
@@ -2197,6 +2207,11 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two .grid-item .item-inner .contents-col {
+    padding: 15px 20px 0 0;
+  }
 }
 .eshb-item-grid.style-two .grid-item .item-inner .contents-col .capacities {
   margin-bottom: 10px;

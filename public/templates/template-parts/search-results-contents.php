@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 $available_accomodations = new WP_Query($available_accomodations_args);
 
                 $view = new ESHB_View();
-                $template = $view->eshb_get_accomodation_grid($available_accomodations, $adult_quantity, $children_quantity, $posts_per_row, 'eshb_thumbnail', 'style-two', $start_date, $end_date );
+                $template = $view->eshb_get_accomodation_grid($available_accomodations, $adult_quantity, $children_quantity, $posts_per_row, 'eshb_thumbnail',  $style, $start_date, $end_date );
 
             }else {
                 ?>

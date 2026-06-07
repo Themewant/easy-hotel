@@ -60,7 +60,7 @@
                     <!-- Image -->
                     <div class="thumbnail-col col-lg-6 col-sm-12 col-12">
                         <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
-                        <div class="pricing-info">
+                        <div class="pricing">
                             <?php 
                             if(!empty($numeric_price)){
                             ?>

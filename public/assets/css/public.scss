@@ -999,8 +999,8 @@ nav.eshb-pagination {
         align-items: center;
         margin: auto;
     }
-    &.style-one {
-        .grid-item {
+  
+    .grid-item {
         position: relative;
 
         .overflow-hidden {
@@ -1152,13 +1152,19 @@ nav.eshb-pagination {
             }
         }
     }
-    }
+    
     
     &.style-two {
+        @media (max-width: 991.98px) {
+           gap: 50px;
+        }
         .grid-item {
             .item-inner {
                 display: flex;
                 position: relative;
+                @media (max-width: 991.98px) {
+                    flex-direction: column;
+                }
                 .thumbnail-col {
                     height: 350px;
                     overflow: hidden;
@@ -1167,7 +1173,7 @@ nav.eshb-pagination {
                         transition: 0.35s ease-in-out;
                     }
                 }
-                .pricing-info {
+                .pricing {
                     display: flex;
                     align-items: center;
                     width: fit-content;
@@ -1193,6 +1199,9 @@ nav.eshb-pagination {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
+                    @media (max-width: 991.98px) {
+                        padding: 15px 20px 0 0;
+                    }
                     .capacities {
                         margin-bottom: 10px;
                         .capacity {
