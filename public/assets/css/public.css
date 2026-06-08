@@ -283,6 +283,10 @@
 .eshb-native-checkout .eshb-order-review-actions .button.eshb-add-more-btn {
   text-decoration: none;
   padding: 10px 20px;
+  background-color: var(--eshb-primary-color);
+}
+.eshb-native-checkout .eshb-order-review-actions .button.eshb-add-more-btn:hover {
+  background-color: var(--eshb-dark-color);
 }
 .eshb-native-checkout .eshb-coupon-panel {
   margin-top: 12px;

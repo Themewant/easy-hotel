@@ -290,6 +290,10 @@
         .button.eshb-add-more-btn {
             text-decoration: none;
             padding: 10px 20px;
+            background-color: var(--eshb-primary-color);
+            &:hover {
+                background-color: var(--eshb-dark-color);
+            }
         }
     }
 
