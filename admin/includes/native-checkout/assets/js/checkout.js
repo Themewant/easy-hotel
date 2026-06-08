@@ -541,6 +541,55 @@
         });
     }
 
+    /* -----------------------------------------------------------------
+     * Cart-blocking hold countdown.
+     *
+     * The server hands us cartBlock.until (unix seconds). We surface the
+     * shared notice banner and tick down to it; on expiry we release the
+     * reservation server-side (freeing the dates for others) and reload to
+     * the empty state so a stale reservation can't be completed.
+     * --------------------------------------------------------------- */
+    function releaseReservationAndReload() {
+        var payload = { action: 'eshb_native_release_reservation', nonce: state.config.nonce };
+        if (state.config.token && state.config.tokenParam) {
+            payload[state.config.tokenParam] = state.config.token;
+        }
+        $.post(state.config.ajaxUrl, payload).always(function () {
+            window.location.reload();
+        });
+    }
+
+    function initCartBlockTimer() {
+        var cb = state.config.cartBlock;
+        if (!cb || !cb.enabled || !cb.until) return;
+
+        var notice = document.getElementById('eshb-cart-block-notice');
+        if (!notice) return;
+
+        var untilMs = parseInt(cb.until, 10) * 1000;
+        if (!untilMs || untilMs <= Date.now()) {
+            // Hold already lapsed before the page finished loading.
+            releaseReservationAndReload();
+            return;
+        }
+
+        notice.style.display = 'block';
+        var timerEl = notice.querySelector('.eshb-block-timer');
+
+        var intervalId = setInterval(function () {
+            var remaining = Math.floor((untilMs - Date.now()) / 1000);
+            if (remaining <= 0) {
+                clearInterval(intervalId);
+                if (timerEl) timerEl.textContent = '0:00';
+                releaseReservationAndReload();
+                return;
+            }
+            var mins = Math.floor(remaining / 60);
+            var secs = remaining % 60;
+            if (timerEl) timerEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }, 1000);
+    }
+
     function bindFormSubmit() {
         $('#eshbNativeCheckoutForm').on('submit', function (e) {
             e.preventDefault();
@@ -566,6 +615,7 @@
         bindFormSubmit();
         initLocationSelects();
         applyPricingToDOM();
+        initCartBlockTimer();
 
         // Initialise the pre-selected gateway (server marks one radio as
         // checked) so state.gateway is set and the correct UI — submit

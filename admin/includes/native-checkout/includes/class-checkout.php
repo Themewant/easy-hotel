@@ -42,6 +42,11 @@ class ESHB_Native_Checkout {
         add_action( 'wp_ajax_nopriv_eshb_native_create_payment', [ $this, 'ajax_create_payment' ] );
         add_action( 'wp_ajax_eshb_native_complete_checkout',        [ $this, 'ajax_complete_checkout' ] );
         add_action( 'wp_ajax_nopriv_eshb_native_complete_checkout', [ $this, 'ajax_complete_checkout' ] );
+
+        // Cart-blocking: release the reservation + hold when the hold
+        // countdown expires on the checkout page.
+        add_action( 'wp_ajax_eshb_native_release_reservation',        [ $this, 'ajax_release_reservation' ] );
+        add_action( 'wp_ajax_nopriv_eshb_native_release_reservation', [ $this, 'ajax_release_reservation' ] );
     }
 
     public function register_shortcode() {
@@ -102,6 +107,20 @@ class ESHB_Native_Checkout {
 
         $token = eshb_native_checkout_set_reservation( $reservation );
 
+        // Place a temporary hold on the dates so concurrent visitors are
+        // told these dates are reserved. The hold is keyed by the native
+        // token (now resolvable via the cookie set above), and released on
+        // booking completion or when the countdown expires. Must run after
+        // set_reservation() so the session token exists.
+        if ( $token ) {
+            ESHB_Booking::instance()->eshb_block_dates_for_reservation(
+                $reservation['accomodation_id'],
+                $reservation['start_date'],
+                $reservation['end_date'],
+                max( 1, (int) $reservation['room_quantity'] )
+            );
+        }
+
         // Pass the reservation token in the redirect URL — cookies are
         // unreliable on some live hosts (Set-Cookie stripped from AJAX
         // responses, edge caches, etc.) so the URL is the source of
@@ -159,6 +178,13 @@ class ESHB_Native_Checkout {
                     esc_html( $available )
                 ),
             ];
+        }
+
+        // Reject dates another visitor is temporarily holding (cart
+        // blocking), mirroring the WooCommerce add-to-cart flow.
+        $conflict = $booking->eshb_get_cart_block_conflict( $accomodation_id, $start_date, $end_date );
+        if ( ! empty( $conflict ) ) {
+            return [ 'code' => 'cart_blocked', 'message' => $conflict ];
         }
 
         return null;
@@ -231,6 +257,19 @@ class ESHB_Native_Checkout {
 
         $reservation_view = $reservation ? $this->build_reservation_view( $reservation ) : null;
 
+        // Cart-blocking countdown data for the checkout page. `until` is
+        // the unix timestamp this visitor's hold expires at (0 when none
+        // or blocking disabled); the JS runs a live countdown and releases
+        // the reservation when it reaches zero.
+        $eshb_settings_cb = get_option( 'eshb_settings', [] );
+        $cart_block = [ 'enabled' => false, 'until' => 0 ];
+        if ( ! empty( $eshb_settings_cb['cart-blocking-switcher'] ) && $reservation && ! empty( $reservation['accomodation_id'] ) ) {
+            $cart_block = [
+                'enabled' => true,
+                'until'   => ESHB_Booking::instance()->eshb_get_my_block_until( (int) $reservation['accomodation_id'] ),
+            ];
+        }
+
         // Load PayPal SDK if available (no-op when no gateway configured).
         $paypal_settings = $manager->get_gateway( 'paypal' );
         if ( $paypal_settings && $paypal_settings->is_enabled() ) {
@@ -261,6 +300,7 @@ class ESHB_Native_Checkout {
             'reservation'      => $reservation_view,
             'pricing'          => $pricing,
             'gateways'         => $gateways,
+            'cartBlock'        => $cart_block,
             'i18n'        => [
                 'missingTerms'         => __( 'Please accept the terms and conditions.', 'easy-hotel' ),
                 'missingFields'        => __( 'Please fill in all required fields.', 'easy-hotel' ),
@@ -639,6 +679,12 @@ class ESHB_Native_Checkout {
         }
 
         // 7. Clear the reservation transient — no double-bookings on refresh.
+        //    Also release the temporary cart-blocking hold: the dates are
+        //    now a confirmed booking, so the short-lived hold is redundant.
+        $blocked_accom = (int) ( $reservation['accomodation_id'] ?? 0 );
+        if ( $blocked_accom ) {
+            ESHB_Booking::instance()->eshb_release_cart_block( $blocked_accom );
+        }
         eshb_native_checkout_clear_reservation();
 
         $redirect = add_query_arg( [ 'booking' => $booking_id ], eshb_native_checkout_url() );
@@ -647,6 +693,25 @@ class ESHB_Native_Checkout {
             'booking_id'   => $booking_id,
             'redirect_url' => apply_filters( 'eshb_native_checkout_thankyou_url', $redirect, $booking_id ),
         ] );
+    }
+
+    /**
+     * Release the current reservation and its cart-blocking hold. Called
+     * from the checkout page when the hold countdown reaches zero so the
+     * held dates are freed for other visitors and a stale reservation can't
+     * be completed after expiry (the page reloads to the empty state).
+     */
+    public function ajax_release_reservation() {
+        $this->verify_native_nonce();
+
+        $reservation = eshb_native_checkout_get_reservation();
+        if ( is_array( $reservation ) && ! empty( $reservation['accomodation_id'] ) ) {
+            ESHB_Booking::instance()->eshb_release_cart_block( (int) $reservation['accomodation_id'] );
+        }
+
+        eshb_native_checkout_clear_reservation();
+
+        wp_send_json_success( [ 'released' => true ] );
     }
 
     /* -----------------------------------------------------------------------

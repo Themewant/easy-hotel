@@ -548,7 +548,6 @@ add_action( 'plugins_loaded', function(){
                     'title'   => 'Enable Cart Blocking',
                     'desc'    => 'Temporarily block calendar dates when a user adds to cart.',
                     'default' => false,
-                    'dependency' => array( 'booking-type', '==', 'woocommerce' ),
                   ),
                   array(
                     'id'         => 'cart-blocking-time',

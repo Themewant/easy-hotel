@@ -273,6 +273,17 @@
 .eshb-native-checkout .eshb-coupon-prompt a:hover {
   color: var(--eshb-territory-color);
 }
+.eshb-native-checkout .eshb-order-review-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.eshb-native-checkout .eshb-order-review-actions .button.eshb-add-more-btn {
+  text-decoration: none;
+  padding: 10px 20px;
+}
 .eshb-native-checkout .eshb-coupon-panel {
   margin-top: 12px;
 }
@@ -2881,7 +2892,7 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   color: #fff;
   text-align: center;
   padding: 10px 20px;
-  z-index: 100000;
+  z-index: 2;
   font-size: 14px;
   font-weight: 600;
 }

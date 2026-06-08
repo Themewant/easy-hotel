@@ -281,6 +281,18 @@
         }
     }
 
+    .eshb-order-review-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        .button.eshb-add-more-btn {
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+    }
+
     .eshb-coupon-panel {
         margin-top: 12px;
 

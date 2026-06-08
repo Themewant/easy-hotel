@@ -92,6 +92,15 @@ $terms_url        = $terms_pid ? get_permalink( (int) $terms_pid ) : '#';
 ?>
 <div class="eshb-native-checkout" id="eshbNativeCheckoutRoot">
     <div class="eshb-container">
+        <?php
+        // Cart-blocking hold countdown banner. Hidden by default; the
+        // checkout JS reveals it and runs the timer when a hold is active.
+        // The markup is shared with the WooCommerce flow.
+        if ( ! empty( $eshb_settings['cart-blocking-switcher'] ) && class_exists( 'ESHB_Booking' ) ) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the method.
+            echo ESHB_Booking::instance()->eshb_cart_block_notice_html( 'inline' );
+        }
+        ?>
         <form class="eshb-native-checkout-form" id="eshbNativeCheckoutForm" novalidate>
 
             <div class="eshb-card">
@@ -237,8 +246,19 @@ $terms_url        = $terms_pid ? get_permalink( (int) $terms_pid ) : '#';
                 ?>
                 <div class="eshb-coupon-section">
                     <p class="eshb-coupon-prompt"<?php echo $coupon_open ? ' hidden' : ''; ?>>
-                        <?php esc_html_e( 'Do you have coupon?', 'easy-hotel' ); ?>
-                        <a href="#" id="eshbCouponToggle" aria-expanded="<?php echo $coupon_open ? 'true' : 'false'; ?>" aria-controls="eshbCouponPanel"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></a>
+                        <div class="eshb-order-review-actions">
+                            <?php
+                            $archive_url = get_post_type_archive_link( 'eshb_accomodation' );
+                            if ( $archive_url ) : ?>
+                            <a href="<?php echo esc_url( $archive_url ); ?>" class="button eshb-add-more-btn">
+                                <?php esc_html_e( 'Add more accommodation', 'easy-hotel' ); ?>
+                            </a>
+                            <?php endif; ?>
+                            <div class="eshb-coupon-toggle-wrap">
+                                <?php esc_html_e( 'Do you have coupon?', 'easy-hotel' ); ?>
+                                <a href="#" id="eshbCouponToggle" aria-expanded="<?php echo $coupon_open ? 'true' : 'false'; ?>" aria-controls="eshbCouponPanel"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></a>
+                            </div>
+                        </div>
                     </p>
                     <div class="eshb-coupon-panel" id="eshbCouponPanel"<?php echo $coupon_open ? '' : ' hidden'; ?>>
                         <div class="eshb-coupon-row">
