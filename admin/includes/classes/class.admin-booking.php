@@ -389,10 +389,10 @@ class ESHB_Admin_Booking {
     
         // update title if its not same to old title
         if ( get_post_field( 'post_title', $post_id ) !== $new_title ) {
-            // prevent loop properly (named callback!)
-            remove_action( 'save_post_eshb_booking', 'eshb_update_booking_title_on_save', 999 );
-            wp_update_post( [ 
-                'ID' => $post_id, 
+            // Recursion is prevented by the static $running guard above; no
+            // need to remove/re-add the hook here.
+            wp_update_post( [
+                'ID' => $post_id,
                 'post_title' => $new_title,
                 ] );
         }

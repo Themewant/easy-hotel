@@ -57,9 +57,9 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
         $amount   = 0.0;
         $currency = $this->get_currency_code();
 
-        if ( function_exists( 'eshb_native_checkout_get_reservation' ) && class_exists( 'ESHB_Native_Pricing' ) ) {
-            $reservation = eshb_native_checkout_get_reservation();
-            if ( is_array( $reservation ) ) {
+        if ( function_exists( 'eshb_native_checkout_get_items' ) && class_exists( 'ESHB_Native_Pricing' ) ) {
+            $items = eshb_native_checkout_get_items();
+            if ( ! empty( $items ) ) {
                 // Nonce is verified by ESHB_Native_Checkout before this
                 // gateway method runs; mirror the handler's inputs so the
                 // recalculated total matches the booking total exactly.
@@ -68,7 +68,7 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
                 $email  = isset( $_POST['email'] )  ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
                 // phpcs:enable WordPress.Security.NonceVerification.Missing
 
-                $pricing = ESHB_Native_Pricing::calculate( $reservation, $coupon, $email );
+                $pricing = ESHB_Native_Pricing::calculate_cart( $items, $coupon, $email );
                 $amount  = (float) ( $pricing['grandTotal'] ?? $pricing['totalPrice'] ?? 0 );
             }
         }

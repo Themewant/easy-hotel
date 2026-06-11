@@ -256,6 +256,34 @@
   padding-top: 16px;
   border-top: 1px dashed #e5e7eb;
 }
+.eshb-native-checkout .eshb-cart-item-aside {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.eshb-native-checkout button.eshb-remove-item {
+  background: var(--eshb-danger-color);
+  color: var(--eshb-white-color);
+  padding: 1px 4px;
+  font-size: 12px;
+  height: 13px;
+  border-radius: 3px;
+  display: grid;
+  place-content: center;
+}
+.eshb-native-checkout .eshb-add-more-btn {
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background-color: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  font-size: 14px;
+  text-decoration: none !important;
+}
+.eshb-native-checkout .eshb-add-more-btn:hover {
+  background-color: var(--eshb-dark-color);
+  color: var(--eshb-white-color);
+}
 .eshb-native-checkout .eshb-coupon-prompt {
   margin: 0;
   font-size: 14px;
@@ -279,14 +307,6 @@
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
-}
-.eshb-native-checkout .eshb-order-review-actions .button.eshb-add-more-btn {
-  text-decoration: none;
-  padding: 10px 20px;
-  background-color: var(--eshb-primary-color);
-}
-.eshb-native-checkout .eshb-order-review-actions .button.eshb-add-more-btn:hover {
-  background-color: var(--eshb-dark-color);
 }
 .eshb-native-checkout .eshb-coupon-panel {
   margin-top: 12px;
@@ -490,6 +510,9 @@
   font-size: 14px;
   color: #6b7280;
   margin: 0 0 16px;
+}
+.eshb-account #loginform label {
+  width: 150px;
 }
 .eshb-account .eshb-account-login-links {
   margin-top: 14px;
@@ -975,6 +998,83 @@
   text-align: center;
   color: #6b7280;
   padding: 20px 0;
+}
+.eshb-account-modal {
+  /* ----- Multi-accommodation cart ----- */
+}
+.eshb-account-modal .eshb-cart-items-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.eshb-account-modal .eshb-add-more-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--eshb-text-color);
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--eshb-text-color);
+  white-space: nowrap;
+}
+.eshb-account-modal .eshb-add-more-btn:hover {
+  background: var(--eshb-text-color);
+  color: #fff;
+}
+.eshb-account-modal .eshb-cart-item {
+  background: #fff;
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.eshb-account-modal .eshb-cart-item:last-child {
+  margin-bottom: 0;
+}
+.eshb-account-modal .eshb-cart-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.eshb-account-modal .eshb-cart-item-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account-modal .eshb-cart-item-aside {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.eshb-account-modal .eshb-cart-item-total {
+  font-weight: 700;
+}
+.eshb-account-modal .eshb-remove-item {
+  appearance: none;
+  border: none;
+  background: #f1f5f9;
+  color: var(--eshb-danger-color);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+}
+.eshb-account-modal .eshb-remove-item:hover {
+  background: #fee2e2;
+}
+.eshb-account-modal .eshb-remove-item:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 body.eshb-account-modal-open {

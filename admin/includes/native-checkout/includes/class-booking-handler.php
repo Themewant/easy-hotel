@@ -16,7 +16,7 @@ class ESHB_Native_Booking_Handler {
      *
      * @return int|false Booking post ID on success.
      */
-    public static function insert_booking( array $reservation, array $customer, array $pricing ) {
+    public static function insert_booking( array $reservation, array $customer, array $pricing, $group_id = '' ) {
 
         $accomodation_id = (int) ( $reservation['accomodation_id'] ?? 0 );
         if ( ! $accomodation_id ) return false;
@@ -73,6 +73,9 @@ class ESHB_Native_Booking_Handler {
             'tax_amount'              => (float) ( $pricing['taxAmount'] ?? 0 ),
             'payment_gateway'         => $customer['gateway'] ?? '',
             'gateway_source'          => 'native_checkout',
+            // Links the per-accommodation bookings created from one
+            // multi-accommodation checkout. Empty for single-item checkouts.
+            'native_group_id'         => (string) $group_id,
         ];
 
         $meta = apply_filters( 'eshb_native_checkout_booking_meta', $meta, $reservation, $customer, $pricing );
@@ -97,6 +100,12 @@ class ESHB_Native_Booking_Handler {
             'post_status' => 'on-hold',
         ] );
 
+        // Store the group id as a top-level meta too so sibling bookings in
+        // the same multi-accommodation checkout are queryable via meta_query.
+        if ( $group_id !== '' ) {
+            update_post_meta( $post_id, 'native_group_id', (string) $group_id );
+        }
+
         // Reduce available rooms (mirrors ESHB_Helper::eshb_insert_booking behavior).
         $accom_meta = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
         if ( is_array( $accom_meta ) ) {
@@ -111,6 +120,81 @@ class ESHB_Native_Booking_Handler {
         do_action( 'eshb_native_checkout_booking_created', $post_id, $reservation, $customer, $pricing );
 
         return $post_id;
+    }
+
+    /**
+     * Insert one linked booking per cart item.
+     *
+     * Each accommodation gets its own eshb_booking record (so the existing
+     * admin / account / email screens keep working unchanged), tied together
+     * by a shared group id. The coupon discount is applied per item (as
+     * computed by ESHB_Native_Pricing::calculate_cart) while the whole-cart
+     * tax is split across the items in proportion to their post-coupon
+     * amount, with any rounding remainder assigned to the last booking so
+     * the booking totals sum exactly to the cart grand total.
+     *
+     * @param array $items        Cart items keyed by item key.
+     * @param array $customer
+     * @param array $cart_pricing Output of ESHB_Native_Pricing::calculate_cart().
+     * @return array { group_id: string, booking_ids: int[], totals: array<int,float> }
+     */
+    public static function insert_cart_bookings( array $items, array $customer, array $cart_pricing ) {
+        $group_id    = str_replace( '.', '', uniqid( 'grp_', true ) );
+        $item_views  = isset( $cart_pricing['items'] ) && is_array( $cart_pricing['items'] ) ? $cart_pricing['items'] : [];
+        $tax_total   = (float) ( $cart_pricing['taxAmount'] ?? 0 );
+
+        // Denominator for the proportional tax split: sum of post-coupon
+        // item amounts (== cart grand total minus tax).
+        $cart_after_coupon = 0.0;
+        foreach ( $item_views as $iv ) {
+            $cart_after_coupon += max( 0, (float) ( $iv['totalPrice'] ?? 0 ) - (float) ( $iv['couponDiscount'] ?? 0 ) );
+        }
+
+        $booking_ids   = [];
+        $totals        = [];
+        $tax_assigned  = 0.0;
+        $keys          = array_keys( $item_views );
+        $last_key      = end( $keys );
+
+        foreach ( $item_views as $item_key => $iv ) {
+            $reservation = isset( $items[ $item_key ] ) && is_array( $items[ $item_key ] ) ? $items[ $item_key ] : [];
+            if ( empty( $reservation['accomodation_id'] ) ) continue;
+
+            $after_coupon = max( 0, (float) ( $iv['totalPrice'] ?? 0 ) - (float) ( $iv['couponDiscount'] ?? 0 ) );
+
+            // Proportional tax share; last item soaks up the rounding remainder.
+            if ( $item_key === $last_key ) {
+                $item_tax = round( $tax_total - $tax_assigned, 2 );
+            } elseif ( $cart_after_coupon > 0 ) {
+                $item_tax = round( $tax_total * ( $after_coupon / $cart_after_coupon ), 2 );
+            } else {
+                $item_tax = 0.0;
+            }
+            $tax_assigned += $item_tax;
+
+            $item_total = round( $after_coupon + $item_tax, 2 );
+
+            // Per-item pricing payload shaped like the single-item output so
+            // insert_booking() can persist it unchanged.
+            $item_pricing = $iv;
+            $item_pricing['taxAmount']  = $item_tax;
+            $item_pricing['grandTotal'] = $item_total;
+            $item_pricing['couponCode'] = ( (float) ( $iv['couponDiscount'] ?? 0 ) > 0 )
+                ? ( $cart_pricing['couponCode'] ?? '' )
+                : '';
+
+            $booking_id = self::insert_booking( $reservation, $customer, $item_pricing, $group_id );
+            if ( $booking_id ) {
+                $booking_ids[]        = $booking_id;
+                $totals[ $booking_id ] = $item_total;
+            }
+        }
+
+        return [
+            'group_id'    => $group_id,
+            'booking_ids' => $booking_ids,
+            'totals'      => $totals,
+        ];
     }
 
     /**

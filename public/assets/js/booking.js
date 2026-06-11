@@ -2819,23 +2819,37 @@
         };
       }
 
+      var eshbPostData = {
+        action: action,
+        selectedServices: JSON.stringify(selectedServices),
+        accomodationId: accomodationId,
+        startDate: startDate,
+        endDate: endDate,
+        adultQuantity: adultQuantity,
+        childrenQuantity: childrenQuantity,
+        roomQuantity: roomQuantity,
+        extraBedQuantity: extraBedQuantity,
+        startTime: startTime,
+        endTime: endTime,
+        customerInfo: customer,
+        nonce: eshb_ajax.nonce,
+      };
+
+      // Native Checkout: forward the existing cart token so a second/third
+      // "Add accommodation" appends to the same cart instead of starting a
+      // fresh one. The token is stored in sessionStorage on the first add,
+      // so it survives navigating away to another accommodation even when
+      // the cart cookie is unreliable on the host.
+      try {
+        var eshbCartToken = sessionStorage.getItem("eshb_native_checkout_token");
+        if (eshbCartToken) {
+          eshbPostData.eshb_chk = eshbCartToken;
+        }
+      } catch (e) { /* sessionStorage unavailable — ignore */ }
+
       $.post(
         eshb_ajax.ajaxurl,
-        {
-          action: action,
-          selectedServices: JSON.stringify(selectedServices),
-          accomodationId: accomodationId,
-          startDate: startDate,
-          endDate: endDate,
-          adultQuantity: adultQuantity,
-          childrenQuantity: childrenQuantity,
-          roomQuantity: roomQuantity,
-          extraBedQuantity: extraBedQuantity,
-          startTime: startTime,
-          endTime: endTime,
-          customerInfo: customer,
-          nonce: eshb_ajax.nonce,
-        },
+        eshbPostData,
         function (response) {
           if (response.success == true) {
             erroMsg = response.data.message;

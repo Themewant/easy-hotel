@@ -133,6 +133,22 @@ class ESHB_Booking {
         if( is_singular('eshb_accomodation') ){
             return false; // don't cache
         }
+
+        // Never cache the Native Checkout / customer account pages: they are
+        // per-visitor (reservation token + a freshly generated nonce baked
+        // into the page). A shared cache would serve a stale nonce to other
+        // visitors — which makes checkout fail for logged-out users (logged-in
+        // users bypass the cache, so it "only works when logged in").
+        if ( is_singular() ) {
+            global $post;
+            if ( $post instanceof WP_Post ) {
+                $eshb_content = (string) $post->post_content;
+                if ( has_shortcode( $eshb_content, 'eshb_native_checkout' ) || has_shortcode( $eshb_content, 'eshb_account' ) ) {
+                    return false; // don't cache
+                }
+            }
+        }
+
         return $cacheable;
 	}
 	

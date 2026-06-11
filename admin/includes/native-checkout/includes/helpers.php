@@ -119,36 +119,197 @@ if ( ! function_exists( 'eshb_native_checkout_storage_key' ) ) {
     }
 }
 
-if ( ! function_exists( 'eshb_native_checkout_set_reservation' ) ) {
-    function eshb_native_checkout_set_reservation( array $reservation ) {
-        $token = eshb_native_checkout_get_token( true );
-        if ( empty( $token ) ) return false;
+/* -----------------------------------------------------------------------
+ * Cart storage
+ *
+ * The native checkout supports multiple accommodations in a single
+ * checkout. The stored payload is a "cart":
+ *
+ *   [
+ *     '_created' => <unix ts>,
+ *     'items'    => [
+ *       '<item_key>' => [ accomodation_id, start_date, end_date, ... , extra_services ],
+ *       ...
+ *     ],
+ *   ]
+ *
+ * Legacy single-reservation payloads (a flat array with accomodation_id at
+ * the top level) are transparently migrated into the items shape on read,
+ * so older links / in-flight sessions keep working.
+ * -------------------------------------------------------------------- */
 
-        $reservation['_created'] = time();
-        // autoload=no so we don't bloat wp_options bootstrap.
-        update_option( eshb_native_checkout_storage_key( $token ), $reservation, false );
-        return $token;
+if ( ! function_exists( 'eshb_native_checkout_normalize_cart' ) ) {
+    /**
+     * Coerce a raw stored payload into the canonical cart shape.
+     * Returns null when the payload is empty/invalid.
+     */
+    function eshb_native_checkout_normalize_cart( $data ) {
+        if ( ! is_array( $data ) ) return null;
+
+        // Already a cart.
+        if ( isset( $data['items'] ) && is_array( $data['items'] ) ) {
+            return $data;
+        }
+
+        // Legacy single reservation → wrap as a one-item cart.
+        if ( ! empty( $data['accomodation_id'] ) ) {
+            $created = isset( $data['_created'] ) ? (int) $data['_created'] : time();
+            unset( $data['_created'] );
+            return [
+                '_created' => $created,
+                'items'    => [ 'itm_legacy' => $data ],
+            ];
+        }
+
+        return null;
     }
 }
 
-if ( ! function_exists( 'eshb_native_checkout_get_reservation' ) ) {
-    function eshb_native_checkout_get_reservation() {
+if ( ! function_exists( 'eshb_native_checkout_get_cart' ) ) {
+    /**
+     * Read the current visitor's cart (or null when empty/expired).
+     */
+    function eshb_native_checkout_get_cart() {
         $token = eshb_native_checkout_get_token( false );
         if ( empty( $token ) ) return null;
 
         $key  = eshb_native_checkout_storage_key( $token );
         $data = get_option( $key, null );
-        if ( ! is_array( $data ) ) return null;
 
-        // Manual expiry: options don't auto-expire, so we drop entries
-        // older than an hour and treat them as absent.
-        $created = isset( $data['_created'] ) ? (int) $data['_created'] : 0;
+        $cart = eshb_native_checkout_normalize_cart( $data );
+        if ( null === $cart ) return null;
+
+        // Manual expiry: options don't auto-expire, so we drop carts older
+        // than an hour and treat them as absent.
+        $created = isset( $cart['_created'] ) ? (int) $cart['_created'] : 0;
         if ( $created > 0 && ( time() - $created ) > HOUR_IN_SECONDS ) {
             delete_option( $key );
             return null;
         }
 
-        return $data;
+        if ( empty( $cart['items'] ) || ! is_array( $cart['items'] ) ) {
+            return null;
+        }
+
+        return $cart;
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_get_items' ) ) {
+    /**
+     * Return the cart items keyed by item key (empty array when none).
+     */
+    function eshb_native_checkout_get_items() {
+        $cart = eshb_native_checkout_get_cart();
+        return ( $cart && ! empty( $cart['items'] ) ) ? $cart['items'] : [];
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_save_cart' ) ) {
+    /**
+     * Persist a cart array. Returns the token, or false when no token
+     * could be created.
+     */
+    function eshb_native_checkout_save_cart( array $cart ) {
+        $token = eshb_native_checkout_get_token( true );
+        if ( empty( $token ) ) return false;
+
+        if ( empty( $cart['_created'] ) ) {
+            $cart['_created'] = time();
+        }
+        // autoload=no so we don't bloat wp_options bootstrap.
+        update_option( eshb_native_checkout_storage_key( $token ), $cart, false );
+        return $token;
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_add_item' ) ) {
+    /**
+     * Append an accommodation to the cart. Returns
+     * [ 'token' => string, 'item_key' => string ] or false on failure.
+     */
+    function eshb_native_checkout_add_item( array $item ) {
+        $cart = eshb_native_checkout_get_cart();
+        if ( ! is_array( $cart ) ) {
+            $cart = [ '_created' => time(), 'items' => [] ];
+        }
+
+        $item_key = uniqid( 'itm_', true );
+        // Keep keys filesystem/JSON-safe (uniqid with more_entropy adds a dot).
+        $item_key = str_replace( '.', '', $item_key );
+
+        $cart['items'][ $item_key ] = $item;
+
+        $token = eshb_native_checkout_save_cart( $cart );
+        if ( ! $token ) return false;
+
+        return [ 'token' => $token, 'item_key' => $item_key ];
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_update_item' ) ) {
+    /**
+     * Replace a single item's payload. Returns true when the item existed.
+     */
+    function eshb_native_checkout_update_item( $item_key, array $item ) {
+        $cart = eshb_native_checkout_get_cart();
+        if ( ! is_array( $cart ) || ! isset( $cart['items'][ $item_key ] ) ) {
+            return false;
+        }
+        $cart['items'][ $item_key ] = $item;
+        eshb_native_checkout_save_cart( $cart );
+        return true;
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_remove_item' ) ) {
+    /**
+     * Drop one item from the cart. When the cart becomes empty the whole
+     * option is deleted. Returns the removed item (for hold release) or null.
+     */
+    function eshb_native_checkout_remove_item( $item_key ) {
+        $cart = eshb_native_checkout_get_cart();
+        if ( ! is_array( $cart ) || ! isset( $cart['items'][ $item_key ] ) ) {
+            return null;
+        }
+
+        $removed = $cart['items'][ $item_key ];
+        unset( $cart['items'][ $item_key ] );
+
+        if ( empty( $cart['items'] ) ) {
+            eshb_native_checkout_clear_reservation();
+        } else {
+            eshb_native_checkout_save_cart( $cart );
+        }
+
+        return $removed;
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_set_reservation' ) ) {
+    /**
+     * Backward-compatible single-reservation setter: replaces the entire
+     * cart with one item. New code should use eshb_native_checkout_add_item().
+     */
+    function eshb_native_checkout_set_reservation( array $reservation ) {
+        unset( $reservation['_created'] );
+        return eshb_native_checkout_save_cart( [
+            '_created' => time(),
+            'items'    => [ uniqid( 'itm_', false ) => $reservation ],
+        ] );
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_get_reservation' ) ) {
+    /**
+     * Backward-compatible single-reservation getter: returns the FIRST
+     * cart item as a flat array (the shape legacy callers and add-ons
+     * expect). New code should use eshb_native_checkout_get_items().
+     */
+    function eshb_native_checkout_get_reservation() {
+        $items = eshb_native_checkout_get_items();
+        if ( empty( $items ) ) return null;
+        return reset( $items );
     }
 }
 

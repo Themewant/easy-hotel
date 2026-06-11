@@ -10,10 +10,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ESHB_Native_Email_Handler {
 
-    public static function send_customer_confirmation( $booking_id, array $customer ) {
-        if ( ! $booking_id || empty( $customer['email'] ) ) return false;
+    /**
+     * Normalize a single booking id or an array of ids (one
+     * multi-accommodation checkout) into a clean list of ints.
+     */
+    private static function normalize_ids( $booking_ids ) {
+        $ids = array_map( 'intval', (array) $booking_ids );
+        return array_values( array_filter( $ids ) );
+    }
 
-        return self::send_templated_email( $booking_id, $customer, 'customer', 'customer_processing_order', $customer['email'],
+    public static function send_customer_confirmation( $booking_ids, array $customer ) {
+        $ids = self::normalize_ids( $booking_ids );
+        if ( empty( $ids ) || empty( $customer['email'] ) ) return false;
+
+        return self::send_templated_email( $ids, $customer, 'customer', 'customer_processing_order', $customer['email'],
             sprintf(
                 /* translators: %s: site name */
                 __( 'Your booking confirmation - %s', 'easy-hotel' ),
@@ -22,17 +32,18 @@ class ESHB_Native_Email_Handler {
         );
     }
 
-    public static function send_admin_notification( $booking_id, array $customer ) {
-        if ( ! $booking_id ) return false;
+    public static function send_admin_notification( $booking_ids, array $customer ) {
+        $ids = self::normalize_ids( $booking_ids );
+        if ( empty( $ids ) ) return false;
 
         $settings = get_option( 'eshb_settings', [] );
         $to = ! empty( $settings['recipent_email'] ) ? $settings['recipent_email'] : get_option( 'admin_email' );
 
-        return self::send_templated_email( $booking_id, $customer, 'admin', 'new_order', $to,
+        return self::send_templated_email( $ids, $customer, 'admin', 'new_order', $to,
             sprintf(
                 /* translators: %d: booking ID */
                 __( 'New booking received - #%d', 'easy-hotel' ),
-                $booking_id
+                reset( $ids )
             )
         );
     }
@@ -51,15 +62,18 @@ class ESHB_Native_Email_Handler {
      * @param string $to              Recipient address.
      * @param string $default_subject Subject used if no extension overrides it.
      */
-    private static function send_templated_email( $booking_id, array $customer, $context, $email_id, $to, $default_subject ) {
+    private static function send_templated_email( $booking_ids, array $customer, $context, $email_id, $to, $default_subject ) {
+        $ids          = self::normalize_ids( $booking_ids );
+        $primary_id   = reset( $ids );
         $core         = new ESHB_Core();
-        $default_body = self::build_email_body( $booking_id, $customer, $context );
+        $default_body = self::build_email_body( $ids, $customer, $context );
 
         $args = [
-            'context'    => $context,
-            'email_id'   => $email_id,
-            'booking_id' => $booking_id,
-            'customer'   => $customer,
+            'context'     => $context,
+            'email_id'    => $email_id,
+            'booking_id'  => $primary_id,
+            'booking_ids' => $booking_ids,
+            'customer'    => $customer,
         ];
 
         /**
@@ -94,15 +108,11 @@ class ESHB_Native_Email_Handler {
         return $host ? ( 'no-reply@' . $host ) : get_option( 'admin_email' );
     }
 
-    private static function build_email_body( $booking_id, array $customer, $context ) {
-        $meta = get_post_meta( $booking_id, 'eshb_booking_metaboxes', true );
-        if ( ! is_array( $meta ) ) $meta = [];
-
-        $accomodation_id    = (int) ( $meta['booking_accomodation_id'] ?? 0 );
-        $accomodation_title = $accomodation_id ? get_the_title( $accomodation_id ) : '';
-        $core               = new ESHB_Core();
-        $total_html         = $core->eshb_price( (float) ( $meta['total_price'] ?? 0 ) );
-        $first_name         = $customer['first_name'] ?? '';
+    private static function build_email_body( $booking_ids, array $customer, $context ) {
+        $ids        = self::normalize_ids( $booking_ids );
+        $core       = new ESHB_Core();
+        $first_name = $customer['first_name'] ?? '';
+        $multiple   = count( $ids ) > 1;
 
         $heading = ( $context === 'customer' )
             ? sprintf(
@@ -110,11 +120,23 @@ class ESHB_Native_Email_Handler {
                 __( 'Hi %s, thank you for your booking!', 'easy-hotel' ),
                 esc_html( $first_name )
             )
-            : sprintf(
-                /* translators: %d: booking ID */
-                __( 'New booking #%d received', 'easy-hotel' ),
-                (int) $booking_id
+            : ( $multiple
+                ? __( 'New booking received', 'easy-hotel' )
+                : sprintf(
+                    /* translators: %d: booking ID */
+                    __( 'New booking #%d received', 'easy-hotel' ),
+                    (int) reset( $ids )
+                )
             );
+
+        // Combined grand total across every booking in the group.
+        $grand_total = 0.0;
+        foreach ( $ids as $bid ) {
+            $bm = get_post_meta( $bid, 'eshb_booking_metaboxes', true );
+            if ( is_array( $bm ) ) {
+                $grand_total += (float) ( $bm['total_price'] ?? 0 );
+            }
+        }
 
         ob_start();
         ?>
@@ -129,28 +151,24 @@ class ESHB_Native_Email_Handler {
                         : esc_html__( 'A new booking has been created from the native checkout.', 'easy-hotel' ); ?>
                 </p>
 
-                <h3 style="font-size:16px;margin:24px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">
-                    <?php esc_html_e( 'Booking summary', 'easy-hotel' ); ?>
-                </h3>
-                <table style="width:100%;border-collapse:collapse;">
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Booking ID', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;">#<?php echo esc_html( $booking_id ); ?></td></tr>
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Accommodation', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $accomodation_title ); ?></td></tr>
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Check-in', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['booking_start_date'] ?? '' ); ?></td></tr>
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Check-out', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['booking_end_date'] ?? '' ); ?></td></tr>
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Guests', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( (int) ( $meta['adult_quantity'] ?? 0 ) + (int) ( $meta['children_quantity'] ?? 0 ) ); ?></td></tr>
-                    <tr><td style="padding:6px 0;"><?php esc_html_e( 'Rooms', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['room_quantity'] ?? 1 ); ?></td></tr>
-                    <?php if ( ! empty( $meta['extra_services_html'] ) ) : ?>
-                        <tr><td style="padding:6px 0;"><?php esc_html_e( 'Extra services', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['extra_services_html'] ); ?></td></tr>
-                    <?php endif; ?>
-                    <?php if ( ! empty( $meta['coupon_code'] ) ) : ?>
-                        <tr><td style="padding:6px 0;"><?php esc_html_e( 'Coupon', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['coupon_code'] ); ?></td></tr>
-                    <?php endif; ?>
-                    <tr><td style="padding:6px 0;font-weight:bold;border-top:1px solid #e5e7eb;"><?php esc_html_e( 'Total paid', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e5e7eb;"><?php echo wp_kses_post( $total_html ); ?></td></tr>
-                </table>
+                <?php
+                foreach ( $ids as $index => $bid ) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside helper.
+                    echo self::render_booking_table( $bid, $customer, $multiple ? ( (int) $index + 1 ) : 0 );
+                }
+
+                if ( $multiple ) : ?>
+                    <table style="width:100%;border-collapse:collapse;margin-top:8px;">
+                        <tr>
+                            <td style="padding:10px 0;font-weight:bold;border-top:2px solid #212121;font-size:15px;"><?php esc_html_e( 'Grand Total', 'easy-hotel' ); ?></td>
+                            <td style="padding:10px 0;text-align:right;font-weight:bold;border-top:2px solid #212121;font-size:15px;"><?php echo wp_kses_post( $core->eshb_price( $grand_total ) ); ?></td>
+                        </tr>
+                    </table>
+                <?php endif; ?>
 
                 <?php
                 // Customer-only call to action: let them jump straight to
-                // the account area to view or manage this booking.
+                // the account area to view or manage their bookings.
                 if ( $context === 'customer' && class_exists( 'ESHB_Native_Account' ) ) :
                     $account_url = ESHB_Native_Account::instance()->get_account_url();
                     if ( $account_url ) :
@@ -185,6 +203,86 @@ class ESHB_Native_Email_Handler {
                 </p>
             </div>
         </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render the summary table for one booking. When $position > 0 the
+     * accommodation is labelled "Accommodation N" so multi-accommodation
+     * emails read clearly.
+     */
+    private static function render_booking_table( $booking_id, array $customer, $position = 0 ) {
+        $meta = get_post_meta( $booking_id, 'eshb_booking_metaboxes', true );
+        if ( ! is_array( $meta ) ) $meta = [];
+
+        $core               = new ESHB_Core();
+        $accomodation_id    = (int) ( $meta['booking_accomodation_id'] ?? 0 );
+        $accomodation_title = $accomodation_id ? get_the_title( $accomodation_id ) : '';
+        $total_html         = $core->eshb_price( (float) ( $meta['total_price'] ?? 0 ) );
+
+        $total_price      = (float) ( $meta['total_price'] ?? 0 );
+        $total_paid       = (float) ( $meta['total_paid'] ?? 0 );
+        $due_amount       = (float) max( 0, $total_price - $total_paid );
+
+        $total_paid_html         = $core->eshb_price( (float) ( $total_paid ) );
+        $due_amount_html         = $core->eshb_price( (float) ( $due_amount ) );
+
+        // Resolve the gateway id stored on the booking into a human-readable
+        // payment method title, falling back to the raw id when the gateway
+        // is no longer registered.
+        $payment_gateway_id   = $meta['payment_gateway'] ?? ( $customer['gateway'] ?? '' );
+        $payment_method_label = '';
+        if ( $payment_gateway_id && class_exists( 'ESHB_Native_Gateway_Manager' ) ) {
+            $gateway = ESHB_Native_Gateway_Manager::instance()->get_gateway( $payment_gateway_id );
+            if ( $gateway ) {
+                $payment_method_label = $gateway->get_title();
+            }
+        }
+        if ( '' === $payment_method_label ) {
+            $payment_method_label = $payment_gateway_id;
+        }
+
+        $section_title = $position > 0
+            ? sprintf(
+                /* translators: 1: accommodation index, 2: accommodation title */
+                __( 'Accommodation %1$d — %2$s', 'easy-hotel' ),
+                (int) $position,
+                $accomodation_title
+            )
+            : __( 'Booking summary', 'easy-hotel' );
+
+        ob_start();
+        ?>
+        <h3 style="font-size:16px;margin:24px 0 8px;border-bottom:1px solid #e5e7eb;padding-bottom:4px;">
+            <?php echo esc_html( $section_title ); ?>
+        </h3>
+        <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Booking ID', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;">#<?php echo esc_html( $booking_id ); ?></td></tr>
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Accommodation', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $accomodation_title ); ?></td></tr>
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Check-in', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['booking_start_date'] ?? '' ); ?></td></tr>
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Check-out', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['booking_end_date'] ?? '' ); ?></td></tr>
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Guests', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( (int) ( $meta['adult_quantity'] ?? 0 ) + (int) ( $meta['children_quantity'] ?? 0 ) ); ?></td></tr>
+            <tr><td style="padding:6px 0;"><?php esc_html_e( 'Rooms', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['room_quantity'] ?? 1 ); ?></td></tr>
+            <?php if ( ! empty( $meta['extra_services_html'] ) ) : ?>
+                <tr><td style="padding:6px 0;"><?php esc_html_e( 'Extra services', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['extra_services_html'] ); ?></td></tr>
+            <?php endif; ?>
+            <?php if ( ! empty( $meta['coupon_code'] ) ) : ?>
+                <tr><td style="padding:6px 0;"><?php esc_html_e( 'Coupon', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['coupon_code'] ); ?></td></tr>
+            <?php endif; ?>
+            <tr><td style="padding:6px 0;font-weight:bold;border-top:1px solid #e5e7eb;"><?php esc_html_e( 'Total', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e5e7eb;"><?php echo wp_kses_post( $total_html ); ?></td></tr>
+            
+            <?php if ( ! empty( $meta['total_paid'] ) ) : ?>
+                <tr><td style="padding:6px 0;font-weight:bold;border-top:1px solid #e5e7eb;"><?php esc_html_e( 'Amount Paid', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e5e7eb;"><?php echo wp_kses_post( $total_paid_html ); ?></td></tr>
+            <?php endif; ?>
+            <?php if ( ! empty( $due_amount ) ) : ?>
+                <tr><td style="padding:6px 0;font-weight:bold;border-top:1px solid #e5e7eb;"><?php esc_html_e( 'Due Balance', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e5e7eb;"><?php echo wp_kses_post( $due_amount_html ); ?></td></tr>
+            <?php endif; ?>
+
+            <?php if ( ! empty( $payment_method_label ) ) : ?>
+                <tr><td style="padding:6px 0;"><?php esc_html_e( 'Payment method', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $payment_method_label ); ?></td></tr>
+            <?php endif; ?>
+        </table>
         <?php
         return ob_get_clean();
     }

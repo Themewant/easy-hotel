@@ -12,7 +12,174 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ESHB_Native_Pricing {
 
+    /**
+     * Single-accommodation pricing (coupon applied to the one item, tax on
+     * the post-coupon total). Kept for the single-item flow, the gateways
+     * and add-ons (e.g. EHB Deposit) that call it via the legacy
+     * reservation shape.
+     */
     public static function calculate( array $reservation, $coupon_code = '', $customer_email = '' ) {
+
+        $pricing         = self::compute_item_base( $reservation );
+        $accomodation_id = (int) ( $reservation['accomodation_id'] ?? 0 );
+        $core            = new ESHB_Core();
+
+        $coupon = self::evaluate_coupon( $coupon_code, $pricing, $accomodation_id, $customer_email );
+
+        // totalPrice already includes the extra services charge exactly once,
+        // so the grand total is simply subtotal − coupon + tax. Tax is applied
+        // on the post-coupon subtotal to mirror checkout.js (recalcLocal) so
+        // the server charge matches the amount shown to the customer.
+        $subtotal_after_coupon = max( 0, (float) ( $pricing['totalPrice'] ?? 0 ) - (float) $coupon['discount'] );
+        $tax_amount            = self::calculate_tax( $subtotal_after_coupon );
+        $grand_total           = $subtotal_after_coupon + $tax_amount;
+
+        $pricing['couponCode']         = $coupon['code'];
+        $pricing['couponId']           = (int) ( $coupon['coupon_id'] ?? 0 );
+        $pricing['couponDiscount']     = $coupon['discount'];
+        $pricing['couponDiscountHtml'] = $core->eshb_price( $coupon['discount'] );
+        $pricing['couponMessage']      = $coupon['message'];
+        $pricing['couponValid']        = $coupon['valid'];
+        $pricing['taxRate']         = self::tax_rate();
+        $pricing['taxAmount']       = $tax_amount;
+        $pricing['taxAmountHtml']   = $core->eshb_price( $tax_amount );
+        $pricing['grandTotal']      = $grand_total;
+        $pricing['grandTotalHtml']  = $core->eshb_price( $grand_total );
+
+        /**
+         * Final-stage filter for the native checkout pricing payload.
+         *
+         * Extensions (e.g. the EHB Deposit add-on) use this to inject
+         * deposit / due / payment-option fields and, when the buyer has
+         * chosen to pay only a deposit, to override grandTotal so the
+         * gateway charges that lower amount. Keep new keys additive so
+         * the JS layer's `[data-eshb-price]` rebinding continues to work.
+         *
+         * @param array $pricing     The computed pricing array.
+         * @param array $reservation The raw reservation payload.
+         */
+        return apply_filters( 'eshb_native_checkout_pricing', $pricing, $reservation );
+    }
+
+    /**
+     * Multi-accommodation (cart) pricing.
+     *
+     * Each item is priced independently; the coupon is evaluated PER
+     * accommodation (so an accommodation-restricted coupon only discounts
+     * the items it applies to) while tax is charged once on the whole-cart
+     * subtotal after discounts. The per-item breakdown is returned under
+     * `items` so the booking handler can split the financials across the
+     * linked per-accommodation booking records.
+     *
+     * @param array  $items          Cart items keyed by item key.
+     * @param string $coupon_code
+     * @param string $customer_email
+     * @return array Cart pricing payload (shares the top-level keys used by
+     *               the single-item payload, plus `isCart` and `items`).
+     */
+    public static function calculate_cart( array $items, $coupon_code = '', $customer_email = '' ) {
+        $core        = new ESHB_Core();
+        $coupon_code = trim( (string) $coupon_code );
+
+        $item_views         = [];
+        $cart_subtotal      = 0.0; // sum of item totals (incl. extras), pre-coupon
+        $cart_regular_total = 0.0;
+        $total_discount     = 0.0;
+        $coupon_any_valid   = false;
+        $coupon_first_error = '';
+        $coupon_code_out    = '';
+        $coupon_id_out      = 0;
+
+        foreach ( $items as $item_key => $reservation ) {
+            if ( ! is_array( $reservation ) ) continue;
+
+            $p        = self::compute_item_base( $reservation );
+            $accom_id = (int) ( $reservation['accomodation_id'] ?? 0 );
+
+            // Per-accommodation coupon evaluation.
+            $item_discount = 0.0;
+            if ( $coupon_code !== '' ) {
+                $c = self::evaluate_coupon( $coupon_code, $p, $accom_id, $customer_email );
+                if ( ! empty( $c['valid'] ) ) {
+                    $item_discount    = (float) $c['discount'];
+                    $total_discount  += $item_discount;
+                    $coupon_any_valid = true;
+                    $coupon_code_out  = $c['code'];
+                    $coupon_id_out    = (int) $c['coupon_id'];
+                } elseif ( $coupon_first_error === '' ) {
+                    $coupon_first_error = $c['message'];
+                }
+            }
+
+            $p['couponDiscount']     = $item_discount;
+            $p['couponDiscountHtml'] = $core->eshb_price( $item_discount );
+            $p['itemKey']            = $item_key;
+            $p['accomodationId']     = $accom_id;
+            $p['accomodationTitle']  = $accom_id ? get_the_title( $accom_id ) : '';
+
+            $cart_subtotal      += (float) ( $p['totalPrice'] ?? 0 );
+            $cart_regular_total += (float) ( $p['regularTotalPrice'] ?? ( $p['totalPrice'] ?? 0 ) );
+
+            $item_views[ $item_key ] = $p;
+        }
+
+        $cart_after_coupon = max( 0, $cart_subtotal - $total_discount );
+        $tax_amount        = self::calculate_tax( $cart_after_coupon );
+        $grand_total       = $cart_after_coupon + $tax_amount;
+
+        if ( $coupon_code === '' ) {
+            $coupon_message = '';
+        } elseif ( $coupon_any_valid ) {
+            $coupon_message = __( 'Coupon applied.', 'easy-hotel' );
+        } else {
+            $coupon_message = $coupon_first_error !== '' ? $coupon_first_error : __( 'Invalid coupon code.', 'easy-hotel' );
+        }
+
+        $currency_symbol = html_entity_decode( $core->get_eshb_currency_symbol() );
+
+        $cart_pricing = [
+            'isCart'              => true,
+            'items'               => $item_views,
+            'itemCount'           => count( $item_views ),
+            'currencySymbol'      => $currency_symbol,
+            'currencyPosition'    => $core->get_eshb_currency_position(),
+
+            'subtotalPrice'       => $cart_subtotal,
+            'subtotalPriceHtml'   => $core->eshb_price( $cart_subtotal ),
+            // totalPrice mirrors subtotalPrice (pre-coupon, pre-tax) for
+            // parity with the single-item payload consumed by add-ons.
+            'totalPrice'          => $cart_subtotal,
+            'totalPriceHtml'      => $core->eshb_price( $cart_subtotal ),
+            'regularTotalPrice'   => $cart_regular_total,
+            'regularTotalPriceHtml' => $core->eshb_price( $cart_regular_total ),
+
+            'couponCode'          => $coupon_code_out,
+            'couponId'            => $coupon_id_out,
+            'couponDiscount'      => $total_discount,
+            'couponDiscountHtml'  => $core->eshb_price( $total_discount ),
+            'couponMessage'       => $coupon_message,
+            'couponValid'         => $coupon_any_valid,
+
+            'taxRate'             => self::tax_rate(),
+            'taxAmount'           => $tax_amount,
+            'taxAmountHtml'       => $core->eshb_price( $tax_amount ),
+
+            'grandTotal'          => $grand_total,
+            'grandTotalHtml'      => $core->eshb_price( $grand_total ),
+        ];
+
+        // Apply the pricing filter ONCE on the cart total (not per item) so
+        // add-ons like EHB Deposit operate on the whole-cart figures.
+        return apply_filters( 'eshb_native_checkout_pricing', $cart_pricing, [ 'items' => $items ] );
+    }
+
+    /**
+     * Per-item base pricing with the extra services charge rebuilt the
+     * native (quantity-based) way. Returns subtotal/total/regular figures
+     * WITHOUT coupon, tax, grand total or the final filter — the shared
+     * core used by both calculate() and calculate_cart().
+     */
+    private static function compute_item_base( array $reservation ) {
 
         $accomodation_id   = (int) ( $reservation['accomodation_id'] ?? 0 );
         $start_date        = sanitize_text_field( $reservation['start_date'] ?? '' );
@@ -46,75 +213,60 @@ class ESHB_Native_Pricing {
             $pricing = [];
         }
 
-        // Native checkout treats `quantity` as authoritative for every
-        // service, regardless of the meta-configured charge_type. The
-        // upstream calculator multiplies by room_quantity for charge_type
-        // === 'room', which would diverge from the JS layer's math after
-        // the user adjusts the qty stepper. Recompute the extras line
-        // here and patch the affected totals so server and client agree.
-        $native_extras = self::calculate_native_extras_charge(
-            $selected_services,
-            (int) ( $pricing['daysCount'] ?? 1 )
-        );
-        $old_extras = (float) ( $pricing['extraServicesPrice'] ?? 0 );
-        if ( abs( $native_extras - $old_extras ) > 0.0001 ) {
-            $delta = $native_extras - $old_extras;
-            $pricing['extraServicesPrice']     = $native_extras;
-            $pricing['extraServicesPriceHtml'] = ( new ESHB_Core() )->eshb_price( $native_extras );
-            $pricing['subtotalPrice']          = max( 0, (float) ( $pricing['subtotalPrice'] ?? 0 ) + $delta );
-            $pricing['subtotalPriceHtml']      = ( new ESHB_Core() )->eshb_price( $pricing['subtotalPrice'] );
-            $pricing['totalPrice']             = max( 0, (float) ( $pricing['totalPrice'] ?? 0 ) + $delta );
-            $pricing['totalPriceHtml']         = ( new ESHB_Core() )->eshb_price( $pricing['totalPrice'] );
-            $pricing['regularSubtotalPrice']   = max( 0, (float) ( $pricing['regularSubtotalPrice'] ?? 0 ) + $delta );
-            $pricing['regularSubtotalPriceHtml'] = ( new ESHB_Core() )->eshb_price( $pricing['regularSubtotalPrice'] );
-            $pricing['regularTotalPrice']      = max( 0, (float) ( $pricing['regularTotalPrice'] ?? 0 ) + $delta );
-            $pricing['regularTotalPriceHtml']  = ( new ESHB_Core() )->eshb_price( $pricing['regularTotalPrice'] );
-        }
-
-        $tax_amount = self::calculate_tax( (float) ( $pricing['totalPrice'] ?? 0 ) );
-        $coupon     = self::evaluate_coupon( $coupon_code, $pricing, $accomodation_id, $customer_email );
-
-        $subtotal_after_coupon = max( 0, (float) ( $pricing['totalPrice'] ?? 0 ) - (float) $coupon['discount'] );
-        $grand_total           = $subtotal_after_coupon + $tax_amount;
-
         $core = new ESHB_Core();
 
-        $pricing['couponCode']         = $coupon['code'];
-        $pricing['couponId']           = (int) ( $coupon['coupon_id'] ?? 0 );
-        $pricing['couponDiscount']     = $coupon['discount'];
-        $pricing['couponDiscountHtml'] = $core->eshb_price( $coupon['discount'] );
-        $pricing['couponMessage']      = $coupon['message'];
-        $pricing['couponValid']        = $coupon['valid'];
-        $pricing['taxRate']         = self::tax_rate();
-        $pricing['taxAmount']       = $tax_amount;
-        $pricing['taxAmountHtml']   = $core->eshb_price( $tax_amount );
-        $pricing['grandTotal']      = $grand_total;
-        $pricing['grandTotalHtml']  = $core->eshb_price( $grand_total );
+        // Native checkout treats `quantity` as authoritative for every
+        // service, regardless of the meta-configured charge_type, so the
+        // server matches the JS layer's math in checkout.js after the user
+        // adjusts the qty stepper. (The upstream calculator multiplies by
+        // room_quantity for charge_type === 'room', which would diverge.)
+        //
+        // Strip the upstream extras figure out of every total, then add the
+        // native (quantity-based) figure back. This unconditionally rebuilds
+        // the totals so the extra services charge is ALWAYS included exactly
+        // once — no conditional, no delta, no double-count.
+        $native_extras = self::calculate_native_extras_charge(
+            $selected_services,
+            (int) ( $pricing['daysCount'] ?? 1 ),
+            (int) ( $room_quantity ?? 1 )
+        );
+        $old_extras = (float) ( $pricing['extraServicesPrice'] ?? 0 );
 
-        /**
-         * Final-stage filter for the native checkout pricing payload.
-         *
-         * Extensions (e.g. the EHB Deposit add-on) use this to inject
-         * deposit / due / payment-option fields and, when the buyer has
-         * chosen to pay only a deposit, to override grandTotal so the
-         * gateway charges that lower amount. Keep new keys additive so
-         * the JS layer's `[data-eshb-price]` rebinding continues to work.
-         *
-         * @param array $pricing     The computed pricing array.
-         * @param array $reservation The raw reservation payload.
-         */
-        return apply_filters( 'eshb_native_checkout_pricing', $pricing, $reservation );
+        // Accommodation-only bases (totals minus whatever extras the
+        // upstream calculator had folded in).
+        $accom_subtotal         = max( 0, (float) ( $pricing['subtotalPrice'] ?? 0 ) - $old_extras );
+        $accom_total            = max( 0, (float) ( $pricing['totalPrice'] ?? 0 ) - $old_extras );
+        $accom_regular_subtotal = max( 0, (float) ( $pricing['regularSubtotalPrice'] ?? 0 ) - $old_extras );
+        $accom_regular_total    = max( 0, (float) ( $pricing['regularTotalPrice'] ?? 0 ) - $old_extras );
+
+        $pricing['extraServicesPrice']       = $native_extras;
+        $pricing['extraServicesPriceHtml']   = $core->eshb_price( $native_extras );
+        $pricing['subtotalPrice']            = $accom_subtotal + $native_extras;
+        $pricing['subtotalPriceHtml']        = $core->eshb_price( $pricing['subtotalPrice'] );
+        $pricing['totalPrice']               = $accom_total + $native_extras;
+        $pricing['totalPriceHtml']           = $core->eshb_price( $pricing['totalPrice'] );
+        $pricing['regularSubtotalPrice']     = $accom_regular_subtotal + $native_extras;
+        $pricing['regularSubtotalPriceHtml'] = $core->eshb_price( $pricing['regularSubtotalPrice'] );
+        $pricing['regularTotalPrice']        = $accom_regular_total + $native_extras;
+        $pricing['regularTotalPriceHtml']    = $core->eshb_price( $pricing['regularTotalPrice'] );
+
+        return $pricing;
     }
 
     /**
-     * Sum the extra services charge using `quantity` as the multiplier
-     * for every service (per_day multiplies by night count). This is
-     * the source-of-truth math for native checkout and mirrors the
-     * client-side calculation in checkout.js.
+     * Sum the extra services charge.
+     *
+     * The selected `quantity` (the qty stepper) ALWAYS scales the line, so
+     * changing it on the checkout page updates the price. Multipliers stack:
+     *   - per_day periodicity  → × number of nights
+     *   - charge_type 'room'   → × number of rooms
+     * At the default quantity of 1, a room-charged service still costs
+     * price × rooms (unchanged), but bumping the stepper now scales it.
      */
-    public static function calculate_native_extras_charge( array $selected_services, $days_count ) {
-        $total = 0.0;
-        $days_count = max( 1, (int) $days_count );
+    public static function calculate_native_extras_charge( array $selected_services, $days_count, $room_quantity ) {
+        $total         = 0.0;
+        $days_count    = max( 1, (int) $days_count );
+        $room_quantity = max( 1, (int) $room_quantity );
 
         foreach ( $selected_services as $service ) {
             if ( ! is_array( $service ) ) continue;
@@ -125,14 +277,25 @@ class ESHB_Native_Pricing {
             $meta = get_post_meta( $service_id, 'eshb_service_metaboxes', true );
             if ( empty( $meta ) ) continue;
 
-            $price       = floatval( $meta['service_price'] ?? 0 );
-            $periodicity = $meta['service_periodicity'] ?? 'once';
+            $price               = floatval( $meta['service_price'] ?? 0 );
+            $periodicity         = $meta['service_periodicity'] ?? 'once';
+            $service_charge_type = $meta['service_charge_type'] ?? 'room';
 
             if ( $periodicity === 'per_day' || $periodicity === 'perday' ) {
                 $price *= $days_count;
             }
+
+            // Room-charged services are additionally multiplied by the room count.
+            if ( $service_charge_type === 'room' ) {
+                //$price *= $room_quantity;
+                $quantity = $room_quantity;
+            }
+
+
+            // Selected quantity always scales the line.
             $price *= $quantity;
 
+            
             $total += $price;
         }
 
