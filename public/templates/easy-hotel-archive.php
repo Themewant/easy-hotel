@@ -38,7 +38,7 @@ $search_form_archive_visibility = isset($eshb_settings['search-form-archive']) ?
 
                 $term = get_queried_object();
 
-                $available_accomodations_args['tax_query'] = array(
+                $available_accomodations_args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
                     array(
                         'taxonomy' => 'eshb_category',
                         'field'    => 'term_id',
@@ -62,7 +62,8 @@ $search_form_archive_visibility = isset($eshb_settings['search-form-archive']) ?
 
             $view = new ESHB_View();
 
-            $template = $view->eshb_get_accomodation_grid($query, '', '', $posts_per_row, '');
+            $style = isset($eshb_settings['archive-page-template-style']) && !empty($eshb_settings['archive-page-template-style']) ? $eshb_settings['archive-page-template-style'] : 'style-one';
+            $template = $view->eshb_get_accomodation_grid($query, '', '', $posts_per_row, 'eshb_thumbnail', $style);
 
 
         ?>

@@ -15,7 +15,7 @@
     if ($query->have_posts()) {
 
         ?>
-        <div class="eshb-item-grid" style="grid-template-columns: repeat(<?php echo esc_attr( $column )?>, 1fr);">
+        <div class="eshb-item-grid style-one" style="grid-template-columns: repeat(<?php echo esc_attr( $column )?>, 1fr);">
         <?php
 
         $animation_delay = 0.2;

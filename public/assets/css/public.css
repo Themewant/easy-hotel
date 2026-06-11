@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   --eshb-primary-color: #ab8965;
   --eshb-secondary-color: #fff5ed;
@@ -17,6 +18,1067 @@
   --eshb-title-font: "Marcellus", Helvetica, Arial, sans-serif;
   --eshb-title-font-weight: "Marcellus", Helvetica, Arial, sans-serif;
   --eshb-body-font: "Jost", Helvetica, Arial, sans-serif;
+}
+
+/* ============================================================
+ * Native Checkout
+ * Bundled into public.scss. Uses the existing plugin CSS
+ * variables (defined in public.scss :root) — no new variables
+ * are introduced here.
+ * ============================================================ */
+.eshb-native-checkout {
+  color: var(--eshb-text-color);
+  padding: 40px 0;
+  font-family: var(--eshb-body-font);
+}
+.eshb-native-checkout .eshb-container {
+  max-width: 760px !important;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.eshb-native-checkout .eshb-card {
+  background: rgba(241, 245, 249, 0.7803921569);
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-native-checkout .eshb-card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-native-checkout .eshb-card h3 {
+  margin: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-native-checkout .eshb-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .eshb-native-checkout .eshb-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-native-checkout .eshb-meta-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.eshb-native-checkout .eshb-meta-value {
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.eshb-native-checkout .eshb-meta-value small {
+  color: #6b7280;
+  font-weight: 400;
+}
+.eshb-native-checkout .eshb-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-bottom: 0;
+}
+.eshb-native-checkout .eshb-meta-grid > div {
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-meta-grid strong {
+  color: #6b7280;
+  font-weight: 500;
+  margin-right: 6px;
+}
+.eshb-native-checkout .eshb-services-summary-cell {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 4px;
+}
+.eshb-native-checkout .eshb-services-summary-cell #eshbServicesSummaryList {
+  flex: 1;
+  color: var(--eshb-text-color);
+}
+.eshb-native-checkout .eshb-edit-link {
+  color: var(--eshb-primary-color);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: auto;
+}
+.eshb-native-checkout .eshb-edit-link:hover {
+  color: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-services-editor {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-native-checkout .eshb-services-editor[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-services-editor h3 {
+  margin: 0 0 12px !important;
+}
+.eshb-native-checkout .eshb-form-group {
+  margin-bottom: 14px;
+}
+.eshb-native-checkout .eshb-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.eshb-native-checkout .eshb-form-group input[type=text],
+.eshb-native-checkout .eshb-form-group input[type=email],
+.eshb-native-checkout .eshb-form-group input[type=tel],
+.eshb-native-checkout .eshb-form-group input[type=number],
+.eshb-native-checkout .eshb-form-group select,
+.eshb-native-checkout .eshb-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+}
+.eshb-native-checkout .eshb-form-group input[type=text]:focus,
+.eshb-native-checkout .eshb-form-group input[type=email]:focus,
+.eshb-native-checkout .eshb-form-group input[type=tel]:focus,
+.eshb-native-checkout .eshb-form-group input[type=number]:focus,
+.eshb-native-checkout .eshb-form-group select:focus,
+.eshb-native-checkout .eshb-form-group textarea:focus {
+  border-color: var(--eshb-primary-color);
+  outline: 2px solid rgba(171, 137, 101, 0.15);
+}
+.eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input, .eshb-native-checkout .eshb-form-group input[type=text].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=email].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=tel].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input,
+.eshb-native-checkout .eshb-form-group input[type=number].eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input,
+.eshb-native-checkout .eshb-form-group select.eshb-error-input:focus,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input,
+.eshb-native-checkout .eshb-form-group textarea.eshb-error-input:focus {
+  border-color: var(--eshb-danger-color);
+  outline: 2px solid rgba(228, 23, 73, 0.18);
+}
+.eshb-native-checkout .eshb-terms-container input.eshb-error-input {
+  outline: 2px solid var(--eshb-danger-color);
+  outline-offset: 2px;
+}
+.eshb-native-checkout .eshb-choice-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: border-color 150ms;
+}
+.eshb-native-checkout .eshb-choice-option:hover {
+  border-color: var(--eshb-primary-color);
+}
+.eshb-native-checkout .eshb-choice-option input[type=checkbox],
+.eshb-native-checkout .eshb-choice-option input[type=radio] {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}
+.eshb-native-checkout .eshb-choice-option label {
+  cursor: pointer;
+  flex: 1;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-choice-title {
+  font-weight: 500;
+}
+.eshb-native-checkout .eshb-choice-meta {
+  color: #6b7280;
+  margin-left: 8px;
+  font-size: 13px;
+}
+.eshb-native-checkout .eshb-choice-desc {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 6px;
+  margin-left: 30px;
+}
+.eshb-native-checkout .eshb-service-qty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.eshb-native-checkout .eshb-service-qty .eshb-qty-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0 17px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background: var(--eshb-white-color);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: normal;
+  color: currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eshb-native-checkout .eshb-service-qty input {
+  width: 50px;
+  height: 28px;
+  text-align: center;
+  padding: 4px;
+  background: var(--eshb-white-color);
+  border: 1px solid #e5e7eb;
+  border-radius: 4px !important;
+  margin: 0;
+}
+.eshb-native-checkout .eshb-coupon-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-native-checkout .eshb-cart-item-aside {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.eshb-native-checkout button.eshb-remove-item {
+  background: var(--eshb-danger-color);
+  color: var(--eshb-white-color);
+  padding: 1px 4px;
+  font-size: 12px;
+  height: 13px;
+  border-radius: 3px;
+  display: grid;
+  place-content: center;
+}
+.eshb-native-checkout .eshb-add-more-btn {
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background-color: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  font-size: 14px;
+  text-decoration: none !important;
+}
+.eshb-native-checkout .eshb-add-more-btn:hover {
+  background-color: var(--eshb-dark-color);
+  color: var(--eshb-white-color);
+}
+.eshb-native-checkout .eshb-coupon-prompt {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+.eshb-native-checkout .eshb-coupon-prompt[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-coupon-prompt a {
+  color: var(--eshb-primary-color);
+  font-weight: 500;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+.eshb-native-checkout .eshb-coupon-prompt a:hover {
+  color: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-order-review-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.eshb-native-checkout .eshb-coupon-panel {
+  margin-top: 12px;
+}
+.eshb-native-checkout .eshb-coupon-panel[hidden] {
+  display: none;
+}
+.eshb-native-checkout .eshb-coupon-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.eshb-native-checkout .eshb-coupon-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px !important;
+  font-size: 14px;
+  margin: 0;
+  height: 43px;
+}
+.eshb-native-checkout .eshb-coupon-row button {
+  height: 43px;
+  line-height: 1;
+}
+.eshb-native-checkout .eshb-btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid var(--eshb-primary-color);
+  background: var(--eshb-white-color);
+  color: var(--eshb-primary-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-btn-secondary:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-native-checkout .eshb-btn-link {
+  background: none;
+  border: none;
+  color: var(--eshb-primary-color);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+}
+.eshb-native-checkout .eshb-btn-link:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-native-checkout .eshb-coupon-message {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.eshb-native-checkout .eshb-coupon-message.eshb-msg-error {
+  color: var(--eshb-danger-color);
+}
+.eshb-native-checkout .eshb-coupon-message.eshb-msg-success {
+  color: var(--eshb-success-color);
+}
+.eshb-native-checkout .eshb-price-table {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+}
+.eshb-native-checkout .eshb-price-table td {
+  padding: 8px 0;
+  font-size: 14px;
+  border: none;
+}
+.eshb-native-checkout .eshb-price-table tr:last-child td {
+  border-bottom: none;
+}
+.eshb-native-checkout .eshb-price-table .eshb-label-col {
+  color: #6b7280;
+}
+.eshb-native-checkout .eshb-price-table .eshb-value-col {
+  text-align: right;
+  font-weight: 500;
+}
+.eshb-native-checkout .eshb-total-row td {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--eshb-text-color);
+  padding-top: 14px !important;
+  border-top: 2px solid var(--eshb-text-color);
+}
+.eshb-native-checkout .eshb-terms-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+.eshb-native-checkout .eshb-terms-container input {
+  width: 18px;
+  height: 18px;
+}
+.eshb-native-checkout .eshb-terms-container label {
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-terms-container a {
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-native-checkout .eshb-checkout-error {
+  background: #fee2e2;
+  color: var(--eshb-danger-color);
+  border: 1px solid #fca5a5;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-btn-submit {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.eshb-native-checkout .eshb-btn-submit:hover {
+  background: var(--eshb-territory-color);
+}
+.eshb-native-checkout .eshb-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.eshb-native-checkout .eshb-gateway-mount {
+  margin-top: 16px;
+}
+.eshb-native-checkout .eshb-gateway-mount > div {
+  min-height: 40px;
+}
+.eshb-native-checkout .eshb-no-gateways {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-card--success {
+  border-color: var(--eshb-primary-color);
+  background: var(--eshb-secondary-color);
+}
+.eshb-native-checkout .eshb-card--success h2 {
+  color: var(--eshb-primary-color);
+}
+.eshb-native-checkout .eshb-thankyou-meta {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+.eshb-native-checkout .eshb-thankyou-meta li {
+  padding: 4px 0;
+  font-size: 14px;
+}
+.eshb-native-checkout .eshb-thankyou-actions {
+  margin: 20px 0 0;
+}
+.eshb-native-checkout .eshb-thankyou-actions .eshb-btn-submit {
+  display: inline-block;
+  width: auto;
+}
+
+/* ============================================================
+ * Native Checkout — Customer Account area
+ * Reuses the same CSS variables and card styling as the
+ * checkout above so the two screens feel like one product.
+ * ============================================================ */
+.eshb-account {
+  color: var(--eshb-text-color);
+  padding: 40px 0;
+  font-family: var(--eshb-body-font);
+}
+.eshb-account .eshb-card {
+  background: rgba(241, 245, 249, 0.7803921569);
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-account .eshb-card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account {
+  /* ---- Login ------------------------------------------------ */
+}
+.eshb-account--login .eshb-account-login-box {
+  max-width: 420px;
+}
+.eshb-account .eshb-account-login-intro {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 16px;
+}
+.eshb-account #loginform label {
+  width: 150px;
+}
+.eshb-account .eshb-account-login-links {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.eshb-account .eshb-account-login-links a {
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-account .eshb-account-login-links .eshb-sep {
+  color: #9ca3af;
+  margin: 0 6px;
+}
+.eshb-account {
+  /* ---- Layout ----------------------------------------------- */
+}
+.eshb-account .eshb-account-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .eshb-account .eshb-account-layout {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-account {
+  /* ---- Sidebar nav ------------------------------------------ */
+}
+.eshb-account .eshb-account-nav {
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+  position: sticky;
+  top: 80px;
+}
+.eshb-account .eshb-account-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding-bottom: 16px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #e5e7eb;
+}
+.eshb-account .eshb-account-user img {
+  border-radius: 50%;
+}
+.eshb-account .eshb-account-username {
+  font-weight: 600;
+  font-size: 15px;
+}
+.eshb-account .eshb-account-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.eshb-account .eshb-account-menu li {
+  margin: 0 0 4px;
+}
+.eshb-account .eshb-account-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--eshb-text-color);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 150ms, color 150ms;
+  text-decoration: none !important;
+}
+.eshb-account .eshb-account-menu-item .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.eshb-account .eshb-account-menu-item:hover, .eshb-account .eshb-account-menu-item.is-active {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account {
+  /* ---- Content panels --------------------------------------- */
+}
+.eshb-account .eshb-account-content {
+  min-width: 0;
+}
+.eshb-account .eshb-account-panel {
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 10px 2px rgba(217, 217, 217, 0.22);
+}
+.eshb-account .eshb-account-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.eshb-account .eshb-account-section-head h2, .eshb-account .eshb-account-section-head h3 {
+  margin: 0;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account .eshb-account-section-head h2 {
+  font-size: 20px;
+}
+.eshb-account .eshb-account-section-head h3 {
+  font-size: 16px;
+}
+.eshb-account .eshb-account-section-head--spaced {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed #e5e7eb;
+}
+.eshb-account .eshb-account-viewall {
+  font-size: 13px;
+  color: var(--eshb-primary-color);
+  text-decoration: underline;
+}
+.eshb-account {
+  /* ---- Dashboard ------------------------------------------- */
+}
+.eshb-account .eshb-account-welcome {
+  margin-bottom: 20px;
+}
+.eshb-account .eshb-account-welcome h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account .eshb-account-welcome-meta {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+.eshb-account .eshb-account-welcome-meta .eshb-sep {
+  margin: 0 6px;
+}
+.eshb-account .eshb-account-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+  .eshb-account .eshb-account-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.eshb-account .eshb-account-stat {
+  background: var(--eshb-white-color);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 18px 16px;
+  text-align: center;
+  border-top: 3px solid var(--eshb-primary-color);
+}
+.eshb-account .eshb-account-stat--active {
+  border-top-color: var(--eshb-success-color);
+}
+.eshb-account .eshb-account-stat--upcoming {
+  border-top-color: var(--eshb-primary-color);
+}
+.eshb-account .eshb-account-stat--cancelled {
+  border-top-color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-account-stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.eshb-account .eshb-account-stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.eshb-account {
+  /* ---- Tables ----------------------------------------------- */
+}
+.eshb-account .eshb-account-table-wrap {
+  overflow-x: auto;
+}
+.eshb-account .eshb-account-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.eshb-account .eshb-account-table th, .eshb-account .eshb-account-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+.eshb-account .eshb-account-table thead th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6b7280;
+  font-weight: 600;
+}
+.eshb-account .eshb-account-actions {
+  white-space: nowrap;
+}
+.eshb-account .eshb-account-date-sep {
+  margin: 0 6px;
+  color: #9ca3af;
+}
+.eshb-account {
+  /* ---- Badges ----------------------------------------------- */
+}
+.eshb-account .eshb-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  background: #e5e7eb;
+  color: #374151;
+}
+.eshb-account .eshb-badge--processing, .eshb-account .eshb-badge--completed {
+  background: #dcfce7;
+  color: #166534;
+}
+.eshb-account .eshb-badge--pending, .eshb-account .eshb-badge--on-hold, .eshb-account .eshb-badge--deposit-payment {
+  background: #fef9c3;
+  color: #854d0e;
+}
+.eshb-account .eshb-badge--cancelled, .eshb-account .eshb-badge--failed, .eshb-account .eshb-badge--refunded {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.eshb-account {
+  /* ---- Buttons ---------------------------------------------- */
+}
+.eshb-account .eshb-btn-link {
+  background: none;
+  border: none;
+  border-radius: 3px;
+  padding: 3px 6px;
+  color: var(--eshb-primary-color);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+}
+.eshb-account .eshb-btn-link:hover {
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account .eshb-btn-link.eshb-btn-danger {
+  color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-btn-link.eshb-btn-danger:hover {
+  background: var(--eshb-danger-color);
+  color: var(--eshb-white-color);
+}
+.eshb-account .eshb-btn-secondary {
+  padding: 10px 16px;
+  border: 1px solid var(--eshb-primary-color);
+  background: var(--eshb-white-color);
+  color: var(--eshb-primary-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.eshb-account .eshb-btn-submit {
+  padding: 11px 20px;
+  background: var(--eshb-primary-color);
+  color: var(--eshb-white-color);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.eshb-account .eshb-btn-submit:hover {
+  background: var(--eshb-territory-color);
+}
+.eshb-account .eshb-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.eshb-account .eshb-btn-submit.eshb-btn-danger {
+  background: var(--eshb-danger-color);
+}
+.eshb-account .eshb-btn-submit.eshb-btn-danger:hover {
+  filter: brightness(0.92);
+}
+.eshb-account .eshb-account-empty {
+  color: #6b7280;
+  font-size: 14px;
+  padding: 12px 0;
+}
+.eshb-account .eshb-account-notice {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.eshb-account .eshb-account-notice[hidden] {
+  display: none;
+}
+.eshb-account .eshb-account-notice--success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.eshb-account .eshb-account-notice--info {
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #bae6fd;
+}
+.eshb-account {
+  /* ---- Forms ------------------------------------------------ */
+}
+.eshb-account .eshb-account-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .eshb-account .eshb-account-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+.eshb-account .eshb-account-field {
+  margin-bottom: 14px;
+}
+.eshb-account .eshb-account-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.eshb-account .eshb-account-field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+}
+.eshb-account .eshb-account-field input:focus {
+  border-color: var(--eshb-primary-color);
+  outline: 2px solid rgba(171, 137, 101, 0.15);
+}
+.eshb-account .eshb-account-form-actions {
+  margin-top: 8px;
+}
+.eshb-account .eshb-account-form-msg,
+.eshb-account .eshb-account-modal-msg {
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+.eshb-account .eshb-account-form-msg.is-error,
+.eshb-account .eshb-account-modal-msg.is-error {
+  color: var(--eshb-danger-color);
+}
+.eshb-account .eshb-account-form-msg.is-success,
+.eshb-account .eshb-account-modal-msg.is-success {
+  color: var(--eshb-success-color);
+}
+.eshb-account {
+  /* ---- Booking detail (modal) ------------------------------- */
+}
+.eshb-account .eshb-account-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.eshb-account .eshb-account-detail-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.eshb-account .eshb-account-detail-title {
+  margin: 18px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--eshb-territory-color);
+}
+.eshb-account .eshb-account-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.eshb-account .eshb-account-detail-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 5px;
+  width: 40%;
+}
+.eshb-account .eshb-account-detail-table td {
+  text-align: right;
+  padding: 5px;
+}
+.eshb-account .eshb-account-detail-text {
+  font-size: 14px;
+  margin: 0;
+}
+.eshb-account {
+  /* ---- Cancellation form ------------------------------------ */
+}
+.eshb-account .eshb-account-cancel h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.eshb-account .eshb-account-field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 12px 0 6px;
+}
+.eshb-account .eshb-account-select,
+.eshb-account .eshb-account-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--eshb-white-color);
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+.eshb-account .eshb-account-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ---- Modal shell (kept outside .eshb-account scroll context) -- */
+.eshb-account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eshb-account-modal[hidden] {
+  display: none;
+}
+.eshb-account-modal .eshb-account-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+}
+.eshb-account-modal .eshb-account-modal-dialog {
+  position: relative;
+  background: var(--eshb-white-color);
+  border-radius: 10px;
+  padding: 24px;
+  width: 92%;
+  max-width: 520px;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+.eshb-account-modal .eshb-account-modal-x {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--eshb-danger-color);
+  cursor: pointer;
+  box-shadow: none;
+}
+.eshb-account-modal .eshb-account-modal-loading {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px 0;
+}
+.eshb-account-modal {
+  /* ----- Multi-accommodation cart ----- */
+}
+.eshb-account-modal .eshb-cart-items-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.eshb-account-modal .eshb-add-more-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--eshb-text-color);
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--eshb-text-color);
+  white-space: nowrap;
+}
+.eshb-account-modal .eshb-add-more-btn:hover {
+  background: var(--eshb-text-color);
+  color: #fff;
+}
+.eshb-account-modal .eshb-cart-item {
+  background: #fff;
+  border: 1px solid #e5eaef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.eshb-account-modal .eshb-cart-item:last-child {
+  margin-bottom: 0;
+}
+.eshb-account-modal .eshb-cart-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.eshb-account-modal .eshb-cart-item-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--eshb-title-font);
+}
+.eshb-account-modal .eshb-cart-item-aside {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.eshb-account-modal .eshb-cart-item-total {
+  font-weight: 700;
+}
+.eshb-account-modal .eshb-remove-item {
+  appearance: none;
+  border: none;
+  background: #f1f5f9;
+  color: var(--eshb-danger-color);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+}
+.eshb-account-modal .eshb-remove-item:hover {
+  background: #fee2e2;
+}
+.eshb-account-modal .eshb-remove-item:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+body.eshb-account-modal-open {
+  overflow: hidden;
 }
 
 body.single .accomodation-gallery .swiper-wrapper {
@@ -1213,6 +2275,93 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 .eshb-item-grid .grid-item .item-inner:hover .details-info {
   opacity: 0;
 }
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two {
+    gap: 50px;
+  }
+}
+.eshb-item-grid.style-two .grid-item .item-inner {
+  display: flex;
+  position: relative;
+}
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two .grid-item .item-inner {
+    flex-direction: column;
+  }
+}
+.eshb-item-grid.style-two .grid-item .item-inner .thumbnail-col {
+  height: 350px;
+  overflow: hidden;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .thumbnail-col img {
+  width: 100%;
+  transition: 0.35s ease-in-out;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  background: #fff;
+  padding: 10px 15px;
+  position: absolute;
+  left: 15px;
+  top: 15px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing .label {
+  font-size: 14px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .pricing .price {
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  width: max-content;
+  margin: 0;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (max-width: 991.98px) {
+  .eshb-item-grid.style-two .grid-item .item-inner .contents-col {
+    padding: 15px 20px 0 0;
+  }
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .capacities {
+  margin-bottom: 10px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .capacities .capacity {
+  margin-right: 1.5rem;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .title,
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .p-title {
+  margin-bottom: 0;
+  font-size: 26px;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .title a,
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col .p-title a {
+  line-height: 1.4em;
+  color: var(--eshb-text-color);
+  text-decoration: none;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col a.details-btn {
+  background: var(--eshb-primary-color);
+  width: auto;
+  max-width: max-content;
+  color: var(--eshb-white-color);
+  padding: 8px 20px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-decoration: none;
+}
+.eshb-item-grid.style-two .grid-item .item-inner .contents-col a.details-btn:hover {
+  background: var(--eshb-dark-color);
+  color: var(--eshb-white-color);
+}
+.eshb-item-grid.style-two .grid-item:hover .thumbnail-col img {
+  transform: scale(1.06);
+}
 
 .eshb-price del {
   margin-right: 10px;
@@ -1847,7 +2996,7 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   color: #fff;
   text-align: center;
   padding: 10px 20px;
-  z-index: 100000;
+  z-index: 2;
   font-size: 14px;
   font-weight: 600;
 }

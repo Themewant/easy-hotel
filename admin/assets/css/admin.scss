@@ -160,6 +160,7 @@
                 border-radius: 3px;
                 overflow: hidden;
                 margin-right: 10px;
+                margin-bottom: 10px;
 
                 a {
                     color: #222;
@@ -1101,6 +1102,7 @@ body.post-type-eshb_payment {
     }
 
     #major-publishing-actions {
+        padding: 10px 9px;
         #delete-action {
             margin-right: 10px;
         }
@@ -1112,10 +1114,11 @@ body.post-type-eshb_payment {
                 float: right;
             }
         }
+    }
 
-        .eshb-error-message {
-            display: none;
-        }
+    .eshb-error-message {
+        display: none;
+        padding: 0 10px;
     }
 
     .input-error {

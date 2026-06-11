@@ -107,9 +107,17 @@ class ESHB_Templates {
     }
 
     public function eshb_page_contents($content) {
+        // Guard against recursion: rendering the grid runs get_the_excerpt(),
+        // which re-applies the 'the_content' filter. Without this guard that
+        // re-entry would render the grid again, causing an infinite loop.
+        static $rendering = false;
+        if ($rendering) {
+            return $content;
+        }
+
         // Retrieve the plugin settings
         $eshb_settings = get_option('eshb_settings');
-        
+
         // Check if plugin settings and archive-page are available
         if (empty($eshb_settings) || empty($eshb_settings['archive-page'])) {
             return $content; // Return original content if settings are not properly set
@@ -125,17 +133,28 @@ class ESHB_Templates {
         
         // If the current page ID matches the specified archive page ID, replace content with shortcode
         if ($selected_page_id == $page_id) {
-            return do_shortcode('[eshb_accomodation_grid]');
+            $rendering = true;
+            $output = do_shortcode('[eshb_accomodation_grid]');
+            $rendering = false;
+            return $output;
         }
-    
+
         // If IDs don't match, return the original content
         return $content;
     }
 
     public function eshb_search_result_page_contents($content) {
+        // Guard against recursion: rendering the grid runs get_the_excerpt(),
+        // which re-applies the 'the_content' filter. Without this guard that
+        // re-entry would render the grid again, causing an infinite loop.
+        static $rendering = false;
+        if ($rendering) {
+            return $content;
+        }
+
         // Retrieve the plugin settings
         $eshb_settings = get_option('eshb_settings');
-        
+
         // Check if plugin settings and archive-page are available
         if (empty($eshb_settings) || empty($eshb_settings['search-result-page'])) {
             return $content; // Return original content if settings are not properly set
@@ -150,9 +169,12 @@ class ESHB_Templates {
         
         // If the current page ID matches the specified archive page ID, replace content with shortcode
         if($selected_page_id == $search_result_page_id){
-            return do_shortcode('[eshb_accomodation_search_result]');
+            $rendering = true;
+            $output = do_shortcode('[eshb_accomodation_search_result]');
+            $rendering = false;
+            return $output;
         }
-    
+
         // If IDs don't match, return the original content
         return $content;
     }

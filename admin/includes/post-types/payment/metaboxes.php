@@ -109,8 +109,8 @@ if( class_exists( 'ESHB' ) ) {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
         $booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
         $current_booking_customer_metadata = ESHB_Helper::get_current_booking_customer_metadata($booking_id, '', '');
-        $saved_state_name = $current_booking_customer_metadata['state'];
-        $saved_city_name = $current_booking_customer_metadata['city'];
+        $saved_state_name = $current_booking_customer_metadata['state'] ?? '';
+        $saved_city_name = $current_booking_customer_metadata['city'] ?? '';
     }
 
     
@@ -325,10 +325,8 @@ if( class_exists( 'ESHB' ) ) {
                 'id'          => 'address_1',
                 'type'        => 'text',
                 'title'       => 'Address line one',
-                'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
                 'default' => $current_booking_customer_metadata['address_1'] ?? '',
-                'class'    => 'required-field',
             ),
             array(
                 'id'          => 'address_2',
@@ -340,10 +338,8 @@ if( class_exists( 'ESHB' ) ) {
                 'id'          => 'postcode',
                 'type'        => 'text',
                 'title'       => 'Postcode / ZIP',
-                'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
                 'default' => $current_booking_customer_metadata['postcode'] ?? '',
-                'class'    => 'required-field',
             ),
         )
     ) );

@@ -22,6 +22,7 @@
     --eshb-body-font: "Jost", Helvetica, Arial, sans-serif;
 }
 
+@import 'native-checkout';
 @import 'carousel';
 @import '../../includes/widgets/room-grid/css/room-grid';
 @import '../../includes/widgets/room-slider/css/room-slider';
@@ -998,7 +999,7 @@ nav.eshb-pagination {
         align-items: center;
         margin: auto;
     }
-
+  
     .grid-item {
         position: relative;
 
@@ -1147,6 +1148,97 @@ nav.eshb-pagination {
 
                 .details-info {
                     opacity: 0;
+                }
+            }
+        }
+    }
+    
+    
+    &.style-two {
+        @media (max-width: 991.98px) {
+           gap: 50px;
+        }
+        .grid-item {
+            .item-inner {
+                display: flex;
+                position: relative;
+                @media (max-width: 991.98px) {
+                    flex-direction: column;
+                }
+                .thumbnail-col {
+                    height: 350px;
+                    overflow: hidden;
+                    img {
+                        width: 100%;
+                        transition: 0.35s ease-in-out;
+                    }
+                }
+                .pricing {
+                    display: flex;
+                    align-items: center;
+                    width: fit-content;
+                    background: #fff;
+                    padding: 10px 15px;
+                    position: absolute;
+                    left: 15px;
+                    top: 15px;
+                    .label {
+                        font-size: 14px;
+                    }
+
+                    .price {
+                        font-size: 18px;
+                        line-height: 1;
+                        display: flex;
+                        width: max-content;
+                        margin: 0;
+                    }
+                }
+                .contents-col {
+                    padding-left: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    @media (max-width: 991.98px) {
+                        padding: 15px 20px 0 0;
+                    }
+                    .capacities {
+                        margin-bottom: 10px;
+                        .capacity {
+                            margin-right: 1.5rem;
+                        }
+                    }
+                    .title,
+                    .p-title {
+                        margin-bottom: 0;
+                        font-size: 26px;
+                        a {
+                            line-height: 1.4em;
+                            color: var(--eshb-text-color);
+                            text-decoration: none;
+                        }
+                    }
+                    a.details-btn {
+                        background: var(--eshb-primary-color);
+                        width: auto;
+                        max-width: max-content;
+                        color: var(--eshb-white-color);
+                        padding: 8px 20px;
+                        font-size: 14px;
+                        letter-spacing: 2px;
+                        text-decoration: none;
+                        &:hover {
+                            background: var(--eshb-dark-color);
+                            color: var(--eshb-white-color);
+                        }
+                    }
+                }
+            }
+            &:hover {
+                .thumbnail-col {
+                    img {
+                        transform: scale(1.06);
+                    }
                 }
             }
         }
@@ -1943,7 +2035,7 @@ div#easy-hotel-booking-modal {
     color: #fff;
     text-align: center;
     padding: 10px 20px;
-    z-index: 100000;
+    z-index: 2;
     font-size: 14px;
     font-weight: 600;
 

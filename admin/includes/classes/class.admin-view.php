@@ -22,6 +22,8 @@ class ESHB_Admin_View {
         echo '</tr></thead><tbody>';
     
         $total_paid = 0;
+        $total_refunded = !empty($eshb_booking_metaboxes['total_refunded']) ? $eshb_booking_metaboxes['total_refunded'] : 0;
+
 
         
 
@@ -49,6 +51,10 @@ class ESHB_Admin_View {
             $total_paid = $total_price;
         }
 
+        if($total_refunded > 0) {
+            $total_paid = !empty($eshb_booking_metaboxes['total_paid']) ? $eshb_booking_metaboxes['total_paid'] : 0;
+        }
+
         echo '<td><strong>' . wp_kses_post( $hotel_core->eshb_price($total_paid) ) . '</strong></td>';
         echo '</tr>';
 
@@ -63,7 +69,7 @@ class ESHB_Admin_View {
         
     
         echo '</tbody></table>';
-        if($total_paid < $total_price){
+        if($booking_status !== 'cancelled' && $total_paid < $total_price){
             $add_new_post_url = admin_url( 'post-new.php?post_type=eshb_payment&booking=' . $booking_id );
             $add_new_post_url_with_amount = admin_url( 'post-new.php?post_type=eshb_payment&booking=' . $booking_id . '&amount=' . $total_due);
             echo '<br>

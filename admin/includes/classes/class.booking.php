@@ -133,6 +133,22 @@ class ESHB_Booking {
         if( is_singular('eshb_accomodation') ){
             return false; // don't cache
         }
+
+        // Never cache the Native Checkout / customer account pages: they are
+        // per-visitor (reservation token + a freshly generated nonce baked
+        // into the page). A shared cache would serve a stale nonce to other
+        // visitors — which makes checkout fail for logged-out users (logged-in
+        // users bypass the cache, so it "only works when logged in").
+        if ( is_singular() ) {
+            global $post;
+            if ( $post instanceof WP_Post ) {
+                $eshb_content = (string) $post->post_content;
+                if ( has_shortcode( $eshb_content, 'eshb_native_checkout' ) || has_shortcode( $eshb_content, 'eshb_account' ) ) {
+                    return false; // don't cache
+                }
+            }
+        }
+
         return $cacheable;
 	}
 	
@@ -2539,6 +2555,18 @@ class ESHB_Booking {
 	// -------------------------------------------------------------------------
 
 	private function eshb_get_session_token() {
+		// Native Checkout does not use a WooCommerce session — the visitor
+		// is identified by the per-visitor reservation token instead. Use
+		// that as the hold key so holds created during the native flow are
+		// attributed to (and excludable for) the right user across the
+		// booking form, calendar and checkout page.
+		if ( function_exists( 'eshb_native_checkout_is_enabled' ) && eshb_native_checkout_is_enabled()
+			&& function_exists( 'eshb_native_checkout_get_token' ) ) {
+			$native_token = eshb_native_checkout_get_token( false );
+			if ( ! empty( $native_token ) ) {
+				return 'native_' . $native_token;
+			}
+		}
 		if ( class_exists( 'WooCommerce' ) && WC()->session ) {
 			return (string) WC()->session->get_customer_id();
 		}
@@ -2609,16 +2637,103 @@ class ESHB_Booking {
 		return '';
 	}
 
+	/**
+	 * Remove the current visitor's hold for one accommodation, deleting the
+	 * transient entirely when no holds remain. Shared by the cart-removal,
+	 * order-completion and Native Checkout release paths.
+	 */
+	private function eshb_remove_session_hold( $accom_id ) {
+		$accom_id = (int) $accom_id;
+		if ( ! $accom_id ) return;
+
+		$session = $this->eshb_get_session_token();
+		if ( empty( $session ) ) return;
+
+		$key   = 'eshb_cart_holds_' . $accom_id;
+		$holds = get_transient( $key );
+		if ( ! is_array( $holds ) ) return;
+
+		unset( $holds[ $session ] );
+		if ( empty( $holds ) ) {
+			delete_transient( $key );
+		} else {
+			$cfg = $this->eshb_get_blocking_settings();
+			set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
+		}
+	}
+
+	// -------------------------------------------------------------------------
+	// Public cart-blocking API (used by the Native Checkout controller, which
+	// is a separate class and short-circuits the WooCommerce add-to-cart flow)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Place a temporary hold for a native reservation. Returns the unix
+	 * timestamp the hold expires at, or 0 when blocking is disabled.
+	 */
+	public function eshb_block_dates_for_reservation( $accom_id, $start_date, $end_date, $room_qty ) {
+		return $this->eshb_set_cart_block( $accom_id, $start_date, $end_date, $room_qty );
+	}
+
+	/**
+	 * Whether the given dates collide with another visitor's active hold.
+	 * Returns a translated message on conflict, or '' when clear.
+	 */
+	public function eshb_get_cart_block_conflict( $accom_id, $start_date, $end_date ) {
+		return $this->eshb_check_cart_block( $accom_id, $start_date, $end_date );
+	}
+
+	/**
+	 * Release the current visitor's hold for an accommodation (on
+	 * completed booking or expired/abandoned native reservation).
+	 */
+	public function eshb_release_cart_block( $accom_id ) {
+		$this->eshb_remove_session_hold( $accom_id );
+	}
+
+	/**
+	 * Expiry timestamp (unix) of the current visitor's own hold for an
+	 * accommodation, or 0 when there is none. Lets the Native Checkout
+	 * page render an accurate countdown.
+	 */
+	public function eshb_get_my_block_until( $accom_id ) {
+		$accom_id = (int) $accom_id;
+		if ( ! $accom_id ) return 0;
+
+		$holds = get_transient( 'eshb_cart_holds_' . $accom_id );
+		if ( ! is_array( $holds ) ) return 0;
+
+		$session = $this->eshb_get_session_token();
+		if ( empty( $session ) || empty( $holds[ $session ]['until'] ) ) return 0;
+
+		return (int) $holds[ $session ]['until'];
+	}
+
+	/**
+	 * Expose the hold-countdown notice markup so the Native Checkout
+	 * template can render the same banner used by the WooCommerce flow.
+	 */
+	public function eshb_cart_block_notice_html( $mode = 'inline' ) {
+		return $this->eshb_get_blocking_notice_html( $mode );
+	}
+
 	public function eshb_add_blocked_dates_to_calendar( $all_dates, $accom_id, $accom_metas ) {
 		$key   = 'eshb_cart_holds_' . (int) $accom_id;
 		$holds = get_transient( $key );
 
 		$blocked_ranges = [];
 		if ( is_array( $holds ) ) {
-			$session = $this->eshb_get_session_token();
-			$now     = time();
+			$now = time();
+			// Show every active hold as "Reserved" on the calendar,
+			// including the current visitor's own. The native flow keys
+			// holds by a cookie token that is reliably present on this
+			// AJAX request, so skipping the own session here would hide
+			// the held dates from the holder (whereas the WooCommerce
+			// session token isn't consistently resolved here, so its
+			// holds always showed). Own-hold exclusion is kept only in
+			// the booking-validation path so the holder can still finish
+			// their own reservation.
 			foreach ( $holds as $token => $hold ) {
-				if ( $token === $session ) continue;
 				if ( $hold['until'] < $now ) continue;
 				$blocked_ranges[] = [
 					'start_date' => $hold['start_date'],
@@ -2646,10 +2761,12 @@ class ESHB_Booking {
 
 		$blocked_ranges = [];
 		if ( is_array( $holds ) ) {
-			$session = $this->eshb_get_session_token();
-			$now     = time();
+			$now = time();
+			// Include every active hold (own included) so the calendar
+			// renders the held dates as "Reserved" consistently across
+			// the WooCommerce and Native Checkout flows. See the note in
+			// eshb_add_blocked_dates_to_calendar().
 			foreach ( $holds as $token => $hold ) {
-				if ( $token === $session ) continue;
 				if ( $hold['until'] < $now ) continue;
 				$blocked_ranges[] = [
 					'start_date' => $hold['start_date'],
@@ -2669,20 +2786,7 @@ class ESHB_Booking {
 		$accom_id = isset( $removed['accomodation_id'] ) ? (int) $removed['accomodation_id'] : 0;
 		if ( ! $accom_id ) return;
 
-		$session = $this->eshb_get_session_token();
-		if ( empty( $session ) ) return;
-
-		$key   = 'eshb_cart_holds_' . $accom_id;
-		$holds = get_transient( $key );
-		if ( ! is_array( $holds ) ) return;
-
-		unset( $holds[ $session ] );
-		if ( empty( $holds ) ) {
-			delete_transient( $key );
-		} else {
-			$cfg = $this->eshb_get_blocking_settings();
-			set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
-		}
+		$this->eshb_remove_session_hold( $accom_id );
 	}
 
 	public function eshb_render_calendar_legend( $accomodation_id = 0 ) {
@@ -2806,17 +2910,7 @@ class ESHB_Booking {
 			$accom_id = (int) $item->get_meta( 'accomodation_id' );
 			if ( ! $accom_id ) continue;
 
-			$key   = 'eshb_cart_holds_' . $accom_id;
-			$holds = get_transient( $key );
-			if ( ! is_array( $holds ) ) continue;
-
-			unset( $holds[ $session ] );
-			if ( empty( $holds ) ) {
-				delete_transient( $key );
-			} else {
-				$cfg = $this->eshb_get_blocking_settings();
-				set_transient( $key, $holds, $cfg['minutes'] * 60 + 60 );
-			}
+			$this->eshb_remove_session_hold( $accom_id );
 		}
 	}
 

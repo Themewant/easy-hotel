@@ -270,14 +270,7 @@ class ESHB_Admin_Booking {
                 'Extra Services IDs' => $extra_services,
                 'Extra Services' => $extra_services_html,
             ];
-
-            error_log(print_r('Booking update_meta_data', true));
-            error_log('booking id : '. print_r($booking_id, true));
-            error_log('accomodation id : '. print_r($accomodation_id, true));
-            error_log('order id : '. print_r($order_id, true));
-
-            error_log('meta_data : '. print_r($meta_data, true));
-
+            
             $eshb_booking_metaboxes['extra_services_html'] = $extra_services_html; 
 
             // update woocommerce order if it exists
@@ -396,10 +389,10 @@ class ESHB_Admin_Booking {
     
         // update title if its not same to old title
         if ( get_post_field( 'post_title', $post_id ) !== $new_title ) {
-            // prevent loop properly (named callback!)
-            remove_action( 'save_post_eshb_booking', 'eshb_update_booking_title_on_save', 999 );
-            wp_update_post( [ 
-                'ID' => $post_id, 
+            // Recursion is prevented by the static $running guard above; no
+            // need to remove/re-add the hook here.
+            wp_update_post( [
+                'ID' => $post_id,
                 'post_title' => $new_title,
                 ] );
         }

@@ -120,7 +120,6 @@ class ESHB_MAIN {
 			strpos(sanitize_text_field( wp_unslash($_SERVER['HTTP_HOST'] ) ), 'localhost') !== false ||
     		strpos(sanitize_text_field( wp_unslash($_SERVER['HTTP_HOST'] ) ), '127.0.0.1') !== false 
 		) {
-			// error_log('mail server is running on localhost!');
 			$phpmailer->isSMTP();
 			$phpmailer->Host = 'localhost';
 			$phpmailer->Port = 1025;

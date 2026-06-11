@@ -103,8 +103,8 @@ class ESHB_Metabox_Settings {
 					" />
 				</div>
 				<div class="clear"></div>
-                <p class="eshb-error-message eshb-text-danger"><?php echo esc_html__( 'Full up all required field!', 'easy-hotel' )?></p>
 			</div>
+            <p class="eshb-error-message eshb-text-danger"><?php echo esc_html__( 'Full up all required field!', 'easy-hotel' )?></p>
 		</div>
 		<?php
 	}
