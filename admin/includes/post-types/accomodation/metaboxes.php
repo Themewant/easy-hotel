@@ -339,15 +339,23 @@ function eshb_accomodation_custom_column_content($column, $post_id) {
 
     $eshb_accomodation_metaboxes = get_post_meta($post_id, 'eshb_accomodation_metaboxes', true);
 
+    // Accommodations created without the metabox form (REST, import, translation
+    // duplication, etc.) have no serialized array here. Guard against accessing
+    // string/empty offsets, which otherwise throws a fatal TypeError and crashes
+    // the whole accommodations list table.
+    if ( ! is_array( $eshb_accomodation_metaboxes ) ) {
+        $eshb_accomodation_metaboxes = array();
+    }
+
     switch ($column) {
         case 'total_capacity':
-            echo esc_html($eshb_accomodation_metaboxes['total_capacity']);
+            echo esc_html($eshb_accomodation_metaboxes['total_capacity'] ?? '');
             break;
         case 'adult_capacity':
-            echo esc_html($eshb_accomodation_metaboxes['adult_capacity']);
+            echo esc_html($eshb_accomodation_metaboxes['adult_capacity'] ?? '');
             break;
         case 'children_capacity':
-            echo esc_html($eshb_accomodation_metaboxes['children_capacity']);
+            echo esc_html($eshb_accomodation_metaboxes['children_capacity'] ?? '');
             break;
         case 'menu_order':
             echo esc_html(get_post_field( 'menu_order' ));
