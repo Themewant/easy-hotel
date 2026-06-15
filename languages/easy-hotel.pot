@@ -118,13 +118,445 @@ msgstr ""
 msgid "[eshb_search_form]"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:43
+msgid "A confirmation email has been sent with your booking details."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:114
+msgid "A customer has cancelled their booking."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:151
+msgid "A new booking has been created from the native checkout."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:119
+#: admin/includes/native-checkout/includes/class-email-handler.php:262
+msgid "Accommodation"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:249
+#, php-format
+msgid "Accommodation %1$d — %2$s"
+msgstr ""
+
 #: admin/includes/post-types/booking/metaboxes.php:74
 #: admin/includes/post-types/booking/metaboxes.php:106
 msgid "Accommodation ID"
 msgstr ""
 
+#: admin/includes/native-checkout/includes/class-checkout.php:97
+msgid "Accommodation is required."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:57
+msgid "Accommodation:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:24
+#: admin/includes/native-checkout/account/templates/bookings.php:28
+#: admin/includes/native-checkout/account/templates/bookings.php:42
+msgid "Accomodation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:16
+msgid "Account"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:13
+msgid "Account Details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:32
+#: admin/includes/native-checkout/account/templates/bookings.php:54
+msgid "Actions"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:18
+msgid "Active Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:266
+msgid "Add accommodation"
+msgstr ""
+
 #: admin/includes/post-types/accomodation/accomodation.php:9
 msgid "Add Accomodation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:49
+msgid "Additional services"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:187
+msgid "Additional Services:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:234
+msgid "Admin"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:168
+msgid "Adults:"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:276
+msgid "Amount Paid"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:115
+#: admin/includes/native-checkout/templates/checkout-page.php:63
+msgid "Amount paid:"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:366
+msgid "Applying coupon…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:225
+msgid "Are you sure you want to cancel this booking?"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:76
+msgid "Are you sure you want to cancel this booking? This cannot be undone."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:397
+msgid "Book Now"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:63
+#: admin/includes/native-checkout/account/templates/dashboard.php:76
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:17
+#, php-format
+msgid "Booking #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:95
+#, php-format
+msgid "Booking #%d was cancelled"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:59
+#, php-format
+msgid "Booking cancelled by customer - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:365
+msgid "Booking confirmed! Redirecting…"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:819
+msgid "Booking could not be created. Please contact us."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:150
+#, php-format
+msgid "Booking for %s"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:118
+#: admin/includes/native-checkout/account/templates/bookings.php:27
+#: admin/includes/native-checkout/account/templates/bookings.php:41
+#: admin/includes/native-checkout/includes/class-email-handler.php:261
+msgid "Booking ID"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:22
+msgid "Booking information"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:52
+#: admin/includes/native-checkout/account/class-account-ajax.php:70
+#: admin/includes/native-checkout/account/class-bookings.php:198
+#: admin/includes/native-checkout/account/class-bookings.php:244
+#: admin/includes/native-checkout/account/class-bookings.php:351
+#: admin/includes/native-checkout/account/templates/booking-view.php:9
+msgid "Booking not found."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:56
+msgid "Booking reference:"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:253
+msgid "Booking summary"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:61
+msgid "Booking total:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:15
+msgid "Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:75
+msgid "Cancel booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:68
+msgid "Cancellation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:69
+msgid "Cancellation Details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:107
+msgid "Cancelled"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:20
+msgid "Cancelled Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:72
+msgid "Cancelled by"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:94
+msgid "Cancelled by:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:123
+#: admin/includes/native-checkout/account/templates/booking-view.php:70
+msgid "Cancelled on"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:93
+msgid "Cancelled on:"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-cod-gateway.php:29
+msgid "Cash on Delivery"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:81
+msgid "Change of plans"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:44
+msgid "Change Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:120
+#: admin/includes/native-checkout/account/templates/booking-view.php:25
+#: admin/includes/native-checkout/account/templates/dashboard.php:65
+#: admin/includes/native-checkout/account/templates/dashboard.php:78
+#: admin/includes/native-checkout/includes/class-email-handler.php:263
+#: admin/includes/native-checkout/templates/checkout-page.php:147
+msgid "Check-in"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:29
+#: admin/includes/native-checkout/account/templates/bookings.php:43
+msgid "Check-in / Check-out"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:58
+msgid "Check-in:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:121
+#: admin/includes/native-checkout/account/templates/booking-view.php:26
+#: admin/includes/native-checkout/includes/class-email-handler.php:264
+#: admin/includes/native-checkout/templates/checkout-page.php:156
+msgid "Check-out"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:59
+msgid "Check-out:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:33
+msgid "Children"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:169
+msgid "Children:"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:196
+msgid "Choose Additional Services"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:72
+msgid "Close"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:94
+msgid "Confirm cancellation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:58
+msgid "Confirm New Password"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:119
+msgid "Could not add to cart. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:765
+msgid "Could not initiate payment."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:312
+msgid "Country / Region"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:57
+#: admin/includes/native-checkout/includes/class-email-handler.php:271
+msgid "Coupon"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:133
+#: admin/includes/native-checkout/includes/class-pricing.php:416
+msgid "Coupon applied."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:233
+msgid "Coupon Discount"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:755
+msgid "Coupon is no longer valid."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:404
+msgid "Coupon is not applicable."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:212
+msgid "Coupon is not valid"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:389
+msgid "Coupon is not valid for this accommodation."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:367
+msgid "Coupon removed."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:185
+msgid "Coupon usage limit reached"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:364
+msgid "Coupon usage limit reached."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:44
+msgid "Create an account"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:49
+msgid "Current Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:146
+msgid "Custom amount"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:144
+#: admin/includes/native-checkout/includes/class-email-handler.php:191
+msgid "Customer"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:14
+msgid "Dashboard"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:209
+msgid "day"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:28
+msgid "Display Name"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:272
+msgid "Do you have coupon?"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:370
+msgid "Done"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:279
+msgid "Due Balance"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:65
+msgid "Due balance:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:110
+msgid "Easy Hotel Account"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/helpers.php:413
+#: admin/includes/native-checkout/native-checkout.php:83
+msgid "Easy Hotel Checkout"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-customer.php:47
+msgid "Easy Hotel Customer"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:369
+#: admin/includes/native-checkout/templates/checkout-page.php:189
+msgid "Edit"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:42
+#: admin/includes/native-checkout/templates/checkout-page.php:302
+msgid "Email"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:32
+msgid "Email or Username"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:150
+msgid "Enter amount"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:277
+msgid "Enter coupon code"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:35
+msgid "Extra beds"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:170
+msgid "Extra Beds:"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:268
+msgid "Extra services"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:177
+msgid "Failed to create PayPal order."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:19
+#: admin/includes/native-checkout/templates/checkout-page.php:292
+msgid "First Name"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:82
+msgid "Found another hotel"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:141
+msgid "Full amount"
 msgstr ""
 
 #: admin/includes/classes/class.metabox-settings.php:90
@@ -155,9 +587,380 @@ msgctxt "Add New on Toolbar"
 msgid "Booking"
 msgstr ""
 
+#: admin/includes/native-checkout/includes/class-email-handler.php:163
+msgid "Grand Total"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:72
+msgid "Grand total paid:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:39
+msgid "Guest details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:30
+#: admin/includes/native-checkout/includes/class-email-handler.php:265
+msgid "Guests"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:120
+#, php-format
+msgid "Hi %s, thank you for your booking!"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:64
+#: admin/includes/native-checkout/account/templates/dashboard.php:77
+msgid "Hotel"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:388
+#, php-format
+msgid "I have read and accept the %s."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:101
+msgid "Invalid accommodation."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:135
+#: admin/includes/native-checkout/includes/class-pricing.php:350
+msgid "Invalid coupon code."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:664
+msgid "Invalid coupon."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:703
+msgid "Invalid item."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:92
+msgid "Invalid request."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:960
+msgid "Invalid request. Please refresh the page."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:93
+msgid "Keep booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:23
+#: admin/includes/native-checkout/templates/checkout-page.php:296
+msgid "Last Name"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:229
+msgid "Loading…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:35
+msgid "Log In"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:25
+msgid "Log in to view and manage your bookings."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:42
+msgid "Logout"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:41
+msgid "Lost your password?"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:178
+msgid "Manage your booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:63
+msgid "Method"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:192
+msgid "Missing PayPal order id."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:14
+msgid "My Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:127
+#, php-format
+msgid "New booking #%d received"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:124
+msgid "New booking received"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:45
+#, php-format
+msgid "New booking received - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:54
+msgid "New Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:171
+#: admin/includes/native-checkout/account/class-account.php:228
+msgid "New password and confirmation do not match."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:171
+msgid "Nights:"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:350
+msgid "No payment gateways are configured. Please contact the administrator."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:460
+msgid "No reservation found"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:371
+#: admin/includes/native-checkout/templates/checkout-page.php:184
+msgid "None selected"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:329
+msgid "Notes"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:159
+msgid "Nothing left to refund."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:84
+msgid "Other"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:61
+msgid "Paid"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:33
+msgid "Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:174
+msgid "Password must be at least 6 characters."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:180
+msgid "Password updated. Please log in again."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:29
+msgid "Pay securely using your PayPal account or a credit card."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-cod-gateway.php:30
+msgid "Pay with cash upon arrival / at the property."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:364
+msgid "Payment could not be completed. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:805
+msgid "Payment could not be confirmed."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:283
+msgid "Payment method"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:28
+msgid "PayPal"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:221
+#, php-format
+msgid "PayPal capture failed (%s)."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:102
+msgid "PayPal credentials are not configured."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:44
+#: admin/includes/native-checkout/templates/checkout-page.php:306
+msgid "Phone"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:360
+msgid "Please accept the terms and conditions."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:362
+msgid "Please choose a payment method."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:203
+msgid "Please enter a coupon code"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:194
+msgid "Please enter a valid amount."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:126
+#: admin/includes/native-checkout/includes/class-checkout.php:1036
+#: admin/includes/native-checkout/includes/class-checkout.php:363
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:363
+msgid "Please enter a valid refund amount."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:377
+msgid "Please enter your email address above before applying this coupon."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:165
+msgid "Please fill in all password fields."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:1032
+#: admin/includes/native-checkout/includes/class-checkout.php:361
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:461
+msgid "Please go back and choose your accommodation to start booking."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:37
+msgid "Please log in to continue."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:226
+msgid "Price Breakdown"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:83
+msgid "Price issue"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:155
+msgid "Process refund"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:192
+msgid "Process this refund?"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:191
+#: admin/includes/native-checkout/account/class-account.php:226
+#: admin/includes/native-checkout/includes/class-checkout.php:368
+msgid "Processing…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:151
+#: admin/includes/native-checkout/account/templates/booking-view.php:75
+msgid "Reason"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:78
+msgid "Reason (optional)"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:96
+msgid "Reason:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:50
+msgid "Recent Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:146
+msgid "Redirecting to checkout…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:135
+msgid "Refund"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:366
+msgid "Refund amount cannot exceed the amount paid."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:228
+msgid "Refund processed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:118
+msgid "Refunded:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:34
+msgid "Remember me"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:141
+#: admin/includes/native-checkout/templates/checkout-page.php:279
+msgid "Remove"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:372
+msgid "Remove this accommodation from your booking?"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:27
+#: admin/includes/native-checkout/includes/class-email-handler.php:266
+msgid "Rooms"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:167
+msgid "Rooms:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:39
+msgid "Save Changes"
+msgstr ""
+
 #: admin/includes/post-types/session/session.php:8
 msgctxt "Add New on Toolbar"
 msgid "Season"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:204
+msgid "Security check failed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:40
+msgid "Security check failed. Please refresh the page."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:314
+msgid "Select a country…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:80
+msgid "Select a reason…"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:320
+msgid "Select a state…"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:746
+#: admin/includes/native-checkout/includes/class-checkout.php:788
+msgid "Selected payment method is not available."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:187
+#: admin/includes/native-checkout/includes/class-checkout.php:210
+#, php-format
+msgid "Selected room is not available. Available room: %s"
 msgstr ""
 
 #: admin/includes/post-types/service/service.php:8
@@ -206,6 +1009,7 @@ msgstr ""
 msgid "Adult Capacity"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/booking-view.php:32
 #: admin/includes/post-types/booking/hooks.php:114
 msgid "Adults"
 msgstr ""
@@ -230,6 +1034,8 @@ msgstr ""
 msgid "All Services"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:273
+#: admin/includes/native-checkout/templates/checkout-page.php:278
 #: public/includes/plugin-scripts.php:43
 msgid "Apply"
 msgstr ""
@@ -270,6 +1076,7 @@ msgstr ""
 msgid "Booking Date"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:129
 #: admin/includes/post-types/booking/hooks.php:78
 msgid "Booking Details"
 msgstr ""
@@ -294,6 +1101,8 @@ msgstr ""
 msgid "Button"
 msgstr ""
 
+#: admin/includes/native-checkout/account/class-account-admin.php:156
+#: admin/includes/native-checkout/account/templates/bookings.php:60
 #: public/includes/plugin-scripts.php:44
 msgid "Cancel"
 msgstr ""
@@ -332,6 +1141,7 @@ msgstr ""
 msgid "Childrens"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:325
 #: admin/includes/post-types/booking/hooks.php:160
 msgid "City"
 msgstr ""
@@ -466,6 +1276,7 @@ msgstr ""
 msgid "Edit Service"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/account-settings.php:32
 #: admin/includes/post-types/booking/hooks.php:148
 msgid "Email Address"
 msgstr ""
@@ -602,6 +1413,7 @@ msgstr ""
 msgid "More Rooms"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/booking-view.php:41
 #: admin/includes/post-types/booking/hooks.php:144
 msgid "Name"
 msgstr ""
@@ -760,6 +1572,96 @@ msgctxt ""
 msgid "Set cover image"
 msgstr ""
 
+#: admin/includes/native-checkout/account/class-account-admin.php:87
+msgid "Set the status to “Cancelled” and update to cancel this booking. The customer and admin will be notified."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:14
+msgid "Sign in to your account"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:193
+#: admin/includes/native-checkout/account/class-account.php:227
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:330
+msgid "Special requests, dietary requirements, etc."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:31
+#: admin/includes/native-checkout/account/templates/bookings.php:49
+#: admin/includes/native-checkout/account/templates/dashboard.php:67
+#: admin/includes/native-checkout/account/templates/dashboard.php:80
+msgid "Status"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:59
+#: admin/includes/native-checkout/templates/checkout-page.php:237
+msgid "Tax"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:88
+msgid "Tell us more (optional)"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:389
+msgid "terms and conditions"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:42
+msgid "Thank you! Your booking is confirmed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:131
+msgid "That email address is already in use."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:210
+msgid "The check-in date has already passed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:113
+msgid "The following booking has been cancelled. If this was a mistake, please contact us."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:206
+msgid "This booking can no longer be cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:86
+msgid "This booking has not been cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:395
+msgid "This coupon has expired."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:157
+#: admin/includes/native-checkout/includes/class-email-handler.php:202
+msgid "This email was generated by Easy Hotel."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:17
+msgid "Total Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:123
+msgid "Unable to authenticate with PayPal."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:112
+msgid "Unable to calculate price."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:19
+msgid "Upcoming Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:66
+msgid "Update Password"
+msgstr ""
+
 #: admin/includes/post-types/accomodation/accomodation.php:25
 msgctxt ""
 "Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
@@ -821,10 +1723,12 @@ msgstr ""
 msgid "Parent Services:"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/booking-view.php:53
 #: admin/includes/post-types/booking/hooks.php:186
 msgid "Payment"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:347
 #: admin/includes/post-types/booking/hooks.php:200
 msgid "Payment Method"
 msgstr ""
@@ -1057,6 +1961,7 @@ msgstr ""
 msgid "Start Date"
 msgstr ""
 
+#: admin/includes/native-checkout/templates/checkout-page.php:318
 #: admin/includes/post-types/booking/hooks.php:164
 msgid "State"
 msgstr ""
@@ -1093,6 +1998,8 @@ msgstr ""
 msgid "Sub Title"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/booking-view.php:55
+#: admin/includes/native-checkout/templates/checkout-page.php:229
 #: admin/includes/post-types/booking/hooks.php:212
 msgid "Subtotal"
 msgstr ""
@@ -1204,6 +2111,13 @@ msgstr ""
 msgid "to learn more in details."
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/booking-view.php:60
+#: admin/includes/native-checkout/account/templates/bookings.php:30
+#: admin/includes/native-checkout/account/templates/bookings.php:48
+#: admin/includes/native-checkout/account/templates/dashboard.php:66
+#: admin/includes/native-checkout/account/templates/dashboard.php:79
+#: admin/includes/native-checkout/includes/class-email-handler.php:273
+#: admin/includes/native-checkout/templates/checkout-page.php:241
 #: public/includes/classes/class.view.php:376
 msgid "Total"
 msgstr ""
@@ -1224,12 +2138,94 @@ msgstr ""
 msgid "Enter Your Detais"
 msgstr ""
 
+#: admin/includes/native-checkout/account/templates/bookings.php:56
+msgid "View"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:52
+msgid "View all"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:135
+#: admin/includes/native-checkout/templates/checkout-page.php:84
+msgid "View your bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:182
+msgid "View your bookings and manage your account anytime from your account dashboard."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:28
+#, php-format
+msgid "Welcome back, %s"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:200
+msgid "You are not allowed to cancel this booking."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:213
+msgid "You are not allowed to refund this booking."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:193
+#: admin/includes/native-checkout/includes/class-pricing.php:382
+msgid "You have already used this coupon the maximum number of times."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:21
+#: admin/includes/native-checkout/account/templates/dashboard.php:57
+msgid "You have no bookings yet."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:128
+msgid "Your Accommodations"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:29
+#, php-format
+msgid "Your booking confirmation - %s"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:92
+msgid "Your booking has been cancelled"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:45
+#, php-format
+msgid "Your booking has been cancelled - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:105
+msgid "Your booking has been cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:373
+msgid "Your booking is empty."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:168
+msgid "Your current password is incorrect."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:148
+msgid "Your details have been saved."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:289
+msgid "Your Information"
+msgstr ""
+
 #: public/includes/classes/class.view.php:466
 msgid "Your name"
 msgstr ""
 
 #: public/includes/classes/class.view.php:467
 msgid "Your email"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:20
+msgid "Your password has been set. Please log in to continue."
 msgstr ""
 
 #: public/includes/classes/class.view.php:468
@@ -1346,7 +2342,6 @@ msgstr ""
 msgid "W"
 msgstr ""
 
-
 #: public/includes//classes/class.booking-calendar.php
 msgid "Accomodations"
 msgstr ""
@@ -1397,4 +2392,12 @@ msgstr ""
 
 #: admin/includes/plugin-scripts.php
 msgid "Billing email not found!"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:1002
+msgid "Your reservation has expired. Please start again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:150
+msgid "Your reservation is on hold and will be confirmed once we process your payment."
 msgstr ""
