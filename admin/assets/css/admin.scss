@@ -1,3 +1,5 @@
+@import '../../includes/dashboard/assets/scss/dashboard';
+
 :root {
     --eshb-primary-color: #ab8965;
     --eshb-success-color: #1ec734;
@@ -7,7 +9,6 @@
     --eshb-white-color: #ffffff;
     --eshb-border-color: #ab8965;
 }
-
 .eshb-text-danger {
     color: var(--eshb-danger-color);
 }
