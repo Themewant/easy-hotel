@@ -2401,3 +2401,176 @@ msgstr ""
 #: admin/includes/native-checkout/includes/class-email-handler.php:150
 msgid "Your reservation is on hold and will be confirmed once we process your payment."
 msgstr ""
+
+#. Easy Hotel – Admin Dashboard
+#: admin/includes/dashboard/views/dashboard-page.php:28
+msgid "Pending Bookings"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:29
+msgid "Check-ins Today"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:30
+msgid "Check-outs Today"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:31
+msgid "Available Rooms"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:38
+msgid "Add New Room"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:39
+#: admin/includes/dashboard/views/dashboard-page.php:143
+msgid "View All Bookings"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:40
+msgid "Create Manual Booking"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:41
+msgid "Manage Availability"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:42
+msgid "Create Coupon"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:91
+msgid "Booking Calendar"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:93
+msgid "Booked"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:94
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:127
+msgid "Available"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:99
+msgid "Previous month"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:101
+msgid "Next month"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:108
+msgid "Quick Actions"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:123
+msgid "Booking Trend"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:123
+#: admin/includes/dashboard/views/dashboard-page.php:131
+msgid "(Last 30 Days)"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:126
+#: admin/includes/dashboard/views/dashboard-page.php:131
+msgid "30 Days"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:130
+msgid "(Last 7 Days)"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:130
+msgid "7 Days"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:132
+msgid "(Last 12 Months)"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:132
+msgid "1 Year"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:169
+msgid "Room Availability Summary"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:175
+msgid "Get Premium Addons & Themes"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:176
+msgid "Advanced pricing, diposit, ical syncronization, whatspp and many more with our premium add-ons."
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:177
+msgid "Explore Now"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:126
+msgid "Could not load dashboard data."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:128
+msgid "Updated just now"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:129
+msgid "from last month"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:130
+msgid "from yesterday"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:132
+msgid "Sun"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:133
+msgid "Mon"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:134
+msgid "Tue"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:135
+msgid "Wed"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:136
+msgid "Thu"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:137
+msgid "Fri"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:138
+msgid "Sat"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-rest.php:47
+msgid "You are not allowed to view the dashboard data."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:325
+msgid "Guest"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:331
+msgid "%d Adult"
+msgid_plural "%d Adults"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:335
+msgid "%d Child"
+msgid_plural "%d Children"
+msgstr[0] ""
+msgstr[1] ""
