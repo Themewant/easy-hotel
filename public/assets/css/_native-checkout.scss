@@ -513,6 +513,8 @@
         .eshb-btn-submit {
             display: inline-block;
             width: auto;
+            padding: 10px 15px;
+            text-decoration: none;
         }
     }
 }
@@ -1149,4 +1151,41 @@
 
 body.eshb-account-modal-open {
     overflow: hidden;
+}
+
+/* EHB PDF Invoice — front-end download button */
+
+.eshb-pdf-invoice-download-btn {
+	display: inline-block;
+	margin: 8px 0;
+	padding: 8px 18px;
+	background: #212121;
+	color: #fff !important;
+	border-radius: 6px;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.eshb-pdf-invoice-download-btn:hover,
+.eshb-pdf-invoice-download-btn:focus {
+	background: #000;
+	color: #fff !important;
+}
+
+/* Thank-you page: keep the invoice button inline next to "View your bookings". */
+.eshb-thankyou-actions .eshb-pdf-invoice-download-btn {
+	display: inline-block;
+	margin: 0 0 0 8px;
+	vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+	.eshb-pdf-invoice-download-btn {
+		display: block;
+		text-align: center;
+	}
+
+	.eshb-thankyou-actions .eshb-pdf-invoice-download-btn {
+		display: inline-block;
+	}
 }
