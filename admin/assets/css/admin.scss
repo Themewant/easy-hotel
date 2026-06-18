@@ -45,6 +45,12 @@
     textarea {
         border-color: #e1dede;
     }
+    .wp-picker-container {
+        width: auto;
+        .wp-color-result.button {
+            width: 140px;
+        }
+    }
 }
 
 .csf-field.hidden-metabox {
@@ -556,6 +562,7 @@
         button {
             max-width: unset;
             width: unset;
+            line-height: normal;
         }
 
         .ajax-loader {

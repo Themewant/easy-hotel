@@ -738,6 +738,12 @@
 .csf-field textarea {
   border-color: #e1dede;
 }
+.csf-field .wp-picker-container {
+  width: auto;
+}
+.csf-field .wp-picker-container .wp-color-result.button {
+  width: 140px;
+}
 
 .csf-field.hidden-metabox {
   display: none;
@@ -1183,6 +1189,7 @@
 #eshb-license-activator .form-group button {
   max-width: unset;
   width: unset;
+  line-height: normal;
 }
 #eshb-license-activator .form-group .ajax-loader {
   display: none;

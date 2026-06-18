@@ -113,7 +113,18 @@ function eshb_get_booking_data_tables() {
             ?>
             <div class="wrap">
 
+
                 <h1><?php esc_html_e('Booking Details', 'easy-hotel') ?></h1>
+                <?php
+                    /**
+                     * Fires after the Booking Details title — used by the
+                     * EHB PDF Invoice add-on to render Download / Print buttons.
+                     *
+                     * @param int $post_id Booking post id.
+                     */
+                    do_action( 'eshb_after_booking_details_title', $post_id );
+                ?>
+
                 <h3><?php esc_html_e('Rooms & Services', 'easy-hotel') ?></h3>
 
                 <table class="wp-list-table widefat fixed striped">
