@@ -113,6 +113,7 @@ Unlike other hotel booking plugins, it provides flexibility, an easy-to-use book
 * [EHB Currency](https://themewant.com/downloads/ehb-currency/) Multi Currency Converter plugin for easy hotel.
 * [EHB Manual Booking](https://themewant.com/downloads/ehb-manual-booking/) Manual Booking solution for easy hotel.
 * [EHB Deposit](https://themewant.com/downloads/ehb-manual-booking/) Deposit / Paritial payment solution for easy hotel.
+* [EHB PDF Invoice](https://themewant.com/downloads/ehb-pdf-invoice/) PDF Invoice generator for easy hotel.
 
 
 
@@ -252,6 +253,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 = 2.0.3 =
 * Added: Hotel Dashboard
+* Made Compatible with EHB PDF Invoice addon
 
 = 2.0.2 =
 * Made Compatible with Bogo - multilingual translation plugin

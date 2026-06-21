@@ -11,6 +11,15 @@ class ESHB_PRO_ADDONS {
     public function eshb_get_addons(){
         $addons = array(
                 array(
+                    'name' => 'EHB PDF Invoice',
+                    'slug' => 'ehb-pdf-invoice/ehb-pdf-invoice.php',
+                    'external_url'  => 'https://themewant.com/downloads/ehb-pdf-invoice/',
+                    'demo_url'  => 'https://themewant.com/downloads/ehb-pdf-invoice/',
+                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/pdf-invoice.png',
+                    'desc' => 'Easy Hotel PDF Invoice Plugin, PDF Invoice generator for Easy Hotel plugin.',
+                    'is_pro' => true
+                ),
+                array(
                     'name' => 'EHB WhatsApp',
                     'slug' => 'ehb-whatsapp/ehb-whatsapp.php',
                     'external_url'  => 'https://themewant.com/downloads/ehb-whatsapp/',

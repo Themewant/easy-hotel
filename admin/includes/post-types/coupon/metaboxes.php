@@ -102,16 +102,18 @@ if( class_exists( 'ESHB' ) ) {
                   ),
                   array(
                     'id'    => 'used-by',
+                    'class' => 'hidden-metabox',
                     'type'  => 'textarea',
                     'title' => 'Used By',
-                    'desc'  => 'Leave empty for unlimited.',
+                    //'desc'  => 'Leave empty for unlimited.',
                     //'readonly' => true,
                   ),
                   array(
                     'id'    => 'usage-count',
+                    'class' => 'hidden-metabox',
                     'type'  => 'text',
                     'title' => 'Usage Count',
-                    'desc'  => 'Leave empty for unlimited.',
+                    //'desc'  => 'Leave empty for unlimited.',
                     //'readonly' => true,
                   ),
                   
