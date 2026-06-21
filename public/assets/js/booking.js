@@ -99,6 +99,9 @@
         ESHBPUBLICBOOKING.setBookingFormCalendar(
           startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form
         );
+        setTimeout(() => {
+          ESHBPUBLICBOOKING.updatePricingTable();
+        }, 2000);
       } else {
         // Frontend: initialize each booking/search form independently so they don't share state
         $('.eshb-booking-form, .eshb-search-form').each(function () {
