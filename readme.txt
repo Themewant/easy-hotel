@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,7 @@ Unlike other hotel booking plugins, it provides flexibility, an easy-to-use book
 * [EHB Manual Booking](https://themewant.com/downloads/ehb-manual-booking/) Manual Booking solution for easy hotel.
 * [EHB Deposit](https://themewant.com/downloads/ehb-manual-booking/) Deposit / Paritial payment solution for easy hotel.
 * [EHB PDF Invoice](https://themewant.com/downloads/ehb-pdf-invoice/) PDF Invoice generator for easy hotel.
+* [EHB Mailchimp](https://themewant.com/downloads/ehb-mailchimp/) PDF Invoice generator for easy hotel.
 
 
 
@@ -250,6 +251,9 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 2.0.4 =
+* Made Compatible with EHB Mailchimp addon
 
 = 2.0.3 =
 * Added: Hotel Dashboard

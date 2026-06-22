@@ -11,6 +11,15 @@ class ESHB_PRO_ADDONS {
     public function eshb_get_addons(){
         $addons = array(
                 array(
+                    'name' => 'EHB Mailchimp',
+                    'slug' => 'ehb-pdf-invoice/ehb-mailchimp.php',
+                    'external_url'  => 'https://themewant.com/downloads/ehb-mailchimp/',
+                    'demo_url'  => 'https://themewant.com/downloads/ehb-mailchimp/',
+                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/mailchimp.png',
+                    'desc' => 'Easy Hotel Mailchimp Plugin, User data collection system for Easy Hotel plugin.',
+                    'is_pro' => true
+                ),
+                array(
                     'name' => 'EHB PDF Invoice',
                     'slug' => 'ehb-pdf-invoice/ehb-pdf-invoice.php',
                     'external_url'  => 'https://themewant.com/downloads/ehb-pdf-invoice/',
