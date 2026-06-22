@@ -321,9 +321,15 @@ $multi             = count( $items_view ) > 1;
                         </select>
                     </div>
                 </div>
-                <div class="eshb-form-group">
-                    <label><?php esc_html_e( 'City', 'easy-hotel' ); ?> *</label>
-                    <input type="text" name="city" required>
+                <div class="eshb-grid-2">
+                    <div class="eshb-form-group">
+                        <label><?php esc_html_e( 'City', 'easy-hotel' ); ?> *</label>
+                        <input type="text" name="city" required>
+                    </div>
+                    <div class="eshb-form-group">
+                        <label><?php esc_html_e( 'Postal Code / ZIP', 'easy-hotel' ); ?></label>
+                        <input type="text" name="postcode">
+                    </div>
                 </div>
                 <div class="eshb-form-group">
                     <label><?php esc_html_e( 'Notes', 'easy-hotel' ); ?></label>

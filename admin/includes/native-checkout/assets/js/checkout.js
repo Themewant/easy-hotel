@@ -89,6 +89,7 @@
             country: $form.find('[name="country"]').val(),
             state: $form.find('[name="state"]').val(),
             city: $form.find('[name="city"]').val(),
+            postcode: $form.find('[name="postcode"]').val(),
             notes: $form.find('textarea[name="notes"]').val()
         };
     }
@@ -107,6 +108,7 @@
             country: customer.country,
             state: customer.state,
             city: customer.city,
+            postcode: customer.postcode,
             notes: customer.notes
         };
         // Reservation token: cookies can be stripped on some live hosts, so
