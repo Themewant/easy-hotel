@@ -21,7 +21,6 @@ class ESHB_Core {
         require_once( trailingslashit( ABSPATH ) .'wp-load.php' );
 
         if (!function_exists('wp_mail')) {
-            //error_log('Error: wp_mail() function is missing!');
             return false;
         }
 

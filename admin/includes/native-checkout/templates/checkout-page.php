@@ -222,6 +222,18 @@ $multi             = count( $items_view ) > 1;
                 <?php endforeach; ?>
             </div>
 
+            <?php
+            /**
+             * Fires before the Payment Method card. Extensions use this to
+             * inject extra UI (e.g. the EHB Deposit add-on renders the
+             * "Pay Deposit / Pay Full" radio selector here).
+             *
+             * @param array $pricing          Cart pricing payload.
+             * @param array $reservation_view First item view-model.
+             */
+            do_action( 'eshb_native_checkout_payment_option', $pricing, $reservation_view );
+            ?>
+
             <div class="eshb-card">
                 <h2><?php esc_html_e( 'Price Breakdown', 'easy-hotel' ); ?></h2>
                 <table class="eshb-price-table">
@@ -336,18 +348,6 @@ $multi             = count( $items_view ) > 1;
                     <textarea rows="2" name="notes" placeholder="<?php esc_attr_e( 'Special requests, dietary requirements, etc.', 'easy-hotel' ); ?>"></textarea>
                 </div>
             </div>
-
-            <?php
-            /**
-             * Fires before the Payment Method card. Extensions use this to
-             * inject extra UI (e.g. the EHB Deposit add-on renders the
-             * "Pay Deposit / Pay Full" radio selector here).
-             *
-             * @param array $pricing          Cart pricing payload.
-             * @param array $reservation_view First item view-model.
-             */
-            do_action( 'eshb_native_checkout_payment_option', $pricing, $reservation_view );
-            ?>
 
             <div class="eshb-card">
                 <h2><?php esc_html_e( 'Payment Method', 'easy-hotel' ); ?></h2>

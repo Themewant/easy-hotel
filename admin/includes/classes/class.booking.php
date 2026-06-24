@@ -1023,15 +1023,18 @@ class ESHB_Booking {
 	public function create_woocommerce_booking_on_checkout($order_id){
 
 		if (!$order_id) {
-			// error_log("Error: Missing order ID.");
 			return;
+		}
+
+		// Check if the booking post has already been created
+		if (get_post_meta($order_id, '_booking_post_created', true)) {
+			return; // Exit if the booking post has already been created
 		}
 	
 		// Get the order object
 		$order = wc_get_order($order_id);
 	
 		if (!$order) {
-			// error_log("Error: Invalid order ID: $order_id");
 			return;
 		}
 		
@@ -1042,21 +1045,27 @@ class ESHB_Booking {
 		$order_status = $order->get_status();
 		$booking_status = $order_status;
 
-		if ( $order && $order->is_paid() && $order->get_status() !== 'completed' && isset($eshb_settings['booking-auto-approval']) && $eshb_settings['booking-auto-approval'] == true) {
+		// A deposit order still has a balance owed, so auto-approval must
+		// NOT mark it completed — it has to stay 'deposit-payment' until the
+		// remaining balance is collected. Detect a deposit by the captured
+		// deposit meta (set only on the deposit path, before this runs) or
+		// the deposit-payment status. A FULL payment has neither, so it must
+		// auto-complete normally.
+		$is_deposit_order = ( (float) get_post_meta( $order_id, 'initial_deposit', true ) > 0 )
+			|| ( 'deposit-payment' === $order->get_status() );
+
+		if ( $order && $order->is_paid() && $order->get_status() !== 'completed' && ! $is_deposit_order && isset($eshb_settings['booking-auto-approval']) && $eshb_settings['booking-auto-approval'] == true) {
 			$order->update_status('completed', 'Payment successful, status updated via code.');
 			$booking_status = 'completed';
 		}
-		
+
 		$first_name = $order->get_billing_first_name();
 		$last_name = $order->get_billing_last_name();
 		$customer_name = trim($first_name . ' ' . $last_name); // Concatenate first and last name
 		$customer_email = $order->get_billing_email(); // Get customer email
 		$customer_phone = $order->get_billing_phone(); // Get customer phone number
 
-		// Check if the booking post has already been created
-		if (get_post_meta($order_id, '_booking_post_created', true)) {
-			return; // Exit if the booking post has already been created
-		}
+		
 		
 		// Loop through order items
 		foreach ($order->get_items() as $item_id => $item) {
@@ -2362,9 +2371,13 @@ class ESHB_Booking {
 		$booking_post_id = get_post_meta($order_id, '_booking_post_created', true);
 
 		$eshb_settings = get_option('eshb_settings', []);
-		
 
-		if ( ! empty($booking_post_id) ) {
+		// Don't auto-complete an order that still owes a deposit balance —
+		// it must remain 'deposit-payment' until the rest is paid. A full
+		// payment never has a captured deposit recorded, so it auto-completes.
+		$is_deposit_order = ( (float) get_post_meta( $order_id, 'initial_deposit', true ) > 0 );
+
+		if ( ! empty($booking_post_id) && ! $is_deposit_order ) {
 			if(isset($eshb_settings['booking-auto-approval']) && $eshb_settings['booking-auto-approval'] == true){
 				return 'completed'; // Mark order as completed
 			}
@@ -2396,6 +2409,27 @@ class ESHB_Booking {
 		$booking_post_id = get_post_meta($order_id, '_booking_post_created', true); // Adjusted to your meta key
 	
 		if ($booking_post_id) {
+
+			// Auto-approval: a fully-paid, non-deposit hotel order must not be
+			// synced down to 'processing' — it should be 'completed'. Without
+			// this, a later order transition to 'processing' (gateway / IPN)
+			// overwrites the 'completed' status set at checkout. Deposits keep
+			// their status (they still owe a balance).
+			if ( 'processing' === $new_status && $order ) {
+				$eshb_settings = get_option( 'eshb_settings', [] );
+				$auto_approve  = ! empty( $eshb_settings['booking-auto-approval'] ) && $eshb_settings['booking-auto-approval'] == true;
+				$is_deposit    = ( (float) get_post_meta( $order_id, 'initial_deposit', true ) > 0 )
+					|| ( (float) get_post_meta( $order_id, 'eshb_booking_due_amount', true ) > 0 );
+
+				if ( $auto_approve && ! $is_deposit ) {
+					$new_status = 'completed';
+					if ( $order->get_status() !== 'completed' ) {
+						// Re-enters this method with new_status='completed', which
+						// then falls through to the normal sync below.
+						$order->update_status( 'completed', 'Auto-approved: full payment received.' );
+					}
+				}
+			}
 
 			// update booking status
             $updated_booking = array(

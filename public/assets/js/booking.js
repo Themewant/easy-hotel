@@ -2249,7 +2249,12 @@
         }
 
         if (inputVal > maxCount) {
-          errContainer.html(errMsg + " " + maxCount);
+          if(eshb_ajax.booking_capacity_count_show != '') {
+            errContainer.html(errMsg + " " + maxCount);
+          }else{
+            errContainer.html(errMsg );
+          }
+          
           $(input).val(maxCount);
           setTimeout(() => {
             errContainer.html("");

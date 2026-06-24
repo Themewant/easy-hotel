@@ -54,3 +54,13 @@
 
     }
     add_action( 'plugins_loaded', 'eshb_appsero_init_tracker' );
+
+
+    add_filter( 'eshb_booking_action_messages', function($messages, $args){
+        $messages['maximumCapacity'] =  __('Add additional guests below', 'easy-hotel');
+        return $messages;
+    }, 10, 2 );
+    
+    add_filter( 'eshb_booking_capacity_count_show', function($show, $args){
+        return false;
+    }, 10, 2 );
