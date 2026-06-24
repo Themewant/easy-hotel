@@ -315,10 +315,7 @@ class ESHB_Helper {
     // Record a payment (deposit or subsequent) against an order.
     public static function eshb_assign_payment_to_booking( $payment_id, $order_id, $booking_id, $amount_paid, $update = false, $args = [] ) {
 
-        // error_log('payment assining' . $payment_id);
-
         if ( $amount_paid <= 0 ) {
-            //error_log('invalid payment amount!');
             return false;
         }
     
@@ -799,7 +796,6 @@ class ESHB_Helper {
         }
 
         if($accomodation_id) {
-            //error_log('$accomodation_id' . $accomodation_id);
             $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
             $available_rooms = $eshb_booking->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
             $available_rooms = $available_rooms > 0 ? $available_rooms : 0;
@@ -826,6 +822,9 @@ class ESHB_Helper {
             'maxNightsErrorMsgAvCal' => __('Requried Maximum Nights:', 'easy-hotel'),
         ];
 
+        $eshb_translations = apply_filters( 'eshb_booking_action_messages', $eshb_translations, [$accomodation_id, $eshb_settings] );
+        $show_count = apply_filters( 'eshb_booking_capacity_count_show', true, [$accomodation_id, $eshb_settings] );
+
         $nonce_action = ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action');
         wp_localize_script(
             'eshb-public-script', 
@@ -851,6 +850,7 @@ class ESHB_Helper {
                     'currentAccomodationMeta' => $eshb_accomodation_metaboxes,
                     'search_capacities' => $search_capacity_settings,
                     'booking_capacities' => $booking_capacity_settings,
+                    'booking_capacity_count_show' => $show_count,
                     'translations'              => $eshb_translations,
                     'cart_blocking_enabled'     => ! empty( $eshb_settings['cart-blocking-switcher'] ),
                     'cart_blocking_time'        => ! empty( $eshb_settings['cart-blocking-time'] ) ? (int) $eshb_settings['cart-blocking-time'] : 5,

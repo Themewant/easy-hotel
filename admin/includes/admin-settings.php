@@ -271,8 +271,6 @@ add_action( 'plugins_loaded', function(){
   );
   do_action( 'eshb_settings_fields_init');
 
-  //error_log('easy hotel loaded');
-
   $general_option_fields = apply_filters( 'eshb_general_option_fields', $general_option_fields );
 
 // Control core classes for avoid errors
