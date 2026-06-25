@@ -166,6 +166,7 @@ class ESHB_Search {
                     $booked_accomodation_ids = [];
                     $accomodation_id = ESHB_Helper::get_main_post_id_for_translated($accomodation_id);
 
+                    $booking_accomodation_id = ESHB_Helper::get_main_post_id_for_translated($booking_accomodation_id);
                     
                     if ($accomodation_id == $booking_accomodation_id) {
 

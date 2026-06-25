@@ -254,6 +254,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 = 2.0.4 =
 * Made Compatible with EHB Mailchimp addon
+* Fixed Polylang translation issues for bookings
 
 = 2.0.3 =
 * Added: Hotel Dashboard
