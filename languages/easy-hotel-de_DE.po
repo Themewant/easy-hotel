@@ -1,0 +1,2586 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Easy Hotel\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-29 06:56+0000\n"
+"PO-Revision-Date: 2026-06-29 05:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Deutsch\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.5; wp-7.0; php-8.4.16\n"
+
+#. %1$s%2$s / %3$s is replaced with "values of $currency_symbol $service_price & $service_charge_type"
+#: public/includes/classes/class.view.php:321
+#, php-format
+msgid "%1$s%2$s / %3$s"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:331
+msgid "%d Adult"
+msgid_plural "%d Adults"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:335
+msgid "%d Child"
+msgid_plural "%d Children"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:132
+msgid "(Last 12 Months)"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:123
+#: admin/includes/dashboard/views/dashboard-page.php:131
+msgid "(Last 30 Days)"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:130
+msgid "(Last 7 Days)"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:160
+#: public/includes/widgets/room-slider/room-slider-widget.php:242
+#: public/includes/widgets/room-slider/room-slider-widget.php:262
+#: public/includes/widgets/room-slider/room-slider-widget.php:282
+#: public/includes/widgets/room-slider/room-slider-widget.php:302
+msgid "1 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:322
+msgid "1 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:537
+#: public/includes/widgets/room-slider/room-slider-widget.php:561
+msgid "1 Seconds"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:132
+msgid "1 Year"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:161
+#: public/includes/widgets/room-slider/room-slider-widget.php:243
+#: public/includes/widgets/room-slider/room-slider-widget.php:263
+#: public/includes/widgets/room-slider/room-slider-widget.php:283
+#: public/includes/widgets/room-slider/room-slider-widget.php:303
+msgid "2 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:323
+msgid "2 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:538
+#: public/includes/widgets/room-slider/room-slider-widget.php:560
+msgid "2 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:162
+#: public/includes/widgets/room-slider/room-slider-widget.php:244
+#: public/includes/widgets/room-slider/room-slider-widget.php:264
+#: public/includes/widgets/room-slider/room-slider-widget.php:284
+#: public/includes/widgets/room-slider/room-slider-widget.php:304
+msgid "3 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:324
+msgid "3 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:539
+#: public/includes/widgets/room-slider/room-slider-widget.php:559
+msgid "3 Seconds"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:126
+#: admin/includes/dashboard/views/dashboard-page.php:131
+msgid "30 Days"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:163
+#: public/includes/widgets/room-slider/room-slider-widget.php:245
+#: public/includes/widgets/room-slider/room-slider-widget.php:265
+#: public/includes/widgets/room-slider/room-slider-widget.php:285
+#: public/includes/widgets/room-slider/room-slider-widget.php:305
+msgid "4 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:325
+msgid "4 Item"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:540
+#: public/includes/widgets/room-slider/room-slider-widget.php:558
+msgid "4 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:246
+#: public/includes/widgets/room-slider/room-slider-widget.php:266
+#: public/includes/widgets/room-slider/room-slider-widget.php:286
+#: public/includes/widgets/room-slider/room-slider-widget.php:306
+msgid "5 Column"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:541
+#: public/includes/widgets/room-slider/room-slider-widget.php:557
+msgid "5 Seconds"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:164
+#: public/includes/widgets/room-slider/room-slider-widget.php:247
+#: public/includes/widgets/room-slider/room-slider-widget.php:267
+#: public/includes/widgets/room-slider/room-slider-widget.php:287
+#: public/includes/widgets/room-slider/room-slider-widget.php:307
+msgid "6 Column"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:130
+msgid "7 Days"
+msgstr ""
+
+#: admin/includes/admin-settings.php:433
+msgid "[eshb_accomodation_grid]"
+msgstr ""
+
+#: admin/includes/admin-settings.php:434
+msgid "[eshb_search_form]"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:43
+msgid "A confirmation email has been sent with your booking details."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:114
+msgid "A customer has cancelled their booking."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:151
+msgid "A new booking has been created from the native checkout."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:119
+#: admin/includes/native-checkout/includes/class-email-handler.php:262
+msgid "Accommodation"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:249
+#, php-format
+msgid "Accommodation %1$d — %2$s"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:74
+#: admin/includes/post-types/booking/metaboxes.php:106
+msgid "Accommodation ID"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:97
+msgid "Accommodation is required."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:57
+msgid "Accommodation:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:24
+#: admin/includes/native-checkout/account/templates/bookings.php:28
+#: admin/includes/native-checkout/account/templates/bookings.php:42
+msgid "Accomodation"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Accomodations"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:16
+msgid "Account"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:13
+msgid "Account Details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:32
+#: admin/includes/native-checkout/account/templates/bookings.php:54
+msgid "Actions"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:18
+msgid "Active Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:266
+msgid "Add accommodation"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:9
+msgid "Add Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:9
+#: admin/includes/post-types/service/service.php:9
+#: admin/includes/post-types/session/session.php:9
+msgid "Add New"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:10
+msgid "Add New Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:10
+msgid "Add New Booking"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:8
+msgctxt "Add New on Toolbar"
+msgid "Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:8
+msgctxt "Add New on Toolbar"
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:8
+msgctxt "Add New on Toolbar"
+msgid "Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:8
+msgctxt "Add New on Toolbar"
+msgid "Service"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:38
+msgid "Add New Room"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:10
+msgid "Add New Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:10
+msgid "Add New Service"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:49
+msgid "Additional services"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:187
+msgid "Additional Services:"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:176
+msgid "Address One"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:180
+msgid "Address Two"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:234
+msgid "Admin"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:7
+msgctxt "Admin Menu text"
+msgid "Bookings"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:7
+msgctxt "Admin Menu text"
+msgid "Easy Hotel"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:7
+msgctxt "Admin Menu text"
+msgid "Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:7
+msgctxt "Admin Menu text"
+msgid "Services"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:201
+#: admin/includes/post-types/accomodation/metaboxes.php:235
+msgid "Adult Capacity"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:32
+#: admin/includes/post-types/booking/hooks.php:114
+msgid "Adults"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:168
+msgid "Adults:"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:176
+msgid ""
+"Advanced pricing, diposit, ical syncronization, whatspp and many more with "
+"our premium add-ons."
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "All Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:14
+msgid "All Bookings"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:858
+msgid "All Features"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:14
+msgid "All Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:14
+msgid "All Services"
+msgstr ""
+
+#: public/includes/class.view.php:372
+msgid "All slots are Booked!"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "All Statuses"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:56
+msgid "Allowed max time for this slot is"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:55
+msgid "Allowed min time for this slot is"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:276
+msgid "Amount Paid"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:115
+#: admin/includes/native-checkout/templates/checkout-page.php:63
+msgid "Amount paid:"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:273
+#: admin/includes/native-checkout/templates/checkout-page.php:278
+#: public/includes/plugin-scripts.php:43
+msgid "Apply"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Apply Filter"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:366
+msgid "Applying coupon…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:225
+msgid "Are you sure you want to cancel this booking?"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:76
+msgid "Are you sure you want to cancel this booking? This cannot be undone."
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:519
+msgid "Autoplay"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:553
+msgid "Autoplay Interval"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:533
+msgid "Autoplay Slide Speed"
+msgstr ""
+
+#: admin/includes/framework/fields
+msgid "Availability Calendar"
+msgstr "Verfügbarkeitskalender"
+
+#: admin/includes/dashboard/views/dashboard-page.php:94
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:127
+msgid "Available"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1699
+msgid "Available Room"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:31
+msgid "Available Rooms"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:222
+msgid "Back to Booking List"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:204
+#: public/includes/widgets/room-grid/room-grid-widget.php:213
+#: public/includes/widgets/room-grid/room-grid-widget.php:533
+#: public/includes/widgets/room-grid/room-grid-widget.php:597
+#: public/includes/widgets/room-grid/room-grid-widget.php:643
+msgid "Background"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:204
+msgid "Base Price"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:616
+msgid "Best Seller"
+msgstr ""
+
+#: admin/includes/plugin-scripts.php
+msgid "Billing email not found!"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Blocked"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:397
+msgid "Book Now"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:93
+msgid "Booked"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:63
+#: admin/includes/native-checkout/account/templates/dashboard.php:76
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:17
+#, php-format
+msgid "Booking #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:95
+#, php-format
+msgid "Booking #%d was cancelled"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:91
+msgid "Booking Calendar"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:59
+#, php-format
+msgid "Booking cancelled by customer - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:365
+msgid "Booking confirmed! Redirecting…"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:819
+msgid "Booking could not be created. Please contact us."
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:90
+msgid "Booking Date"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:129
+#: admin/includes/post-types/booking/hooks.php:78
+msgid "Booking Details"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:98
+msgid "Booking End Date"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:150
+#, php-format
+msgid "Booking for %s"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:118
+#: admin/includes/native-checkout/account/templates/bookings.php:27
+#: admin/includes/native-checkout/account/templates/bookings.php:41
+#: admin/includes/native-checkout/includes/class-email-handler.php:261
+msgid "Booking ID"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:22
+msgid "Booking information"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:52
+#: admin/includes/native-checkout/account/class-account-ajax.php:70
+#: admin/includes/native-checkout/account/class-bookings.php:198
+#: admin/includes/native-checkout/account/class-bookings.php:244
+#: admin/includes/native-checkout/account/class-bookings.php:351
+#: admin/includes/native-checkout/account/templates/booking-view.php:9
+msgid "Booking not found."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:56
+msgid "Booking reference:"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:94
+msgid "Booking Start Date"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:253
+msgid "Booking summary"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:61
+msgid "Booking total:"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:123
+msgid "Booking Trend"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:15
+msgid "Bookings"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:259
+#: public/includes/widgets/room-grid/room-grid-widget.php:559
+#: public/includes/widgets/room-slider/room-slider-widget.php:721
+msgid "Border Radius"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:177
+#: public/includes/widgets/room-grid/room-grid-widget.php:500
+#: public/includes/widgets/room-slider/room-slider-widget.php:188
+msgid "Button"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:156
+#: admin/includes/native-checkout/account/templates/bookings.php:60
+#: public/includes/plugin-scripts.php:44
+msgid "Cancel"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:75
+msgid "Cancel booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:68
+msgid "Cancellation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:69
+msgid "Cancellation Details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:107
+msgid "Cancelled"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:20
+msgid "Cancelled Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:72
+msgid "Cancelled by"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:94
+msgid "Cancelled by:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:123
+#: admin/includes/native-checkout/account/templates/booking-view.php:70
+msgid "Cancelled on"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:93
+msgid "Cancelled on:"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:423
+msgid "Capacity Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:434
+msgid "Capacity Hover Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:445
+msgid "Capacity Typography"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-cod-gateway.php:29
+msgid "Cash on Delivery"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:120
+#: public/includes/widgets/room-slider/room-slider-widget.php:110
+msgid "Category"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:623
+msgid "Center Mode"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:81
+msgid "Change of plans"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:44
+msgid "Change Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:120
+#: admin/includes/native-checkout/account/templates/booking-view.php:25
+#: admin/includes/native-checkout/account/templates/dashboard.php:65
+#: admin/includes/native-checkout/account/templates/dashboard.php:78
+#: admin/includes/native-checkout/includes/class-email-handler.php:263
+#: admin/includes/native-checkout/templates/checkout-page.php:147
+msgid "Check-in"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:29
+#: admin/includes/native-checkout/account/templates/bookings.php:43
+msgid "Check-in / Check-out"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:58
+msgid "Check-in:"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:29
+msgid "Check-ins Today"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:121
+#: admin/includes/native-checkout/account/templates/booking-view.php:26
+#: admin/includes/native-checkout/includes/class-email-handler.php:264
+#: admin/includes/native-checkout/templates/checkout-page.php:156
+msgid "Check-out"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:59
+msgid "Check-out:"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:30
+msgid "Check-outs Today"
+msgstr ""
+
+#: admin/includes/framework/fields/checkbox/checkbox.php:23
+msgid "Check/Uncheck All"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:33
+msgid "Children"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:202
+#: admin/includes/post-types/accomodation/metaboxes.php:236
+msgid "Children Capacity"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:169
+msgid "Children:"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:118
+msgid "Childrens"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:196
+msgid "Choose Additional Services"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:325
+#: admin/includes/post-types/booking/hooks.php:160
+msgid "City"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:72
+msgid "Close"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:624
+#: public/includes/widgets/room-slider/room-slider-widget.php:743
+#: public/includes/widgets/room-slider/room-slider-widget.php:776
+#: public/includes/widgets/room-slider/room-slider-widget.php:837
+#: public/includes/widgets/room-slider/room-slider-widget.php:909
+msgid "Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:157
+msgid "Columns"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:156
+msgid "Company"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:94
+msgid "Confirm cancellation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:58
+msgid "Confirm New Password"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Confirmed"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:96
+#: public/includes/widgets/room-slider/room-slider-widget.php:87
+msgid "Content"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:119
+msgid "Could not add to cart. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:765
+msgid "Could not initiate payment."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:126
+msgid "Could not load dashboard data."
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:172
+msgid "Country"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:312
+msgid "Country / Region"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:57
+#: admin/includes/native-checkout/includes/class-email-handler.php:271
+msgid "Coupon"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:133
+#: admin/includes/native-checkout/includes/class-pricing.php:416
+msgid "Coupon applied."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:233
+msgid "Coupon Discount"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:755
+msgid "Coupon is no longer valid."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:404
+msgid "Coupon is not applicable."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:212
+msgid "Coupon is not valid"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:389
+msgid "Coupon is not valid for this accommodation."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:367
+msgid "Coupon removed."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:185
+msgid "Coupon usage limit reached"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:364
+msgid "Coupon usage limit reached."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:44
+msgid "Create an account"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:42
+msgid "Create Coupon"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:40
+msgid "Create Manual Booking"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:49
+msgid "Current Password"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Custom"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:146
+msgid "Custom amount"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:47
+msgid "Custom Range"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:144
+#: admin/includes/native-checkout/includes/class-email-handler.php:191
+msgid "Customer"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:134
+msgid "Customer & Billings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:14
+msgid "Dashboard"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:474
+msgid "Date"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:209
+msgid "day"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:395
+#: public/includes/widgets/room-slider/room-slider-widget.php:829
+msgid "Description"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:402
+msgid "Description Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:415
+msgid "Description Typography"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:238
+msgid "Desktops > 1199px"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:258
+msgid "Desktops > 991px"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:484
+msgid "Details"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:358
+#: public/includes/widgets/room-slider/room-slider-widget.php:419
+#: public/includes/widgets/room-slider/room-slider-widget.php:524
+#: public/includes/widgets/room-slider/room-slider-widget.php:578
+#: public/includes/widgets/room-slider/room-slider-widget.php:596
+#: public/includes/widgets/room-slider/room-slider-widget.php:614
+#: public/includes/widgets/room-slider/room-slider-widget.php:628
+msgid "Disable"
+msgstr ""
+
+#: public/includes/classes/class.view.php:414
+msgid "Discounted Price"
+msgstr ""
+
+#: public/templates/single/single-eshb_accomodation-style-two.php:152
+msgid "DISCOVER"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:28
+msgid "Display Name"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:272
+msgid "Do you have coupon?"
+msgstr ""
+
+#: admin/includes/admin-settings.php:440
+msgid "documentation "
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:370
+msgid "Done"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:279
+msgid "Due Balance"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:65
+msgid "Due balance:"
+msgstr ""
+
+#. Name of the plugin
+#: admin/includes/admin-settings.php:439
+msgid "Easy Hotel"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:110
+msgid "Easy Hotel Account"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/helpers.php:413
+#: admin/includes/native-checkout/native-checkout.php:83
+msgid "Easy Hotel Checkout"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-customer.php:47
+msgid "Easy Hotel Customer"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Easy Hotel Plugin, A complete hotel booking solution for WordPress website."
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:40
+msgid "Easy Hotel Room Grid"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:46
+msgid "Easy Hotel Room Slider"
+msgstr ""
+
+#: class.easy-hotel.php:96
+msgid "Easy Hotel Thumbnail"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:369
+#: admin/includes/native-checkout/templates/checkout-page.php:189
+msgid "Edit"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:12
+msgid "Edit Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:12
+msgid "Edit Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:12
+msgid "Edit Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:12
+msgid "Edit Service"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:42
+#: admin/includes/native-checkout/templates/checkout-page.php:302
+msgid "Email"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:32
+#: admin/includes/post-types/booking/hooks.php:148
+msgid "Email Address"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:32
+msgid "Email or Username"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:357
+#: public/includes/widgets/room-slider/room-slider-widget.php:418
+#: public/includes/widgets/room-slider/room-slider-widget.php:523
+#: public/includes/widgets/room-slider/room-slider-widget.php:577
+#: public/includes/widgets/room-slider/room-slider-widget.php:595
+#: public/includes/widgets/room-slider/room-slider-widget.php:613
+#: public/includes/widgets/room-slider/room-slider-widget.php:627
+msgid "Enable"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:76
+#: admin/includes/post-types/booking/metaboxes.php:108
+#: admin/includes/post-types/session/metaboxes.php:72
+#: admin/includes/post-types/session/metaboxes.php:105
+msgid "End Date"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:150
+msgid "Enter amount"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:277
+msgid "Enter coupon code"
+msgstr ""
+
+#: public/includes/classes/class.view.php:463
+msgid "Enter Your Detais"
+msgstr ""
+
+#: admin/includes/shortcodes.php:13
+msgid "ESHB_View class not found."
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:137
+msgid "Excerpt Length"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:177
+msgid "Explore Now"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:35
+msgid "Extra beds"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:170
+msgid "Extra Beds:"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:494
+#: public/includes/classes/class.view.php:372
+#: admin/includes/post-types/booking/hooks.php:125
+msgid "Extra Services"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:268
+msgid "Extra services"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:177
+msgid "Failed to create PayPal order."
+msgstr ""
+
+#: public/includes/plugin-scripts.php:45
+#: public/templates/template-parts/grid-style-one.php:37
+#: public/includes/widgets/room-grid/style2.php:7
+#: public/includes/widgets/room-grid/styledefault.php:7
+#: public/includes/widgets/room-slider/style1.php:9
+#: public/includes/widgets/room-slider/style3.php:10
+#: public/includes/widgets/room-slider/style4.php:11
+msgctxt "Feer"
+msgid "From"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:84
+#: admin/includes/post-types/booking/hooks.php:138
+#: admin/includes/post-types/booking/hooks.php:190
+msgid "Field"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:19
+#: admin/includes/native-checkout/templates/checkout-page.php:292
+msgid "First Name"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:82
+msgid "Found another hotel"
+msgstr ""
+
+#: public/includes/classes/class.view.php:448
+msgid "Free"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:137
+msgid "Fri"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Friday"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:129
+msgid "from last month"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:130
+msgid "from yesterday"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:141
+msgid "Full amount"
+msgstr ""
+
+#: admin/includes/classes/class.metabox-settings.php:90
+msgid "Full up all required field!"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:175
+msgid "Get Premium Addons & Themes"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:163
+msgid "Grand Total"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:72
+msgid "Grand total paid:"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-data.php:325
+msgid "Guest"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:39
+msgid "Guest details"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:30
+#: admin/includes/native-checkout/includes/class-email-handler.php:265
+msgid "Guests"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:120
+#, php-format
+msgid "Hi %s, thank you for your booking!"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:125
+#: public/includes/widgets/room-slider/room-slider-widget.php:152
+msgid "Hide"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:64
+#: admin/includes/native-checkout/account/templates/dashboard.php:77
+msgid "Hotel"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Hour"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Hours"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:579
+msgid "Hover"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://themewant.com/"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://themewant.com/downloads/hotel-booking/"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:388
+#, php-format
+msgid "I have read and accept the %s."
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Ical Confirmed"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:867
+msgid "Icon"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:875
+msgid "Icon Color"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:886
+msgid "Icon Size"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:101
+msgid "Invalid accommodation."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:135
+#: admin/includes/native-checkout/includes/class-pricing.php:350
+msgid "Invalid coupon code."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:664
+msgid "Invalid coupon."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:703
+msgid "Invalid item."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:92
+msgid "Invalid request."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:960
+msgid "Invalid request. Please refresh the page."
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:196
+msgid "Item"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:317
+msgid "Item Bottom Gap"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:292
+#: public/includes/widgets/room-slider/room-slider-widget.php:639
+msgid "Item Gap"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:93
+msgid "Keep booking"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:460
+msgid "Label Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:471
+msgid "Label Typography"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:23
+#: admin/includes/native-checkout/templates/checkout-page.php:296
+msgid "Last Name"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account.php:229
+msgid "Loading…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:35
+msgid "Log In"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:25
+msgid "Log in to view and manage your bookings."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-page.php:42
+msgid "Logout"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:609
+msgid "Loop"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:41
+msgid "Lost your password?"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:41
+msgid "Manage Availability"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:178
+msgid "Manage your booking"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:281
+#: public/includes/widgets/room-slider/room-slider-widget.php:811
+#: public/includes/widgets/room-slider/room-slider-widget.php:940
+msgid "Margin"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Adult and Children Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Adult Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1691
+msgid "Maximum Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Children Capacity"
+msgstr ""
+
+#: public/includes/classes/class.view.php:1718
+msgid "Maximum Extra Bed Capacity"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:63
+msgid "Method"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:192
+msgid "Missing PayPal order id."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:133
+msgid "Mon"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Monday"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Month"
+msgstr ""
+
+#: public/templates/single/single-eshb_accomodation-style-two.php:153
+msgid "More Rooms"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:14
+msgid "My Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:41
+#: admin/includes/post-types/booking/hooks.php:144
+msgid "Name"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:353
+msgid "Navigation Dots"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:414
+msgid "Navigation Nav"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:477
+msgid "Navigation Top Gap"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:11
+msgid "New Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:11
+msgid "New Booking"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:127
+#, php-format
+msgid "New booking #%d received"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:124
+msgid "New booking received"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:45
+#, php-format
+msgid "New booking received - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:54
+msgid "New Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:171
+#: admin/includes/native-checkout/account/class-account.php:228
+msgid "New password and confirmation do not match."
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:11
+msgid "New Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:11
+msgid "New Service"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:101
+msgid "Next month"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Night"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Nights"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:171
+msgid "Nights:"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:18
+msgid "No accomodations found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:17
+msgid "No accomodations found."
+msgstr ""
+
+#. Invalid nonce, handle the error
+#: public/templates/template-parts/search-results-contents.php:41
+msgid "No available accommodations found for the selected dates."
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:18
+msgid "No bookings found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:17
+msgid "No bookings found."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:350
+msgid "No payment gateways are configured. Please contact the administrator."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:460
+msgid "No reservation found"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:18
+msgid "No Seasons found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:17
+msgid "No Seasons found."
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:18
+msgid "No services found in Trash."
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:17
+msgid "No services found."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:371
+#: admin/includes/native-checkout/templates/checkout-page.php:184
+msgid "None selected"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:509
+msgid "Normal"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:329
+msgid "Notes"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:159
+msgid "Nothing left to refund."
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:110
+msgid "Number of Extra Beds"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:106
+msgid "Number of Rooms"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:378
+msgid "Opacity"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Ops! This Reservation has been failed. Requried Maximum"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Ops! This Reservation has been failed. Requried Minimum"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:84
+msgid "Other"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:221
+msgid "Overlay BG Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:237
+msgid "Overlay BG Hover Color"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Accomodation Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Booking Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Season Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:19
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Service Cover Image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:24
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into service"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:21
+#: admin/includes/post-types/booking/booking.php:21
+#: admin/includes/post-types/service/service.php:21
+#: admin/includes/post-types/session/session.php:21
+msgctxt ""
+"Overrides the “Remove featured image” phrase for this post type. Added in 4.3"
+msgid "Remove cover image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:20
+#: admin/includes/post-types/booking/booking.php:20
+#: admin/includes/post-types/service/service.php:20
+#: admin/includes/post-types/session/session.php:20
+msgctxt ""
+"Overrides the “Set featured image” phrase for this post type. Added in 4.3"
+msgid "Set cover image"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:25
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this service"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:22
+#: admin/includes/post-types/booking/booking.php:22
+#: admin/includes/post-types/service/service.php:22
+#: admin/includes/post-types/session/session.php:22
+msgctxt ""
+"Overrides the “Use as featured image” phrase for this post type. Added in 4.3"
+msgid "Use as cover image"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:270
+#: public/includes/widgets/room-grid/room-grid-widget.php:548
+#: public/includes/widgets/room-grid/room-grid-widget.php:651
+#: public/includes/widgets/room-slider/room-slider-widget.php:796
+#: public/includes/widgets/room-slider/room-slider-widget.php:928
+msgid "Padding"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:61
+msgid "Paid"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:16
+msgid "Parent Accomodations:"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:16
+msgid "Parent Bookings:"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:16
+msgid "Parent Seasons:"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:16
+msgid "Parent Services:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:33
+msgid "Password"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:174
+msgid "Password must be at least 6 characters."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:180
+msgid "Password updated. Please log in again."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:29
+msgid "Pay securely using your PayPal account or a credit card."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-cod-gateway.php:30
+msgid "Pay with cash upon arrival / at the property."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:53
+#: admin/includes/post-types/booking/hooks.php:186
+msgid "Payment"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:364
+msgid "Payment could not be completed. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:805
+msgid "Payment could not be confirmed."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:347
+#: admin/includes/post-types/booking/hooks.php:200
+msgid "Payment Method"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:283
+msgid "Payment method"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:196
+msgid "Payment Status"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:28
+msgid "PayPal"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:221
+#, php-format
+msgid "PayPal capture failed (%s)."
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:102
+msgid "PayPal credentials are not configured."
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Pending"
+msgstr ""
+
+#. Easy Hotel – Admin Dashboard
+#: admin/includes/dashboard/views/dashboard-page.php:28
+msgid "Pending Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:44
+#: admin/includes/native-checkout/templates/checkout-page.php:306
+msgid "Phone"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:152
+msgid "Phone Number"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:360
+msgid "Please accept the terms and conditions."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:362
+msgid "Please choose a payment method."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:203
+msgid "Please enter a coupon code"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:194
+msgid "Please enter a valid amount."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:126
+#: admin/includes/native-checkout/includes/class-checkout.php:1036
+#: admin/includes/native-checkout/includes/class-checkout.php:363
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:363
+msgid "Please enter a valid refund amount."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:377
+msgid "Please enter your email address above before applying this coupon."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:165
+msgid "Please fill in all password fields."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:1032
+#: admin/includes/native-checkout/includes/class-checkout.php:361
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:461
+msgid "Please go back and choose your accommodation to start booking."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:37
+msgid "Please log in to continue."
+msgstr ""
+
+#: public/includes/classes/class.view.php:348
+msgid "Please Wait"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:168
+msgid "Post Code"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:5
+msgctxt "Post type general name"
+msgid "Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:5
+msgctxt "Post type general name"
+msgid "Bookings"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:5
+msgctxt "Post type general name"
+msgid "Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:5
+msgctxt "Post type general name"
+msgid "Services"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:6
+msgctxt "Post type singular name"
+msgid "Accomodation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:6
+msgctxt "Post type singular name"
+msgid "Booking"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:6
+msgctxt "Post type singular name"
+msgid "Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:6
+msgctxt "Post type singular name"
+msgid "Service"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:99
+msgid "Previous month"
+msgstr ""
+
+#: admin/includes/post-types/session/metaboxes.php:70
+#: admin/includes/post-types/session/metaboxes.php:103
+msgid "Price"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:226
+msgid "Price Breakdown"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:478
+msgid "Price Color"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:83
+msgid "Price issue"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:453
+msgid "Pricing"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:490
+msgid "Pricing Typography"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:155
+msgid "Process refund"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:192
+msgid "Process this refund?"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:191
+#: admin/includes/native-checkout/account/class-account.php:226
+#: admin/includes/native-checkout/includes/class-checkout.php:368
+msgid "Processing…"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:147
+#: public/includes/widgets/room-slider/room-slider-widget.php:178
+msgid "Project Show Per Page"
+msgstr ""
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Quarter"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:108
+msgid "Quick Actions"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:151
+#: admin/includes/native-checkout/account/templates/booking-view.php:75
+msgid "Reason"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:78
+msgid "Reason (optional)"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:96
+msgid "Reason:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:50
+msgid "Recent Bookings"
+msgstr "Aktuelle Buchungen"
+
+#: admin/includes/native-checkout/includes/class-checkout.php:146
+msgid "Redirecting to checkout…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:135
+msgid "Refund"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:366
+msgid "Refund amount cannot exceed the amount paid."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:228
+msgid "Refund processed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:118
+msgid "Refunded:"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:34
+msgid "Remember me"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:141
+#: admin/includes/native-checkout/templates/checkout-page.php:279
+msgid "Remove"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:372
+msgid "Remove this accommodation from your booking?"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Requried Maximum Nights:"
+msgstr ""
+
+#: public/includes/plugin-scripts.php
+msgid "Requried Minimum Nights:"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:102
+msgid "Room"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:169
+msgid "Room Availability Summary"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:27
+#: admin/includes/native-checkout/includes/class-email-handler.php:266
+msgid "Rooms"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:80
+msgid "Rooms & Services"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:167
+msgid "Rooms:"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:138
+msgid "Sat"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Saturday"
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1020
+msgid "Save"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:39
+msgid "Save Changes"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter accomodations list"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter bookings list"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter Seasons list"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:26
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter services list"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Accomodations list"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Bookings list"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Seasons list"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:28
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Services list"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Accomodations list navigation"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Bookings list navigation"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Seasons list navigation"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:27
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Services list navigation"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:15
+msgid "Search Accomodations"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:15
+msgid "Search Bookings"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:15
+msgid "Search Seasons"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:15
+msgid "Search Services"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:204
+msgid "Security check failed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:40
+msgid "Security check failed. Please refresh the page."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:314
+msgid "Select a country…"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:80
+msgid "Select a reason…"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:320
+msgid "Select a state…"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:105
+#: public/includes/widgets/room-slider/room-slider-widget.php:95
+msgid "Select Style"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:746
+#: admin/includes/native-checkout/includes/class-checkout.php:788
+msgid "Selected payment method is not available."
+msgstr ""
+
+#: admin/includes/classes/class.booking.php:1102
+msgid "Selected room is not available. Available room:"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:187
+#: admin/includes/native-checkout/includes/class-checkout.php:210
+#, php-format
+msgid "Selected room is not available. Available room: %s"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:208
+msgid "Service Charge"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:87
+msgid ""
+"Set the status to “Cancelled” and update to cancel this booking. The "
+"customer and admin will be notified."
+msgstr ""
+
+#: admin/includes/admin-settings.php:431
+msgid "Shortcode:"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:124
+#: public/includes/widgets/room-slider/room-slider-widget.php:151
+msgid "Show"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:149
+msgid "Show all feature icons"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:122
+msgid "Show Excerpt"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:14
+msgid "Sign in to your account"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:318
+msgid "Slide To Scroll"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:209
+msgid "Slider Settings"
+msgstr ""
+
+#: public/includes/classes/class.view.php
+msgid ""
+"Some previous dates are not allowed for booking today. We set buffer for "
+"today + "
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:193
+#: admin/includes/native-checkout/account/class-account.php:227
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:330
+msgid "Special requests, dietary requirements, etc."
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:75
+#: admin/includes/post-types/booking/metaboxes.php:107
+#: admin/includes/post-types/session/metaboxes.php:71
+#: admin/includes/post-types/session/metaboxes.php:104
+msgid "Start Date"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:318
+#: admin/includes/post-types/booking/hooks.php:164
+msgid "State"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:31
+#: admin/includes/native-checkout/account/templates/bookings.php:49
+#: admin/includes/native-checkout/account/templates/dashboard.php:67
+#: admin/includes/native-checkout/account/templates/dashboard.php:80
+msgid "Status"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:591
+msgid "Stop on Hover"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:573
+msgid "Stop On Interaction"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:348
+msgid "Style"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:99
+msgid "Style 1"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:100
+msgid "Style 2"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:101
+msgid "Style 3"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:102
+msgid "Style 4"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:768
+msgid "Sub Title"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:55
+#: admin/includes/native-checkout/templates/checkout-page.php:229
+#: admin/includes/post-types/booking/hooks.php:212
+msgid "Subtotal"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:132
+msgid "Sun"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Sunday"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:298
+msgid "Tablets < 768px"
+msgstr ""
+
+#: public/includes/widgets/room-slider/room-slider-widget.php:278
+msgid "Tablets > 767px"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:59
+#: admin/includes/native-checkout/templates/checkout-page.php:237
+msgid "Tax"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:88
+msgid "Tell us more (optional)"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:389
+msgid "terms and conditions"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:185
+#: public/includes/widgets/room-slider/room-slider-widget.php:196
+msgid "Text"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:515
+#: public/includes/widgets/room-grid/room-grid-widget.php:586
+msgid "Text Color"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:42
+msgid "Thank you! Your booking is confirmed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:131
+msgid "That email address is already in use."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:210
+msgid "The check-in date has already passed."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:113
+msgid ""
+"The following booking has been cancelled. If this was a mistake, please "
+"contact us."
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Accomodation archives"
+msgstr ""
+
+#: admin/includes/post-types/booking/booking.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Booking archives"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Season archives"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:23
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Service archives"
+msgstr ""
+
+#. Author of the plugin
+msgid "Themewant"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:206
+msgid "This booking can no longer be cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:86
+msgid "This booking has not been cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-pricing.php:395
+msgid "This coupon has expired."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:157
+#: admin/includes/native-checkout/includes/class-email-handler.php:202
+msgid "This email was generated by Easy Hotel."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:136
+msgid "Thu"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Thursday"
+msgstr ""
+
+#: admin/includes/post-types/booking/metaboxes.php:98
+msgid "Time Slots!"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:356
+#: public/includes/widgets/room-slider/room-slider-widget.php:735
+msgid "Title"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:363
+msgid "Title Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:374
+msgid "Title Hover Color"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:387
+msgid "Title Typography"
+msgstr ""
+
+#: public/includes/plugin-scripts.php:46
+msgid "To"
+msgstr ""
+
+#: admin/includes/admin-settings.php:440
+msgid "to learn more in details."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/booking-view.php:60
+#: admin/includes/native-checkout/account/templates/bookings.php:30
+#: admin/includes/native-checkout/account/templates/bookings.php:48
+#: admin/includes/native-checkout/account/templates/dashboard.php:66
+#: admin/includes/native-checkout/account/templates/dashboard.php:79
+#: admin/includes/native-checkout/includes/class-email-handler.php:273
+#: admin/includes/native-checkout/templates/checkout-page.php:241
+#: public/includes/classes/class.view.php:376
+msgid "Total"
+msgstr ""
+
+#: public/includes/classes/class.view.php:367
+msgid "Total Base Price"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:17
+msgid "Total Bookings"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/metaboxes.php:200
+#: admin/includes/post-types/accomodation/metaboxes.php:234
+msgid "Total Capacity"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:134
+msgid "Tue"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Tuesday"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:188
+#: public/includes/widgets/room-slider/room-slider-widget.php:199
+msgid "Type your text here"
+msgstr ""
+
+#: public/includes/widgets/room-grid/room-grid-widget.php:635
+msgid "Typography"
+msgstr ""
+
+#: admin/includes/native-checkout/gateways/class-paypal-gateway.php:123
+msgid "Unable to authenticate with PayPal."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:112
+msgid "Unable to calculate price."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:19
+msgid "Upcoming Bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/account-settings.php:66
+msgid "Update Password"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:128
+msgid "Updated just now"
+msgstr ""
+
+#: admin/includes/post-types/booking/hooks.php:85
+#: admin/includes/post-types/booking/hooks.php:139
+#: admin/includes/post-types/booking/hooks.php:191
+msgid "Value"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:56
+msgid "View"
+msgstr ""
+
+#: admin/includes/post-types/accomodation/accomodation.php:13
+msgid "View Accomodation"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:52
+msgid "View all"
+msgstr ""
+
+#: admin/includes/dashboard/views/dashboard-page.php:39
+#: admin/includes/dashboard/views/dashboard-page.php:143
+msgid "View All Bookings"
+msgstr "Alle Buchungen anzeigen"
+
+#: admin/includes/post-types/booking/booking.php:13
+msgid "View Booking"
+msgstr ""
+
+#: public/templates/template-parts/grid-style-one.php:40
+#: public/includes/widgets/room-grid/room-grid-widget.php:187
+#: public/includes/widgets/room-slider/room-slider-widget.php:198
+#: public/includes/widgets/room-slider/style1.php:12
+#: public/includes/widgets/room-slider/style3.php:13
+#: public/includes/widgets/room-slider/style4.php:14
+msgid "View Details"
+msgstr ""
+
+#: public/includes/widgets/room-grid/style1.php:34
+#: public/includes/widgets/room-grid/styledefault.php:10
+msgid "view details"
+msgstr ""
+
+#: admin/includes/post-types/session/session.php:13
+msgid "View Season"
+msgstr ""
+
+#: admin/includes/post-types/service/service.php:13
+msgid "View Service"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:135
+#: admin/includes/native-checkout/templates/checkout-page.php:84
+msgid "View your bookings"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:182
+msgid ""
+"View your bookings and manage your account anytime from your account "
+"dashboard."
+msgstr ""
+
+#: public/includes/plugin-scripts.php:48
+msgid "W"
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-menu.php:135
+msgid "Wed"
+msgstr ""
+
+#: public/includes/classes/class.view.php:773
+msgid "Wednesday"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/dashboard.php:28
+#, php-format
+msgid "Welcome back"
+msgstr "Willkommen zurück"
+
+#: public/includes//classes/class.booking-calendar.php
+msgid "Year"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-bookings.php:200
+msgid "You are not allowed to cancel this booking."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-admin.php:213
+msgid "You are not allowed to refund this booking."
+msgstr ""
+
+#: admin/includes/dashboard/class-eshb-dashboard-rest.php:47
+msgid "You are not allowed to view the dashboard data."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-coupon.php:193
+#: admin/includes/native-checkout/includes/class-pricing.php:382
+msgid "You have already used this coupon the maximum number of times."
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/bookings.php:21
+#: admin/includes/native-checkout/account/templates/dashboard.php:57
+msgid "You have no bookings yet."
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:128
+msgid "Your Accommodations"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:29
+#, php-format
+msgid "Your booking confirmation - %s"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:92
+msgid "Your booking has been cancelled"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-cancellation-email.php:45
+#, php-format
+msgid "Your booking has been cancelled - #%d"
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:105
+msgid "Your booking has been cancelled."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:373
+msgid "Your booking is empty."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:168
+msgid "Your current password is incorrect."
+msgstr ""
+
+#: admin/includes/native-checkout/account/class-account-ajax.php:148
+msgid "Your details have been saved."
+msgstr ""
+
+#: public/includes/classes/class.view.php:467
+msgid "Your email"
+msgstr ""
+
+#: admin/includes/native-checkout/templates/checkout-page.php:289
+msgid "Your Information"
+msgstr ""
+
+#: public/includes/classes/class.view.php:471
+msgid "Your message"
+msgstr ""
+
+#: public/includes/classes/class.view.php:466
+msgid "Your name"
+msgstr ""
+
+#: admin/includes/native-checkout/account/templates/login.php:20
+msgid "Your password has been set. Please log in to continue."
+msgstr ""
+
+#: public/includes/classes/class.view.php:468
+msgid "Your phone"
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-checkout.php:1002
+msgid "Your reservation has expired. Please start again."
+msgstr ""
+
+#: admin/includes/native-checkout/includes/class-email-handler.php:150
+msgid ""
+"Your reservation is on hold and will be confirmed once we process your "
+"payment."
+msgstr ""
