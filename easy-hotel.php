@@ -5,7 +5,7 @@
  * Plugin URI:  https://themewant.com/downloads/hotel-booking/
  * Author:      Themewant
  * Author URI:  http://themewant.com/
- * Version:     2.0.4
+ * Version:     2.0.5
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: easy-hotel
@@ -13,7 +13,7 @@
 */
     if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-    define( 'ESHB_VERSION', '2.0.4' );
+    define( 'ESHB_VERSION', '2.0.5' );
     define( 'ESHB_PL_ROOT', __FILE__ );
     define( 'ESHB_PL_URL', plugins_url( '/', ESHB_PL_ROOT ) );
     define( 'ESHB_PL_PATH', plugin_dir_path( ESHB_PL_ROOT ) );
@@ -32,10 +32,9 @@
 
     register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
     add_action( 'plugins_loaded', function(){
-        
             ESHB_MAIN::instance();
     }, 12 );
-    
+
     /**
      * Initialize the plugin tracker
      *
@@ -54,13 +53,3 @@
 
     }
     add_action( 'plugins_loaded', 'eshb_appsero_init_tracker' );
-
-
-    add_filter( 'eshb_booking_action_messages', function($messages, $args){
-        $messages['maximumCapacity'] =  __('Add additional guests below', 'easy-hotel');
-        return $messages;
-    }, 10, 2 );
-    
-    add_filter( 'eshb_booking_capacity_count_show', function($show, $args){
-        return false;
-    }, 10, 2 );

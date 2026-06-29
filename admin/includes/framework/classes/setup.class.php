@@ -471,7 +471,11 @@ if ( ! class_exists( 'ESHB_Setup' ) ) {
 
     // Setup textdomain
     public static function textdomain() {
-      load_textdomain( 'easy-hotel', self::$dir .'/languages/'. get_locale() .'.mo' );
+      // Translations (plugin + framework strings) are loaded once via
+      // load_plugin_textdomain() in the main plugin file from /languages,
+      // using the standard easy-hotel-{locale}.mo naming. The old per-locale
+      // loader here pointed at the framework folder with {locale}.mo naming and
+      // clobbered the 'easy-hotel' domain, so it has been removed.
     }
 
     // Set all of used fields

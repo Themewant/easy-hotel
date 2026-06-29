@@ -22,12 +22,10 @@ $cards = [
 ?>
 <div class="eshb-account-panel">
     <div class="eshb-account-welcome">
-        <h2><?php
-            printf(
-                /* translators: %s: customer display name */
-                esc_html__( 'Welcome back, %s', 'easy-hotel' ),
-                esc_html( $user->display_name )
-            );
+        <h2>
+        <?php
+            echo esc_html__( 'Welcome back', 'easy-hotel' ) . ' ';
+            echo esc_html( $user->display_name );
         ?></h2>
         <p class="eshb-account-welcome-meta">
             <span><?php echo esc_html( trim( $user->first_name . ' ' . $user->last_name ) ?: $user->display_name ); ?></span>
