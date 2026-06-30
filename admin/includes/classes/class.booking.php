@@ -497,8 +497,8 @@ class ESHB_Booking {
 			$min_max_settings = apply_filters( 'eshb_min_max_settings', $min_max_settings, $accomodation_id, $accomodation_metaboxes );
 			$required_min_nights = isset($min_max_settings['required_min_nights']) ? $min_max_settings['required_min_nights'] : '';
 			$required_max_nights = isset($min_max_settings['required_max_nights']) ? $min_max_settings['required_max_nights'] : '';
-			$string_required_minimum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Minumum', 'easy-hotel' );
-			$string_required_maximum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel' );
+			$string_required_minimum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A minimum stay of', 'easy-hotel' );
+			$string_required_maximum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A maximum stay of', 'easy-hotel' );
 
 			$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
 			
@@ -1529,8 +1529,8 @@ class ESHB_Booking {
 			$min_max_settings = apply_filters( 'eshb_min_max_settings', $min_max_settings, $accomodation_id, $accomodation_metaboxes );
 			$required_min_nights = $start_date !== $end_date && isset($min_max_settings['required_min_nights']) ? $min_max_settings['required_min_nights'] : '';
 			$required_max_nights = $start_date !== $end_date && isset($min_max_settings['required_max_nights']) ? $min_max_settings['required_max_nights'] : '';
-			$string_required_minimum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Minumum', 'easy-hotel' );
-			$string_required_maximum_nights_msg = esc_html__( 'Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel' );
+			$string_required_minimum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A minimum stay of', 'easy-hotel' );
+			$string_required_maximum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A maximum stay of', 'easy-hotel' );
 			$pricing_periodicity = apply_filters( 'eshb_pricing_periodicity', false, $accomodation_id, $accomodation_metaboxes );
 			
 			$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
