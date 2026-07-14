@@ -22,7 +22,7 @@ function eshb_custom_column_content_payment($column, $post_id) {
     switch ($column) {
         case 'amount':
             $edit_url = get_edit_post_link($post_id);
-            echo '<a href="'.esc_url( $edit_url ).'" target="_blank"><div class="order-amount"><span>' . esc_html($amount) . '</span></div></a>';
+            echo '<a href="'.esc_url( $edit_url ).'" target="_blank"><div class="order-amount"><span>' . wp_kses_post($amount) . '</span></div></a>';
             break;
         case 'payment_status':
             $edit_url = get_edit_post_link($post_id);

@@ -133,7 +133,7 @@ class ESHB_Metabox_Settings {
         $plugin_name = 'EHB Manual Booking';
         $plugin_slug = 'ehb-manual-booking';
         $plugin_url = 'https://themewant.com/downloads/'.$plugin_slug;
-        echo esc_html($this->eshb_upgrade_message($plugin_name, $plugin_url, 'div'));
+        echo wp_kses_post($this->eshb_upgrade_message($plugin_name, $plugin_url, 'div'));
     }
 
 	public function modify_title_actions( $label, $url, $options = array() ) {
