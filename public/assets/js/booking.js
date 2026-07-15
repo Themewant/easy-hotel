@@ -61,6 +61,21 @@
    * @property {function} addCustomFieldsToShortcodedForm - Adds custom booking fields to shortcoded forms (CF7, FluentForm).
    * @property {function} updateCustomFieldsInShortcodedForm - Updates custom fields in shortcoded forms.
    */
+  // Apply the WordPress site locale to moment.js BEFORE the calendar defaults capture
+  // moment.weekdaysShort(), so the picker's month/weekday names are translated.
+  if (typeof eshb_daterangepicker_i18n !== "undefined" && eshb_daterangepicker_i18n.locale) {
+    try {
+      var eshbLoc = String(eshb_daterangepicker_i18n.locale).toLowerCase();
+      if (eshb_daterangepicker_i18n.months && eshb_daterangepicker_i18n.weekdaysShort) {
+        moment.updateLocale(eshbLoc, {
+          months: eshb_daterangepicker_i18n.months,
+          weekdaysShort: eshb_daterangepicker_i18n.weekdaysShort,
+        });
+      }
+      moment.locale(eshbLoc);
+    } catch (e) {}
+  }
+
   let ESHBPUBLICBOOKING = {
     eshbInjectCartNotice: function () {
       if (typeof eshb_cart_notice === 'undefined' || eshb_cart_notice.enabled !== '1') return;
@@ -145,6 +160,19 @@
 
       // mount countries fields data from api
       ESHBPUBLICBOOKING.countriesDataMount();
+
+      // Render selected dates into the visible display fields (WP date format + locale).
+      // Machine inputs keep their Y-m-d value; only the read-only display is reformatted.
+      $(document).on(
+        "apply.daterangepicker",
+        ".eshb-date-machine, input[name='available_date_picker']",
+        function () {
+          setTimeout(function () {
+            ESHBPUBLICBOOKING.updateDateDisplay();
+          }, 0);
+        }
+      );
+      ESHBPUBLICBOOKING.updateDateDisplay();
 
       // validate input fields of metaboxes form
       ESHBPUBLICBOOKING.validateInputFields();
@@ -1095,24 +1123,44 @@
               if (!picker.endDate) {
                 $(endDateInput).val("");
               }
+              // reformat the Y-m-d values into the visible display fields
+              ESHBPUBLICBOOKING.updateDateDisplay();
             }, 0);
           });
 
-        // Restore the inputs from picker state on hide. When the user clicks
-        // outside the calendar after only picking a start, the library reverts
-        // picker.startDate / picker.endDate to their previous values in hide()
-        // — mirroring them back to the inputs brings the cleared end date back.
-        // On the apply path the apply handler runs after hide and overwrites
-        // these values with the validated dates, so this is a no-op there.
-        $input.off("hide.eshbInstant")
+        // Do NOT restore or inject any checkout date when the calendar closes.
+        // Checkout is filled ONLY by an explicit calendar day-click (the apply
+        // handler, which runs after hide) and cleared by the start-pick mirror
+        // above. So merely opening/closing the calendar — or clicking outside it
+        // — leaves an empty checkout empty ("Add date") instead of the picker
+        // injecting its default next-day date.
+        $input.off("show.eshbInstant hide.eshbInstant")
           .on("hide.daterangepicker.eshbInstant", function (ev, p) {
             if (p && p.startDate) {
               $(startDateInput).val(p.startDate.format("YYYY-MM-DD"));
             }
-            if (p && p.endDate) {
-              $(endDateInput).val(p.endDate.format("YYYY-MM-DD"));
-            }
+            // reformat the Y-m-d values into the visible display fields
+            ESHBPUBLICBOOKING.updateDateDisplay();
           });
+
+        // Two-stage placeholder: while the calendar is closed and the field is
+        // empty, show the friendly "Add date" label; when the calendar opens,
+        // reveal the date-format hint (e.g. "Dec 31, 2025"). This only swaps the
+        // placeholder text — a date is added ONLY when a calendar day is clicked.
+        var $ph = $input.closest(".eshb-date-field").find(".eshb-date-display");
+        if ($ph.length) {
+          $input.off(".eshbPh")
+            .on("show.daterangepicker.eshbPh", function () {
+              var hint = $ph.attr("data-eshb-hint");
+              if (hint) $ph.attr("placeholder", hint);
+            })
+            .on("hide.daterangepicker.eshbPh", function () {
+              if (!$ph.val()) {
+                var empty = $ph.attr("data-eshb-empty");
+                if (empty) $ph.attr("placeholder", empty);
+              }
+            });
+        }
       }
       eshbBindInstantStartMirror($(startDateInput));
       eshbBindInstantStartMirror($(endDateInput));
@@ -1129,6 +1177,20 @@
 
         let startDate = picker.startDate.format("YYYY-MM-DD");
         let endDate = picker.endDate.format("YYYY-MM-DD");
+
+        // Same-day click: user picked the same date for check-in AND check-out.
+        // A 0-night stay is invalid, so DON'T auto-bump checkout to the next day.
+        // Keep only the check-in and leave checkout empty ("Add date") so the
+        // user deliberately picks a real checkout date.
+        if (allowSingleDate != true && startDate === endDate) {
+          $(startDateInput).val(startDate);
+          $(endDateInput).val("");
+          $(availableDatePickerInput).val(startDate);
+          ESHBPUBLICBOOKING.updateDateDisplay();
+          $(this).closest('.eshb-booking-form').find('.eshb-form-loader').removeClass('is-active');
+          if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", false);
+          return; // skip pricing/calendar update while checkout is empty
+        }
 
         // check seleceted day in allowedDays and show errors
         selectedDay = picker.startDate.format("dddd").toLowerCase();
@@ -2615,6 +2677,19 @@
     },
     formatPrice: function (totalPrice, currencySymbol = "$") {
       return currencySymbol + ESHBPUBLICBOOKING.formatAmount(totalPrice);
+    },
+    // Read each machine (Y-m-d) date input and render it into its sibling display
+    // field using the WordPress date format + locale. Never changes the machine
+    // value, so form submission / pricing stay in Y-m-d.
+    updateDateDisplay: function () {
+      var i18n = typeof eshb_daterangepicker_i18n !== "undefined" ? eshb_daterangepicker_i18n : {};
+      var fmt = i18n.displayFormat || "YYYY-MM-DD";
+      $(".eshb-date-field").each(function () {
+        var $wrap = $(this);
+        var machine = $wrap.find(".eshb-date-machine").val();
+        var $disp = $wrap.find(".eshb-date-display");
+        $disp.val(machine ? moment(machine, "YYYY-MM-DD").format(fmt) : "");
+      });
     },
     formatAmount: function (totalPrice) {
       // Match wc_price() default: 2 decimals + thousand separators (e.g. 1,359.00)

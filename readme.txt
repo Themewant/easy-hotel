@@ -254,6 +254,7 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 = 2.0.5 =
+* Added: Check-in/Check-out dates now follow the WordPress General date format.
 * Fixed text domain not loading issue
 * Fixed: Payment Listing amount column html markup issue fixes
 * Updated reservation failed message
