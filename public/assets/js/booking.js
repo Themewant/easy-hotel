@@ -67,10 +67,14 @@
     try {
       var eshbLoc = String(eshb_daterangepicker_i18n.locale).toLowerCase();
       if (eshb_daterangepicker_i18n.months && eshb_daterangepicker_i18n.weekdaysShort) {
-        moment.updateLocale(eshbLoc, {
+        var eshbLocaleSpec = {
           months: eshb_daterangepicker_i18n.months,
           weekdaysShort: eshb_daterangepicker_i18n.weekdaysShort,
-        });
+        };
+        if (eshb_daterangepicker_i18n.monthsShort) {
+          eshbLocaleSpec.monthsShort = eshb_daterangepicker_i18n.monthsShort;
+        }
+        moment.updateLocale(eshbLoc, eshbLocaleSpec);
       }
       moment.locale(eshbLoc);
     } catch (e) {}

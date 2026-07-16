@@ -56,13 +56,30 @@ function eshb_wp_enqueue_scripts (){
 
      // Translated month + short weekday names (from WordPress translations, so they are
      // guaranteed localized even when moment.js has no bundled locale on the page).
+     // Each sample instant is built at local noon in the site timezone: wp_date() renders
+     // in the site timezone, so a UTC-midnight sample would roll back to the previous
+     // day/month on any timezone behind UTC and shift the whole array by one.
+     $eshb_tz = wp_timezone();
+
      $eshb_months = array();
      for ( $m = 1; $m <= 12; $m++ ) {
-         $eshb_months[] = wp_date( 'F', mktime( 0, 0, 0, $m, 1, 2025 ) );
+         $eshb_month_sample = new DateTime( sprintf( '2025-%02d-15 12:00:00', $m ), $eshb_tz );
+         $eshb_months[] = wp_date( 'F', $eshb_month_sample->getTimestamp() );
      }
+
      $eshb_weekdays_short = array(); // Sunday-first to match moment.js weekdaysShort()
+     $eshb_weekday_sample = new DateTime( '2025-01-05 12:00:00', $eshb_tz ); // a Sunday
      for ( $d = 0; $d < 7; $d++ ) {
-         $eshb_weekdays_short[] = wp_date( 'D', strtotime( 'Sunday +' . $d . ' days' ) );
+         $eshb_weekdays_short[] = wp_date( 'D', $eshb_weekday_sample->getTimestamp() );
+         $eshb_weekday_sample->modify( '+1 day' );
+     }
+
+     // moment.monthsShort() drives the calendar header; without it the header falls back
+     // to moment's built-in English names regardless of the site locale.
+     $eshb_months_short = array();
+     for ( $m = 1; $m <= 12; $m++ ) {
+         $eshb_month_sample = new DateTime( sprintf( '2025-%02d-15 12:00:00', $m ), $eshb_tz );
+         $eshb_months_short[] = wp_date( 'M', $eshb_month_sample->getTimestamp() );
      }
 
      // Prepare translations dynamically based on current locale
@@ -70,6 +87,7 @@ function eshb_wp_enqueue_scripts (){
          'displayFormat'     => $eshb_moment_format,
          'locale'            => str_replace( '_', '-', strtolower( $locale ) ),
          'months'            => $eshb_months,
+         'monthsShort'       => $eshb_months_short,
          'weekdaysShort'     => $eshb_weekdays_short,
          'applyLabel'        => !empty($apply_text_default) ? eshb_get_translated_string($apply_text_default) : __('Apply', 'easy-hotel'),
          'cancelLabel'       => !empty($cancel_text_default) ? eshb_get_translated_string($cancel_text_default) : __('Cancel', 'easy-hotel'),
