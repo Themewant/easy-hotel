@@ -426,16 +426,70 @@ if ( ! function_exists( 'eshb_native_checkout_ensure_page' ) ) {
     }
 }
 
+if ( ! function_exists( 'eshb_native_checkout_translated_page_id' ) ) {
+    /**
+     * The current language's version of a page, when a translation plugin is running.
+     *
+     * Mirrors what ESHB_View does for the search result page: ask Polylang first, then
+     * WPML, and fall back to the id we were given when neither is installed or the page
+     * has no translation in this language. Never returns 0 for a real page — an
+     * untranslated page is still better than no page.
+     *
+     * @param  int    $page_id
+     * @param  string $shortcode Optional. Only accept the translation if it actually
+     *                           carries this shortcode. A translated page created
+     *                           without it would render empty, which is worse than the
+     *                           original language rendering correctly.
+     * @return int
+     */
+    function eshb_native_checkout_translated_page_id( $page_id, $shortcode = '' ) {
+
+        $page_id = (int) $page_id;
+
+        if ( ! $page_id ) {
+            return 0;
+        }
+
+        if ( function_exists( 'pll_get_post' ) ) {
+            $translated = pll_get_post( $page_id );
+        } elseif ( function_exists( 'icl_object_id' ) ) {
+            $translated = icl_object_id( $page_id, 'page', true );
+        } else {
+            return $page_id;
+        }
+
+        $translated = (int) $translated;
+
+        if ( ! $translated || $translated === $page_id ) {
+            return $page_id;
+        }
+
+        if ( $shortcode !== '' && ! has_shortcode( (string) get_post_field( 'post_content', $translated ), $shortcode ) ) {
+            return $page_id;
+        }
+
+        return $translated;
+    }
+}
+
 if ( ! function_exists( 'eshb_native_checkout_url' ) ) {
     function eshb_native_checkout_url() {
+
         $page_id = eshb_native_checkout_ensure_page();
+
         if ( $page_id ) {
-            return get_permalink( $page_id );
+            // Translated at the URL, not at the stored option: `eshb_native_checkout_page_id`
+            // has to keep pointing at the one canonical page, or the next lookup would
+            // save whichever language happened to be showing.
+            $url = get_permalink( eshb_native_checkout_translated_page_id( $page_id, 'eshb_native_checkout' ) );
+        } else {
+            // Avoid colliding with WooCommerce's /checkout/ as a last resort —
+            // surface the home URL so the user notices instead of landing on
+            // an unrelated page.
+            $url = home_url( '/' );
         }
-        // Avoid colliding with WooCommerce's /checkout/ as a last resort —
-        // surface the home URL so the user notices instead of landing on
-        // an unrelated page.
-        return home_url( '/' );
+
+        return apply_filters( 'eshb_native_checkout_url', $url, $page_id );
     }
 }
 

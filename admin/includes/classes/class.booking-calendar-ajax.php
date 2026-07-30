@@ -424,11 +424,9 @@ class ESHB_Booking_Calendar_Ajax {
         if (isset($_REQUEST['accomodationId']) && get_post_type(sanitize_text_field(wp_unslash($_REQUEST['accomodationId']))) == 'eshb_accomodation') {
             $accomodation_id = intval(sanitize_text_field(wp_unslash($_REQUEST['accomodationId'])));
 
-            $eshb_min_max_settings = get_option( 'eshb_min_max_settings', []);
-            $required_min_nights = !empty($eshb_min_max_settings['required_min_nights']) ? $eshb_min_max_settings['required_min_nights'] : 1;
-            $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : 999;
-
-            $eshb_week_settings = get_option( 'eshb_week_settings', [] );
+            // Booking Rules tab first, legacy EHB Week option as fallback — the filter is
+            // answered by whichever of the two owns the check-in day feature here.
+            $eshb_week_settings = apply_filters( 'eshb_week_settings', [] );
             $string_check_in_day_error_msg = !empty($eshb_week_settings['string_check_in_day_error_msg']) ? $eshb_week_settings['string_check_in_day_error_msg'] : '';
 
             // accomodation details metadata
@@ -439,7 +437,20 @@ class ESHB_Booking_Calendar_Ajax {
             $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
             $available_rooms = $eshb_booking->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
             $eshb_accomodation_metaboxes['available_rooms'] = $available_rooms;
-            
+
+            // Resolved for this accomodation through the same filter the booking
+            // validation uses. Reading the global option here instead would report the
+            // site wide limits for every accomodation, and the calendar would offer
+            // ranges the server then rejects.
+            $eshb_min_max_settings = apply_filters( 'eshb_min_max_settings', [
+                'required_min_nights'          => 1,
+                'required_max_nights'          => 999,
+                'is_global_source_for_min_max' => true,
+            ], $accomodation_id, $eshb_accomodation_metaboxes );
+
+            $required_min_nights = !empty($eshb_min_max_settings['required_min_nights']) ? $eshb_min_max_settings['required_min_nights'] : 1;
+            $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : 999;
+
 
             $eshb_translations = [
                 'maximumCapacity' => __('Maximum Capacity', 'easy-hotel'),

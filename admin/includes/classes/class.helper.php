@@ -802,11 +802,18 @@ class ESHB_Helper {
             $eshb_accomodation_metaboxes['available_rooms'] = $available_rooms;
 
 
-            $is_global_source_for_min_max = !empty($eshb_accomodation_metaboxes['is_global_source_for_min_max']) ? true : false;
-            if($is_global_source_for_min_max != true) {
-                $required_min_nights = !empty($eshb_accomodation_metaboxes['required_min_nights']) ? $eshb_accomodation_metaboxes['required_min_nights'] : 1;
-                $required_max_nights = !empty($eshb_accomodation_metaboxes['required_max_nights']) ? $eshb_accomodation_metaboxes['required_max_nights'] : 999;
-            }
+            // Resolved through the same filter the booking validation uses, so the
+            // calendar can never offer a range the server would then reject. Which
+            // source wins — globals, the Booking Rules table or the accomodation's own
+            // "Nights" metabox — is decided there, by whichever module is active.
+            $accomodation_min_max_settings = apply_filters( 'eshb_min_max_settings', [
+                'required_min_nights'          => $required_min_nights,
+                'required_max_nights'          => $required_max_nights,
+                'is_global_source_for_min_max' => true,
+            ], $accomodation_id, $eshb_accomodation_metaboxes );
+
+            $required_min_nights = !empty($accomodation_min_max_settings['required_min_nights']) ? $accomodation_min_max_settings['required_min_nights'] : 1;
+            $required_max_nights = !empty($accomodation_min_max_settings['required_max_nights']) ? $accomodation_min_max_settings['required_max_nights'] : 999;
         }
         
         $eshb_translations = [
@@ -860,82 +867,105 @@ class ESHB_Helper {
         );
     }
 
-    public static function get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date) {
-        $metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
-        $min_stay_night = 0;
-       
+    /**
+     * Every session (season) that carries a "Minimum Nights" rule for this accomodation.
+     *
+     * Returned in a shape the booking calendar can evaluate client side, so the rule
+     * is known the moment a date is clicked instead of only after the range has
+     * already been applied.
+     *
+     * @param  int|string $accomodation_id
+     * @return array List of ['start_date','end_date','days','min_nights'].
+     */
+    public static function get_eshb_session_min_nights_rules($accomodation_id) {
 
-        // Get all sessions
-        $qargs = array(
+        $all_week = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+        $query = new WP_Query( array(
             'post_type'      => 'eshb_session',
             'post_status'    => 'publish',
             'posts_per_page' => -1,
-        );
-        $query = new WP_Query($qargs);
+        ) );
 
-        $sessions = [];
-        
+        $rules = [];
+
         if ($query->have_posts()) {
             while ($query->have_posts()) {
                 $query->the_post();
-                $post_id = get_the_ID();
+                $post_id   = get_the_ID();
                 $metaboxes = maybe_unserialize(get_post_meta($post_id, 'eshb_session_metaboxes', true));
 
                 if (empty($metaboxes['start_date']) || empty($metaboxes['end_date'])) continue;
 
-                $sessions[] = [
-                    'id'                 => $post_id,
-                    'start_date'         => $metaboxes['start_date'],
-                    'end_date'           => $metaboxes['end_date'],
-                    'min_nights'         => $metaboxes['min_nights'] ?? 0,
-                    'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
-                    'days'               => $metaboxes['days'] ?? [],
+                $min_nights = !empty($metaboxes['min_nights']) ? (int) $metaboxes['min_nights'] : 0;
+                if ($min_nights < 1) continue;
+
+                $accomodation_ids = $metaboxes['accomodation_ids'] ?? [];
+                if (empty($accomodation_ids) || !in_array($accomodation_id, $accomodation_ids)) continue;
+
+                $session_days = !empty($metaboxes['days']) ? $metaboxes['days'] : $all_week;
+                if (in_array('all', (array) $session_days)) {
+                    $session_days = $all_week;
+                }
+
+                $rules[] = [
+                    'start_date' => $metaboxes['start_date'],
+                    'end_date'   => $metaboxes['end_date'],
+                    'days'       => array_values( (array) $session_days ),
+                    'min_nights' => $min_nights,
                 ];
             }
             wp_reset_postdata();
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Highest "Minimum Nights" any session imposes on the given stay.
+     *
+     * Every night of the stay is checked (the check-out day is excluded, it is not a
+     * night) and the LARGEST matching value wins — with overlapping seasons the
+     * strictest rule has to be the one that applies.
+     *
+     * @return int 0 when no session covers the stay.
+     */
+    public static function get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date) {
+
+        // Guard against empty dates: DatePeriod would silently iterate nothing and
+        // every session rule would look inapplicable.
+        if (empty($start_date) || empty($end_date)) {
+            return 0;
+        }
+
+        $rules = self::get_eshb_session_min_nights_rules($accomodation_id);
+
+        if (empty($rules)) {
+            return 0;
         }
 
         // Create date range (exclude checkout date if multi-day)
         $period = new DatePeriod(
             new DateTime($start_date),
             new DateInterval('P1D'),
-            (new DateTime($start_date) == new DateTime($end_date))
+            ($start_date === $end_date)
                 ? (new DateTime($end_date))->modify('+1 day') // same-day booking
                 : new DateTime($end_date) // exclude checkout
         );
 
-        $total_nights = iterator_count($period);
-        $per_day_prices = [];
-
+        $min_stay_night = 0;
 
         foreach ($period as $day) {
-            $current_date = $day->format('Y-m-d');
+            $current_date     = $day->format('Y-m-d');
             $current_day_name = strtolower($day->format('l'));
 
-            foreach ($sessions as $session) {
-
-
-                if(empty($session['accomodation_ids'])){
-                    continue;
-                }
-
-                if (!empty($session['accomodation_ids']) && !in_array($accomodation_id, $session['accomodation_ids'])) {
-                    continue;
-                }
-
-                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                if(in_array('all', $session_days)){
-                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                }
-
-                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
-         
-                    // 1. Get min night
-                    $min_stay_night = $session['min_nights'];
-                    break;
+            foreach ($rules as $rule) {
+                if ($current_date >= $rule['start_date'] && $current_date <= $rule['end_date'] && in_array($current_day_name, $rule['days'])) {
+                    $min_stay_night = max($min_stay_night, $rule['min_nights']);
                 }
             }
         }
+
         return $min_stay_night;
     }
 }

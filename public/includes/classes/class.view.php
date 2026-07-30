@@ -186,17 +186,34 @@ class ESHB_View extends ESHB_MAIN{
             "thursday" => 4, "friday" => 5, "saturday" => 6
         ];
         
-        if (!isset($daysOfWeek[strtolower($allowedDays[0])])) {
-            return false; 
+        // A rule can allow several days, so this looks for the soonest of them rather
+        // than assuming the first one listed.
+        $daysToAdd = null;
+
+        foreach ( (array) $allowedDays as $allowedDay ) {
+
+            $allowedDay = strtolower( trim( (string) $allowedDay ) );
+
+            if ( ! isset( $daysOfWeek[ $allowedDay ] ) ) {
+                continue;
+            }
+
+            $targetDay = $daysOfWeek[ $allowedDay ];
+
+            if ( $targetDay === $dayOfWeek ) {
+                return $givenDate->format('Y-m-d');
+            }
+
+            $distance  = ( $targetDay - $dayOfWeek + 7 ) % 7 ?: 7;
+            $daysToAdd = ( $daysToAdd === null ) ? $distance : min( $daysToAdd, $distance );
         }
-    
-        $targetDay = $daysOfWeek[strtolower($allowedDays[0])];
-    
-        if ($dayOfWeek !== $targetDay) {
-            $daysToAdd = ($targetDay - $dayOfWeek + 7) % 7 ?: 7; 
-            $givenDate->modify("+$daysToAdd days");
+
+        if ( $daysToAdd === null ) {
+            return false;
         }
-    
+
+        $givenDate->modify("+$daysToAdd days");
+
         return $givenDate->format('Y-m-d');
     }
 
@@ -308,8 +325,20 @@ class ESHB_View extends ESHB_MAIN{
         $end = new DateTime($end_date);
         $interval = $start->diff($end);
         $days_count = $interval->days;
-        $allowed_check_in_day = isset($accomodation_metaboxes['allowed_check_in_day']) && !empty($accomodation_metaboxes['allowed_check_in_day']) ? $accomodation_metaboxes['allowed_check_in_day'] : [];
-        
+        // Resolved through the same filter the booking validation uses, so both sources
+        // reach this path: the accomodation's own "Check-in Day" metabox while the EHB
+        // Week add-on is active, and the Booking Rules table otherwise. 'all' is core's
+        // way of saying unrestricted, which is no restriction to apply here.
+        $allowed_check_in_day = apply_filters( 'eshb_booking_allowed_check_in_day', 'all', $accomodation_id, $accomodation_metaboxes );
+
+        // A rule can allow several days, in which case the filter returns them comma
+        // separated. 'all' is core's word for unrestricted, so nothing to apply here.
+        if ( $allowed_check_in_day === 'all' ) {
+            $allowed_check_in_day = [];
+        } elseif ( is_string( $allowed_check_in_day ) && strpos( $allowed_check_in_day, ',' ) !== false ) {
+            $allowed_check_in_day = array_filter( array_map( 'trim', explode( ',', $allowed_check_in_day ) ) );
+        }
+
         if(!empty($allowed_check_in_day)){
             // push the day to array if its string  
             if(is_string($allowed_check_in_day)){

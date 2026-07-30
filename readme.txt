@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -251,6 +251,13 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 2.0.6 =
+* Added: Booking rules settings tab new added
+* Fixed: Settings improvement
+* Fixed: Booking rules max & min price
+* Fixed: Booking calender minimum nights issue fixes
+* Fixed: Booking seasons minimum nights issue fixes
 
 
 = 2.0.5 =

@@ -95,4 +95,4 @@
 .eshb-bkf .eshb-bkf-form .submition-wrapper .eshb-form-submit-btn:hover {
   background-color: var(--eshb-bkf-submit-btn-bg-color-hover, var(--eshb-bkf-submit-btn-bg-color));
   color: var(--eshb-bkf-submit-btn-text-color-hover, var(--eshb-bkf-submit-btn-text-color));
-}/*# sourceMappingURL=editor.css.map */
+}

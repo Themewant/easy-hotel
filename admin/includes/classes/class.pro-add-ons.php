@@ -118,15 +118,8 @@ class ESHB_PRO_ADDONS {
                     'desc' => 'Single day booking solution. Manage single day booking with custom pricing',
                     'is_pro' => true
                 ),
-                array(
-                    'name' => 'EHB Min Max',
-                    'slug' => 'ehb-min-max/ehb-min-max.php',
-                    'external_url'  => 'https://themewant.com/downloads/ehb-min-max/',
-                    'demo_url'  => 'https://themewant.com/downloads/ehb-min-max/',
-                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/min-max.png',
-                    'desc' => 'Minimum and Maximum reservation conditional solution for WordPress. Whether you manage single day booking',
-                    'is_pro' => true
-                ),
+                // EHB Min Max is bundled with the core plugin now — see the
+                // "Booking Rules" settings tab — so it is no longer listed here.
                 array(
                     'name' => 'EHB Currency',
                     'slug' => 'ehb-currency/ehb-currency.php',

@@ -1059,7 +1059,9 @@
   font-weight: 700;
 }
 .eshb-account-modal .eshb-remove-item {
-  appearance: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   border: none;
   background: #f1f5f9;
   color: var(--eshb-danger-color);
@@ -1123,7 +1125,8 @@ body.single .accomodation-gallery .swiper-wrapper {
 body.single .accomodation-gallery img {
   height: 600px;
   width: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 @media (max-width: 782px) {
   body.single .accomodation-gallery img {
@@ -1241,7 +1244,8 @@ body.single .accomodation-gallery .swiper-button-next::after {
 .room-grid.style2 {
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-  column-gap: 20px;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
 }
 .room-grid.style2 .grid-item .item-inner .hover-bg-two {
   background: linear-gradient(180deg, rgba(113, 155, 14, 0) 0%, rgb(23, 23, 23) 100%);
@@ -1292,13 +1296,15 @@ body.single .accomodation-gallery .swiper-button-next::after {
 }
 
 .room_slider-inner-wrapper {
+  height: -moz-max-content;
   height: max-content;
 }
 
 .rt_room_slider.eshb-item-grid .all-features {
   margin-top: 20px;
   display: flex;
-  column-gap: 5px;
+  -moz-column-gap: 5px;
+       column-gap: 5px;
   flex-wrap: wrap;
 }
 .rt_room_slider.eshb-item-grid .all-features .feature {
@@ -1615,7 +1621,8 @@ body.single .accomodation-gallery .swiper-button-next::after {
   }
 }
 .eshb-details-page .accomodation-video video {
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 @media only screen and (max-width: 767px) {
   .eshb-details-page .accomodation-video video {
@@ -1628,7 +1635,8 @@ body.single .accomodation-gallery .swiper-button-next::after {
 .eshb-details-page .basic-information-list {
   display: flex;
   align-items: center;
-  column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+       column-gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 26px;
 }
@@ -1891,12 +1899,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(0, 30%, 0);
     transform: translate3d(0, 30%, 0);
   }
   to {
     opacity: 1;
-    -webkit-transform: none;
     transform: none;
   }
 }
@@ -1921,9 +1927,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-align: center;
   -webkit-user-select: none;
   /* Safari */
-  -ms-user-select: none;
   /* IE 10 and IE 11 */
-  user-select: none;
+  -moz-user-select: none;
+       user-select: none;
   /* Standard syntax */
   border-radius: 30px;
   -moz-border-radius: 30px;
@@ -2099,7 +2105,9 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   line-height: 1.5;
   background-clip: padding-box;
   border: none;
-  appearance: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   background: none;
   color: var(--eshb-white-color);
@@ -2233,6 +2241,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   color: var(--eshb-white-color);
   display: flex;
   align-items: end;
+  width: -moz-max-content;
   width: max-content;
   margin-inline: auto;
 }
@@ -2252,6 +2261,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   min-height: 37px;
   line-height: 37px;
   font-family: var(--eshb-body-font);
+  width: -moz-max-content;
   width: max-content;
 }
 .eshb-item-grid .grid-item .item-inner .hover-bg-one {
@@ -2336,6 +2346,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 .eshb-item-grid.style-two .grid-item .item-inner .pricing {
   display: flex;
   align-items: center;
+  width: -moz-fit-content;
   width: fit-content;
   background: #fff;
   padding: 10px 15px;
@@ -2350,6 +2361,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   font-size: 18px;
   line-height: 1;
   display: flex;
+  width: -moz-max-content;
   width: max-content;
   margin: 0;
 }
@@ -2384,6 +2396,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 .eshb-item-grid.style-two .grid-item .item-inner .contents-col a.details-btn {
   background: var(--eshb-primary-color);
   width: auto;
+  max-width: -moz-max-content;
   max-width: max-content;
   color: var(--eshb-white-color);
   padding: 8px 20px;
@@ -2514,7 +2527,8 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   display: grid;
   margin: 10px 0;
   grid-template-columns: repeat(2, 1fr);
-  column-gap: 10px;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
   justify-content: center;
 }
 .eshb-booking .eshb-booking-form .eshb-form-groups .eshb-form-group {
@@ -3117,6 +3131,7 @@ div#easy-hotel-booking-modal .easy-hotel-booking-modal-body .eshb-booking .eshb-
   position: relative;
   left: 0 !important;
   top: 0 !important;
+  width: -moz-max-content;
   width: max-content;
 }
 @media (max-width: 768px) {
@@ -3453,6 +3468,7 @@ a.wc-block-components-button.wp-element-button,
   color: var(--eshb-white-color);
 }
 .woocommerce-checkout form.checkout .eshb-order-review-actions .eshb-coupon-wrap {
+  width: -moz-fit-content;
   width: fit-content;
   margin-left: auto;
 }
@@ -3525,6 +3541,7 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 
 @media (min-width: 564px) {
   .brxe-eshb-availability-calendar .daterangepicker {
+    width: -moz-max-content;
     width: max-content;
   }
 }
@@ -3572,4 +3589,11 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 
 .eshb-cart-remove-btn {
   margin-left: 4px;
-}/*# sourceMappingURL=public.css.map */
+}
+
+.eshb-booking-form .eshb-input-wrapper .eshb-date-field {
+  border: 1px solid var(--eshb-primary-color);
+}
+.eshb-booking-form .eshb-input-wrapper .eshb-date-field input {
+  border: 0 !important;
+}

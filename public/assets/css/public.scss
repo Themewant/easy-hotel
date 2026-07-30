@@ -2717,3 +2717,14 @@ body.rtl {
 .eshb-cart-remove-btn {
     margin-left: 4px;
 }
+
+.eshb-booking-form {
+    .eshb-input-wrapper {
+        .eshb-date-field {
+            border: 1px solid var(--eshb-primary-color);
+            input {
+                border: 0 !important;
+            }
+        }
+    }
+}

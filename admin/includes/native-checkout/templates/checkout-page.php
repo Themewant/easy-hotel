@@ -104,7 +104,7 @@ $core              = new ESHB_Core();
 $currency_symbol   = $core->get_eshb_currency_symbol();
 $currency_position = $core->get_eshb_currency_position();
 $terms_pid         = $eshb_settings['terms-and-conditions-page'] ?? '';
-$terms_url         = $terms_pid ? get_permalink( (int) $terms_pid ) : '#';
+$terms_url         = $terms_pid ? get_permalink( eshb_native_checkout_translated_page_id( $terms_pid ) ) : '#';
 $archive_url       = get_post_type_archive_link( 'eshb_accomodation' );
 // First item view for the add-on hooks that still expect a single reservation.
 $reservation_view  = ! empty( $items_view ) ? $items_view[0] : [];

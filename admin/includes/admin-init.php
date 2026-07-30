@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 include 'framework/tw-framework.php';
 include 'admin-settings.php';
+include ESHB_PL_PATH . 'admin/booking-rules/booking-rules.php';
 include 'classes/class.booking-calendar.php';
 include 'classes/class.booking-calendar-ajax.php';
 include 'classes/class.core.php';

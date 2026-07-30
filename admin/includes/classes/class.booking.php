@@ -487,7 +487,7 @@ class ESHB_Booking {
 			$allowed_check_in_day = apply_filters( 'eshb_booking_allowed_check_in_day', 'all', $accomodation_id, $accomodation_metaboxes );
 			$string_check_in_day_error_msg = !empty($eshb_week_settings['string_check_in_day_error_msg']) ? $eshb_week_settings['string_check_in_day_error_msg'] : 'Only allowed check in day is : ';
 
-			
+
 			// Min Max Booking Configurations
 			$min_max_settings = [
 				'required_min_nights' => '',
@@ -1646,7 +1646,11 @@ class ESHB_Booking {
 
 
 			// Validate check-in day
-			if($allowed_check_in_day != 'all' && $start_day_name != '' && !empty($allowed_check_in_day) && $allowed_check_in_day == $start_day_name) {
+			// Same check as the other booking path above: a rule can now allow several
+			// days, so the comparison is a lookup in the comma separated list rather than
+			// an equality test — which was also the wrong way round here, rejecting the
+			// allowed day and letting every other one through.
+			if($allowed_check_in_day != 'all' && $start_day_name != '' && !empty($allowed_check_in_day) && strpos($allowed_check_in_day, $start_day_name) === false) {
 				$error = array(
 					'code'    => 'check_in_day_error',
 					'message' => sprintf(
@@ -1660,7 +1664,8 @@ class ESHB_Booking {
 					'error' => $error,
 				]);
 			}
-		
+
+
 
 			if(!empty($allowed_check_in_day) && $allowed_check_in_day != 'all'){
 				$days_count = 1;

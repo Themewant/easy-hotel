@@ -61,8 +61,7 @@
    * @property {function} addCustomFieldsToShortcodedForm - Adds custom booking fields to shortcoded forms (CF7, FluentForm).
    * @property {function} updateCustomFieldsInShortcodedForm - Updates custom fields in shortcoded forms.
    */
-  // Apply the WordPress site locale to moment.js BEFORE the calendar defaults capture
-  // moment.weekdaysShort(), so the picker's month/weekday names are translated.
+  
   if (typeof eshb_daterangepicker_i18n !== "undefined" && eshb_daterangepicker_i18n.locale) {
     try {
       var eshbLoc = String(eshb_daterangepicker_i18n.locale).toLowerCase();
@@ -709,10 +708,31 @@
     getnextAllowedStartDate: function (allowedDays, date) {
       var givenDate = moment(date, "YYYY-MM-DD");
       var dayOfWeek = givenDate.day();
-      var targetDay = moment().day(allowedDays[0]).day();
 
-      if (dayOfWeek !== targetDay) {
-        var daysToAdd = (targetDay - dayOfWeek + 7) % 7 || 7;
+      // A rule can allow several days, so look for the soonest of them rather than
+      // assuming the first one listed.
+      var daysToAdd = null;
+
+      [].concat(allowedDays || []).forEach(function (day) {
+        var targetDay = moment().day(day).day();
+
+        if (isNaN(targetDay)) {
+          return;
+        }
+
+        var distance = (targetDay - dayOfWeek + 7) % 7;
+
+        if (distance === 0) {
+          daysToAdd = 0;
+          return;
+        }
+
+        if (daysToAdd === null || (daysToAdd !== 0 && distance < daysToAdd)) {
+          daysToAdd = distance;
+        }
+      });
+
+      if (daysToAdd) {
         givenDate.add(daysToAdd, "days");
       }
 
@@ -817,7 +837,10 @@
         let $errEl = $form
           ? $form.find(".date-err-msg")
           : $(".eshb-booking-form .date-err-msg");
-        $errEl.html(eshb_ajax.checkInDayErrorMsg + " " + allowedDays[0]);
+        // Name every allowed day, not just the first — a rule can allow several.
+        $errEl.html(
+          eshb_ajax.checkInDayErrorMsg + " " + [].concat(allowedDays).join(", ")
+        );
         setTimeout(() => {
           $errEl.html("");
         }, 3000);
@@ -839,20 +862,207 @@
 
       let $errEl = form ? $(form).find('.date-err-msg') : $('.date-err-msg').first();
       if (!$errEl.length) return;
+      // Always start clean: a valid pick clears whatever the previous one showed.
       $errEl.html('');
-      if (minNights > 1 && diff < minNights) {
-        $errEl.html(translations.minNightsErrorMsgAvCal + minNights);
-      } else if (maxNights !== 0 && diff > maxNights) {
-        $errEl.html(translations.maxNightsErrorMsgAvCal + maxNights);
+      let msg = ESHBPUBLICBOOKING.getNightsErrorMsg(diff, minNights, maxNights, translations, picker.startDate);
+      if (msg) {
+        $errEl.html(msg);
       }
-      // Note: end date is adjusted relative to the picked start in the apply
-      // handlers below (end = start + minNights/maxNights), preserving the user's
-      // chosen start date. We intentionally do not call resetCalendar here, which
-      // would discard the picked start and reset to today.
+      // Note: an out-of-range selection is REJECTED (see rejectNightsSelection),
+      // never silently auto-corrected. The check-in the user picked is kept and
+      // the check-out is cleared so no wrong date can reach the checkout page.
+      // The message is NOT auto-hidden — it must stay on screen for as long as the
+      // check-out field is empty, otherwise the guest is left with a blank
+      // check-out and no explanation.
+    },
+    /**
+     * Strictest "Minimum Nights" that applies to the picked stay.
+     *
+     * Mirrors ESHB_Helper::get_eshb_min_stay_night_by_session() on the server: every
+     * night of the stay (check-out excluded, it is not a night) is matched against the
+     * season rules and the LARGEST value wins, then the global/accomodation minimum is
+     * applied on top.
+     *
+     * Evaluating this in the browser is what makes a season rule bite on the FIRST
+     * pick. The `min_nights` number that comes back from the server is derived from
+     * the range that was already selected, so on its own it is always one step behind.
+     *
+     * @param {string|object} startDate  Check-in (moment or YYYY-MM-DD).
+     * @param {string|object} endDate    Check-out (moment or YYYY-MM-DD).
+     * @param {number} baseMinNights     Global / per accomodation minimum.
+     * @param {Array} rules              [{start_date, end_date, days, min_nights}]
+     * @return {number}
+     */
+    resolveMinNights: function (startDate, endDate, baseMinNights, rules) {
 
-      setTimeout(() => {
-        $errEl.html('');
-      }, 4000);
+      let minNights = parseInt(baseMinNights) || 0;
+
+      if (!Array.isArray(rules) || !rules.length || !startDate || !endDate) {
+        return minNights;
+      }
+
+      let start = moment(startDate instanceof Object ? startDate.format("YYYY-MM-DD") : startDate, "YYYY-MM-DD");
+      let end = moment(endDate instanceof Object ? endDate.format("YYYY-MM-DD") : endDate, "YYYY-MM-DD");
+
+      if (!start.isValid() || !end.isValid()) {
+        return minNights;
+      }
+
+      // Same-day stay still counts as one night for rule matching.
+      if (!end.isAfter(start, "day")) {
+        end = start.clone().add(1, "days");
+      }
+
+      for (let night = start.clone(); night.isBefore(end, "day"); night.add(1, "days")) {
+        let date = night.format("YYYY-MM-DD");
+        let dayName = night.format("dddd").toLowerCase();
+
+        rules.forEach(function (rule) {
+          if (!rule || !rule.min_nights) return;
+          if (date < rule.start_date || date > rule.end_date) return;
+          if (Array.isArray(rule.days) && rule.days.length && rule.days.indexOf(dayName) === -1) return;
+
+          minNights = Math.max(minNights, parseInt(rule.min_nights) || 0);
+        });
+      }
+
+      return minNights;
+    },
+    /**
+     * Returns true when the picked number of nights breaks the min/max rule.
+     * `maxNights === 0` means "no maximum".
+     */
+    isNightsOutOfRange: function (diff, minNights, maxNights, allowSingleDate) {
+      minNights = parseInt(minNights) || 0;
+      maxNights = parseInt(maxNights) || 0;
+
+      // A 0-night (same day) range is only valid for single-day booking.
+      if (allowSingleDate !== true && diff < 1) return true;
+
+      if (minNights > 1 && diff < minNights) return true;
+      if (maxNights !== 0 && diff > maxNights) return true;
+
+      return false;
+    },
+    /**
+     * Builds the human readable min/max nights error, or '' when the range is fine.
+     *
+     * When `startDate` is given the earliest acceptable check-out date is appended.
+     * "Minimum 3 nights" means check-out = check-in + 3 days, i.e. 4 highlighted
+     * days in the calendar — spelling that date out removes the nights/days
+     * confusion that the bare number causes.
+     */
+    getNightsErrorMsg: function (diff, minNights, maxNights, translations, startDate) {
+      translations = translations || eshb_ajax.translations;
+      minNights = parseInt(minNights) || 0;
+      maxNights = parseInt(maxNights) || 0;
+
+      let formatDate = function (m) {
+        let i18n = typeof eshb_daterangepicker_i18n !== "undefined" ? eshb_daterangepicker_i18n : {};
+        return m.format(i18n.displayFormat || "YYYY-MM-DD");
+      };
+
+      if (minNights > 1 && diff < minNights) {
+        let msg = translations.minNightsErrorMsgAvCal + minNights;
+        if (startDate) {
+          msg += ' (' + formatDate(moment(startDate).clone().add(minNights, "days")) + ')';
+        }
+        return msg;
+      }
+      if (maxNights !== 0 && diff > maxNights) {
+        let msg = translations.maxNightsErrorMsgAvCal + maxNights;
+        if (startDate) {
+          msg += ' (' + formatDate(moment(startDate).clone().add(maxNights, "days")) + ')';
+        }
+        return msg;
+      }
+
+      return '';
+    },
+    /**
+     * Rejects a date range that violates the min/max nights rule.
+     *
+     * Previously the apply handlers silently pushed the check-out to
+     * `start + minNights`, so the visible fields still showed the (invalid) range
+     * the user picked while the submitted values were different — the checkout
+     * page then appeared to "auto increase" the check-out date.
+     *
+     * Now nothing is auto-corrected: the picked check-in is kept, the check-out is
+     * cleared back to the "Add date" state and the submit button stays disabled
+     * until a valid check-out is chosen.
+     */
+    rejectNightsSelection: function (startDate, pickers, startDateInput, endDateInput, availableDatePickerInput, form) {
+      $(startDateInput).val(startDate);
+      $(endDateInput).val("");
+      $(availableDatePickerInput).val(startDate);
+
+      // Keep every picker anchored on the picked check-in with no end selection,
+      // so reopening the calendar continues from the same month.
+      (pickers || []).forEach(function (picker) {
+        if (!picker) return;
+        picker.setStartDate(startDate);
+        picker.setEndDate(startDate);
+      });
+
+      ESHBPUBLICBOOKING.updateDateDisplay();
+
+      let $form = form ? $(form) : $('.eshb-booking-form');
+      $form.find('.eshb-form-loader').removeClass('is-active');
+      // Incomplete/invalid range: booking must not be submittable.
+      $form.find('.eshb-form-submit-btn').prop("disabled", true);
+    },
+    /**
+     * Last line of defence before the reservation is sent. Returns false (and
+     * shows the reason) when check-in/check-out are missing or break the required
+     * nights rule, so the booking is never submitted with dates the guest did not
+     * actually confirm.
+     */
+    assertValidNightsBeforeSubmit: function (form, startDate, endDate) {
+      let $form = $(form);
+      // Only enforce the "at least one night" rule when we positively know the
+      // accommodation is not a single-day/hourly one, so those keep working.
+      let allowSingleDate = $form.data("eshbAllowSingleDate") !== false;
+
+      let minNights = $form.data("eshbMinNights");
+      let maxNights = $form.data("eshbMaxNights");
+
+      if (typeof minNights === "undefined") minNights = eshb_ajax.requiredMinNights;
+      if (typeof maxNights === "undefined") maxNights = eshb_ajax.requiredMaxNights;
+
+      minNights = parseInt(minNights) || 1;
+      maxNights = parseInt(maxNights) || 0;
+
+      let $errEl = $form.find('.date-err-msg');
+      let showErr = function (msg) {
+        $form.find('.eshb-form-loader').removeClass('is-active');
+        if ($errEl.length) {
+          $errEl.html(msg);
+          setTimeout(() => {
+            $errEl.html('');
+          }, 4000);
+        }
+      };
+
+      if (!startDate || !endDate) {
+        showErr(ESHBPUBLICBOOKING.getNightsErrorMsg(0, minNights, maxNights) ||
+          eshb_ajax.translations.minNightsErrorMsgAvCal + minNights);
+        return false;
+      }
+
+      let diff = moment(endDate, "YYYY-MM-DD").diff(moment(startDate, "YYYY-MM-DD"), "days");
+
+      // Raise the minimum when the stay falls inside a season that demands more.
+      minNights = ESHBPUBLICBOOKING.resolveMinNights(
+        startDate, endDate, minNights, $form.data("eshbSessionMinNightsRules")
+      );
+
+      if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, minNights, maxNights, allowSingleDate)) {
+        showErr(ESHBPUBLICBOOKING.getNightsErrorMsg(diff, minNights, maxNights, null, moment(startDate, "YYYY-MM-DD")) ||
+          eshb_ajax.translations.minNightsErrorMsgAvCal + minNights);
+        return false;
+      }
+
+      return true;
     },
     resetCalendar: function (minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) {
 
@@ -892,7 +1102,8 @@
       allowSingleDate = false,
       minNights = 1,
       maxNights = 365,
-      blockedRanges = []
+      blockedRanges = [],
+      sessionMinNightsRules = []
     ) {
       let options = this.calendarDefaultsOps;
       options.startDate = $(startDateInput).val();
@@ -904,6 +1115,24 @@
 
       minNights = parseInt(minNights);
       maxNights = parseInt(maxNights);
+      sessionMinNightsRules = Array.isArray(sessionMinNightsRules) ? sessionMinNightsRules : [];
+
+      // Remember the effective rule on the form so the submit handler can block a
+      // booking whose nights were never validated by an apply event.
+      if (form && $(form).length) {
+        $(form).data("eshbMinNights", minNights).data("eshbMaxNights", maxNights);
+        $(form).data("eshbAllowSingleDate", allowSingleDate === true);
+        $(form).data("eshbSessionMinNightsRules", sessionMinNightsRules);
+      }
+
+      // Minimum that applies to whatever range the picker currently holds. The season
+      // rules are evaluated here, on the picked dates, so the rule is enforced on the
+      // first pick — the server's `min_nights` alone always describes the PREVIOUS
+      // selection.
+      let effectiveMinNights = function (picker) {
+        if (!picker || !picker.startDate || !picker.endDate) return minNights;
+        return ESHBPUBLICBOOKING.resolveMinNights(picker.startDate, picker.endDate, minNights, sessionMinNightsRules);
+      };
 
       options.minDate = moment().startOf("day").add(startDateBuffer, "days");
       options.endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
@@ -1176,7 +1405,7 @@
         if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
-        ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
+        ESHBPUBLICBOOKING.minMaxErr(effectiveMinNights(picker), maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
 
 
         let startDate = picker.startDate.format("YYYY-MM-DD");
@@ -1246,25 +1475,25 @@
           }
         }
 
-        let reqquiredNights = minNights;
-
         if (allowSingleDate != true) {
-          var start = picker.startDate;
-          var end = picker.endDate;
-          var diff = end.diff(start, "days"); // check the difference in days
+          var diff = picker.endDate.diff(picker.startDate, "days"); // check the difference in days
 
-          if (diff < minNights || diff > maxNights) {
-
-            if (diff > maxNights) {
-              reqquiredNights = maxNights;
-            }
-
-            end = start.clone().add(reqquiredNights, "days");
-            picker.setEndDate(end);
-
-            // Update the input field manually
-            $(this).val(start.format("YYYY-MM-DD"));
-            endDate = end.format("YYYY-MM-DD");
+          // Required nights not satisfied: reject the selection instead of
+          // silently moving the check-out date.
+          if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
+            ESHBPUBLICBOOKING.rejectNightsSelection(
+              startDate,
+              [
+                picker,
+                $(endDateInput).data("daterangepicker"),
+                $(availableDatePickerInput).data("daterangepicker"),
+              ],
+              startDateInput,
+              endDateInput,
+              availableDatePickerInput,
+              form
+            );
+            return;
           }
         }
 
@@ -1273,6 +1502,9 @@
 
         $(availableDatePickerInput).val(startDate);
         $(availableDatePickerInput).val(endDate);
+
+        // keep the visible (formatted) fields in sync with the machine values
+        ESHBPUBLICBOOKING.updateDateDisplay();
 
         // Update all calendar
         //if (!accomodationId || accomodationId == "") return;
@@ -1294,7 +1526,7 @@
         if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
         // validate min max nights
-        ESHBPUBLICBOOKING.minMaxErr(minNights, maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
+        ESHBPUBLICBOOKING.minMaxErr(effectiveMinNights(picker), maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
 
         let startDate = picker.startDate.format("YYYY-MM-DD");
         let endDate = picker.endDate.format("YYYY-MM-DD");
@@ -1349,26 +1581,25 @@
           }
         }
 
-        let reqquiredNights = minNights;
-
         if (allowSingleDate != true) {
-          var start = picker.startDate;
-          var end = picker.endDate;
-          var diff = end.diff(start, "days"); // check the difference in days
+          var diff = picker.endDate.diff(picker.startDate, "days"); // check the difference in days
 
-          if (diff < minNights || diff > maxNights) {
-
-            if (diff > maxNights) {
-
-              reqquiredNights = maxNights;
-            }
-
-            end = start.clone().add(reqquiredNights, "days");
-            picker.setEndDate(end);
-
-            // Update the input field manually
-            $(this).val(start.format("YYYY-MM-DD"));
-            endDate = end.format("YYYY-MM-DD");
+          // Required nights not satisfied: reject the selection instead of
+          // silently moving the check-out date.
+          if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
+            ESHBPUBLICBOOKING.rejectNightsSelection(
+              startDate,
+              [
+                picker,
+                $(startDateInput).data("daterangepicker"),
+                $(availableDatePickerInput).data("daterangepicker"),
+              ],
+              startDateInput,
+              endDateInput,
+              availableDatePickerInput,
+              form
+            );
+            return;
           }
         }
 
@@ -1377,6 +1608,9 @@
 
         $(availableDatePickerInput).val(startDate);
         $(availableDatePickerInput).val(endDate);
+
+        // keep the visible (formatted) fields in sync with the machine values
+        ESHBPUBLICBOOKING.updateDateDisplay();
 
         // // Update first date picker
         ESHBPUBLICBOOKING.updateEshbCalendar(
@@ -1400,23 +1634,34 @@
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
 
-            let minMaxValid = true;
             var diff = picker.endDate.diff(picker.startDate, "days");
+            let nightsErrMsg = ESHBPUBLICBOOKING.getNightsErrorMsg(diff, effectiveMinNights(picker), maxNights, null, picker.startDate);
 
             document.querySelector('.eshb-availability-calendars-err').innerHTML = '';
-            if (minNights > 1 && diff < minNights) {
-              minMaxValid = false;
-              document.querySelector('.eshb-availability-calendars-err').innerHTML = eshb_ajax.translations.minNightsErrorMsgAvCal + minNights;
+            if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
+              document.querySelector('.eshb-availability-calendars-err').innerHTML = nightsErrMsg;
 
-            } else if (maxNights !== 0 && diff > maxNights) {
-              minMaxValid = false;
-              document.querySelector('.eshb-availability-calendars-err').innerHTML = eshb_ajax.translations.maxNightsErrorMsgAvCal + maxNights;
-            }
-            if (minMaxValid != true) {
-              ESHBPUBLICBOOKING.resetCalendar(minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
-              return setTimeout(() => {
-                document.querySelector('.eshb-availability-calendars-err').innerHTML = '';
-              }, 4000);
+              // Keep the picked check-in, drop the invalid check-out. The dates are
+              // NOT reset to today and NOT auto-corrected — the guest has to pick a
+              // check-out that satisfies the required nights.
+              ESHBPUBLICBOOKING.rejectNightsSelection(
+                startDate,
+                [
+                  picker,
+                  $(startDateInput).data("daterangepicker"),
+                  $(endDateInput).data("daterangepicker"),
+                ],
+                startDateInput,
+                endDateInput,
+                availableDatePickerInput,
+                // The availability calendar drives every booking form on the page,
+                // so block them all — mirrors the loader/disable done above.
+                null
+              );
+
+              // Message stays until the guest picks a valid range (it is cleared at
+              // the top of this handler on the next apply).
+              return;
             }
 
 
@@ -1470,25 +1715,9 @@
               }
             }
 
-            let reqquiredNights = minNights;
-
-            if (allowSingleDate != true) {
-              var start = picker.startDate;
-              var end = picker.endDate;
-              var diff = end.diff(start, "days"); // check the difference in days
-
-              if (diff < minNights || diff > maxNights) {
-                if (diff > maxNights) {
-                  reqquiredNights = maxNights;
-                }
-                end = start.clone().add(reqquiredNights, "days");
-                picker.setEndDate(end);
-
-                // Update the input field manually
-                $(this).val(start.format("YYYY-MM-DD"));
-                endDate = end.format("YYYY-MM-DD");
-              }
-            }
+            // NOTE: the min/max nights rule was already enforced above — an
+            // out-of-range range never reaches this point, so the check-out date is
+            // never silently rewritten here.
 
             $(availableDatePickerInput).val(startDate);
 
@@ -1503,6 +1732,9 @@
                 vars.roomQuantityInput, vars.accomodationId, $thisForm
               );
             });
+
+            // keep the visible (formatted) fields in sync with the machine values
+            ESHBPUBLICBOOKING.updateDateDisplay();
 
             const element = document.getElementById("eshb-aside");
             if (element) {
@@ -1572,6 +1804,7 @@
             allowedDaysArray = [];
             availableTimeSlots = response.data.available_slots;
             let blockedRanges = Array.isArray(response.data.blocked_dates) ? response.data.blocked_dates : [];
+            let sessionMinNightsRules = Array.isArray(response.data.session_min_nights_rules) ? response.data.session_min_nights_rules : [];
 
             let isRenderTimeSlots = false;
 
@@ -1592,8 +1825,21 @@
               form.find(".time-picker-metabox").addClass("hidden-metabox");
             }
 
-            if (allowedDays != "all") {
-              allowedDaysArray.push(allowedDays); // Push single day into array
+            // A rule can allow several check-in days. The bundled Booking Rules tab sends
+            // an array; the EHB Week add-on sends a single day string. "all" means
+            // unrestricted either way, and an empty list is what the calendar reads as
+            // "no restriction".
+            if (Array.isArray(allowedDays)) {
+              allowedDaysArray = allowedDays.filter(function (day) {
+                return day && day !== "all";
+              });
+            } else if (allowedDays && allowedDays !== "all") {
+              allowedDaysArray = String(allowedDays)
+                .split(",")
+                .map(function (day) {
+                  return day.trim();
+                })
+                .filter(Boolean);
             }
 
             if (bookedDates.length > 0) {
@@ -1620,7 +1866,8 @@
               allowSingleDate,
               minNights,
               maxNights,
-              blockedRanges
+              blockedRanges,
+              sessionMinNightsRules
             );
             $(".holiday-date").attr("title", "Holiday");
             ESHBPUBLICBOOKING.updateEshbCalendar(
@@ -2682,9 +2929,7 @@
     formatPrice: function (totalPrice, currencySymbol = "$") {
       return currencySymbol + ESHBPUBLICBOOKING.formatAmount(totalPrice);
     },
-    // Read each machine (Y-m-d) date input and render it into its sibling display
-    // field using the WordPress date format + locale. Never changes the machine
-    // value, so form submission / pricing stay in Y-m-d.
+   
     updateDateDisplay: function () {
       var i18n = typeof eshb_daterangepicker_i18n !== "undefined" ? eshb_daterangepicker_i18n : {};
       var fmt = i18n.displayFormat || "YYYY-MM-DD";
@@ -2826,6 +3071,13 @@
           .find('.eshb-time-slot.selected input[name="end_time"]')
           .val(),
         action = "eshb_add_to_cart_reservation";
+
+      // Guard the required nights one last time. Without this a stale/incomplete
+      // range could still be submitted and the check-out date would appear to
+      // change by itself on the cart/checkout page.
+      if (!ESHBPUBLICBOOKING.assertValidNightsBeforeSubmit(form, startDate, endDate)) {
+        return;
+      }
 
       if ($(form).find('input[name="adult_quantity"]').length) {
         adultQuantity = $(form).find('input[name="adult_quantity"]').val();
@@ -2995,10 +3247,7 @@
               } else if (bookingType == "surecart") {
                 location.replace(response.data.checkout_url);
               } else if (bookingType == "native_checkout" && response.data.redirect_url) {
-                // Save the token to sessionStorage too so the checkout
-                // page can recover it if a CDN, security plugin or
-                // canonical redirect strips the ?eshb_chk param from
-                // the URL between this navigation and the page load.
+               
                 try {
                   if (response.data.token) {
                     sessionStorage.setItem("eshb_native_checkout_token", response.data.token);

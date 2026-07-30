@@ -722,52 +722,7 @@ add_action( 'plugins_loaded', function(){
                       )
                     )
                   ),
-                  array(
-                    'id'        => 'holidays',
-                    'type'      => 'repeater',
-                    'title'     => 'Holidays',
-                    'fields'    => array(
-                  
-                      array(
-                        'id'    => 'holiday-date',
-                        'type'  => 'date',
-                        'title' => 'Date',
-                        'desc'  => 'Add holiday by date from here.',
-                        'from_to'  => true,
-                        'settings' => array(
-                          'dateFormat'      => 'yy-mm-dd',
-                          'changeMonth'     => true,
-                          'changeYear'      => true,
-                          'showButtonPanel' => true,
-                          'weekHeader'      => 'Week',
-                          'monthNamesShort' => array( 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ),
-                          'dayNamesMin'     => array( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ),
-                        ),
-                      ),
-                      array(
-                        'id'    => 'holiday-title',
-                        'type'  => 'text',
-                        'title' => 'Title',
-                        'desc'  => 'Add holiday title from here.',
-                      ),
-                      array(
-                        'id'          => 'accomodation-ids',
-                        'type'        => 'select',
-                        'title'       => 'Accomodations',
-                        'placeholder' => 'Select Accomodations',
-                        'desc'  => 'Select Accomodations for this coupon.',
-                        'options'     => 'posts',
-                        'multiple'     => true,
-                        'chosen'      => false,
-                        'query_args'  => array(
-                                            'post_type' => 'eshb_accomodation',
-                                            'posts_per_page' => -1,
-                                        ),
-                      ),
-                  
-                    ),
-                  ),
-                  
+
             )
           )
         );

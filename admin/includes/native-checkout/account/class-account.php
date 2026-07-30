@@ -172,10 +172,20 @@ class ESHB_Native_Account {
 
     /**
      * Permalink of the account page (home as a last resort).
+     *
+     * Translated here and nowhere else: get_account_page_id() has to keep returning the
+     * one canonical page, because that is what ensure_account_page() edits and what the
+     * PAGE_OPTION stores. Only the link a visitor follows needs to be in their language.
      */
     public function get_account_url() {
+
         $page_id = $this->get_account_page_id( true );
-        return $page_id ? get_permalink( $page_id ) : home_url( '/' );
+
+        $url = $page_id
+            ? get_permalink( eshb_native_checkout_translated_page_id( $page_id, 'eshb_account' ) )
+            : home_url( '/' );
+
+        return apply_filters( 'eshb_native_account_url', $url, $page_id );
     }
 
     /**

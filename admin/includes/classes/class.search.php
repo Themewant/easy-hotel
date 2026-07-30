@@ -59,7 +59,17 @@ class ESHB_Search {
         if (isset($_POST['accomodation_id'])) {
             $accomodation_id = sanitize_text_field(wp_unslash($_POST['accomodation_id']));
         }
-        
+
+        // The calendar posts the currently selected range; without reading it here the
+        // session (season) rules below were always evaluated against empty dates.
+        if (isset($_POST['start_date'])) {
+            $start_date = sanitize_text_field(wp_unslash($_POST['start_date']));
+        }
+
+        if (isset($_POST['end_date'])) {
+            $end_date = sanitize_text_field(wp_unslash($_POST['end_date']));
+        }
+
         $eshb_settings = get_option('eshb_settings', []);
         $booked_dates = [];
         $total_room_bookings_per_date = []; // Track room bookings per date
@@ -124,9 +134,21 @@ class ESHB_Search {
         $min_max_nights_settings = apply_filters('eshb_min_max_nights_settings_before_search', $min_max_nights_settings, $accomodation_id, $accomodation_metas);
         
         // Get min stay night by session
-        $min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
-        if(class_exists('ESHB_ADVANCED_PRICING') && $min_stay_night_by_session > 0){
-            $min_max_nights_settings['required_min_nights'] = $min_stay_night_by_session;
+        $session_min_nights_rules = [];
+        if(class_exists('ESHB_ADVANCED_PRICING')){
+
+            $session_min_nights_rules = ESHB_Helper::get_eshb_session_min_nights_rules($accomodation_id);
+
+            $min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
+            if($min_stay_night_by_session > 0){
+                // max(), not a plain override: booking validation enforces the session
+                // rule AND the global/accomodation rule, so the calendar has to show
+                // whichever is stricter or it would allow a range the server rejects.
+                $min_max_nights_settings['required_min_nights'] = max(
+                    (int) $min_max_nights_settings['required_min_nights'],
+                    (int) $min_stay_night_by_session
+                );
+            }
         }
 
         // Find all bookings for this accommodation
@@ -254,6 +276,9 @@ class ESHB_Search {
             'single_day' => false,
             'min_nights' => $min_max_nights_settings['required_min_nights'],
             'max_nights' => $min_max_nights_settings['required_max_nights'],
+            // Season rules the calendar evaluates itself, so a stay that starts inside a
+            // season is validated on the very first pick instead of one step late.
+            'session_min_nights_rules' => $session_min_nights_rules,
             'total_room_bookings_per_date' => $total_room_bookings_per_date,
         ];
 

@@ -1,7 +1,8 @@
 .eshb-accomodation-info-block-wrapper .basic-information-list {
   display: flex;
   align-items: center;
-  column-gap: 1.5rem;
+  -moz-column-gap: 1.5rem;
+       column-gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 26px;
 }
@@ -16,4 +17,4 @@
 }
 .eshb-accomodation-info-block-wrapper .basic-information-list .info .info-icon:hover {
   color: var(--eshb-acmInfo-icon-color-hover) !important;
-}/*# sourceMappingURL=style.css.map */
+}
