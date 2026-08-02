@@ -9,13 +9,19 @@ class ESHB_Booking_Calendar {
     public $calendar = array();
     public $accomodations = array();
     public $bookings = array();
+    /** Memoised translation lookups: post id => default-language id. */
+    protected $main_accomodation_ids = array();
     public $calendar_settings = array(
         'start_date' => '',
         'end_date' => '',
         'booking_period' => 'custom',
         'current_accomodation' => 'all',
-        'current_status' => ['processing', 'on-hold', 'completed', 'pending', 'blocked'],
-        'allowed_status' => ['processing', 'on-hold', 'completed', 'pending', 'blocked'],
+        // 'deposit-payment' belongs here even though set_all_bookings() maps
+        // processing/on-hold onto 'blocked': a part-paid booking keeps its own
+        // status all the way through, so leaving it out dropped those rooms from
+        // the grid entirely while they were still blocked everywhere else.
+        'current_status' => ['processing', 'on-hold', 'completed', 'pending', 'deposit-payment', 'blocked'],
+        'allowed_status' => ['processing', 'on-hold', 'completed', 'pending', 'deposit-payment', 'blocked'],
     );
 
     public function __construct() {
@@ -157,21 +163,64 @@ class ESHB_Booking_Calendar {
             'post_status' => 'publish',
             'orderby' => 'ID',
             'order' => 'DESC',
+            
+            'lang' => '',
         ]);
 
+        $seen = [];
+
         foreach ($accomodation_posts as $post) {
-            $accomodation_id = $post->ID;
+            $accomodation_id = $this->get_main_accomodation_id($post->ID);
+
+            if (isset($seen[$accomodation_id])) {
+                continue;
+            }
+            $seen[$accomodation_id] = true;
+
             $metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
             $total_rooms = isset($metaboxes['total_rooms']) ? floatval($metaboxes['total_rooms']) : 0;
 
             $this->accomodations[] = [
                 'id' => $accomodation_id,
-                'name' => $post->post_title,
+                'name' => get_the_title($accomodation_id),
                 'type' => $post->post_type,
                 'status' => $post->post_status,
                 'total_rooms' => $total_rooms,
             ];
         }
+    }
+
+    /**
+     * Default-language id for an accomodation, so every translation of a room
+     * resolves to the same calendar row and the same bookings.
+     *
+     * A room with no default-language translation is its own original and comes
+     * back unchanged.
+     */
+    public function get_main_accomodation_id ($accomodation_id) {
+
+        $accomodation_id = intval($accomodation_id);
+
+        if (!$accomodation_id) {
+            return 0;
+        }
+
+        if (isset($this->main_accomodation_ids[$accomodation_id])) {
+            return $this->main_accomodation_ids[$accomodation_id];
+        }
+
+        $main_post_id = 0;
+
+        if ( function_exists( 'pll_get_post' ) && function_exists( 'pll_default_language' ) ) {
+            $default_lang = pll_default_language();
+            $main_post_id = $default_lang ? intval( pll_get_post( $accomodation_id, $default_lang ) ) : 0;
+        } elseif ( function_exists( 'icl_object_id' ) ) {
+            $main_post_id = intval( apply_filters( 'wpml_original_element_id', NULL, $accomodation_id, 'post_eshb_accomodation' ) );
+        }
+
+        $this->main_accomodation_ids[$accomodation_id] = $main_post_id ? $main_post_id : $accomodation_id;
+
+        return $this->main_accomodation_ids[$accomodation_id];
     }
 
     public function set_all_bookings (){
@@ -269,25 +318,16 @@ class ESHB_Booking_Calendar {
         $dates_map = array_flip($dates);
         $total_dates = count($dates);
     
-        // Group bookings by accomodation id for faster access
         $bookings_by_accomodation = [];
         foreach ($this->bookings as $booking) {
             if (!isset($booking['accomodation_id'])) continue;
-            $acc_id = $booking['accomodation_id'];
+            $acc_id = $this->get_main_accomodation_id($booking['accomodation_id']);
             $bookings_by_accomodation[$acc_id][] = $booking;
         }
-    
+
         foreach ($accomodations as $accomodation) {
+            // Already the default-language id — set_all_accomodations() resolved it.
             $accomodation_id = $accomodation['id'];
-
-            if ( function_exists( 'pll_get_post' )) {
-                $default_lang = pll_default_language();
-                $main_post_id = pll_get_post( $accomodation_id, $default_lang ) ? pll_get_post( $accomodation_id, $default_lang ) : $accomodation_id ;
-                $accomodation_id = $main_post_id;
-            }elseif ( function_exists( 'apply_filters' ) && function_exists( 'icl_object_id' ) ) {
-                 $accomodation_id = apply_filters( 'wpml_original_element_id', NULL, $accomodation_id, 'post_post' );
-            }
-
             $accomodation_name = $accomodation['name'];
             
             $bookings = isset($bookings_by_accomodation[$accomodation_id]) ? $bookings_by_accomodation[$accomodation_id] : [];
@@ -502,6 +542,7 @@ class ESHB_Booking_Calendar {
                 $html .= '<option '. selected( '', $current_status, false ).' value="">' . esc_html__('All Statuses', 'easy-hotel') . '</option>';
                 $html .= '<option '. selected( 'pending', $current_status, false ).' value="pending">' . esc_html__('Pending', 'easy-hotel') . '</option>';
                 $html .= '<option '. selected( 'completed', $current_status, false ).' value="completed">' . esc_html__('Confirmed', 'easy-hotel') . '</option>';
+                $html .= '<option '. selected( 'deposit-payment', $current_status, false ).' value="deposit-payment">' . esc_html__('Deposit Payment', 'easy-hotel') . '</option>';
                 $html .= '<option '. selected( 'blocked', $current_status, false ).' value="blocked">' . esc_html__('Blocked', 'easy-hotel') . '</option>';
                 $html .= '</select>';
                 $html .= '<div id="eshb-calendar-filter-period-wrapper">';
@@ -536,6 +577,7 @@ class ESHB_Booking_Calendar {
                 $html = apply_filters( 'eshb_calendar_legend', $html);
 
                 $html .= '<legend class="legend-item pending" title="' . esc_html__('Pending', 'easy-hotel') . '"><span>' . esc_html__('Pending', 'easy-hotel') . '</span></legend>';
+                $html .= '<legend class="legend-item deposit-payment" title="' . esc_html__('Deposit Payment', 'easy-hotel') . '"><span>' . esc_html__('Deposit Payment', 'easy-hotel') . '</span></legend>';
                 $html .= '<legend class="legend-item blocked" title="' . esc_html__('Blocked', 'easy-hotel') . '"><span>' . esc_html__('Blocked', 'easy-hotel') . '</span></legend>';
             $html .= '</div>';
         $html .= '</div>';

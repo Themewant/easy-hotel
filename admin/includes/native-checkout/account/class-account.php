@@ -37,13 +37,9 @@ class ESHB_Native_Account {
 
         add_action( 'init', [ $this, 'register_shortcode' ] );
         add_action( 'init', [ $this, 'ensure_account_page' ], 20 );
-        // Belt-and-suspenders: guarantee the page exists after any admin load.
         add_action( 'admin_init', [ $this, 'ensure_account_page' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ], 1000 );
 
-        // After a customer sets/resets their password (e.g. via the
-        // auto-created-account email), send them to the account page to log
-        // in instead of the default wp-login confirmation screen.
         add_action( 'after_password_reset', [ $this, 'redirect_after_password_reset' ], 10, 2 );
 
         // AJAX + admin cancellation support live in their own classes.
@@ -67,10 +63,6 @@ class ESHB_Native_Account {
             return;
         }
 
-        // An admin-selected page (Settings → Account Page) takes over as the
-        // account endpoint. Replace its content with the [eshb_account]
-        // shortcode so it renders the account UI, then we're done — no
-        // auto-created page is needed.
         $selected = $this->get_selected_account_page();
         if ( $selected ) {
             update_option( self::PAGE_OPTION, $selected );
@@ -78,12 +70,10 @@ class ESHB_Native_Account {
             if ( ! has_shortcode( $content, 'eshb_account' ) ) {
                 wp_update_post( [ 'ID' => $selected, 'post_content' => '[eshb_account]' ] );
             }
+            $this->sync_account_page_translations( $selected );
             return;
         }
 
-        // Migrate a previously auto-created page that still uses the old
-        // [eshb_native_account] shortcode to the new [eshb_account] tag, so
-        // we update the existing page instead of creating a duplicate.
         $stored = (int) get_option( self::PAGE_OPTION, 0 );
         if ( $stored && get_post_status( $stored ) === 'publish' ) {
             $content = (string) get_post_field( 'post_content', $stored );
@@ -97,9 +87,52 @@ class ESHB_Native_Account {
 
         $page_id = $this->get_account_page_id( true );
 
-        // Migrate a previously auto-created page to the current title.
         if ( $page_id && 'My Account' === get_post_field( 'post_title', $page_id ) ) {
             wp_update_post( [ 'ID' => $page_id, 'post_title' => $this->account_page_title() ] );
+        }
+
+        $this->sync_account_page_translations( $page_id );
+    }
+
+    /**
+     * Keep every translation of the account page rendering the account UI.
+     *
+     * Polylang/WPML store each translation as its own post, so a translated
+     * "My Account" page is created empty. get_account_url() only hands out a
+     * translation that actually carries the shortcode — otherwise a visitor
+     * would land on a blank page — so without this sync every language falls
+     * back to the original page's URL.
+     *
+     * @param int $page_id Canonical account page.
+     */
+    private function sync_account_page_translations( $page_id ) {
+
+        $page_id = (int) $page_id;
+
+        if ( ! $page_id || ! function_exists( 'eshb_native_checkout_page_translation_ids' ) ) {
+            return;
+        }
+
+        foreach ( eshb_native_checkout_page_translation_ids( $page_id ) as $translation_id ) {
+
+            $content = (string) get_post_field( 'post_content', $translation_id );
+
+            if ( has_shortcode( $content, 'eshb_account' ) ) {
+                continue;
+            }
+
+            if ( false !== strpos( $content, '[eshb_native_account]' ) ) {
+                wp_update_post( [
+                    'ID'           => $translation_id,
+                    'post_content' => str_replace( '[eshb_native_account]', '[eshb_account]', $content ),
+                ] );
+                continue;
+            }
+
+            wp_update_post( [
+                'ID'           => $translation_id,
+                'post_content' => '' === trim( $content ) ? '[eshb_account]' : $content . "\n\n[eshb_account]",
+            ] );
         }
     }
 
@@ -214,8 +247,7 @@ class ESHB_Native_Account {
         if ( ! $this->is_account_page() ) {
             return;
         }
-        // Styles live in public/assets/css/_native-checkout.scss which is
-        // bundled into the site-wide public.css — nothing to enqueue here.
+        
         $base_url  = ESHB_PL_URL . 'admin/includes/native-checkout/account/assets/';
         $base_path = ESHB_PL_PATH . 'admin/includes/native-checkout/account/assets/';
 

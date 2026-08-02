@@ -605,7 +605,8 @@ add_action( 'init', function(){
                         'data-saved-value' => $saved_state_name,
                         'class' => 'eshb-customer-state'
                     ),
-                    'validate' => 'eshb_validate_for_required', // Required validation
+                    // Required only for countries that actually have states.
+                    'validate' => 'eshb_validate_state_for_required',
                     'required' => true,
                 ),
                 array(

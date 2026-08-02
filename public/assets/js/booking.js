@@ -1641,9 +1641,6 @@
             if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
               document.querySelector('.eshb-availability-calendars-err').innerHTML = nightsErrMsg;
 
-              // Keep the picked check-in, drop the invalid check-out. The dates are
-              // NOT reset to today and NOT auto-corrected — the guest has to pick a
-              // check-out that satisfies the required nights.
               ESHBPUBLICBOOKING.rejectNightsSelection(
                 startDate,
                 [
@@ -1654,13 +1651,10 @@
                 startDateInput,
                 endDateInput,
                 availableDatePickerInput,
-                // The availability calendar drives every booking form on the page,
-                // so block them all — mirrors the loader/disable done above.
+               
                 null
               );
 
-              // Message stays until the guest picks a valid range (it is cleared at
-              // the top of this handler on the next apply).
               return;
             }
 
@@ -1715,9 +1709,6 @@
               }
             }
 
-            // NOTE: the min/max nights rule was already enforced above — an
-            // out-of-range range never reaches this point, so the check-out date is
-            // never silently rewritten here.
 
             $(availableDatePickerInput).val(startDate);
 
@@ -3285,14 +3276,71 @@
       e.preventDefault();
       $("#easy-hotel-booking-modal").fadeIn();
     },
+    /**
+     * True when a countries.json state is the one stored on the booking.
+     *
+     * The stored value reaches us in more than one shape: the plain state name, a
+     * WooCommerce state code ("BD-C"), or — on a field rendered before the
+     * attribute quoting was fixed — a name cut at its first space. Compare against
+     * each rather than dropping the selection.
+     */
+    eshbStateMatches: function (state, savedValue) {
+      if (!state || !savedValue) return false;
+
+      let saved = String(savedValue).trim().toLowerCase();
+      if (saved === "" || saved === "default") return false;
+
+      let name = String(state.name || "").trim().toLowerCase();
+      let code = String(state.code || "").trim().toLowerCase();
+
+      if (saved === name || (code !== "" && saved === code)) return true;
+
+      // WooCommerce writes "<country>-<state>", e.g. "BD-C".
+      if (code !== "" && saved.indexOf("-") !== -1 && saved.split("-").pop() === code) {
+        return true;
+      }
+
+      return false;
+    },
+    /**
+     * Keeps the State field required only while its dropdown has something to pick.
+     *
+     * Countries such as American Samoa carry an empty states list, so after a change
+     * the select holds nothing but its placeholder. validateInputFields walks the
+     * `.required-field` wrappers fresh on every save click, so dropping the class is
+     * enough to let that country through — and the stale error outline goes with it.
+     */
+    toggleStateRequired: function (stateSelect) {
+      if (!stateSelect) return;
+
+      let wrapper = stateSelect.closest(".csf-field");
+      if (!wrapper) return;
+
+      let hasStates =
+        stateSelect.querySelectorAll('option[value]:not([value=""])').length > 0;
+
+      wrapper.classList.toggle("required-field", hasStates);
+
+      if (!hasStates) {
+        stateSelect.classList.remove("input-error");
+      }
+    },
     countriesDataMount: async function () {
       // return if is not admin
+      if (typeof eshb_ajax === "undefined") return;
       if (typeof eshb_ajax.is_admin !== "undefined" && !eshb_ajax.is_admin) {
         return;
       }
 
+      const countrySelect =
+        document.querySelector("select.eshb-customer-country") ||
+        document.querySelector('select[name$="[country]"]');
+      const stateSelect =
+        document.querySelector("select.eshb-customer-state") ||
+        document.querySelector('select[name$="[state]"]');
+
       // return if elements not existing
-      if (!document.querySelector("select.eshb-customer-country")) return;
+      if (!countrySelect) return;
 
       let currienciesData = await fetch(eshb_ajax.pluginURL + "public/assets/lib/currency.json")
         .then((data) => {
@@ -3314,20 +3362,17 @@
       const currencySelect = document.querySelector(
         "select.eshb-payment-currency"
       );
-      const countrySelect = document.querySelector(
-        "select.eshb-customer-country"
-      );
-      const stateSelect = document.querySelector("select.eshb-customer-state");
       const savedCurrencyValue = currencySelect
         ? currencySelect.getAttribute("data-saved-value")
         : "default";
       const savedCountryValue =
         countrySelect.getAttribute("data-saved-value") || "";
-      const savedStateValue =
-        stateSelect.getAttribute("data-saved-value") || "";
+      const savedStateValue = stateSelect
+        ? stateSelect.getAttribute("data-saved-value") || ""
+        : "";
       //const savedCityValue = citySelect.getAttribute("data-saved-value") || "";
 
-      if (countriesData) {
+      if (Array.isArray(countriesData)) {
         // mount country
         countriesData.forEach((country) => {
           const opt = document.createElement("option");
@@ -3342,7 +3387,7 @@
         });
 
         // mount currency
-        if (currencySelect) {
+        if (currencySelect && currienciesData) {
           Object.entries(currienciesData).forEach(([code, data]) => {
             const opt = document.createElement("option");
             opt.value = code.trim();
@@ -3359,10 +3404,11 @@
       }
 
       countrySelect.addEventListener("change", function () {
+       
+        if (!stateSelect || !Array.isArray(countriesData)) return;
+
         const selectedCountryCode = this.value;
         stateSelect.innerHTML = '<option value="">Select State</option>';
-
-        //citySelect.innerHTML = '<option value="">Select City</option>';
 
         const country = countriesData.find(
           (c) => c.code2 === selectedCountryCode
@@ -3373,15 +3419,15 @@
             const opt = document.createElement("option");
             opt.value = state.name.trim();
             opt.text = state.name;
-            if (savedStateValue !== "") {
-              if (opt.value == savedStateValue) {
-                opt.selected = true;
-              }
+            if (ESHBPUBLICBOOKING.eshbStateMatches(state, savedStateValue)) {
+              opt.selected = true;
             }
 
             stateSelect.appendChild(opt);
           });
         }
+
+        ESHBPUBLICBOOKING.toggleStateRequired(stateSelect);
       });
 
       countrySelect.dispatchEvent(new Event("change"));

@@ -587,6 +587,7 @@ body.rtl {
     --eshb-calendar-ical-completed-color: #97dfd4b5;
     --eshb-calendar-completed-color: #cef093;
     --eshb-calendar-pending-color: #fed24d;
+    --eshb-calendar-deposit-color: #f5deb3;
     --eshb-calendar-blocked-color: #ffd0d0;
 
     .eshb-calendar-filter {
@@ -675,6 +676,12 @@ body.rtl {
                 &.pending {
                     &::before {
                         background-color: var(--eshb-calendar-pending-color);
+                    }
+                }
+
+                &.deposit-payment {
+                    &::before {
+                        background-color: var(--eshb-calendar-deposit-color);
                     }
                 }
 
@@ -788,6 +795,10 @@ body.rtl {
 
                     &.status-pending {
                         background: var(--eshb-calendar-pending-color)
+                    }
+
+                    &.status-deposit-payment {
+                        background: var(--eshb-calendar-deposit-color);
                     }
                 }
 

@@ -472,6 +472,48 @@ if ( ! function_exists( 'eshb_native_checkout_translated_page_id' ) ) {
     }
 }
 
+if ( ! function_exists( 'eshb_native_checkout_page_translation_ids' ) ) {
+    /**
+     * Published translations of a page, excluding the page itself.
+     *
+     * Polylang and WPML keep each translation as its own post, so a translated
+     * page starts out empty — no shortcode, no content. Callers use this to keep
+     * those siblings in sync with the canonical page.
+     *
+     * @param  int $page_id
+     * @return int[] Empty when no translation plugin is running.
+     */
+    function eshb_native_checkout_page_translation_ids( $page_id ) {
+
+        $page_id = (int) $page_id;
+        $ids     = [];
+
+        if ( ! $page_id ) {
+            return $ids;
+        }
+
+        if ( function_exists( 'pll_get_post_translations' ) ) {
+            $ids = array_map( 'intval', (array) pll_get_post_translations( $page_id ) );
+        } elseif ( function_exists( 'icl_object_id' ) ) {
+            $languages = apply_filters( 'wpml_active_languages', null, [ 'skip_missing' => 1 ] );
+            if ( is_array( $languages ) ) {
+                foreach ( array_keys( $languages ) as $code ) {
+                    $ids[] = (int) apply_filters( 'wpml_object_id', $page_id, 'page', false, $code );
+                }
+            }
+        }
+
+        $ids = array_filter(
+            $ids,
+            function ( $id ) use ( $page_id ) {
+                return $id && $id !== $page_id && get_post_status( $id ) === 'publish';
+            }
+        );
+
+        return array_values( array_unique( $ids ) );
+    }
+}
+
 if ( ! function_exists( 'eshb_native_checkout_url' ) ) {
     function eshb_native_checkout_url() {
 

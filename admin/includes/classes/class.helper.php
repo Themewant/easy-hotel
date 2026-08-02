@@ -55,7 +55,6 @@ class ESHB_Helper {
         $accomodation_title = get_the_title( $accomodation_id );
 
         if (!is_wp_error($post_id)) {
-            // Update the post title to include the post ID
             wp_update_post(array(
                 'ID'         => $post_id,
                 'post_title' => 'Booking #' . $post_id . ' for: ' . $accomodation_title,
@@ -207,8 +206,9 @@ class ESHB_Helper {
         $value = $address ?? $default_value;
 
         if(!empty($key)){
-            $value = $address[$key] ?? $default_value;
-        } 
+           
+            $value = ( isset($address[$key]) && '' !== $address[$key] ) ? $address[$key] : $default_value;
+        }
         return $value;
     }
 
@@ -219,7 +219,7 @@ class ESHB_Helper {
         if (empty($id)) return '';
         
         $address = get_post_meta($id, 'eshb_payment_customer_details_metaboxes', true);
-        return isset($address[$key]) ? $address[$key] : 'default';
+        return ( isset($address[$key]) && '' !== $address[$key] ) ? $address[$key] : 'default';
     }
 
     public static function eshb_get_payment_ids() {
@@ -295,6 +295,56 @@ class ESHB_Helper {
             $state_city_name = isset( $all_states[$country_code][ $code ] ) ? $all_states[$country_code][ $code ] : '';
         }
         return $state_city_name;
+    }
+
+    /**
+     * Whether a country offers any state to pick.
+     *
+     * Reads the same countries.json the admin dropdown is built from, so PHP and
+     * JS never disagree about which countries are stateless. 52 of the 250 entries
+     * — American Samoa, Bermuda, Gibraltar and the like — ship an empty "states"
+     * list, and their State dropdown renders with nothing but its placeholder.
+     *
+     * @param string $country_code Two letter code, e.g. "AS".
+     * @return bool False only when the country is known and has no states.
+     */
+    public static function eshb_country_has_states ( $country_code ) {
+
+        static $countries = null;
+
+        $country_code = trim( (string) $country_code );
+
+        if ( '' === $country_code ) {
+            return false;
+        }
+
+        if ( null === $countries ) {
+
+            $countries      = array();
+            $countries_file = ESHB_PL_PATH . 'public/assets/lib/countries.json';
+
+            if ( file_exists( $countries_file ) ) {
+
+                $decoded = json_decode( file_get_contents( $countries_file ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin asset.
+
+                if ( is_array( $decoded ) ) {
+                    foreach ( $decoded as $country ) {
+                        if ( ! empty( $country['code2'] ) ) {
+                            $countries[ trim( $country['code2'] ) ] = ! empty( $country['states'] );
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        if ( ! isset( $countries[ $country_code ] ) ) {
+            return true;
+        }
+
+        return $countries[ $country_code ];
+
     }
 
     public static function eshb_get_extra_services () {
@@ -507,7 +557,6 @@ class ESHB_Helper {
         ];
 
 
-        // load customer details from order
         $first_name = $order->get_billing_first_name();
         $last_name = $order->get_billing_last_name();
         $email = $order->get_billing_email();
@@ -621,12 +670,10 @@ class ESHB_Helper {
             return 0;
         }
 
-        // If the textual times are equal (ignoring seconds) and not a 24:00 case, treat as 0 hours for same-day
         if(!$is_end_24 && $start_dt->format('H:i') === $end_dt->format('H:i') && $end_date === $start_date){
             return 0;
         }
 
-        // If end is not after start, or explicitly 24:00, assume it crosses midnight to the next day
         if($is_end_24 || $end_dt <= $start_dt){
             $end_dt->modify('+1 day');
         }
@@ -660,7 +707,7 @@ class ESHB_Helper {
             $meta = get_post_meta($booking_id, 'eshb_booking_metaboxes', true);
             if (!is_array($meta)) continue;
     
-            // Skip if accommodation does not match
+          
             if ((int)($meta['booking_accomodation_id'] ?? 0) !== (int)$accommodation_id) continue;
     
             // Skip if booking date does not match
@@ -708,16 +755,14 @@ class ESHB_Helper {
                 $slot_start_ts = strtotime("$date_str {$slot[0]}");
                 $slot_end_ts   = strtotime("$date_str {$slot[1]}");
     
-                // Gap before the booking = available slot
+               
                 if ($slot_start_ts > $pointer) {
                     $available_slots[] = [gmdate('H:i', $pointer), $slot[0]];
                 }
     
-                // Move pointer to end of current booked slot
                 $pointer = max($pointer, $slot_end_ts);
             }
     
-            // After last booking, remaining time is available
             if ($pointer < $window_end_ts) {
                 $available_slots[] = [gmdate('H:i', $pointer), $end_time];
             }
@@ -802,10 +847,6 @@ class ESHB_Helper {
             $eshb_accomodation_metaboxes['available_rooms'] = $available_rooms;
 
 
-            // Resolved through the same filter the booking validation uses, so the
-            // calendar can never offer a range the server would then reject. Which
-            // source wins — globals, the Booking Rules table or the accomodation's own
-            // "Nights" metabox — is decided there, by whichever module is active.
             $accomodation_min_max_settings = apply_filters( 'eshb_min_max_settings', [
                 'required_min_nights'          => $required_min_nights,
                 'required_max_nights'          => $required_max_nights,
@@ -932,8 +973,7 @@ class ESHB_Helper {
      */
     public static function get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date) {
 
-        // Guard against empty dates: DatePeriod would silently iterate nothing and
-        // every session rule would look inapplicable.
+       
         if (empty($start_date) || empty($end_date)) {
             return 0;
         }

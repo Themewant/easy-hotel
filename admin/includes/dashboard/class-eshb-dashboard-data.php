@@ -29,6 +29,20 @@ class ESHB_Dashboard_Data {
 	protected $bookings = null;
 
 	/**
+	 * Cached accommodation ids, deduplicated across translations.
+	 *
+	 * @var int[]|null
+	 */
+	protected $accommodation_ids = null;
+
+	/**
+	 * Memoised translation lookups: post id => canonical id.
+	 *
+	 * @var int[]
+	 */
+	protected $canonical_ids = array();
+
+	/**
 	 * Today's date in the site timezone (Y-m-d).
 	 *
 	 * @var string
@@ -68,8 +82,9 @@ class ESHB_Dashboard_Data {
 		$position = 'left';
 
 		if ( class_exists( 'ESHB_Core' ) ) {
-			$core     = ESHB_Core::instance();
-			$symbol   = $core->get_eshb_currency_symbol();
+			$core = ESHB_Core::instance();
+
+			$symbol   = html_entity_decode( (string) $core->get_eshb_currency_symbol(), ENT_QUOTES, 'UTF-8' );
 			$position = $core->get_eshb_currency_position();
 		}
 
@@ -246,8 +261,6 @@ class ESHB_Dashboard_Data {
 		$current  = (int) $current;
 		$previous = (int) $previous;
 
-		// No baseline last period. If there's activity now, it's all-new growth
-		// (↑ 100%); if both are zero there's genuinely nothing to show.
 		if ( $previous <= 0 ) {
 			if ( $current <= 0 ) {
 				return null;
@@ -275,17 +288,7 @@ class ESHB_Dashboard_Data {
 	protected function get_available_rooms_today( $bookings ) {
 		$total = 0;
 
-		$rooms = get_posts(
-			array(
-				'post_type'      => 'eshb_accomodation',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-			)
-		);
-
-		foreach ( $rooms as $room_id ) {
+		foreach ( $this->get_accommodation_ids() as $room_id ) {
 			$total += $this->get_room_total_units( $room_id );
 		}
 
@@ -300,6 +303,80 @@ class ESHB_Dashboard_Data {
 			'total'     => $total,
 			'available' => max( 0, $total - $occupied ),
 		);
+	}
+
+	/**
+	 * Published accommodation ids, one per translation group.
+	 *
+	 * Ordered newest first, like the underlying query, so callers that only take
+	 * the first few keep showing the most recently added accommodations.
+	 *
+	 * @return int[]
+	 */
+	protected function get_accommodation_ids() {
+		if ( null !== $this->accommodation_ids ) {
+			return $this->accommodation_ids;
+		}
+
+		$rooms = get_posts(
+			array(
+				'post_type'      => 'eshb_accomodation',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'lang'           => '',
+			)
+		);
+
+		$unique = array();
+
+		foreach ( $rooms as $room_id ) {
+			$canonical = $this->canonical_accommodation_id( $room_id );
+			// Keyed, so every translation of a room lands on the same entry.
+			$unique[ $canonical ] = $canonical;
+		}
+
+		$this->accommodation_ids = array_values( $unique );
+
+		return $this->accommodation_ids;
+	}
+
+	/**
+	 * Canonical (default-language) id for an accommodation.
+	 *
+	 * Polylang and WPML store each translation as its own post, but "Mountain
+	 * Cabin" and its Bangla translation are the same physical rooms. Room counts
+	 * collapse onto this id so translating an accommodation doesn't double the
+	 * hotel's inventory. A post with no default-language translation is its own
+	 * original and is returned unchanged.
+	 *
+	 * @param  int $post_id
+	 * @return int
+	 */
+	protected function canonical_accommodation_id( $post_id ) {
+		$post_id = (int) $post_id;
+
+		if ( ! $post_id ) {
+			return 0;
+		}
+
+		if ( isset( $this->canonical_ids[ $post_id ] ) ) {
+			return $this->canonical_ids[ $post_id ];
+		}
+
+		$main = 0;
+
+		if ( function_exists( 'pll_get_post' ) && function_exists( 'pll_default_language' ) ) {
+			$default = pll_default_language();
+			$main    = $default ? (int) pll_get_post( $post_id, $default ) : 0;
+		} elseif ( function_exists( 'icl_object_id' ) ) {
+			$main = (int) apply_filters( 'wpml_original_element_id', null, $post_id, 'post_eshb_accomodation' );
+		}
+
+		$this->canonical_ids[ $post_id ] = $main ? $main : $post_id;
+
+		return $this->canonical_ids[ $post_id ];
 	}
 
 	/**
@@ -337,7 +414,7 @@ class ESHB_Dashboard_Data {
 
 			$rows[] = array(
 				'id'       => $b['id'],
-				'label'    => '#' . ( '' !== $b['title'] ? $b['title'] : 'EHB' . $b['id'] ),
+				'label'    => '#' . $b['id'],
 				'editLink' => get_edit_post_link( $b['id'], 'raw' ),
 				'guest'    => $name,
 				'room'     => $b['accomodation_id'] ? get_the_title( $b['accomodation_id'] ) : '—',
@@ -357,23 +434,18 @@ class ESHB_Dashboard_Data {
 	 * Per-room availability summary (available / total units).
 	 */
 	protected function get_room_availability( $bookings ) {
-		$rooms = get_posts(
-			array(
-				'post_type'      => 'eshb_accomodation',
-				'post_status'    => 'publish',
-				'posts_per_page' => 6,
-				'no_found_rows'  => true,
-			)
-		);
+		$room_ids = array_slice( $this->get_accommodation_ids(), 0, 6 );
 
 		$summary = array();
 
-		foreach ( $rooms as $room ) {
-			$total    = $this->get_room_total_units( $room->ID );
+		foreach ( $room_ids as $room_id ) {
+			$total    = $this->get_room_total_units( $room_id );
 			$occupied = 0;
 
 			foreach ( $bookings as $b ) {
-				if ( $b['accomodation_id'] === $room->ID && $this->is_active( $b['status'] ) && $this->covers_date( $b, $this->today ) ) {
+				// Booked against a translation? Same physical room, so it counts here.
+				if ( $this->canonical_accommodation_id( $b['accomodation_id'] ) === $room_id
+					&& $this->is_active( $b['status'] ) && $this->covers_date( $b, $this->today ) ) {
 					$occupied += max( 1, $b['room_quantity'] );
 				}
 			}
@@ -381,7 +453,7 @@ class ESHB_Dashboard_Data {
 			$available = max( 0, $total - $occupied );
 
 			$summary[] = array(
-				'name'      => get_the_title( $room->ID ),
+				'name'      => get_the_title( $room_id ),
 				'available' => $available,
 				'total'     => $total,
 				'percent'   => $total > 0 ? round( ( $available / $total ) * 100 ) : 0,

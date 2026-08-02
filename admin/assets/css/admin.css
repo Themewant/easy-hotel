@@ -1211,6 +1211,7 @@ body.rtl .csf-content {
   --eshb-calendar-ical-completed-color: #97dfd4b5;
   --eshb-calendar-completed-color: #cef093;
   --eshb-calendar-pending-color: #fed24d;
+  --eshb-calendar-deposit-color: #f5deb3;
   --eshb-calendar-blocked-color: #ffd0d0;
 }
 .eshb-booking-info-calendar .eshb-calendar-filter {
@@ -1283,6 +1284,9 @@ body.rtl .csf-content {
 }
 .eshb-booking-info-calendar .eshb-calendar-filter .eshb-calendar-legends .legend-item.pending::before {
   background-color: var(--eshb-calendar-pending-color);
+}
+.eshb-booking-info-calendar .eshb-calendar-filter .eshb-calendar-legends .legend-item.deposit-payment::before {
+  background-color: var(--eshb-calendar-deposit-color);
 }
 .eshb-booking-info-calendar .eshb-calendar-filter .eshb-calendar-legends .legend-item.blocked::before {
   background-color: var(--eshb-calendar-blocked-color);
@@ -1373,6 +1377,9 @@ body.rtl .csf-content {
 }
 .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info.status-pending {
   background: var(--eshb-calendar-pending-color);
+}
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info.status-deposit-payment {
+  background: var(--eshb-calendar-deposit-color);
 }
 .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table .left-heading {
   position: sticky;

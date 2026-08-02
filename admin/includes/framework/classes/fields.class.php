@@ -64,6 +64,51 @@ if ( ! class_exists( 'ESHB_Fields' ) ) {
 
     }
 
+    /**
+     * Same attribute list as field_attributes(), but with the values quoted.
+     *
+     * field_attributes() leaves them bare so that the callers which run its result
+     * through esc_attr() a second time still emit something a browser accepts. That
+     * only holds for single-token values: an empty value makes the parser read the
+     * NEXT attribute as this one's value (so ` data-x= class=y` loses `class`
+     * entirely), and a value with a space is truncated at that space. Callers that
+     * pass user data — an address, a state name — must use this method instead and
+     * echo it without re-escaping, since every key and value is escaped here.
+     *
+     * @param array $custom_atts Defaults merged under the field's own attributes.
+     * @return string Attribute string, each value wrapped in double quotes.
+     */
+    public function field_attributes_html( $custom_atts = array() ) {
+
+      $field_id   = ( ! empty( $this->field['id'] ) ) ? $this->field['id'] : '';
+      $attributes = ( ! empty( $this->field['attributes'] ) ) ? $this->field['attributes'] : array();
+
+      if ( ! empty( $field_id ) && empty( $attributes['data-depend-id'] ) ) {
+        $attributes['data-depend-id'] = $field_id;
+      }
+
+      if ( ! empty( $this->field['placeholder'] ) ) {
+        $attributes['placeholder'] = $this->field['placeholder'];
+      }
+
+      $attributes = wp_parse_args( $attributes, $custom_atts );
+
+      $atts = '';
+
+      if ( ! empty( $attributes ) ) {
+        foreach ( $attributes as $key => $value ) {
+          if ( $value === 'only-key' ) {
+            $atts .= ' '. esc_attr( $key );
+          } else {
+            $atts .= ' '. esc_attr( $key ) . '="'. esc_attr( $value ) .'"';
+          }
+        }
+      }
+
+      return $atts;
+
+    }
+
     public function field_before() {
       return ( ! empty( $this->field['before'] ) ) ? '<div class="csf-before-text">'. $this->field['before'] .'</div>' : '';
     }

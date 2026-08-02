@@ -48,7 +48,7 @@ if ( ! class_exists( 'ESHB_Field_select' ) ) {
         $placeholder_attr = ( $args['chosen'] && $args['placeholder'] ) ? ' data-placeholder="'. esc_attr( $args['placeholder'] ) .'"' : '';
         $field_class      = ( $args['chosen'] ) ? ' class="eshb-chosen'. esc_attr( $chosen_rtl . $chosen_sortable . $chosen_ajax ) .'"' : '';
         $field_name       = $this->field_name( $multiple_name );
-        $field_attr       = esc_attr($this->field_attributes());
+        $field_attr       = $this->field_attributes_html();
         $maybe_options    = $this->field['options'];
         $chosen_data_attr = ( $args['chosen'] && ! empty( $args['settings'] ) ) ? ' data-chosen-settings="'. esc_attr( wp_json_encode( $args['settings'] ) ) .'"' : '';
 
@@ -64,7 +64,7 @@ if ( ! class_exists( 'ESHB_Field_select' ) ) {
 
           if ( ! empty( $args['chosen'] ) && ! empty( $args['multiple'] ) ) {
 
-            echo '<select name="'. esc_attr($field_name) .'" class="csf-hide-select hidden"'. esc_attr($multiple_attr) . esc_attr($field_attr) .'>';
+            echo '<select name="'. esc_attr($field_name) .'" class="csf-hide-select hidden"'. esc_attr($multiple_attr) . $field_attr .'>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in field_attributes_html()
             foreach ( $this->value as $option_key ) {
               echo '<option value="'. esc_attr( $option_key ) .'" selected>'. esc_attr( $option_key ) .'</option>';
             }
@@ -76,7 +76,7 @@ if ( ! class_exists( 'ESHB_Field_select' ) ) {
           }
 
           // These attributes has been serialized above.
-          echo '<select name="'. esc_attr( $field_name ) .'"'. esc_attr($field_class) . esc_attr($multiple_attr) . esc_attr($placeholder_attr) . esc_attr($field_attr) . esc_attr($chosen_data_attr) .'>';
+          echo '<select name="'. esc_attr( $field_name ) .'"'. esc_attr($field_class) . esc_attr($multiple_attr) . esc_attr($placeholder_attr) . $field_attr . esc_attr($chosen_data_attr) .'>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in field_attributes_html()
 
           if ( $args['placeholder'] && empty( $args['multiple'] ) ) {
             if ( ! empty( $args['chosen'] ) ) {
