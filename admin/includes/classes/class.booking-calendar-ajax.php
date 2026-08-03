@@ -337,7 +337,8 @@ class ESHB_Booking_Calendar_Ajax {
 
                 <?php 
                     // after_eshb_booking_details_html
-                    do_action( 'after_eshb_booking_details_html', $order_id ); 
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
+                    do_action( 'after_eshb_booking_details_html', $order_id );
                 ?>
             </div>
             <?php

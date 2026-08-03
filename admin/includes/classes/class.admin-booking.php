@@ -342,6 +342,7 @@ class ESHB_Admin_Booking {
                     update_post_meta($order_id, '_booking_post_created', $booking_id);
                     update_post_meta($booking_id, '_order_post_created', $order_id);
 
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
                     do_action( 'after_created_manual_booking', ['booking_id' => $booking_id, 'order_id' => $order_id, 'due' => $new_due] );
 
                   

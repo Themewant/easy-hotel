@@ -371,6 +371,7 @@ class ESHB_Dashboard_Data {
 			$default = pll_default_language();
 			$main    = $default ? (int) pll_get_post( $post_id, $default ) : 0;
 		} elseif ( function_exists( 'icl_object_id' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML, name cannot be prefixed.
 			$main = (int) apply_filters( 'wpml_original_element_id', null, $post_id, 'post_eshb_accomodation' );
 		}
 

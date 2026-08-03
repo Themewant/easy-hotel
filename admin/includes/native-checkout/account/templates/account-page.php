@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $current_user = wp_get_current_user();
 
-$nav = [
+$eshb_nav = [
     'dashboard' => [ 'label' => __( 'Dashboard', 'easy-hotel' ), 'icon' => 'dashicons-dashboard' ],
     'bookings'  => [ 'label' => __( 'Bookings', 'easy-hotel' ),  'icon' => 'dashicons-calendar-alt' ],
     'account'   => [ 'label' => __( 'Account', 'easy-hotel' ),   'icon' => 'dashicons-admin-users' ],
@@ -27,12 +27,12 @@ $nav = [
                     <span class="eshb-account-username"><?php echo esc_html( $current_user->display_name ); ?></span>
                 </div>
                 <ul class="eshb-account-menu">
-                    <?php foreach ( $nav as $key => $item ) : ?>
+                    <?php foreach ( $eshb_nav as $eshb_key => $eshb_item ) : ?>
                         <li>
-                            <a href="<?php echo esc_url( $account->get_tab_url( $key ) ); ?>"
-                               class="eshb-account-menu-item<?php echo $active_tab === $key ? ' is-active' : ''; ?>">
-                                <span class="dashicons <?php echo esc_attr( $item['icon'] ); ?>"></span>
-                                <span><?php echo esc_html( $item['label'] ); ?></span>
+                            <a href="<?php echo esc_url( $account->get_tab_url( $eshb_key ) ); ?>"
+                               class="eshb-account-menu-item<?php echo $active_tab === $eshb_key ? ' is-active' : ''; ?>">
+                                <span class="dashicons <?php echo esc_attr( $eshb_item['icon'] ); ?>"></span>
+                                <span><?php echo esc_html( $eshb_item['label'] ); ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>

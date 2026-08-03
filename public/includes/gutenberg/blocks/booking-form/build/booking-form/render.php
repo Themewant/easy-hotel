@@ -9,15 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$attributes = $attributes ?? [];
+// $attributes is supplied by WordPress to the block render callback.
+$eshb_attributes = $attributes ?? [];
 
-$style = 'style-one';
+$eshb_style = 'style-one';
 
 if ( ! empty( $block->parsed_block['attrs']['className'] ) ) {
-    $class_name = $block->parsed_block['attrs']['className'];
+    $eshb_class_name = $block->parsed_block['attrs']['className'];
 
-    if ( str_contains( $class_name, 'is-style-two' ) ) {
-        $style = 'style-two';
+    if ( str_contains( $eshb_class_name, 'is-style-two' ) ) {
+        $eshb_style = 'style-two';
     }
 }
 $posts = get_posts([
@@ -26,342 +27,342 @@ $posts = get_posts([
     'fields'         => 'ids',
 ]);
 
-$first_accommodation_id = $posts[0] ?? 0;
-$accomodation_id = !empty($attributes['accomodationId']) ? $attributes['accomodationId'] : $first_accommodation_id;
+$eshb_first_accommodation_id = $posts[0] ?? 0;
+$eshb_accomodation_id = !empty($eshb_attributes['accomodationId']) ? $eshb_attributes['accomodationId'] : $eshb_first_accommodation_id;
 
 if(is_single() ) {
-   $accomodation_id = get_the_ID();
+   $eshb_accomodation_id = get_the_ID();
 }
 
 // Helper function to ensure units
-$ensure_unit = function( $value ) {
+$eshb_ensure_unit = function( $value ) {
     if ( $value === '' || $value === null ) return '0px';
     if ( is_numeric( $value ) && $value != 0 ) return $value . 'px';
     return $value;
 };
 
 // Collect CSS variables
-$vars = [];
-$default_background_color = '#fff';
-$default_background_color_hover = '#fff';
-if($style == 'style-two') {
-    $default_background_color = 'var(--eshb-dark-color)';
-    $default_background_color_hover = 'var(--eshb-dark-color)';
+$eshb_vars = [];
+$eshb_default_background_color = '#fff';
+$eshb_default_background_color_hover = '#fff';
+if($eshb_style == 'style-two') {
+    $eshb_default_background_color = 'var(--eshb-dark-color)';
+    $eshb_default_background_color_hover = 'var(--eshb-dark-color)';
 }
 
-if(!empty($attributes['customBackgroundColor'])) {
-    $vars[] = '--eshb-bkf-bg:' . esc_attr($attributes['customBackgroundColor']);
+if(!empty($eshb_attributes['customBackgroundColor'])) {
+    $eshb_vars[] = '--eshb-bkf-bg:' . esc_attr($eshb_attributes['customBackgroundColor']);
 }else{
-    $vars[] = '--eshb-bkf-bg:' . $default_background_color;
+    $eshb_vars[] = '--eshb-bkf-bg:' . $eshb_default_background_color;
 }
 
-if(!empty($attributes['customBackgroundColorHover'])) {
-    $vars[] = '--eshb-bkf-bg-hover:' . esc_attr($attributes['customBackgroundColorHover']);
+if(!empty($eshb_attributes['customBackgroundColorHover'])) {
+    $eshb_vars[] = '--eshb-bkf-bg-hover:' . esc_attr($eshb_attributes['customBackgroundColorHover']);
 }else{
-    $vars[] = '--eshb-bkf-bg-hover:' . $default_background_color_hover;
+    $eshb_vars[] = '--eshb-bkf-bg-hover:' . $eshb_default_background_color_hover;
 }
 
-$padding = $attributes['padding'] ?? [];
-$vars[] = '--eshb-bkf-pt:' . esc_attr( $ensure_unit( $padding['top'] ?? '35px' ) );
-$vars[] = '--eshb-bkf-pr:' . esc_attr( $ensure_unit( $padding['right'] ?? '40px' ) );
-$vars[] = '--eshb-bkf-pb:' . esc_attr( $ensure_unit( $padding['bottom'] ?? '35px' ) );
-$vars[] = '--eshb-bkf-pl:' . esc_attr( $ensure_unit( $padding['left'] ?? '40px' ) );
+$eshb_padding = $eshb_attributes['padding'] ?? [];
+$eshb_vars[] = '--eshb-bkf-pt:' . esc_attr( $eshb_ensure_unit( $eshb_padding['top'] ?? '35px' ) );
+$eshb_vars[] = '--eshb-bkf-pr:' . esc_attr( $eshb_ensure_unit( $eshb_padding['right'] ?? '40px' ) );
+$eshb_vars[] = '--eshb-bkf-pb:' . esc_attr( $eshb_ensure_unit( $eshb_padding['bottom'] ?? '35px' ) );
+$eshb_vars[] = '--eshb-bkf-pl:' . esc_attr( $eshb_ensure_unit( $eshb_padding['left'] ?? '40px' ) );
 
-$border_radius = $attributes['borderRadius'] ?? [];
-$vars[] = '--eshb-bkf-bt:' . esc_attr( $ensure_unit( $border_radius['top'] ?? '0px' ) );
-$vars[] = '--eshb-bkf-br:' . esc_attr( $ensure_unit( $border_radius['right'] ?? '0px' ) );
-$vars[] = '--eshb-bkf-bl:' . esc_attr( $ensure_unit( $border_radius['bottom'] ?? '0px' ) );
-$vars[] = '--eshb-bkf-br:' . esc_attr( $ensure_unit( $border_radius['left'] ?? '0px' ) );
+$eshb_border_radius = $eshb_attributes['borderRadius'] ?? [];
+$eshb_vars[] = '--eshb-bkf-bt:' . esc_attr( $eshb_ensure_unit( $eshb_border_radius['top'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkf-br:' . esc_attr( $eshb_ensure_unit( $eshb_border_radius['right'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkf-bl:' . esc_attr( $eshb_ensure_unit( $eshb_border_radius['bottom'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkf-br:' . esc_attr( $eshb_ensure_unit( $eshb_border_radius['left'] ?? '0px' ) );
 
-$default_form_title_color = $style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
-$form_title_color = !empty($attributes['formTitleColor']) ? $attributes['formTitleColor'] : $default_form_title_color;
-if ( ! empty( $form_title_color ) ) {
-    $vars[] = '--eshb-bkf-form-title-color:' . esc_attr( $form_title_color );
+$eshb_default_form_title_color = $eshb_style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
+$eshb_form_title_color = !empty($eshb_attributes['formTitleColor']) ? $eshb_attributes['formTitleColor'] : $eshb_default_form_title_color;
+if ( ! empty( $eshb_form_title_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-form-title-color:' . esc_attr( $eshb_form_title_color );
 }
 
-$form_title_color_hover = !empty($attributes['formTitleColorHover']) ? $attributes['formTitleColorHover'] : $default_form_title_color;
-if ( ! empty( $form_title_color_hover ) ) {
-    $vars[] = '--eshb-bkf-form-title-color-hover:' . esc_attr( $form_title_color_hover );
+$eshb_form_title_color_hover = !empty($eshb_attributes['formTitleColorHover']) ? $eshb_attributes['formTitleColorHover'] : $eshb_default_form_title_color;
+if ( ! empty( $eshb_form_title_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-form-title-color-hover:' . esc_attr( $eshb_form_title_color_hover );
 }
 
-$fg_padding = $attributes['fieldGroupPadding'] ?? [];
-$vars[] = '--eshb-bkfgp-pt:' . esc_attr( $ensure_unit( $fg_padding['top'] ?? '0px' ) );
-$vars[] = '--eshb-bkfgp-pr:' . esc_attr( $ensure_unit( $fg_padding['right'] ?? '0px' ) );
-$vars[] = '--eshb-bkfgp-pb:' . esc_attr( $ensure_unit( $fg_padding['bottom'] ?? '0px' ) );
-$vars[] = '--eshb-bkfgp-pl:' . esc_attr( $ensure_unit( $fg_padding['left'] ?? '0px' ) );
+$eshb_fg_padding = $eshb_attributes['fieldGroupPadding'] ?? [];
+$eshb_vars[] = '--eshb-bkfgp-pt:' . esc_attr( $eshb_ensure_unit( $eshb_fg_padding['top'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkfgp-pr:' . esc_attr( $eshb_ensure_unit( $eshb_fg_padding['right'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkfgp-pb:' . esc_attr( $eshb_ensure_unit( $eshb_fg_padding['bottom'] ?? '0px' ) );
+$eshb_vars[] = '--eshb-bkfgp-pl:' . esc_attr( $eshb_ensure_unit( $eshb_fg_padding['left'] ?? '0px' ) );
 
-$default_fg_title_color = $style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
-$fg_title_color = $attributes['groupTitleColor'] ?? $default_fg_title_color;
-if ( ! empty( $fg_title_color ) ) {
-    $vars[] = '--eshb-bkf-field-group-title-color:' . esc_attr( $fg_title_color );
+$eshb_default_fg_title_color = $eshb_style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
+$eshb_fg_title_color = $eshb_attributes['groupTitleColor'] ?? $eshb_default_fg_title_color;
+if ( ! empty( $eshb_fg_title_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-group-title-color:' . esc_attr( $eshb_fg_title_color );
 }
 
-$fg_title_color_hover = $attributes['groupTitleColorHover'] ?? $default_fg_title_color;
-if ( ! empty( $fg_title_color_hover ) ) {
-    $vars[] = '--eshb-bkf-field-group-title-color-hover:' . esc_attr( $fg_title_color_hover );
+$eshb_fg_title_color_hover = $eshb_attributes['groupTitleColorHover'] ?? $eshb_default_fg_title_color;
+if ( ! empty( $eshb_fg_title_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-group-title-color-hover:' . esc_attr( $eshb_fg_title_color_hover );
 }
 
-$fg_title_typo = $attributes['groupTitleTypography'] ?? [];
-if ( ! empty( $fg_title_typo ) ) {
-    $vars[] = '--eshb-bkf-field-group-title-fs:' . esc_attr( $fg_title_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-field-group-title-fw:' . esc_attr( $fg_title_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-field-group-title-lh:' . esc_attr( $fg_title_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-field-group-title-tt:' . esc_attr( $fg_title_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-field-group-title-ls:' . esc_attr( $fg_title_typo['letterSpacing'] ?? 'inherit' );
+$eshb_fg_title_typo = $eshb_attributes['groupTitleTypography'] ?? [];
+if ( ! empty( $eshb_fg_title_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-group-title-fs:' . esc_attr( $eshb_fg_title_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-field-group-title-fw:' . esc_attr( $eshb_fg_title_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-field-group-title-lh:' . esc_attr( $eshb_fg_title_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-field-group-title-tt:' . esc_attr( $eshb_fg_title_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-field-group-title-ls:' . esc_attr( $eshb_fg_title_typo['letterSpacing'] ?? 'inherit' );
 }
 
-$default_field_label_color = $style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
-$field_label_color = $attributes['fieldLabelColor'] ?? $default_field_label_color;
-if ( ! empty( $field_label_color ) ) {
-    $vars[] = '--eshb-bkf-field-label-color:' . esc_attr( $field_label_color );
+$eshb_default_field_label_color = $eshb_style == 'style-two' ? 'var(--eshb-white-color)' : 'var(--eshb-dark-color)';
+$eshb_field_label_color = $eshb_attributes['fieldLabelColor'] ?? $eshb_default_field_label_color;
+if ( ! empty( $eshb_field_label_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-label-color:' . esc_attr( $eshb_field_label_color );
 }
 
-$field_label_color_hover = $attributes['fieldLabelColorHover'] ?? $default_field_label_color;
-if ( ! empty( $field_label_color_hover ) ) {
-    $vars[] = '--eshb-bkf-field-label-color-hover:' . esc_attr( $field_label_color_hover );
+$eshb_field_label_color_hover = $eshb_attributes['fieldLabelColorHover'] ?? $eshb_default_field_label_color;
+if ( ! empty( $eshb_field_label_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-label-color-hover:' . esc_attr( $eshb_field_label_color_hover );
 }
 
-$field_text_color = $attributes['fieldTextColor'] ?? $default_field_label_color;    
-if ( ! empty( $field_text_color ) ) {
-    $vars[] = '--eshb-bkf-field-text-color:' . esc_attr( $field_text_color );
+$eshb_field_text_color = $eshb_attributes['fieldTextColor'] ?? $eshb_default_field_label_color;    
+if ( ! empty( $eshb_field_text_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-text-color:' . esc_attr( $eshb_field_text_color );
 }
 
-$field_text_color_hover = $attributes['fieldTextColorHover'] ?? $default_field_label_color;    
-if ( ! empty( $field_text_color_hover ) ) {
-    $vars[] = '--eshb-bkf-field-text-color-hover:' . esc_attr( $field_text_color_hover );
+$eshb_field_text_color_hover = $eshb_attributes['fieldTextColorHover'] ?? $eshb_default_field_label_color;    
+if ( ! empty( $eshb_field_text_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-field-text-color-hover:' . esc_attr( $eshb_field_text_color_hover );
 }
 
-$field_border_radius = $attributes['fieldBorderRadius'] ?? [];
-if ( ! empty( $field_border_radius ) ) {
-    $vars[] = '--eshb-bkf-br-tl:' . esc_attr( $ensure_unit( $field_border_radius['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-br-tr:' . esc_attr( $ensure_unit( $field_border_radius['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-br-br:' . esc_attr( $ensure_unit( $field_border_radius['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-br-bl:' . esc_attr( $ensure_unit( $field_border_radius['left'] ?? '0px' ) );
+$eshb_field_border_radius = $eshb_attributes['fieldBorderRadius'] ?? [];
+if ( ! empty( $eshb_field_border_radius ) ) {
+    $eshb_vars[] = '--eshb-bkf-br-tl:' . esc_attr( $eshb_ensure_unit( $eshb_field_border_radius['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-br-tr:' . esc_attr( $eshb_ensure_unit( $eshb_field_border_radius['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-br-br:' . esc_attr( $eshb_ensure_unit( $eshb_field_border_radius['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-br-bl:' . esc_attr( $eshb_ensure_unit( $eshb_field_border_radius['left'] ?? '0px' ) );
 }
 
-$margin = $attributes['margin'] ?? [];
-if ( ! empty( $margin ) ) {
-    $vars[] = '--eshb-bkf-mt:' . esc_attr( $ensure_unit( $margin['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-mr:' . esc_attr( $ensure_unit( $margin['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-mb:' . esc_attr( $ensure_unit( $margin['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-ml:' . esc_attr( $ensure_unit( $margin['left'] ?? '0px' ) );
+$eshb_margin = $eshb_attributes['margin'] ?? [];
+if ( ! empty( $eshb_margin ) ) {
+    $eshb_vars[] = '--eshb-bkf-mt:' . esc_attr( $eshb_ensure_unit( $eshb_margin['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-mr:' . esc_attr( $eshb_ensure_unit( $eshb_margin['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-mb:' . esc_attr( $eshb_ensure_unit( $eshb_margin['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-ml:' . esc_attr( $eshb_ensure_unit( $eshb_margin['left'] ?? '0px' ) );
 }
 
-$box_shadow = $attributes['boxShadow'] ?? '';
-if ( ! empty( $box_shadow ) ) {
-    $vars[] = '--eshb-bkf-box-shadow:' . esc_attr( $box_shadow );
+$eshb_box_shadow = $eshb_attributes['boxShadow'] ?? '';
+if ( ! empty( $eshb_box_shadow ) ) {
+    $eshb_vars[] = '--eshb-bkf-box-shadow:' . esc_attr( $eshb_box_shadow );
 }
 
-$box_shadow_hover = $attributes['boxShadowHover'] ?? '';
-if ( ! empty( $box_shadow_hover ) ) {
-    $vars[] = '--eshb-bkf-box-shadow-hover:' . esc_attr( $box_shadow_hover );
+$eshb_box_shadow_hover = $eshb_attributes['boxShadowHover'] ?? '';
+if ( ! empty( $eshb_box_shadow_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-box-shadow-hover:' . esc_attr( $eshb_box_shadow_hover );
 }
 
-$fl_typo = $attributes['fieldLabelTypography'] ?? [];
-if ( ! empty( $fl_typo ) ) {
-    $vars[] = '--eshb-bkf-fl-fs:' . esc_attr( $fl_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-fl-fw:' . esc_attr( $fl_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-fl-lh:' . esc_attr( $fl_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-fl-tt:' . esc_attr( $fl_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-fl-ls:' . esc_attr( $fl_typo['letterSpacing'] ?? 'inherit' );
-}
-
-
-$ft_typo = $attributes['fieldTextTypography'] ?? [];
-if ( ! empty( $ft_typo ) ) {
-    $vars[] = '--eshb-bkf-ft-fs:' . esc_attr( $ft_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-ft-fw:' . esc_attr( $ft_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-ft-lh:' . esc_attr( $ft_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-ft-tt:' . esc_attr( $ft_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-ft-ls:' . esc_attr( $ft_typo['letterSpacing'] ?? 'inherit' );
-}
-
-$calendar_icon_color = $attributes['calendarIconColor'] ?? '';
-if ( ! empty( $calendar_icon_color ) ) {
-    $vars[] = '--eshb-bkf-calendar-icon-color:' . esc_attr( $calendar_icon_color );
-}
-
-$calendar_icon_color_hover = $attributes['calendarIconColorHover'] ?? '';
-if ( ! empty( $calendar_icon_color_hover ) ) {
-    $vars[] = '--eshb-bkf-calendar-icon-color-hover:' . esc_attr( $calendar_icon_color_hover );
-}
-
-$calendar_icon_size = $attributes['calendarIconSize'] ?? '';
-if ( ! empty( $calendar_icon_size ) ) {
-    $vars[] = '--eshb-bkf-calendar-icon-size:' . esc_attr( $calendar_icon_size ) . 'px';
-}
-
-$calendar_icon_position_x = $attributes['calendarIconPositionX'] ?? '';
-if ( ! empty( $calendar_icon_position_x ) ) {
-    $vars[] = '--eshb-bkf-calendar-icon-position-x:' . esc_attr( $calendar_icon_position_x ) . '%';
-}
-
-$calendar_icon_position_y = $attributes['calendarIconPositionY'] ?? '';
-if ( ! empty( $calendar_icon_position_y ) ) {
-    $vars[] = '--eshb-bkf-calendar-icon-position-y:' . esc_attr( $calendar_icon_position_y ) . '%';
-}
-
-$pm_btn_bg_color = $attributes['plusMinusBtnBackgroundColor'] ?? '';
-if ( ! empty( $pm_btn_bg_color ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-bg-color:' . esc_attr( $pm_btn_bg_color );
-}
-
-$pm_btn_bg_color_hover = $attributes['plusMinusBtnBackgroundColorHover'] ?? '';
-if ( ! empty( $pm_btn_bg_color_hover ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-bg-color-hover:' . esc_attr( $pm_btn_bg_color_hover );
-}
-
-$pm_btn_text_color = $attributes['plusMinusBtnTextColor'] ?? '';
-if ( ! empty( $pm_btn_text_color ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-text-color:' . esc_attr( $pm_btn_text_color );
-}
-
-$pm_btn_text_color_hover = $attributes['plusMinusBtnTextColorHover'] ?? '';
-if ( ! empty( $pm_btn_text_color_hover ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-text-color-hover:' . esc_attr( $pm_btn_text_color_hover );
-}
-
-$pm_btn_typo = $attributes['plusMinusBtnTypography'] ?? [];
-if ( ! empty( $pm_btn_typo ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-fs:' . esc_attr( $pm_btn_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-pm-btn-fw:' . esc_attr( $pm_btn_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-pm-btn-lh:' . esc_attr( $pm_btn_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-pm-btn-tt:' . esc_attr( $pm_btn_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-pm-btn-ls:' . esc_attr( $pm_btn_typo['letterSpacing'] ?? 'inherit' );
-}
-
-$pm_btn_padding = $attributes['plusMinusBtnPadding'] ?? [];
-if ( ! empty( $pm_btn_padding ) ) {
-    $vars[] = '--eshb-bkf-pm-btn-pt:' . esc_attr( $ensure_unit( $pm_btn_padding['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-pm-btn-pr:' . esc_attr( $ensure_unit( $pm_btn_padding['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-pm-btn-pb:' . esc_attr( $ensure_unit( $pm_btn_padding['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-pm-btn-pl:' . esc_attr( $ensure_unit( $pm_btn_padding['left'] ?? '0px' ) );
+$eshb_fl_typo = $eshb_attributes['fieldLabelTypography'] ?? [];
+if ( ! empty( $eshb_fl_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-fl-fs:' . esc_attr( $eshb_fl_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-fl-fw:' . esc_attr( $eshb_fl_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-fl-lh:' . esc_attr( $eshb_fl_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-fl-tt:' . esc_attr( $eshb_fl_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-fl-ls:' . esc_attr( $eshb_fl_typo['letterSpacing'] ?? 'inherit' );
 }
 
 
-$submit_btn_bg_color = $attributes['submitBtnBackgroundColor'] ?? '';
-if ( ! empty( $submit_btn_bg_color ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-bg-color:' . esc_attr( $submit_btn_bg_color );
+$eshb_ft_typo = $eshb_attributes['fieldTextTypography'] ?? [];
+if ( ! empty( $eshb_ft_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-ft-fs:' . esc_attr( $eshb_ft_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-ft-fw:' . esc_attr( $eshb_ft_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-ft-lh:' . esc_attr( $eshb_ft_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-ft-tt:' . esc_attr( $eshb_ft_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-ft-ls:' . esc_attr( $eshb_ft_typo['letterSpacing'] ?? 'inherit' );
 }
 
-$submit_btn_bg_color_hover = $attributes['submitBtnBackgroundColorHover'] ?? '';
-if ( ! empty( $submit_btn_bg_color_hover ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-bg-color-hover:' . esc_attr( $submit_btn_bg_color_hover );
+$eshb_calendar_icon_color = $eshb_attributes['calendarIconColor'] ?? '';
+if ( ! empty( $eshb_calendar_icon_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-calendar-icon-color:' . esc_attr( $eshb_calendar_icon_color );
 }
 
-$submit_btn_text_color = $attributes['submitBtnTextColor'] ?? '';
-if ( ! empty( $submit_btn_text_color ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-text-color:' . esc_attr( $submit_btn_text_color );
+$eshb_calendar_icon_color_hover = $eshb_attributes['calendarIconColorHover'] ?? '';
+if ( ! empty( $eshb_calendar_icon_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-calendar-icon-color-hover:' . esc_attr( $eshb_calendar_icon_color_hover );
 }
 
-$submit_btn_text_color_hover = $attributes['submitBtnTextColorHover'] ?? '';
-if ( ! empty( $submit_btn_text_color_hover ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-text-color-hover:' . esc_attr( $submit_btn_text_color_hover );
+$eshb_calendar_icon_size = $eshb_attributes['calendarIconSize'] ?? '';
+if ( ! empty( $eshb_calendar_icon_size ) ) {
+    $eshb_vars[] = '--eshb-bkf-calendar-icon-size:' . esc_attr( $eshb_calendar_icon_size ) . 'px';
 }
 
-$submit_btn_typo = $attributes['submitBtnTypography'] ?? [];
-if ( ! empty( $submit_btn_typo ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-fs:' . esc_attr( $submit_btn_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-submit-btn-fw:' . esc_attr( $submit_btn_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-submit-btn-lh:' . esc_attr( $submit_btn_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-submit-btn-tt:' . esc_attr( $submit_btn_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-submit-btn-ls:' . esc_attr( $submit_btn_typo['letterSpacing'] ?? 'inherit' );
+$eshb_calendar_icon_position_x = $eshb_attributes['calendarIconPositionX'] ?? '';
+if ( ! empty( $eshb_calendar_icon_position_x ) ) {
+    $eshb_vars[] = '--eshb-bkf-calendar-icon-position-x:' . esc_attr( $eshb_calendar_icon_position_x ) . '%';
 }
 
-$submit_btn_padding = $attributes['submitBtnPadding'] ?? [];
-if ( ! empty( $submit_btn_padding ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-pt:' . esc_attr( $ensure_unit( $submit_btn_padding['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-pr:' . esc_attr( $ensure_unit( $submit_btn_padding['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-pb:' . esc_attr( $ensure_unit( $submit_btn_padding['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-pl:' . esc_attr( $ensure_unit( $submit_btn_padding['left'] ?? '0px' ) );
+$eshb_calendar_icon_position_y = $eshb_attributes['calendarIconPositionY'] ?? '';
+if ( ! empty( $eshb_calendar_icon_position_y ) ) {
+    $eshb_vars[] = '--eshb-bkf-calendar-icon-position-y:' . esc_attr( $eshb_calendar_icon_position_y ) . '%';
 }
 
-$submit_btn_margin = $attributes['submitBtnMargin'] ?? [];
-if ( ! empty( $submit_btn_margin ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-mt:' . esc_attr( $ensure_unit( $submit_btn_margin['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-mr:' . esc_attr( $ensure_unit( $submit_btn_margin['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-mb:' . esc_attr( $ensure_unit( $submit_btn_margin['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-ml:' . esc_attr( $ensure_unit( $submit_btn_margin['left'] ?? '0px' ) );
+$eshb_pm_btn_bg_color = $eshb_attributes['plusMinusBtnBackgroundColor'] ?? '';
+if ( ! empty( $eshb_pm_btn_bg_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-bg-color:' . esc_attr( $eshb_pm_btn_bg_color );
 }
 
-$submit_btn_border_radius = $attributes['submitBtnBorderRadius'] ?? [];
-if ( ! empty( $submit_btn_border_radius ) ) {
-    $vars[] = '--eshb-bkf-submit-btn-tr:' . esc_attr( $ensure_unit( $submit_btn_border_radius['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-tl:' . esc_attr( $ensure_unit( $submit_btn_border_radius['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-br:' . esc_attr( $ensure_unit( $submit_btn_border_radius['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-submit-btn-bl:' . esc_attr( $ensure_unit( $submit_btn_border_radius['left'] ?? '0px' ) );
+$eshb_pm_btn_bg_color_hover = $eshb_attributes['plusMinusBtnBackgroundColorHover'] ?? '';
+if ( ! empty( $eshb_pm_btn_bg_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-bg-color-hover:' . esc_attr( $eshb_pm_btn_bg_color_hover );
+}
+
+$eshb_pm_btn_text_color = $eshb_attributes['plusMinusBtnTextColor'] ?? '';
+if ( ! empty( $eshb_pm_btn_text_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-text-color:' . esc_attr( $eshb_pm_btn_text_color );
+}
+
+$eshb_pm_btn_text_color_hover = $eshb_attributes['plusMinusBtnTextColorHover'] ?? '';
+if ( ! empty( $eshb_pm_btn_text_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-text-color-hover:' . esc_attr( $eshb_pm_btn_text_color_hover );
+}
+
+$eshb_pm_btn_typo = $eshb_attributes['plusMinusBtnTypography'] ?? [];
+if ( ! empty( $eshb_pm_btn_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-fs:' . esc_attr( $eshb_pm_btn_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-fw:' . esc_attr( $eshb_pm_btn_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-lh:' . esc_attr( $eshb_pm_btn_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-tt:' . esc_attr( $eshb_pm_btn_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-ls:' . esc_attr( $eshb_pm_btn_typo['letterSpacing'] ?? 'inherit' );
+}
+
+$eshb_pm_btn_padding = $eshb_attributes['plusMinusBtnPadding'] ?? [];
+if ( ! empty( $eshb_pm_btn_padding ) ) {
+    $eshb_vars[] = '--eshb-bkf-pm-btn-pt:' . esc_attr( $eshb_ensure_unit( $eshb_pm_btn_padding['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-pr:' . esc_attr( $eshb_ensure_unit( $eshb_pm_btn_padding['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-pb:' . esc_attr( $eshb_ensure_unit( $eshb_pm_btn_padding['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-pm-btn-pl:' . esc_attr( $eshb_ensure_unit( $eshb_pm_btn_padding['left'] ?? '0px' ) );
+}
+
+
+$eshb_submit_btn_bg_color = $eshb_attributes['submitBtnBackgroundColor'] ?? '';
+if ( ! empty( $eshb_submit_btn_bg_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-bg-color:' . esc_attr( $eshb_submit_btn_bg_color );
+}
+
+$eshb_submit_btn_bg_color_hover = $eshb_attributes['submitBtnBackgroundColorHover'] ?? '';
+if ( ! empty( $eshb_submit_btn_bg_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-bg-color-hover:' . esc_attr( $eshb_submit_btn_bg_color_hover );
+}
+
+$eshb_submit_btn_text_color = $eshb_attributes['submitBtnTextColor'] ?? '';
+if ( ! empty( $eshb_submit_btn_text_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-text-color:' . esc_attr( $eshb_submit_btn_text_color );
+}
+
+$eshb_submit_btn_text_color_hover = $eshb_attributes['submitBtnTextColorHover'] ?? '';
+if ( ! empty( $eshb_submit_btn_text_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-text-color-hover:' . esc_attr( $eshb_submit_btn_text_color_hover );
+}
+
+$eshb_submit_btn_typo = $eshb_attributes['submitBtnTypography'] ?? [];
+if ( ! empty( $eshb_submit_btn_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-fs:' . esc_attr( $eshb_submit_btn_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-fw:' . esc_attr( $eshb_submit_btn_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-lh:' . esc_attr( $eshb_submit_btn_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-tt:' . esc_attr( $eshb_submit_btn_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-ls:' . esc_attr( $eshb_submit_btn_typo['letterSpacing'] ?? 'inherit' );
+}
+
+$eshb_submit_btn_padding = $eshb_attributes['submitBtnPadding'] ?? [];
+if ( ! empty( $eshb_submit_btn_padding ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-pt:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_padding['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-pr:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_padding['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-pb:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_padding['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-pl:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_padding['left'] ?? '0px' ) );
+}
+
+$eshb_submit_btn_margin = $eshb_attributes['submitBtnMargin'] ?? [];
+if ( ! empty( $eshb_submit_btn_margin ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-mt:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_margin['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-mr:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_margin['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-mb:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_margin['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-ml:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_margin['left'] ?? '0px' ) );
+}
+
+$eshb_submit_btn_border_radius = $eshb_attributes['submitBtnBorderRadius'] ?? [];
+if ( ! empty( $eshb_submit_btn_border_radius ) ) {
+    $eshb_vars[] = '--eshb-bkf-submit-btn-tr:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_border_radius['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-tl:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_border_radius['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-br:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_border_radius['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-submit-btn-bl:' . esc_attr( $eshb_ensure_unit( $eshb_submit_btn_border_radius['left'] ?? '0px' ) );
 }
 
 // Extra Services
-$extra_services_color = $attributes['extraServicesColor'] ?? '';
-if ( ! empty( $extra_services_color ) ) {
-    $vars[] = '--eshb-bkf-es-color:' . esc_attr( $extra_services_color );
+$eshb_extra_services_color = $eshb_attributes['extraServicesColor'] ?? '';
+if ( ! empty( $eshb_extra_services_color ) ) {
+    $eshb_vars[] = '--eshb-bkf-es-color:' . esc_attr( $eshb_extra_services_color );
 }
 
-$extra_services_color_hover = $attributes['extraServicesColorHover'] ?? '';
-if ( ! empty( $extra_services_color_hover ) ) {
-    $vars[] = '--eshb-bkf-es-color-hover:' . esc_attr( $extra_services_color_hover );
+$eshb_extra_services_color_hover = $eshb_attributes['extraServicesColorHover'] ?? '';
+if ( ! empty( $eshb_extra_services_color_hover ) ) {
+    $eshb_vars[] = '--eshb-bkf-es-color-hover:' . esc_attr( $eshb_extra_services_color_hover );
 }
 
-$es_typo = $attributes['extraServicesTypography'] ?? [];
-if ( ! empty( $es_typo ) ) {
-    $vars[] = '--eshb-bkf-es-fs:' . esc_attr( $es_typo['fontSize'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-es-fw:' . esc_attr( $es_typo['fontWeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-es-lh:' . esc_attr( $es_typo['lineHeight'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-es-tt:' . esc_attr( $es_typo['textTransform'] ?? 'inherit' );
-    $vars[] = '--eshb-bkf-es-ls:' . esc_attr( $es_typo['letterSpacing'] ?? 'inherit' );
+$eshb_es_typo = $eshb_attributes['extraServicesTypography'] ?? [];
+if ( ! empty( $eshb_es_typo ) ) {
+    $eshb_vars[] = '--eshb-bkf-es-fs:' . esc_attr( $eshb_es_typo['fontSize'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-es-fw:' . esc_attr( $eshb_es_typo['fontWeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-es-lh:' . esc_attr( $eshb_es_typo['lineHeight'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-es-tt:' . esc_attr( $eshb_es_typo['textTransform'] ?? 'inherit' );
+    $eshb_vars[] = '--eshb-bkf-es-ls:' . esc_attr( $eshb_es_typo['letterSpacing'] ?? 'inherit' );
 }
 
-$extra_services_margin = $attributes['extraServicesMargin'] ?? [];
-if ( ! empty( $extra_services_margin ) ) {
-    $vars[] = '--eshb-bkf-es-mt:' . esc_attr( $ensure_unit( $extra_services_margin['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-es-mr:' . esc_attr( $ensure_unit( $extra_services_margin['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-es-mb:' . esc_attr( $ensure_unit( $extra_services_margin['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-es-ml:' . esc_attr( $ensure_unit( $extra_services_margin['left'] ?? '0px' ) );
+$eshb_extra_services_margin = $eshb_attributes['extraServicesMargin'] ?? [];
+if ( ! empty( $eshb_extra_services_margin ) ) {
+    $eshb_vars[] = '--eshb-bkf-es-mt:' . esc_attr( $eshb_ensure_unit( $eshb_extra_services_margin['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-es-mr:' . esc_attr( $eshb_ensure_unit( $eshb_extra_services_margin['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-es-mb:' . esc_attr( $eshb_ensure_unit( $eshb_extra_services_margin['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-es-ml:' . esc_attr( $eshb_ensure_unit( $eshb_extra_services_margin['left'] ?? '0px' ) );
 }
 
-$service_checkbox_border_radius = $attributes['serviceCheckboxBorderRadius'] ?? [];
-if ( ! empty( $service_checkbox_border_radius ) ) {
-    $vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $ensure_unit( $service_checkbox_border_radius['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $ensure_unit( $service_checkbox_border_radius['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $ensure_unit( $service_checkbox_border_radius['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $ensure_unit( $service_checkbox_border_radius['left'] ?? '0px' ) );
+$eshb_service_checkbox_border_radius = $eshb_attributes['serviceCheckboxBorderRadius'] ?? [];
+if ( ! empty( $eshb_service_checkbox_border_radius ) ) {
+    $eshb_vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_checkbox_border_radius['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_checkbox_border_radius['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_checkbox_border_radius['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-checkbox-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_checkbox_border_radius['left'] ?? '0px' ) );
 }
 
-$service_qty_border_radius = $attributes['serviceQtyBorderRadius'] ?? [];
-if ( ! empty( $service_qty_border_radius ) ) {
-    $vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $ensure_unit( $service_qty_border_radius['top'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $ensure_unit( $service_qty_border_radius['right'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $ensure_unit( $service_qty_border_radius['bottom'] ?? '0px' ) );
-    $vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $ensure_unit( $service_qty_border_radius['left'] ?? '0px' ) );
+$eshb_service_qty_border_radius = $eshb_attributes['serviceQtyBorderRadius'] ?? [];
+if ( ! empty( $eshb_service_qty_border_radius ) ) {
+    $eshb_vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_qty_border_radius['top'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_qty_border_radius['right'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_qty_border_radius['bottom'] ?? '0px' ) );
+    $eshb_vars[] = '--eshb-bkf-service-qty-br:' . esc_attr( $eshb_ensure_unit( $eshb_service_qty_border_radius['left'] ?? '0px' ) );
 }
 
 // Inject CSS variables into existing wrapper
-$style_attr = '';
-if ( $vars ) {
-    $style_attr = implode( ';', $vars );
+$eshb_style_attr = '';
+if ( $eshb_vars ) {
+    $eshb_style_attr = implode( ';', $eshb_vars );
 }
-$calendar_icon_position_x_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
-ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_x_responsive, 'calendarIconPositionX', 'right', [], false);
+$eshb_calendar_icon_position_x_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($eshb_attributes, $eshb_calendar_icon_position_x_responsive, 'calendarIconPositionX', 'right', [], false);
 
-$calendar_icon_position_y_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
-ESHB_Block_Helper::add_responsive_vars($attributes, $calendar_icon_position_y_responsive, 'calendarIconPositionY', 'top', [], false);
+$eshb_calendar_icon_position_y_responsive = ['desktop' => [], 'tablet' => [], 'mobile' => []];
+ESHB_Block_Helper::add_responsive_vars($eshb_attributes, $eshb_calendar_icon_position_y_responsive, 'calendarIconPositionY', 'top', [], false);
 
-$style_handle = 'eshb-style';
-$unique_id    = $attributes['blockId'];
-$selector     = '.eshb-booking-form-block-wrapper.' . $unique_id;
+$eshb_style_handle = 'eshb-style';
+$eshb_unique_id    = $eshb_attributes['blockId'];
+$eshb_selector     = '.eshb-booking-form-block-wrapper.' . $eshb_unique_id;
 
-$full_responsive_css = '';
-$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_x_responsive);
-$full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $calendar_icon_position_y_responsive);
+$eshb_full_responsive_css = '';
+$eshb_full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($eshb_selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $eshb_calendar_icon_position_x_responsive);
+$eshb_full_responsive_css .= ESHB_Block_Helper::generate_responsive_css($eshb_selector . ' .eshb-booking .eshb-booking-form.eshb-has-calendar-icon .eshb-calendar-icon', $eshb_calendar_icon_position_y_responsive);
 
-wp_enqueue_style( $style_handle );
-ESHB_Block_Helper::add_custom_style( $style_handle, $selector, $full_responsive_css, []);   
+wp_enqueue_style( $eshb_style_handle );
+ESHB_Block_Helper::add_custom_style( $eshb_style_handle, $eshb_selector, $eshb_full_responsive_css, []);   
 
 
 $ESHB_View = new ESHB_View();
 ?>
 
-<div class="eshb-booking eshb-booking-form-block-wrapper <?php echo esc_attr( $unique_id ); ?>" style="<?php echo esc_attr( $style_attr ); ?>">
-    <?php $ESHB_View->eshb_get_booking_form_html( $accomodation_id, $style ); ?>
+<div class="eshb-booking eshb-booking-form-block-wrapper <?php echo esc_attr( $eshb_unique_id ); ?>" style="<?php echo esc_attr( $eshb_style_attr ); ?>">
+    <?php $ESHB_View->eshb_get_booking_form_html( $eshb_accomodation_id, $eshb_style ); ?>
 </div>

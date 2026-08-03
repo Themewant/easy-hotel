@@ -1,5 +1,6 @@
 <?php
 // This file is generated. Do not modify it manually.
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 return array(
 	'search-form' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',

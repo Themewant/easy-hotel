@@ -6,7 +6,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$user = wp_get_current_user();
+$eshb_user = wp_get_current_user();
 ?>
 <div class="eshb-account-panel">
     <div class="eshb-account-section-head">
@@ -17,20 +17,20 @@ $user = wp_get_current_user();
         <div class="eshb-account-grid-2">
             <div class="eshb-account-field">
                 <label for="eshbFirstName"><?php esc_html_e( 'First Name', 'easy-hotel' ); ?></label>
-                <input type="text" id="eshbFirstName" name="first_name" value="<?php echo esc_attr( $user->first_name ); ?>">
+                <input type="text" id="eshbFirstName" name="first_name" value="<?php echo esc_attr( $eshb_user->first_name ); ?>">
             </div>
             <div class="eshb-account-field">
                 <label for="eshbLastName"><?php esc_html_e( 'Last Name', 'easy-hotel' ); ?></label>
-                <input type="text" id="eshbLastName" name="last_name" value="<?php echo esc_attr( $user->last_name ); ?>">
+                <input type="text" id="eshbLastName" name="last_name" value="<?php echo esc_attr( $eshb_user->last_name ); ?>">
             </div>
         </div>
         <div class="eshb-account-field">
             <label for="eshbDisplayName"><?php esc_html_e( 'Display Name', 'easy-hotel' ); ?></label>
-            <input type="text" id="eshbDisplayName" name="display_name" value="<?php echo esc_attr( $user->display_name ); ?>">
+            <input type="text" id="eshbDisplayName" name="display_name" value="<?php echo esc_attr( $eshb_user->display_name ); ?>">
         </div>
         <div class="eshb-account-field">
             <label for="eshbEmail"><?php esc_html_e( 'Email Address', 'easy-hotel' ); ?></label>
-            <input type="email" id="eshbEmail" name="email" value="<?php echo esc_attr( $user->user_email ); ?>" required>
+            <input type="email" id="eshbEmail" name="email" value="<?php echo esc_attr( $eshb_user->user_email ); ?>" required>
         </div>
 
         <p class="eshb-account-form-msg" data-eshb-profile-msg></p>

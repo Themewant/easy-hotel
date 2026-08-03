@@ -1121,6 +1121,7 @@ class ESHB_Booking {
 			];
 
 			// filter for $cart_item_data;
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
 			$cart_item_data = apply_filters( 'on_booking_cart_item_data', $cart_item_data );
 			
 			// Insert the booking

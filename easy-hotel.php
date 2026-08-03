@@ -5,7 +5,7 @@
  * Plugin URI:  https://themewant.com/downloads/hotel-booking/
  * Author:      Themewant
  * Author URI:  http://themewant.com/
- * Version:     2.0.6
+ * Version:     2.0.7
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: easy-hotel
@@ -13,7 +13,7 @@
 */
     if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-    define( 'ESHB_VERSION', '2.0.6' );
+    define( 'ESHB_VERSION', '2.0.7' );
     define( 'ESHB_PL_ROOT', __FILE__ );
     define( 'ESHB_PL_URL', plugins_url( '/', ESHB_PL_ROOT ) );
     define( 'ESHB_PL_PATH', plugin_dir_path( ESHB_PL_ROOT ) );
@@ -43,7 +43,7 @@
     function eshb_appsero_init_tracker() {
 
         if ( ! class_exists( 'Appsero\Client' ) ) {
-        include ESHB_PL_PATH . 'admin/includes/opt-in/Client.php';
+            include ESHB_PL_PATH . 'admin/includes/opt-in/Client.php';
         }
 
         $client = new Appsero\Client( 'aad425e0-9ec8-4de0-a3cf-011a98a4fb39', 'Easy Hotel Booking – Powerful Hotel Booking', __FILE__ );

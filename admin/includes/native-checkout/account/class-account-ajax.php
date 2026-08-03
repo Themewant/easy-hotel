@@ -155,11 +155,13 @@ class ESHB_Native_Account_Ajax {
         $this->guard();
         $user = wp_get_current_user();
 
-        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        // Passwords are deliberately left unsanitized: any filtering would alter the
+        // raw value before it is hashed/compared. They are never echoed or stored raw.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $current = isset( $_POST['current_password'] ) ? (string) wp_unslash( $_POST['current_password'] ) : '';
         $new     = isset( $_POST['new_password'] ) ? (string) wp_unslash( $_POST['new_password'] ) : '';
         $confirm = isset( $_POST['confirm_password'] ) ? (string) wp_unslash( $_POST['confirm_password'] ) : '';
-        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
         if ( '' === $current || '' === $new || '' === $confirm ) {
             wp_send_json_error( [ 'message' => __( 'Please fill in all password fields.', 'easy-hotel' ) ] );

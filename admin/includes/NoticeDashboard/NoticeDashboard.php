@@ -179,6 +179,7 @@ class ESHB_NoticeDashboard {
         if ( empty( $notice_id ) ) {
             return false;
         }
+        // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Shared "thewtmc_" global: the dedup pool must use the same name in every ThemeWant plugin.
         if ( ! isset( $GLOBALS['thewtmc_noticebar_claims'] ) ) {
             $GLOBALS['thewtmc_noticebar_claims'] = array();
         }
@@ -186,6 +187,7 @@ class ESHB_NoticeDashboard {
             return false;
         }
         $GLOBALS['thewtmc_noticebar_claims'][ $notice_id ] = true;
+        // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         return true;
     }
 
@@ -302,6 +304,7 @@ class ESHB_NoticeDashboard {
         // empty after dedup. If nothing is left for us to render, skip
         // registering the widget entirely.
         if ( ! isset( $GLOBALS['thewtmc_widget_claims'] ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Shared "thewtmc_" global: the dedup pool must use the same name in every ThemeWant plugin.
             $GLOBALS['thewtmc_widget_claims'] = array();
         }
 
@@ -320,6 +323,7 @@ class ESHB_NoticeDashboard {
             if ( $this->get_notice_status( $id ) === 'true' ) {
                 continue;
             }
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Shared "thewtmc_" global: the dedup pool must use the same name in every ThemeWant plugin.
             $GLOBALS['thewtmc_widget_claims'][ $id ] = true;
             $this->my_widget_notice_ids[ $id ]       = true;
         }

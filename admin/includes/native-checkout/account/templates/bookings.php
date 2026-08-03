@@ -7,7 +7,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$ids = $account->customer->get_user_booking_ids( wp_get_current_user() );
+$eshb_ids = $account->customer->get_user_booking_ids( wp_get_current_user() );
 ?>
 <div class="eshb-account-panel">
     <div class="eshb-account-section-head">
@@ -17,7 +17,7 @@ $ids = $account->customer->get_user_booking_ids( wp_get_current_user() );
     <?php // Success notice shown after a booking is cancelled (filled by account.js). ?>
     <div class="eshb-account-notice eshb-account-notice--info" data-eshb-notice hidden></div>
 
-    <?php if ( empty( $ids ) ) : ?>
+    <?php if ( empty( $eshb_ids ) ) : ?>
         <p class="eshb-account-empty"><?php esc_html_e( 'You have no bookings yet.', 'easy-hotel' ); ?></p>
     <?php else : ?>
         <div class="eshb-account-table-wrap">
@@ -33,30 +33,30 @@ $ids = $account->customer->get_user_booking_ids( wp_get_current_user() );
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ( $ids as $id ) :
-                        $row = $bookings->get_row_view( $id );
-                        if ( empty( $row ) ) continue;
+                    <?php foreach ( $eshb_ids as $eshb_id ) :
+                        $eshb_row = $bookings->get_row_view( $eshb_id );
+                        if ( empty( $eshb_row ) ) continue;
                         ?>
-                        <tr data-booking-id="<?php echo esc_attr( $row['id'] ); ?>">
-                            <td data-label="<?php esc_attr_e( 'Booking ID', 'easy-hotel' ); ?>">#<?php echo esc_html( $row['id'] ); ?></td>
-                            <td data-label="<?php esc_attr_e( 'Accomodation', 'easy-hotel' ); ?>"><?php echo esc_html( $row['accomodation'] ); ?></td>
+                        <tr data-booking-id="<?php echo esc_attr( $eshb_row['id'] ); ?>">
+                            <td data-label="<?php esc_attr_e( 'Booking ID', 'easy-hotel' ); ?>">#<?php echo esc_html( $eshb_row['id'] ); ?></td>
+                            <td data-label="<?php esc_attr_e( 'Accomodation', 'easy-hotel' ); ?>"><?php echo esc_html( $eshb_row['accomodation'] ); ?></td>
                             <td data-label="<?php esc_attr_e( 'Check-in / Check-out', 'easy-hotel' ); ?>">
-                                <?php echo esc_html( $row['check_in_label'] ); ?>
+                                <?php echo esc_html( $eshb_row['check_in_label'] ); ?>
                                 <span class="eshb-account-date-sep">→</span>
-                                <?php echo esc_html( $row['check_out_label'] ); ?>
+                                <?php echo esc_html( $eshb_row['check_out_label'] ); ?>
                             </td>
-                            <td data-label="<?php esc_attr_e( 'Total', 'easy-hotel' ); ?>"><?php echo wp_kses_post( $row['total_html'] ); ?></td>
+                            <td data-label="<?php esc_attr_e( 'Total', 'easy-hotel' ); ?>"><?php echo wp_kses_post( $eshb_row['total_html'] ); ?></td>
                             <td data-label="<?php esc_attr_e( 'Status', 'easy-hotel' ); ?>">
-                                <span class="eshb-badge eshb-badge--<?php echo esc_attr( $row['status'] ); ?>" data-eshb-status>
-                                    <?php echo esc_html( $row['status_label'] ); ?>
+                                <span class="eshb-badge eshb-badge--<?php echo esc_attr( $eshb_row['status'] ); ?>" data-eshb-status>
+                                    <?php echo esc_html( $eshb_row['status_label'] ); ?>
                                 </span>
                             </td>
                             <td data-label="<?php esc_attr_e( 'Actions', 'easy-hotel' ); ?>" class="eshb-account-actions">
-                                <button type="button" class="eshb-btn-link" data-eshb-view="<?php echo esc_attr( $row['id'] ); ?>">
+                                <button type="button" class="eshb-btn-link" data-eshb-view="<?php echo esc_attr( $eshb_row['id'] ); ?>">
                                     <?php esc_html_e( 'View', 'easy-hotel' ); ?>
                                 </button>
-                                <?php if ( $row['can_cancel'] ) : ?>
-                                    <button type="button" class="eshb-btn-link eshb-btn-danger" data-eshb-cancel="<?php echo esc_attr( $row['id'] ); ?>">
+                                <?php if ( $eshb_row['can_cancel'] ) : ?>
+                                    <button type="button" class="eshb-btn-link eshb-btn-danger" data-eshb-cancel="<?php echo esc_attr( $eshb_row['id'] ); ?>">
                                         <?php esc_html_e( 'Cancel', 'easy-hotel' ); ?>
                                     </button>
                                 <?php endif; ?>

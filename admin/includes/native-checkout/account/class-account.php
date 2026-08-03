@@ -280,6 +280,7 @@ class ESHB_Native_Account {
     public function render_shortcode() {
         nocache_headers();
         if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Standard caching-plugin constant, name cannot be prefixed.
             define( 'DONOTCACHEPAGE', true );
         }
 

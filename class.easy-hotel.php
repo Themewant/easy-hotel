@@ -22,7 +22,7 @@ class ESHB_MAIN {
 	 */
 	public function __construct() {
 		add_action( 'init', [ $this, 'includes' ], 11 );
-		add_action( 'plugins_loaded', [ $this, 'init' ] );
+		$this->init();
 		add_action( 'init', [$this, 'enable_elementor_for_custom_post_type'] );
 		add_filter( 'admin_body_class',  [$this, 'add_admin_body_class'] );
 		add_action( 'phpmailer_init', [$this, 'enable_local_mail'] );
@@ -55,15 +55,69 @@ class ESHB_MAIN {
 	public function init() {
 		// Add Plugin actions
 		add_filter( 'plugin_action_links_' . ESHB_PLUGIN_BASE, [ $this, 'easy_hotel_plugin_action_links' ], 10, 4 );
+		add_filter( 'plugin_row_meta', [ $this, 'easy_hotel_plugin_row_meta' ], 10, 2 );
 		add_action( 'init', [$this, 'eshb_add_image_sizes'] );
 		add_filter( 'image_size_names_choose', [$this, 'eshb_add_image_size_to_media_library'] );
 	}
 
+	/**
+	 * External links used on the plugins list table row.
+	 *
+	 * @return array
+	 */
+	public function eshb_plugin_links() {
+		return array(
+			'settings' => admin_url( 'edit.php?post_type=eshb_accomodation&page=easy-hotel-settings' ),
+			'support'  => 'https://wordpress.org/support/plugin/easy-hotel/',
+		);
+	}
 
+	/**
+	 * Action links shown under the plugin name: Settings | Deactivate.
+	 *
+	 * @param array  $plugin_actions Existing action links.
+	 * @param string $plugin_file    Plugin file path.
+	 * @param array  $plugin_data    Plugin header data.
+	 * @param string $context        Current plugins list context.
+	 *
+	 * @return array
+	 */
 	public function easy_hotel_plugin_action_links( $plugin_actions, $plugin_file, $plugin_data, $context ) {
-		$new_actions = array();
-		$new_actions['easy_hotel_plugin_actions_setting'] = '<a href="'.admin_url( 'edit.php?post_type=eshb_accomodation&page=easy-hotel-settings' ).'">Settings</a>';
-		return array_merge( $new_actions, $plugin_actions );
+		$links = $this->eshb_plugin_links();
+
+		$before = array(
+			'easy_hotel_plugin_actions_setting' => sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( $links['settings'] ),
+				esc_html__( 'Settings', 'easy-hotel' )
+			),
+		);
+
+		return array_merge( $before, $plugin_actions );
+	}
+
+	/**
+	 * Extra meta links shown next to the plugin description: Community support.
+	 *
+	 * @param array  $plugin_meta Existing meta links.
+	 * @param string $plugin_file Plugin file path.
+	 *
+	 * @return array
+	 */
+	public function easy_hotel_plugin_row_meta( $plugin_meta, $plugin_file ) {
+		if ( ESHB_PLUGIN_BASE !== $plugin_file ) {
+			return $plugin_meta;
+		}
+
+		$links = $this->eshb_plugin_links();
+
+		$plugin_meta[] = sprintf(
+			'<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			esc_url( $links['support'] ),
+			esc_html__( 'Community support', 'easy-hotel' )
+		);
+
+		return $plugin_meta;
 	}
 	
 	public function eshb_add_image_sizes() {

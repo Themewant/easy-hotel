@@ -218,6 +218,7 @@ class ESHB_Native_Account_Bookings {
          * @param true|WP_Error $result     true if allowed, WP_Error otherwise.
          * @param int           $booking_id
          */
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- "easy_hotel_" is this plugin's own public hook prefix.
         return apply_filters( 'easy_hotel_can_cancel_booking', $result, $booking_id );
     }
 
@@ -257,6 +258,7 @@ class ESHB_Native_Account_Bookings {
          *
          * @param int $booking_id
          */
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- "easy_hotel_" is this plugin's own public hook prefix.
         do_action( 'easy_hotel_before_booking_cancelled', $booking_id );
 
         // Set the guard + metadata BEFORE the status change so the
@@ -300,6 +302,7 @@ class ESHB_Native_Account_Bookings {
          * @param int   $booking_id
          * @param array $booking_data Detail view-model of the cancelled booking.
          */
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- "easy_hotel_" is this plugin's own public hook prefix.
         do_action( 'easy_hotel_booking_cancelled', $booking_id, $booking_data );
 
         return true;

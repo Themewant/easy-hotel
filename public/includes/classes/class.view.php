@@ -648,10 +648,16 @@ class ESHB_View extends ESHB_MAIN{
                                                     }
 
                                                     if ( ! empty( $service_price ) ) {
+                                                        // Format through eshb_price() so the WooCommerce currency symbol and
+                                                        // position are used when WooCommerce checkout is active. For every
+                                                        // other booking type it falls back to the plugin's own currency
+                                                        // settings, exactly as before.
+                                                        $service_price_html = $hotel_core->eshb_price( $service_price, $currency_symbol );
+
                                                         if ( ! $room_visibility && $service_charge_type === 'room' ) {
-                                                            echo esc_html( $currency_symbol . $service_price );
+                                                            echo wp_kses_post( $service_price_html );
                                                         } else {
-                                                            echo esc_html( $currency_symbol . $service_price . ' / ' . eshb_get_translated_string( $string_service_charge_type_translated ) );
+                                                            echo wp_kses_post( $service_price_html ) . esc_html( ' / ' . eshb_get_translated_string( $string_service_charge_type_translated ) );
                                                         }
                                                     } else {
                                                         echo esc_html__( 'Free', 'easy-hotel' );

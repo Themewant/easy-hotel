@@ -382,7 +382,7 @@ class ESHB_Core {
 
     public function eshb_price ($price, $currency_symbol = NULL){
 
-        if(!$currency_symbol || $currency_symbol = NULL || empty($currency_symbol)) {
+        if( empty($currency_symbol) ) {
             // Get the currency symbol
             $currency_symbol = $this->get_eshb_currency_symbol();
         }

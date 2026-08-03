@@ -6,12 +6,12 @@
         
         <?php 
             if(has_post_thumbnail($accomodation_id)) {
-                $thumbnail_url = get_the_post_thumbnail_url( $accomodation_id, $thumbnail_size);
+                $eshb_thumbnail_url = get_the_post_thumbnail_url( $accomodation_id, $thumbnail_size);
             } else {
-                $thumbnail_url = ESHB_DIR_URL . 'public/assets/img/placeholder.png';
+                $eshb_thumbnail_url = ESHB_DIR_URL . 'public/assets/img/placeholder.png';
             }
         ?>
-        <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
+        <img src="<?php echo esc_url( $eshb_thumbnail_url ); ?>" alt="Thumbnail" class="thumbnail">
 
         <div class="pricing-info">
             <?php 
@@ -38,14 +38,14 @@
             <div class="capacities eshb-text-center" style="background-size: cover; background-repeat: no-repeat;">
                 <?php 
                   
-                    $i = 0;
+                    $eshb_i = 0;
                     if( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0){
-                        foreach ($accomodation_info_group as $key => $group) { 
-                            $i++;
-                            if($i >= 3) break;
+                        foreach ($accomodation_info_group as $eshb_key => $eshb_group) { 
+                            $eshb_i++;
+                            if($eshb_i >= 3) break;
                             ?>
                             <span class="capacity">
-                                <?php echo esc_html($group['info_title']); ?>
+                                <?php echo esc_html($eshb_group['info_title']); ?>
                             </span>
                         <?php }
                     }

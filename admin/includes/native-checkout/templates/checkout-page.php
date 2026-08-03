@@ -5,7 +5,6 @@
  * Rendered by ESHB_Native_Checkout::render_shortcode(). Expects:
  *   - $items_view        (list of per-item view-models; each has item_key,
  *                         pricing, services, selected_services, labels…)
- *   - $reservation_view  (first item view — kept for add-on hooks)
  *   - $pricing           (cart pricing from ESHB_Native_Pricing::calculate_cart())
  *   - $gateways          (enabled gateway instances)
  *
@@ -19,22 +18,19 @@ if ( ! isset( $pricing, $gateways ) ) {
     return;
 }
 
-// Read-only thank-you lookup; no state change happens here, so a nonce
-// is not required. The id is cast through absint() before use.
+
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-$booking_id_param = isset( $_GET['booking'] ) ? absint( $_GET['booking'] ) : 0;
-if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' ) {
+$eshb_booking_id_param = isset( $_GET['booking'] ) ? absint( $_GET['booking'] ) : 0;
+if ( $eshb_booking_id_param && get_post_type( $eshb_booking_id_param ) === 'eshb_booking' ) {
 
-    $core = new ESHB_Core();
+    $eshb_core = new ESHB_Core();
 
-    // Every booking created in this checkout (multi-accommodation). Falls
-    // back to the single booking when no group context was passed.
-    $thankyou_ids = ( isset( $group_booking_ids ) && is_array( $group_booking_ids ) && ! empty( $group_booking_ids ) )
+    $eshb_thankyou_ids = ( isset( $group_booking_ids ) && is_array( $group_booking_ids ) && ! empty( $group_booking_ids ) )
         ? array_map( 'absint', $group_booking_ids )
-        : [ $booking_id_param ];
+        : [ $eshb_booking_id_param ];
 
-    $grand_total = 0.0;
-    $grand_paid  = 0.0;
+    $eshb_grand_total = 0.0;
+    $eshb_grand_paid  = 0.0;
     ?>
     <div class="eshb-native-checkout eshb-native-checkout--thankyou">
         <div class="eshb-container">
@@ -42,35 +38,35 @@ if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' 
                 <h2><?php esc_html_e( 'Thank you! Your booking is confirmed.', 'easy-hotel' ); ?></h2>
                 <p><?php esc_html_e( 'A confirmation email has been sent with your booking details.', 'easy-hotel' ); ?></p>
 
-                <?php foreach ( $thankyou_ids as $tid ) :
-                    $booking_meta = get_post_meta( $tid, 'eshb_booking_metaboxes', true );
-                    if ( ! is_array( $booking_meta ) ) continue;
+                <?php foreach ( $eshb_thankyou_ids as $eshb_tid ) :
+                    $eshb_booking_meta = get_post_meta( $eshb_tid, 'eshb_booking_metaboxes', true );
+                    if ( ! is_array( $eshb_booking_meta ) ) continue;
 
-                    $ty_total = (float) ( $booking_meta['total_price'] ?? 0 );
-                    $ty_paid  = isset( $booking_meta['total_paid'] ) ? (float) $booking_meta['total_paid'] : $ty_total;
-                    $ty_due   = max( 0, round( $ty_total - $ty_paid, 2 ) );
-                    $grand_total += $ty_total;
-                    $grand_paid  += $ty_paid;
+                    $eshb_ty_total = (float) ( $eshb_booking_meta['total_price'] ?? 0 );
+                    $eshb_ty_paid  = isset( $eshb_booking_meta['total_paid'] ) ? (float) $eshb_booking_meta['total_paid'] : $eshb_ty_total;
+                    $eshb_ty_due   = max( 0, round( $eshb_ty_total - $eshb_ty_paid, 2 ) );
+                    $eshb_grand_total += $eshb_ty_total;
+                    $eshb_grand_paid  += $eshb_ty_paid;
                     ?>
                     <ul class="eshb-thankyou-meta">
-                        <li><strong><?php esc_html_e( 'Booking reference:', 'easy-hotel' ); ?></strong> #<?php echo esc_html( $tid ); ?></li>
-                        <li><strong><?php esc_html_e( 'Accommodation:', 'easy-hotel' ); ?></strong> <?php echo esc_html( get_the_title( (int) ( $booking_meta['booking_accomodation_id'] ?? 0 ) ) ); ?></li>
-                        <li><strong><?php esc_html_e( 'Check-in:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $booking_meta['booking_start_date'] ?? '' ); ?></li>
-                        <li><strong><?php esc_html_e( 'Check-out:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $booking_meta['booking_end_date'] ?? '' ); ?></li>
-                        <?php if ( $ty_due > 0 ) : ?>
-                            <li><strong><?php esc_html_e( 'Booking total:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $ty_total ) ); ?></li>
+                        <li><strong><?php esc_html_e( 'Booking reference:', 'easy-hotel' ); ?></strong> #<?php echo esc_html( $eshb_tid ); ?></li>
+                        <li><strong><?php esc_html_e( 'Accommodation:', 'easy-hotel' ); ?></strong> <?php echo esc_html( get_the_title( (int) ( $eshb_booking_meta['booking_accomodation_id'] ?? 0 ) ) ); ?></li>
+                        <li><strong><?php esc_html_e( 'Check-in:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $eshb_booking_meta['booking_start_date'] ?? '' ); ?></li>
+                        <li><strong><?php esc_html_e( 'Check-out:', 'easy-hotel' ); ?></strong> <?php echo esc_html( $eshb_booking_meta['booking_end_date'] ?? '' ); ?></li>
+                        <?php if ( $eshb_ty_due > 0 ) : ?>
+                            <li><strong><?php esc_html_e( 'Booking total:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $eshb_core->eshb_price( $eshb_ty_total ) ); ?></li>
                         <?php endif; ?>
-                        <li><strong><?php esc_html_e( 'Amount paid:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $ty_paid ) ); ?></li>
-                        <?php if ( $ty_due > 0 ) : ?>
-                            <li><strong><?php esc_html_e( 'Due balance:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $core->eshb_price( $ty_due ) ); ?></li>
+                        <li><strong><?php esc_html_e( 'Amount paid:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $eshb_core->eshb_price( $eshb_ty_paid ) ); ?></li>
+                        <?php if ( $eshb_ty_due > 0 ) : ?>
+                            <li><strong><?php esc_html_e( 'Due balance:', 'easy-hotel' ); ?></strong> <?php echo wp_kses_post( $eshb_core->eshb_price( $eshb_ty_due ) ); ?></li>
                         <?php endif; ?>
                     </ul>
                 <?php endforeach; ?>
 
-                <?php if ( count( $thankyou_ids ) > 1 ) : ?>
+                <?php if ( count( $eshb_thankyou_ids ) > 1 ) : ?>
                     <p class="eshb-thankyou-grand">
                         <strong><?php esc_html_e( 'Grand total paid:', 'easy-hotel' ); ?></strong>
-                        <?php echo wp_kses_post( $core->eshb_price( $grand_paid ) ); ?>
+                        <?php echo wp_kses_post( $eshb_core->eshb_price( $eshb_grand_paid ) ); ?>
                     </p>
                 <?php endif; ?>
 
@@ -95,27 +91,23 @@ if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' 
     return;
 }
 
-if ( ! isset( $items_view ) || ! is_array( $items_view ) ) {
-    $items_view = [];
-}
+// $items_view is supplied by the caller (ESHB_Native_Checkout::render_shortcode).
+$eshb_items_view = ( isset( $items_view ) && is_array( $items_view ) ) ? $items_view : [];
 
-$eshb_settings     = get_option( 'eshb_settings', [] );
-$core              = new ESHB_Core();
-$currency_symbol   = $core->get_eshb_currency_symbol();
-$currency_position = $core->get_eshb_currency_position();
-$terms_pid         = $eshb_settings['terms-and-conditions-page'] ?? '';
-$terms_url         = $terms_pid ? get_permalink( eshb_native_checkout_translated_page_id( $terms_pid ) ) : '#';
-$archive_url       = get_post_type_archive_link( 'eshb_accomodation' );
+$eshb_settings          = get_option( 'eshb_settings', [] );
+$eshb_core              = new ESHB_Core();
+$eshb_currency_symbol   = $eshb_core->get_eshb_currency_symbol();
+$eshb_currency_position = $eshb_core->get_eshb_currency_position();
+$eshb_terms_pid         = $eshb_settings['terms-and-conditions-page'] ?? '';
+$eshb_terms_url         = $eshb_terms_pid ? get_permalink( eshb_native_checkout_translated_page_id( $eshb_terms_pid ) ) : '#';
+$eshb_archive_url       = get_post_type_archive_link( 'eshb_accomodation' );
 // First item view for the add-on hooks that still expect a single reservation.
-$reservation_view  = ! empty( $items_view ) ? $items_view[0] : [];
-$multi             = count( $items_view ) > 1;
+$eshb_reservation_view  = ! empty( $eshb_items_view ) ? $eshb_items_view[0] : [];
+$eshb_multi             = count( $eshb_items_view ) > 1;
 ?>
 <div class="eshb-native-checkout" id="eshbNativeCheckoutRoot">
     <div class="eshb-container">
         <?php
-        // Cart-blocking hold countdown banner. Hidden by default; the
-        // checkout JS reveals it and runs the timer when a hold is active.
-        // The markup is shared with the WooCommerce flow.
         if ( ! empty( $eshb_settings['cart-blocking-switcher'] ) && class_exists( 'ESHB_Booking' ) ) {
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the method.
             echo ESHB_Booking::instance()->eshb_cart_block_notice_html( 'inline' );
@@ -124,21 +116,21 @@ $multi             = count( $items_view ) > 1;
         <form class="eshb-native-checkout-form" id="eshbNativeCheckoutForm" novalidate>
 
             <div class="eshb-card eshb-cart-items-card">
-                <h2><?php echo $multi
+                <h2><?php echo $eshb_multi
                     ? esc_html__( 'Your Accommodations', 'easy-hotel' )
                     : esc_html__( 'Booking Details', 'easy-hotel' ); ?></h2>
 
-                <?php foreach ( $items_view as $item ) :
-                    $item_key   = $item['item_key'] ?? '';
-                    $item_price = isset( $item['pricing'] ) && is_array( $item['pricing'] ) ? $item['pricing'] : [];
-                    $i_nights   = (int) ( $item_price['daysCount'] ?? 0 );
+                <?php foreach ( $eshb_items_view as $eshb_item ) :
+                    $eshb_item_key   = $eshb_item['item_key'] ?? '';
+                    $eshb_item_price = isset( $eshb_item['pricing'] ) && is_array( $eshb_item['pricing'] ) ? $eshb_item['pricing'] : [];
+                    $eshb_i_nights   = (int) ( $eshb_item_price['daysCount'] ?? 0 );
                     ?>
-                    <div class="eshb-cart-item" data-item-key="<?php echo esc_attr( $item_key ); ?>">
+                    <div class="eshb-cart-item" data-item-key="<?php echo esc_attr( $eshb_item_key ); ?>">
                         <div class="eshb-cart-item-head">
-                            <h3 class="eshb-cart-item-title"><?php echo esc_html( $item['accomodation_title'] ); ?></h3>
+                            <h3 class="eshb-cart-item-title"><?php echo esc_html( $eshb_item['accomodation_title'] ); ?></h3>
                             <div class="eshb-cart-item-aside">
-                                <span class="eshb-cart-item-total" data-eshb-item-total="<?php echo esc_attr( $item_key ); ?>"><?php echo wp_kses_post( $item_price['totalPriceHtml'] ?? '' ); ?></span>
-                                <button type="button" class="eshb-remove-item" data-item-key="<?php echo esc_attr( $item_key ); ?>" aria-label="<?php esc_attr_e( 'Remove', 'easy-hotel' ); ?>">&times;</button>
+                                <span class="eshb-cart-item-total" data-eshb-item-total="<?php echo esc_attr( $eshb_item_key ); ?>"><?php echo wp_kses_post( $eshb_item_price['totalPriceHtml'] ?? '' ); ?></span>
+                                <button type="button" class="eshb-remove-item" data-item-key="<?php echo esc_attr( $eshb_item_key ); ?>" aria-label="<?php esc_attr_e( 'Remove', 'easy-hotel' ); ?>">&times;</button>
                             </div>
                         </div>
 
@@ -146,72 +138,72 @@ $multi             = count( $items_view ) > 1;
                             <div>
                                 <div class="eshb-meta-label"><?php esc_html_e( 'Check-in', 'easy-hotel' ); ?></div>
                                 <div class="eshb-meta-value">
-                                    <?php echo esc_html( $item['start_date_label'] ); ?>
-                                    <?php if ( ! empty( $item['start_time'] ) ) : ?>
-                                        <small>(<?php echo esc_html( $item['start_time'] ); ?>)</small>
+                                    <?php echo esc_html( $eshb_item['start_date_label'] ); ?>
+                                    <?php if ( ! empty( $eshb_item['start_time'] ) ) : ?>
+                                        <small>(<?php echo esc_html( $eshb_item['start_time'] ); ?>)</small>
                                     <?php endif; ?>
                                 </div>
                             </div>
                             <div>
                                 <div class="eshb-meta-label"><?php esc_html_e( 'Check-out', 'easy-hotel' ); ?></div>
                                 <div class="eshb-meta-value">
-                                    <?php echo esc_html( $item['end_date_label'] ); ?>
-                                    <?php if ( ! empty( $item['end_time'] ) ) : ?>
-                                        <small>(<?php echo esc_html( $item['end_time'] ); ?>)</small>
+                                    <?php echo esc_html( $eshb_item['end_date_label'] ); ?>
+                                    <?php if ( ! empty( $eshb_item['end_time'] ) ) : ?>
+                                        <small>(<?php echo esc_html( $eshb_item['end_time'] ); ?>)</small>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
 
                         <div class="eshb-form-group eshb-meta-grid">
-                            <div><strong><?php esc_html_e( 'Rooms:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $item['room_quantity'] ); ?></span></div>
-                            <div><strong><?php esc_html_e( 'Adults:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $item['adult_quantity'] ); ?></span></div>
-                            <div><strong><?php esc_html_e( 'Children:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $item['children_quantity'] ); ?></span></div>
-                            <div><strong><?php esc_html_e( 'Extra Beds:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $item['extra_bed_quantity'] ); ?></span></div>
-                            <div><strong><?php esc_html_e( 'Nights:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $i_nights ); ?></span></div>
+                            <div><strong><?php esc_html_e( 'Rooms:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $eshb_item['room_quantity'] ); ?></span></div>
+                            <div><strong><?php esc_html_e( 'Adults:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $eshb_item['adult_quantity'] ); ?></span></div>
+                            <div><strong><?php esc_html_e( 'Children:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $eshb_item['children_quantity'] ); ?></span></div>
+                            <div><strong><?php esc_html_e( 'Extra Beds:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $eshb_item['extra_bed_quantity'] ); ?></span></div>
+                            <div><strong><?php esc_html_e( 'Nights:', 'easy-hotel' ); ?></strong> <span><?php echo esc_html( $eshb_i_nights ); ?></span></div>
 
-                            <?php if ( ! empty( $item['services'] ) ) :
-                                $initial_summary = [];
-                                foreach ( $item['services'] as $svc ) {
-                                    $sid = (int) $svc['id'];
-                                    if ( isset( $item['selected_services'][ $sid ] ) ) {
-                                        $qty = (int) $item['selected_services'][ $sid ];
-                                        $initial_summary[] = $svc['title'] . ( $qty > 1 ? ' × ' . $qty : '' );
+                            <?php if ( ! empty( $eshb_item['services'] ) ) :
+                                $eshb_initial_summary = [];
+                                foreach ( $eshb_item['services'] as $eshb_svc ) {
+                                    $eshb_sid = (int) $eshb_svc['id'];
+                                    if ( isset( $eshb_item['selected_services'][ $eshb_sid ] ) ) {
+                                        $eshb_qty = (int) $eshb_item['selected_services'][ $eshb_sid ];
+                                        $eshb_initial_summary[] = $eshb_svc['title'] . ( $eshb_qty > 1 ? ' × ' . $eshb_qty : '' );
                                     }
                                 }
-                                $initial_summary_text = ! empty( $initial_summary )
-                                    ? implode( ', ', $initial_summary )
+                                $eshb_initial_summary_text = ! empty( $eshb_initial_summary )
+                                    ? implode( ', ', $eshb_initial_summary )
                                     : __( 'None selected', 'easy-hotel' );
                                 ?>
                                 <div class="eshb-services-summary-cell">
                                     <strong><?php esc_html_e( 'Additional Services:', 'easy-hotel' ); ?></strong>
-                                    <span class="eshb-services-summary-list"><?php echo esc_html( $initial_summary_text ); ?></span>
+                                    <span class="eshb-services-summary-list"><?php echo esc_html( $eshb_initial_summary_text ); ?></span>
                                     <a href="#" class="eshb-edit-link eshb-services-edit-toggle"><?php esc_html_e( 'Edit', 'easy-hotel' ); ?></a>
                                 </div>
                             <?php endif; ?>
                         </div>
 
-                        <?php if ( ! empty( $item['services'] ) ) : ?>
+                        <?php if ( ! empty( $eshb_item['services'] ) ) : ?>
                             <div class="eshb-services-editor" hidden>
                                 <h4><?php esc_html_e( 'Choose Additional Services', 'easy-hotel' ); ?></h4>
-                                <?php foreach ( $item['services'] as $service ) :
-                                    $svc_id     = (int) $service['id'];
-                                    $selected   = isset( $item['selected_services'][ $svc_id ] );
-                                    $quantity   = $selected ? (int) $item['selected_services'][ $svc_id ] : 1;
-                                    $price_html = $core->eshb_price( $service['price'] );
-                                    $field_id   = 'eshb-service-' . esc_attr( $item_key ) . '-' . $svc_id;
+                                <?php foreach ( $eshb_item['services'] as $eshb_service ) :
+                                    $eshb_svc_id     = (int) $eshb_service['id'];
+                                    $eshb_selected   = isset( $eshb_item['selected_services'][ $eshb_svc_id ] );
+                                    $eshb_quantity   = $eshb_selected ? (int) $eshb_item['selected_services'][ $eshb_svc_id ] : 1;
+                                    $eshb_price_html = $eshb_core->eshb_price( $eshb_service['price'] );
+                                    $eshb_field_id   = 'eshb-service-' . esc_attr( $eshb_item_key ) . '-' . $eshb_svc_id;
                                     ?>
-                                    <div class="eshb-choice-option eshb-service-option" data-service-id="<?php echo esc_attr( $svc_id ); ?>" data-service-price="<?php echo esc_attr( $service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $service['charge_type'] ); ?>">
-                                        <input type="checkbox" id="<?php echo $field_id; ?>" value="<?php echo esc_attr( $svc_id ); ?>" <?php checked( $selected ); ?>>
-                                        <label for="<?php echo $field_id; ?>">
-                                            <span class="eshb-choice-title"><?php echo esc_html( $service['title'] ); ?></span>
-                                            <span class="eshb-choice-meta"><?php echo wp_kses_post( $price_html ); ?>
-                                                <?php echo $service['periodicity'] === 'per_day' ? ' / ' . esc_html__( 'day', 'easy-hotel' ) : ''; ?>
+                                    <div class="eshb-choice-option eshb-service-option" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>">
+                                        <input type="checkbox" id="<?php echo esc_attr( $eshb_field_id ); ?>" value="<?php echo esc_attr( $eshb_svc_id ); ?>" <?php checked( $eshb_selected ); ?>>
+                                        <label for="<?php echo esc_attr( $eshb_field_id ); ?>">
+                                            <span class="eshb-choice-title"><?php echo esc_html( $eshb_service['title'] ); ?></span>
+                                            <span class="eshb-choice-meta"><?php echo wp_kses_post( $eshb_price_html ); ?>
+                                                <?php echo $eshb_service['periodicity'] === 'per_day' ? ' / ' . esc_html__( 'day', 'easy-hotel' ) : ''; ?>
                                             </span>
                                         </label>
-                                        <div class="eshb-service-qty" style="display:<?php echo $selected ? 'flex' : 'none'; ?>;">
+                                        <div class="eshb-service-qty" style="display:<?php echo $eshb_selected ? 'flex' : 'none'; ?>;">
                                             <button type="button" class="eshb-qty-btn" data-dir="-1">&minus;</button>
-                                            <input type="number" min="1" value="<?php echo esc_attr( max( 1, $quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $svc_id ); ?>">
+                                            <input type="number" min="1" value="<?php echo esc_attr( max( 1, $eshb_quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $eshb_svc_id ); ?>">
                                             <button type="button" class="eshb-qty-btn" data-dir="1">+</button>
                                         </div>
                                     </div>
@@ -229,9 +221,9 @@ $multi             = count( $items_view ) > 1;
              * "Pay Deposit / Pay Full" radio selector here).
              *
              * @param array $pricing          Cart pricing payload.
-             * @param array $reservation_view First item view-model.
+             * @param array $eshb_reservation_view First item view-model.
              */
-            do_action( 'eshb_native_checkout_payment_option', $pricing, $reservation_view );
+            do_action( 'eshb_native_checkout_payment_option', $pricing, $eshb_reservation_view );
             ?>
 
             <div class="eshb-card">
@@ -260,35 +252,33 @@ $multi             = count( $items_view ) > 1;
                      * due, etc.) without forking the template.
                      *
                      * @param array $pricing          Cart pricing payload.
-                     * @param array $reservation_view First item view-model.
+                     * @param array $eshb_reservation_view First item view-model.
                      */
-                    do_action( 'eshb_native_checkout_after_price_total', $pricing, $reservation_view );
+                    do_action( 'eshb_native_checkout_after_price_total', $pricing, $eshb_reservation_view );
                     ?>
                 </table>
 
                 <?php
-                // Show the coupon panel by default only when a coupon is
-                // already applied (e.g. user navigated back to the page).
-                $coupon_open = ! empty( $pricing['couponCode'] );
+                $eshb_coupon_open = ! empty( $pricing['couponCode'] );
                 ?>
                 <div class="eshb-coupon-section">
                     <div class="eshb-order-review-actions">
-                        <?php if ( $archive_url ) : ?>
-                            <a href="<?php echo esc_url( $archive_url ); ?>" class="eshb-add-more-btn">
+                        <?php if ( $eshb_archive_url ) : ?>
+                            <a href="<?php echo esc_url( $eshb_archive_url ); ?>" class="eshb-add-more-btn">
                                 + <?php esc_html_e( 'Add accommodation', 'easy-hotel' ); ?>
                             </a>
                         <?php endif; ?>
 
                         <div class="eshb-coupon-area">
-                            <p class="eshb-coupon-prompt"<?php echo $coupon_open ? ' hidden' : ''; ?>>
+                            <p class="eshb-coupon-prompt"<?php echo $eshb_coupon_open ? ' hidden' : ''; ?>>
                                 <?php esc_html_e( 'Do you have coupon?', 'easy-hotel' ); ?>
-                                <a href="#" id="eshbCouponToggle" aria-expanded="<?php echo $coupon_open ? 'true' : 'false'; ?>" aria-controls="eshbCouponPanel"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></a>
+                                <a href="#" id="eshbCouponToggle" aria-expanded="<?php echo $eshb_coupon_open ? 'true' : 'false'; ?>" aria-controls="eshbCouponPanel"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></a>
                             </p>
-                            <div class="eshb-coupon-panel" id="eshbCouponPanel"<?php echo $coupon_open ? '' : ' hidden'; ?>>
+                            <div class="eshb-coupon-panel" id="eshbCouponPanel"<?php echo $eshb_coupon_open ? '' : ' hidden'; ?>>
                                 <div class="eshb-coupon-row">
-                                    <input type="text" id="eshbCouponCode" placeholder="<?php esc_attr_e( 'Enter coupon code', 'easy-hotel' ); ?>" value="<?php echo esc_attr( $pricing['couponCode'] ?? '' ); ?>" <?php disabled( $coupon_open ); ?>>
-                                    <button type="button" id="eshbApplyCoupon" class="eshb-btn-secondary" style="display:<?php echo $coupon_open ? 'none' : 'inline-block'; ?>;"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></button>
-                                    <button type="button" id="eshbRemoveCoupon" class="eshb-btn-link" style="display:<?php echo $coupon_open ? 'inline-block' : 'none'; ?>;"><?php esc_html_e( 'Remove', 'easy-hotel' ); ?></button>
+                                    <input type="text" id="eshbCouponCode" placeholder="<?php esc_attr_e( 'Enter coupon code', 'easy-hotel' ); ?>" value="<?php echo esc_attr( $pricing['couponCode'] ?? '' ); ?>" <?php disabled( $eshb_coupon_open ); ?>>
+                                    <button type="button" id="eshbApplyCoupon" class="eshb-btn-secondary" style="display:<?php echo $eshb_coupon_open ? 'none' : 'inline-block'; ?>;"><?php esc_html_e( 'Apply', 'easy-hotel' ); ?></button>
+                                    <button type="button" id="eshbRemoveCoupon" class="eshb-btn-link" style="display:<?php echo $eshb_coupon_open ? 'inline-block' : 'none'; ?>;"><?php esc_html_e( 'Remove', 'easy-hotel' ); ?></button>
                                 </div>
                                 <p class="eshb-coupon-message" id="eshbCouponMessage"></p>
                             </div>
@@ -369,12 +359,12 @@ $multi             = count( $items_view ) > 1;
                         $eshb_default_gateway = $eshb_gateway_ids[0] ?? '';
                     }
                     ?>
-                    <?php foreach ( $gateways as $gateway ) : ?>
+                    <?php foreach ( $gateways as $eshb_gateway ) : ?>
                         <div class="eshb-choice-option eshb-payment-option">
-                            <input type="radio" id="eshb-pay-<?php echo esc_attr( $gateway->get_id() ); ?>" name="eshbPaymentMethod" value="<?php echo esc_attr( $gateway->get_id() ); ?>" <?php checked( $eshb_default_gateway, $gateway->get_id() ); ?>>
-                            <label for="eshb-pay-<?php echo esc_attr( $gateway->get_id() ); ?>" class="eshb-choice-title"><?php echo esc_html( $gateway->get_title() ); ?></label>
-                            <?php if ( $gateway->get_description() ) : ?>
-                                <div class="eshb-choice-desc"><?php echo esc_html( $gateway->get_description() ); ?></div>
+                            <input type="radio" id="eshb-pay-<?php echo esc_attr( $eshb_gateway->get_id() ); ?>" name="eshbPaymentMethod" value="<?php echo esc_attr( $eshb_gateway->get_id() ); ?>" <?php checked( $eshb_default_gateway, $eshb_gateway->get_id() ); ?>>
+                            <label for="eshb-pay-<?php echo esc_attr( $eshb_gateway->get_id() ); ?>" class="eshb-choice-title"><?php echo esc_html( $eshb_gateway->get_title() ); ?></label>
+                            <?php if ( $eshb_gateway->get_description() ) : ?>
+                                <div class="eshb-choice-desc"><?php echo esc_html( $eshb_gateway->get_description() ); ?></div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
@@ -392,7 +382,7 @@ $multi             = count( $items_view ) > 1;
                     printf(
                         /* translators: %s: terms link */
                         esc_html__( 'I have read and accept the %s.', 'easy-hotel' ),
-                        '<a href="' . esc_url( apply_filters( 'eshb_native_checkout_terms_url', $terms_url ) ) . '" target="_blank">' . esc_html__( 'terms and conditions', 'easy-hotel' ) . '</a>'
+                        '<a href="' . esc_url( apply_filters( 'eshb_native_checkout_terms_url', $eshb_terms_url ) ) . '" target="_blank">' . esc_html__( 'terms and conditions', 'easy-hotel' ) . '</a>'
                     );
                     ?>
                 </label>

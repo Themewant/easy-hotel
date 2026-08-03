@@ -6,12 +6,12 @@
     wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['eshb_save_meta'])), 'eshb_save_meta_box_nonce');
   }
 
-  $demo    = get_option( 'eshb_demo_mode', false );
-  $text    = ( ! empty( $demo ) ) ? 'Deactivate' : 'Activate';
-  $status  = ( ! empty( $demo ) ) ? 'deactivate' : 'activate';
-  $class   = ( ! empty( $demo ) ) ? ' csf-warning-primary' : '';
-  $section = ( ! empty( $_GET[ 'section' ] ) ) ? sanitize_text_field( wp_unslash( $_GET[ 'section' ] ) ) : 'about';
-  $links   = array(
+  $eshb_demo    = get_option( 'eshb_demo_mode', false );
+  $eshb_text    = ( ! empty( $eshb_demo ) ) ? 'Deactivate' : 'Activate';
+  $eshb_status  = ( ! empty( $eshb_demo ) ) ? 'deactivate' : 'activate';
+  $eshb_class   = ( ! empty( $eshb_demo ) ) ? ' csf-warning-primary' : '';
+  $eshb_section = ( ! empty( $_GET[ 'section' ] ) ) ? sanitize_text_field( wp_unslash( $_GET[ 'section' ] ) ) : 'about';
+  $eshb_links   = array(
     'about'           => 'About',
     'quickstart'      => 'Quick Start',
     'documentation'   => 'Documentation',
@@ -27,7 +27,7 @@
 
   <p class="csf-about-text">A Simple and Lightweight WordPress Option Framework for Themes and Plugins</p>
 
-  <p class="csf-demo-button"><a href="<?php echo esc_url( add_query_arg( array( 'csf-demo' => $status ) ) ); ?>" class="button button-primary<?php echo esc_attr( $class ); ?>"><?php echo esc_attr( $text ); ?> Demo</a></p>
+  <p class="csf-demo-button"><a href="<?php echo esc_url( add_query_arg( array( 'csf-demo' => $eshb_status ) ) ); ?>" class="button button-primary<?php echo esc_attr( $eshb_class ); ?>"><?php echo esc_attr( $eshb_text ); ?> Demo</a></p>
 
   <div class="csf-logo">
     <div class="csf--effects"><i></i><i></i><i></i><i></i></div>
@@ -42,13 +42,13 @@
   <h2 class="nav-tab-wrapper wp-clearfix">
     <?php
 
-      foreach ( $links as $key => $link ) {
+      foreach ( $eshb_links as $eshb_key => $eshb_link ) {
 
-        if ( ESHB::$premium && $key === 'free-vs-premium' ) { continue; }
+        if ( ESHB::$premium && $eshb_key === 'free-vs-premium' ) { continue; }
 
-        $activate = ( $section === $key ) ? ' nav-tab-active' : '';
+        $eshb_activate = ( $eshb_section === $eshb_key ) ? ' nav-tab-active' : '';
 
-        echo '<a href="'. esc_url( add_query_arg( array( 'page' => 'eshb-welcome', 'section' => $key ), admin_url( 'tools.php' ) ) ) .'" class="nav-tab'. esc_attr( $activate ) .'">'. esc_attr( $link ) .'</a>';
+        echo '<a href="'. esc_url( add_query_arg( array( 'page' => 'eshb-welcome', 'section' => $eshb_key ), admin_url( 'tools.php' ) ) ) .'" class="nav-tab'. esc_attr( $eshb_activate ) .'">'. esc_attr( $eshb_link ) .'</a>';
 
       }
 

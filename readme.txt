@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.6
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -251,6 +251,13 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 2.0.7 =
+* Fixed: Account page language translation issues.
+* Fixed: Dashboard booking calendar language issues.
+* Fixed: Duplicate counts in Total Bookings, Available Bookings, and Room Availability Summary.
+* Fixed: Country and State dropdown issues in deposit booking payments.
+* Fixed: Hardcoded booking logo translation issues.
 
 = 2.0.6 =
 * Added: Booking rules settings tab new added

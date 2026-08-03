@@ -3,10 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 if( class_exists( 'ESHB' ) ) {
 
     // Set a unique slug-like ID
-    $prefix = 'eshb_service_metaboxes';
+    $eshb_prefix = 'eshb_service_metaboxes';
 
     // Create a metabox
-    ESHB::createMetabox( $prefix, array(
+    ESHB::createMetabox( $eshb_prefix, array(
         'title'              => 'Service Options',
         'post_type'          => 'eshb_service',
         'data_type'          => 'serialize',
@@ -26,7 +26,7 @@ if( class_exists( 'ESHB' ) ) {
 
 
     // Create a section
-    ESHB::createSection( $prefix, array(
+    ESHB::createSection( $eshb_prefix, array(
         'title'  => '',
         'fields' => array(
         // A text field

@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Stat cards: key, label, dashicon, accent class.
  */
-$stat_cards = array(
+$eshb_stat_cards = array(
 	array( 'totalBookings', __( 'Total Bookings', 'easy-hotel' ), 'cart', 'blue' ),
 	array( 'pendingBookings', __( 'Pending Bookings', 'easy-hotel' ), 'clock', 'orange' ),
 	array( 'checkinsToday', __( 'Check-ins Today', 'easy-hotel' ), 'arrow-down-alt', 'green' ),
@@ -28,7 +28,7 @@ $stat_cards = array(
 /**
  * Quick action buttons: label, dashicon, url, accent class.
  */
-$quick_actions = array(
+$eshb_quick_actions = array(
 	array( __( 'Add New Room', 'easy-hotel' ), 'admin-home', $links['addRoom'], 'blue' ),
 	array( __( 'View All Bookings', 'easy-hotel' ), 'list-view', $links['bookings'], 'green' ),
 	array( __( 'Create Manual Booking', 'easy-hotel' ), 'plus-alt', $links['addBooking'], 'purple' ),
@@ -44,15 +44,15 @@ $quick_actions = array(
 
 			<!-- Stat cards -->
 			<section class="eshb-dash-stats">
-				<?php foreach ( $stat_cards as $card ) : ?>
+				<?php foreach ( $eshb_stat_cards as $eshb_card ) : ?>
 					<div class="eshb-dash-stat-card">
-						<div class="eshb-dash-stat-icon accent-<?php echo esc_attr( $card[3] ); ?>">
-							<span class="dashicons dashicons-<?php echo esc_attr( $card[2] ); ?>"></span>
+						<div class="eshb-dash-stat-icon accent-<?php echo esc_attr( $eshb_card[3] ); ?>">
+							<span class="dashicons dashicons-<?php echo esc_attr( $eshb_card[2] ); ?>"></span>
 						</div>
 						<div class="eshb-dash-stat-body">
-							<span class="eshb-dash-stat-label"><?php echo esc_html( $card[1] ); ?></span>
-							<span class="eshb-dash-stat-value" data-stat="<?php echo esc_attr( $card[0] ); ?>">—</span>
-							<span class="eshb-dash-stat-delta" data-delta="<?php echo esc_attr( $card[0] ); ?>"></span>
+							<span class="eshb-dash-stat-label"><?php echo esc_html( $eshb_card[1] ); ?></span>
+							<span class="eshb-dash-stat-value" data-stat="<?php echo esc_attr( $eshb_card[0] ); ?>">—</span>
+							<span class="eshb-dash-stat-delta" data-delta="<?php echo esc_attr( $eshb_card[0] ); ?>"></span>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -83,10 +83,10 @@ $quick_actions = array(
 				<div class="eshb-dash-card eshb-card-actions">
 					<div class="eshb-dash-card-head"><h3><?php esc_html_e( 'Quick Actions', 'easy-hotel' ); ?></h3></div>
 					<div class="eshb-dash-actions">
-						<?php foreach ( $quick_actions as $action ) : ?>
-							<a class="eshb-dash-action" href="<?php echo esc_url( $action[2] ); ?>">
-								<span class="eshb-dash-action-icon accent-<?php echo esc_attr( $action[3] ); ?> dashicons dashicons-<?php echo esc_attr( $action[1] ); ?>"></span>
-								<span class="eshb-dash-action-label"><?php echo esc_html( $action[0] ); ?></span>
+						<?php foreach ( $eshb_quick_actions as $eshb_action ) : ?>
+							<a class="eshb-dash-action" href="<?php echo esc_url( $eshb_action[2] ); ?>">
+								<span class="eshb-dash-action-icon accent-<?php echo esc_attr( $eshb_action[3] ); ?> dashicons dashicons-<?php echo esc_attr( $eshb_action[1] ); ?>"></span>
+								<span class="eshb-dash-action-label"><?php echo esc_html( $eshb_action[0] ); ?></span>
 								<span class="eshb-dash-action-arrow dashicons dashicons-arrow-right-alt2"></span>
 							</a>
 						<?php endforeach; ?>

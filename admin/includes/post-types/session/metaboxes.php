@@ -85,6 +85,7 @@ add_action( 'plugins_loaded', function(){
         );
 
         
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
         $session_fields = apply_filters( 'after_session_pricing_fields', $session_fields );
 
 

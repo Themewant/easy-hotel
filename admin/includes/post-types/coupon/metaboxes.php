@@ -2,26 +2,26 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 if( class_exists( 'ESHB' ) ) {
 
-    $settings       = get_option('eshb_settings', []);
-    $booking_type   = $settings['booking-type'] ?? 'woocommerce';
+    $eshb_settings       = get_option('eshb_settings', []);
+    $eshb_booking_type   = $eshb_settings['booking-type'] ?? 'woocommerce';
 
-    $discount_type = array(
+    $eshb_discount_type = array(
         'percent' => 'Percentage discount',
         'fixed_cart' => 'Fixed cart discount',
         'fixed_product' => 'Fixed product discount',
     );
 
-    if($booking_type == 'surecart') {
-        unset($discount_type['fixed_product']);
+    if($eshb_booking_type == 'surecart') {
+        unset($eshb_discount_type['fixed_product']);
     }
     
 
     // Set a unique slug-like ID
-    $prefix = 'eshb_coupon_metaboxes';
+    $eshb_prefix = 'eshb_coupon_metaboxes';
 
 
     // Create a metabox
-    ESHB::createMetabox( $prefix, array(
+    ESHB::createMetabox( $eshb_prefix, array(
         'title'              => 'Coupon Options',
         'post_type'          => 'eshb_coupon',
         'data_type'          => 'serialize',
@@ -41,7 +41,7 @@ if( class_exists( 'ESHB' ) ) {
 
 
     // Create a section
-    ESHB::createSection( $prefix, array(
+    ESHB::createSection( $eshb_prefix, array(
         //'title'  => 'Coupons',
         'fields'    => array(
                   array(
@@ -55,7 +55,7 @@ if( class_exists( 'ESHB' ) ) {
                     'type'  => 'select',
                     'title' => 'Discount Type',
                     'desc'  => 'Add coupon discount type from here.',
-                    'options' => $discount_type,
+                    'options' => $eshb_discount_type,
                     'default' => 'percent'
                   ),
                   array(

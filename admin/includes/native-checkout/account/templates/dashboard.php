@@ -7,17 +7,17 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$user  = wp_get_current_user();
-$stats = $bookings->get_dashboard_stats( $user );
+$eshb_user  = wp_get_current_user();
+$eshb_stats = $bookings->get_dashboard_stats( $eshb_user );
 
 // Last 5 bookings for the quick list.
-$recent_ids = array_slice( $account->customer->get_user_booking_ids( $user ), 0, 5 );
+$eshb_recent_ids = array_slice( $account->customer->get_user_booking_ids( $eshb_user ), 0, 5 );
 
-$cards = [
-    [ 'label' => __( 'Total Bookings', 'easy-hotel' ),     'value' => $stats['total'],     'mod' => 'total' ],
-    [ 'label' => __( 'Active Bookings', 'easy-hotel' ),    'value' => $stats['active'],    'mod' => 'active' ],
-    [ 'label' => __( 'Upcoming Bookings', 'easy-hotel' ),  'value' => $stats['upcoming'],  'mod' => 'upcoming' ],
-    [ 'label' => __( 'Cancelled Bookings', 'easy-hotel' ), 'value' => $stats['cancelled'], 'mod' => 'cancelled' ],
+$eshb_cards = [
+    [ 'label' => __( 'Total Bookings', 'easy-hotel' ),     'value' => $eshb_stats['total'],     'mod' => 'total' ],
+    [ 'label' => __( 'Active Bookings', 'easy-hotel' ),    'value' => $eshb_stats['active'],    'mod' => 'active' ],
+    [ 'label' => __( 'Upcoming Bookings', 'easy-hotel' ),  'value' => $eshb_stats['upcoming'],  'mod' => 'upcoming' ],
+    [ 'label' => __( 'Cancelled Bookings', 'easy-hotel' ), 'value' => $eshb_stats['cancelled'], 'mod' => 'cancelled' ],
 ];
 ?>
 <div class="eshb-account-panel">
@@ -25,20 +25,20 @@ $cards = [
         <h2>
         <?php
             echo esc_html__( 'Welcome back', 'easy-hotel' ) . ' ';
-            echo esc_html( $user->display_name );
+            echo esc_html( $eshb_user->display_name );
         ?></h2>
         <p class="eshb-account-welcome-meta">
-            <span><?php echo esc_html( trim( $user->first_name . ' ' . $user->last_name ) ?: $user->display_name ); ?></span>
+            <span><?php echo esc_html( trim( $eshb_user->first_name . ' ' . $eshb_user->last_name ) ?: $eshb_user->display_name ); ?></span>
             <span class="eshb-sep">·</span>
-            <span><?php echo esc_html( $user->user_email ); ?></span>
+            <span><?php echo esc_html( $eshb_user->user_email ); ?></span>
         </p>
     </div>
 
     <div class="eshb-account-stats">
-        <?php foreach ( $cards as $card ) : ?>
-            <div class="eshb-account-stat eshb-account-stat--<?php echo esc_attr( $card['mod'] ); ?>">
-                <span class="eshb-account-stat-value"><?php echo esc_html( $card['value'] ); ?></span>
-                <span class="eshb-account-stat-label"><?php echo esc_html( $card['label'] ); ?></span>
+        <?php foreach ( $eshb_cards as $eshb_card ) : ?>
+            <div class="eshb-account-stat eshb-account-stat--<?php echo esc_attr( $eshb_card['mod'] ); ?>">
+                <span class="eshb-account-stat-value"><?php echo esc_html( $eshb_card['value'] ); ?></span>
+                <span class="eshb-account-stat-label"><?php echo esc_html( $eshb_card['label'] ); ?></span>
             </div>
         <?php endforeach; ?>
     </div>
@@ -51,7 +51,7 @@ $cards = [
             </a>
         </div>
 
-        <?php if ( empty( $recent_ids ) ) : ?>
+        <?php if ( empty( $eshb_recent_ids ) ) : ?>
             <p class="eshb-account-empty"><?php esc_html_e( 'You have no bookings yet.', 'easy-hotel' ); ?></p>
         <?php else : ?>
             <div class="eshb-account-table-wrap">
@@ -66,17 +66,17 @@ $cards = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ( $recent_ids as $id ) :
-                            $row = $bookings->get_row_view( $id );
-                            if ( empty( $row ) ) continue;
+                        <?php foreach ( $eshb_recent_ids as $eshb_id ) :
+                            $eshb_row = $bookings->get_row_view( $eshb_id );
+                            if ( empty( $eshb_row ) ) continue;
                             ?>
                             <tr>
-                                <td data-label="<?php esc_attr_e( 'Booking', 'easy-hotel' ); ?>">#<?php echo esc_html( $row['id'] ); ?></td>
-                                <td data-label="<?php esc_attr_e( 'Hotel', 'easy-hotel' ); ?>"><?php echo esc_html( $row['accomodation'] ); ?></td>
-                                <td data-label="<?php esc_attr_e( 'Check-in', 'easy-hotel' ); ?>"><?php echo esc_html( $row['check_in_label'] ); ?></td>
-                                <td data-label="<?php esc_attr_e( 'Total', 'easy-hotel' ); ?>"><?php echo wp_kses_post( $row['total_html'] ); ?></td>
+                                <td data-label="<?php esc_attr_e( 'Booking', 'easy-hotel' ); ?>">#<?php echo esc_html( $eshb_row['id'] ); ?></td>
+                                <td data-label="<?php esc_attr_e( 'Hotel', 'easy-hotel' ); ?>"><?php echo esc_html( $eshb_row['accomodation'] ); ?></td>
+                                <td data-label="<?php esc_attr_e( 'Check-in', 'easy-hotel' ); ?>"><?php echo esc_html( $eshb_row['check_in_label'] ); ?></td>
+                                <td data-label="<?php esc_attr_e( 'Total', 'easy-hotel' ); ?>"><?php echo wp_kses_post( $eshb_row['total_html'] ); ?></td>
                                 <td data-label="<?php esc_attr_e( 'Status', 'easy-hotel' ); ?>">
-                                    <span class="eshb-badge eshb-badge--<?php echo esc_attr( $row['status'] ); ?>"><?php echo esc_html( $row['status_label'] ); ?></span>
+                                    <span class="eshb-badge eshb-badge--<?php echo esc_attr( $eshb_row['status'] ); ?>"><?php echo esc_html( $eshb_row['status_label'] ); ?></span>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

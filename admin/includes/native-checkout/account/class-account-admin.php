@@ -21,8 +21,6 @@ class ESHB_Native_Account_Admin {
     public function __construct( ESHB_Native_Account_Bookings $bookings ) {
         $this->bookings = $bookings;
 
-        // Catch every route into the cancelled status (admin edit, code,
-        // our own customer flow — which is made idempotent by a guard meta).
         add_action( 'transition_post_status', [ $this, 'on_status_transition' ], 10, 3 );
 
         if ( is_admin() ) {
@@ -30,7 +28,6 @@ class ESHB_Native_Account_Admin {
             add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
         }
 
-        // Manual refund endpoint (admin only).
         add_action( 'wp_ajax_eshb_native_admin_refund_booking', [ $this, 'ajax_refund' ] );
     }
 
@@ -52,9 +49,6 @@ class ESHB_Native_Account_Admin {
             return;
         }
 
-        // 'system' by default; an admin doing it from wp-admin is attributed
-        // as 'admin'. The customer AJAX flow sets the guard before its own
-        // wp_update_post, so this call is a harmless no-op in that case.
         $by = is_admin() && current_user_can( 'edit_posts' ) ? 'admin' : 'system';
         $this->bookings->process_cancellation( $post->ID, '', $by );
     }
@@ -206,8 +200,8 @@ class ESHB_Native_Account_Admin {
         // phpcs:disable WordPress.Security.NonceVerification.Missing
         $booking_id = isset( $_POST['booking_id'] ) ? absint( wp_unslash( $_POST['booking_id'] ) ) : 0;
         $type       = isset( $_POST['refund_type'] ) ? sanitize_key( wp_unslash( $_POST['refund_type'] ) ) : 'custom';
-        $amount_in  = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0;
-        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $amount_in = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0;
 
         if ( ! $booking_id || get_post_type( $booking_id ) !== 'eshb_booking' || ! current_user_can( 'edit_post', $booking_id ) ) {
             wp_send_json_error( [ 'message' => __( 'You are not allowed to refund this booking.', 'easy-hotel' ) ] );

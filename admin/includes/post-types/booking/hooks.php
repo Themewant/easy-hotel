@@ -358,7 +358,8 @@ function eshb_get_booking_data_tables() {
 
                 <?php 
                     // after_eshb_booking_details_html
-                    do_action( 'after_eshb_booking_details_html', $order_id ); 
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
+                    do_action( 'after_eshb_booking_details_html', $order_id );
                 ?>
                 <p><a href="<?php echo esc_url(admin_url('edit.php?post_type=eshb_booking')); ?>" class="button button-primary"><?php esc_html_e('Back to Booking List', 'easy-hotel'); ?></a></p>
             </div>

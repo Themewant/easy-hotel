@@ -7,18 +7,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$attributes = $attributes ?? [];
+// $attributes is supplied by WordPress to the block render callback.
+$eshb_attributes = $attributes ?? [];
 
 
 // Dynamic Styles Processing helper
-$ensure_unit = function( $value ) {
+$eshb_ensure_unit = function( $value ) {
     if ( $value === '' || $value === null ) return '0px';
     if ( is_numeric( $value ) && $value != 0 ) return $value . 'px';
     return $value;
 };
 
 // Helper for generating inline styles
-$get_inline_styles = function( $style_map ) use ( $ensure_unit ) {
+$eshb_get_inline_styles = function( $style_map ) use ( $eshb_ensure_unit ) {
     $styles = [];
     foreach ( $style_map as $prop => $value ) {
         if ( $value !== '' && $value !== null && $value !== 'inherit' && $value !== '0px' ) {
@@ -28,82 +29,82 @@ $get_inline_styles = function( $style_map ) use ( $ensure_unit ) {
     return implode( ';', $styles );
 };
 
-$vars = [];
+$eshb_vars = [];
 
 // Styles
 
-if ( ! empty( $attributes['textColorHover'] ) ) {
-    $vars[] = '--eshb-acmInfo-text-color-hover:' . esc_attr( $attributes['textColorHover'] );
+if ( ! empty( $eshb_attributes['textColorHover'] ) ) {
+    $eshb_vars[] = '--eshb-acmInfo-text-color-hover:' . esc_attr( $eshb_attributes['textColorHover'] );
 }
 
-if ( ! empty( $attributes['iconColorHover'] ) ) {
-    $vars[] = '--eshb-acmInfo-icon-color-hover:' . esc_attr( $attributes['iconColorHover'] );
+if ( ! empty( $eshb_attributes['iconColorHover'] ) ) {
+    $eshb_vars[] = '--eshb-acmInfo-icon-color-hover:' . esc_attr( $eshb_attributes['iconColorHover'] );
 }
 
 
-$list_styles = [];
-if ( ! empty( $attributes['spaceBetween'] ) ) {
-    $list_styles['column-gap'] = esc_attr( $ensure_unit($attributes['spaceBetween']) );
+$eshb_list_styles = [];
+if ( ! empty( $eshb_attributes['spaceBetween'] ) ) {
+    $eshb_list_styles['column-gap'] = esc_attr( $eshb_ensure_unit($eshb_attributes['spaceBetween']) );
 }
-$list_styles_inline = $get_inline_styles($list_styles);
+$eshb_list_styles_inline = $eshb_get_inline_styles($eshb_list_styles);
 
-$title_styles = [];
-if ( ! empty( $attributes['textColor'] ) ) {
-    $title_styles['color'] = esc_attr( $attributes['textColor'] );
-}
-
-if ( ! empty( $attributes['textSize'] ) ) {
-    $title_styles['font-size'] = esc_attr( $ensure_unit($attributes['textSize']) );
+$eshb_title_styles = [];
+if ( ! empty( $eshb_attributes['textColor'] ) ) {
+    $eshb_title_styles['color'] = esc_attr( $eshb_attributes['textColor'] );
 }
 
-$title_styles_inline = $get_inline_styles($title_styles);
-
-$icon_styles = [];
-$img_icon_styles = [];
-if ( ! empty( $attributes['iconSpace'] ) ) {
-    $icon_styles['margin-right'] = esc_attr( $attributes['iconSpace'] );
-}
-if ( ! empty( $attributes['iconColor'] ) ) {
-    $icon_styles['color'] = esc_attr( $attributes['iconColor'] );
+if ( ! empty( $eshb_attributes['textSize'] ) ) {
+    $eshb_title_styles['font-size'] = esc_attr( $eshb_ensure_unit($eshb_attributes['textSize']) );
 }
 
-if ( ! empty( $attributes['iconSize'] ) ) {
-    $icon_styles['font-size'] = esc_attr( $ensure_unit($attributes['iconSize']) );
-    $img_icon_styles['height'] = esc_attr( $ensure_unit($attributes['iconSize']) );
-    $img_icon_styles['width'] = esc_attr( $ensure_unit($attributes['iconSize']) );
+$eshb_title_styles_inline = $eshb_get_inline_styles($eshb_title_styles);
+
+$eshb_icon_styles = [];
+$eshb_img_icon_styles = [];
+if ( ! empty( $eshb_attributes['iconSpace'] ) ) {
+    $eshb_icon_styles['margin-right'] = esc_attr( $eshb_attributes['iconSpace'] );
+}
+if ( ! empty( $eshb_attributes['iconColor'] ) ) {
+    $eshb_icon_styles['color'] = esc_attr( $eshb_attributes['iconColor'] );
 }
 
-$icon_styles_inline = $get_inline_styles($icon_styles);
-
-$style_attr = '';
-if ( ! empty( $vars ) ) {
-    $style_attr .= implode( ';', $vars ) . ';';
+if ( ! empty( $eshb_attributes['iconSize'] ) ) {
+    $eshb_icon_styles['font-size'] = esc_attr( $eshb_ensure_unit($eshb_attributes['iconSize']) );
+    $eshb_img_icon_styles['height'] = esc_attr( $eshb_ensure_unit($eshb_attributes['iconSize']) );
+    $eshb_img_icon_styles['width'] = esc_attr( $eshb_ensure_unit($eshb_attributes['iconSize']) );
 }
 
-$accomodation_id = get_the_ID();
-$eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
-$accomodation_info_group = !empty($eshb_accomodation_metaboxes['accomodation_info_group']) ? $eshb_accomodation_metaboxes['accomodation_info_group'] : array();
+$eshb_icon_styles_inline = $eshb_get_inline_styles($eshb_icon_styles);
+
+$eshb_style_attr = '';
+if ( ! empty( $eshb_vars ) ) {
+    $eshb_style_attr .= implode( ';', $eshb_vars ) . ';';
+}
+
+$eshb_accomodation_id = get_the_ID();
+$eshb_accomodation_metaboxes = get_post_meta($eshb_accomodation_id, 'eshb_accomodation_metaboxes', true);
+$eshb_accomodation_info_group = !empty($eshb_accomodation_metaboxes['accomodation_info_group']) ? $eshb_accomodation_metaboxes['accomodation_info_group'] : array();
 
 ?>
-<div class="eshb-accomodation-info-block-wrapper" style="<?php echo esc_attr($style_attr); ?>">
-   <div class="basic-information-list" style="<?php echo esc_attr($list_styles_inline); ?>">
+<div class="eshb-accomodation-info-block-wrapper" style="<?php echo esc_attr($eshb_style_attr); ?>">
+   <div class="basic-information-list" style="<?php echo esc_attr($eshb_list_styles_inline); ?>">
         <?php 
-            if ( ! empty( $accomodation_info_group ) ) {
-                foreach ( $accomodation_info_group as $group ) { ?>
+            if ( ! empty( $eshb_accomodation_info_group ) ) {
+                foreach ( $eshb_accomodation_info_group as $eshb_group ) { ?>
                     <p class="info">
                         <?php 
-                            if(!empty($group['info_icon'])){ ?>
-                                <i class="info-icon <?php echo esc_html($group['info_icon']); ?>" style="<?php echo esc_attr($icon_styles_inline); ?>"></i>
+                            if(!empty($eshb_group['info_icon'])){ ?>
+                                <i class="info-icon <?php echo esc_html($eshb_group['info_icon']); ?>" style="<?php echo esc_attr($eshb_icon_styles_inline); ?>"></i>
                             <?php }
 
-                            if(!empty($group['info_icon_img']['url'])){ 
-                                $icon_img_url = $group['info_icon_img']['url'];
+                            if(!empty($eshb_group['info_icon_img']['url'])){ 
+                                $eshb_icon_img_url = $eshb_group['info_icon_img']['url'];
                                 ?>
-                                <img src="<?php echo esc_url($icon_img_url); ?>" alt="info Icon" class="info-icon" style="<?php echo esc_attr($img_icon_styles_inline); ?>">
+                                <img src="<?php echo esc_url($eshb_icon_img_url); ?>" alt="info Icon" class="info-icon" style="<?php echo esc_attr($eshb_img_icon_styles_inline); ?>">
                             <?php }
                         ?>
                         
-                        <span class="info-title" style="<?php echo esc_attr($title_styles_inline); ?>"><?php echo esc_html($group['info_title']); ?></span>
+                        <span class="info-title" style="<?php echo esc_attr($eshb_title_styles_inline); ?>"><?php echo esc_html($eshb_group['info_title']); ?></span>
                     </p>
                 <?php }
             }

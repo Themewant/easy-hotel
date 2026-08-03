@@ -116,6 +116,7 @@ class ESHB_Helper {
             $main_post_id = pll_get_post( $post_id, $default_lang ) ? pll_get_post( $post_id, $default_lang ) : $post_id ;
             
         }elseif ( function_exists( 'apply_filters' ) && function_exists( 'icl_object_id' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML, name cannot be prefixed.
             $main_post_id = apply_filters( 'wpml_original_element_id', NULL, $post_id, 'post_post' );
         }
         return $main_post_id;
@@ -291,6 +292,7 @@ class ESHB_Helper {
         $state_city_name = '';
         if ( file_exists( $states_file ) ) {
             $all_states = include $states_file; // returns array of all countries' states
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WooCommerce, name cannot be prefixed.
             $all_states = apply_filters( 'woocommerce_states', $all_states );
             $state_city_name = isset( $all_states[$country_code][ $code ] ) ? $all_states[$country_code][ $code ] : '';
         }

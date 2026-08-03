@@ -17,6 +17,7 @@ if ( ! class_exists( 'ESHB_Walker_Nav_Menu_Edit' ) && class_exists( 'Walker_Nav_
       parent::start_el( $html, $item, $depth, $args, $id );
 
       ob_start();
+      // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook, name cannot be prefixed.
       do_action( 'wp_nav_menu_item_custom_fields', $item->ID, $item, $depth, $args );
       $custom_fields = ob_get_clean();
 

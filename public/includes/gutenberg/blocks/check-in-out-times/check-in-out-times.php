@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-function create_block_check_in_out_times_block_init() {
+function eshb_create_block_check_in_out_times_block_init() {
 	// Register block-specific styles manually to be sure
 	wp_register_style(
 		'eshb-check-in-out-times-style',
@@ -17,4 +17,4 @@ function create_block_check_in_out_times_block_init() {
 		'editor_style'  => 'eshb-check-in-out-times-style',
 	) );
 }
-add_action( 'init', 'create_block_check_in_out_times_block_init' );
+add_action( 'init', 'eshb_create_block_check_in_out_times_block_init' );

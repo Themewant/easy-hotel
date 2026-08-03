@@ -75,6 +75,7 @@ if ( ! class_exists( 'ESHB_Field_wp_editor' ) ) {
       // Capture the media buttons using output buffering
       ob_start();
           echo '<div class="wp-media-buttons">';
+              // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook, name cannot be prefixed.
               do_action( 'media_buttons' );
           echo '</div>';
       $media_buttons = ob_get_clean();

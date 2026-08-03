@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-function create_block_accomodation_gallery_block_init() {
+function eshb_create_block_accomodation_gallery_block_init() {
 
 
 	// Register the main plugin style
@@ -34,4 +34,4 @@ function create_block_accomodation_gallery_block_init() {
 		'editor_style'  => 'eshb-accomodation-gallery-editor-style',
 	) );
 }
-add_action( 'init', 'create_block_accomodation_gallery_block_init' );
+add_action( 'init', 'eshb_create_block_accomodation_gallery_block_init' );

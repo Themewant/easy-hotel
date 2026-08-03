@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-function create_block_booking_form_block_init() {
+function eshb_create_block_booking_form_block_init() {
 	// Register the main plugin style
 	wp_register_style( 
 		'eshb-style', 
@@ -32,4 +32,4 @@ function create_block_booking_form_block_init() {
 		'editor_style'  => 'eshb-booking-form-editor-style',
 	) );
 }
-add_action( 'init', 'create_block_booking_form_block_init' );
+add_action( 'init', 'eshb_create_block_booking_form_block_init' );

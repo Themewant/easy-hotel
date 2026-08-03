@@ -407,6 +407,7 @@ class ESHB_Native_Checkout {
         // reservation found" view to every visitor. Disable caching for
         // this page so the cookie/transient is always read fresh.
         nocache_headers();
+        // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Standard caching-plugin constants, names cannot be prefixed.
         if ( ! defined( 'DONOTCACHEPAGE' ) ) {
             define( 'DONOTCACHEPAGE', true );
         }
@@ -416,6 +417,7 @@ class ESHB_Native_Checkout {
         if ( ! defined( 'DONOTCACHEDB' ) ) {
             define( 'DONOTCACHEDB', true );
         }
+        // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
         ob_start();
 
@@ -566,6 +568,7 @@ class ESHB_Native_Checkout {
             'order'          => 'ASC',
             'no_found_rows'  => true,
             'fields'         => 'ids',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Fallback lookup only when the group transient is missing; no alternative index exists.
             'meta_query'     => [
                 [
                     'key'   => 'native_group_id',

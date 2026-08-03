@@ -495,9 +495,11 @@ if ( ! function_exists( 'eshb_native_checkout_page_translation_ids' ) ) {
         if ( function_exists( 'pll_get_post_translations' ) ) {
             $ids = array_map( 'intval', (array) pll_get_post_translations( $page_id ) );
         } elseif ( function_exists( 'icl_object_id' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML, name cannot be prefixed.
             $languages = apply_filters( 'wpml_active_languages', null, [ 'skip_missing' => 1 ] );
             if ( is_array( $languages ) ) {
                 foreach ( array_keys( $languages ) as $code ) {
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML, name cannot be prefixed.
                     $ids[] = (int) apply_filters( 'wpml_object_id', $page_id, 'page', false, $code );
                 }
             }

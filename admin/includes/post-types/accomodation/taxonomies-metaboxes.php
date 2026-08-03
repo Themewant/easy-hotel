@@ -3,17 +3,17 @@
 // Control core classes for avoid errors
 if( class_exists( 'ESHB' ) ) {
     // Set a unique slug-like ID
-    $prefix = 'eshb_accomodation_taxonomy_metaboxes';
+    $eshb_prefix = 'eshb_accomodation_taxonomy_metaboxes';
 
     // Create taxonomy options
-    ESHB::createTaxonomyOptions( $prefix, array(
+    ESHB::createTaxonomyOptions( $eshb_prefix, array(
         'taxonomy'  => 'eshb_category',
         'data_type' => 'unserialize ', // The type of the database save options. `serialize` or `unserialize`
     ) 
     );
 
     // Create a section
-    ESHB::createSection( $prefix, array(
+    ESHB::createSection( $eshb_prefix, array(
             'fields' => array(
                 array(
                     'id'      => 'thumbnail',

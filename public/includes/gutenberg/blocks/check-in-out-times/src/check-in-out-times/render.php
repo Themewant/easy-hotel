@@ -7,8 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$accomodation_id = get_the_ID();
-$ESHB_View       = new ESHB_View();
+$eshb_accomodation_id = get_the_ID();
+$ESHB_View            = new ESHB_View();
 ?>
 
 <div <?php echo wp_kses_data( get_block_wrapper_attributes( array(

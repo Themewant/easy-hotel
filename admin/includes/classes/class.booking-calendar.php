@@ -215,6 +215,7 @@ class ESHB_Booking_Calendar {
             $default_lang = pll_default_language();
             $main_post_id = $default_lang ? intval( pll_get_post( $accomodation_id, $default_lang ) ) : 0;
         } elseif ( function_exists( 'icl_object_id' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML, name cannot be prefixed.
             $main_post_id = intval( apply_filters( 'wpml_original_element_id', NULL, $accomodation_id, 'post_eshb_accomodation' ) );
         }
 
