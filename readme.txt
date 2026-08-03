@@ -258,6 +258,8 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 * Fixed: Duplicate counts in Total Bookings, Available Bookings, and Room Availability Summary.
 * Fixed: Country and State dropdown issues in deposit booking payments.
 * Fixed: Hardcoded booking logo translation issues.
+* Fixed: All escaping issue fixes.
+* Fixed: Booking Service currency symbol positioning issue fixes.
 
 = 2.0.6 =
 * Added: Booking rules settings tab new added
