@@ -252,6 +252,13 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 == Changelog ==
 
+= 2.0.8 =
+
+* Added: Room Assign system added.
+* Added: Dashboard Arrival & Departure Management
+* Added: Real-Time Room Availability Checker
+* Added: Room Rack – Visual room assignment board with a calendar timeline.
+
 = 2.0.7 =
 * Fixed: Account page language translation issues.
 * Fixed: Dashboard booking calendar language issues.
