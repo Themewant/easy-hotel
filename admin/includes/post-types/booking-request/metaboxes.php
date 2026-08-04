@@ -258,10 +258,10 @@ function eshb_booking_request_custom_column_content($column, $post_id) {
 
     switch ($column) {
         case 'booking_start_date':
-            echo esc_html(date_i18n( get_option('date_format'), strtotime( $eshb_booking_request_metaboxes['booking_start_date'] ) ));
+            echo esc_html(ESHB_Helper::eshb_format_date( $eshb_booking_request_metaboxes['booking_start_date'] ));
             break;
         case 'booking_end_date':
-            echo esc_html(date_i18n( get_option('date_format'), strtotime( $eshb_booking_request_metaboxes['booking_end_date'] ) ));
+            echo esc_html(ESHB_Helper::eshb_format_date( $eshb_booking_request_metaboxes['booking_end_date'] ));
             break;
         case 'room_quantity':
             echo esc_html($eshb_booking_request_metaboxes['room_quantity']);

@@ -137,15 +137,15 @@ function eshb_get_booking_data_tables() {
                     <tbody>
                         <tr>
                             <td><?php esc_html_e('Booking Date', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html(date_i18n( get_option('date_format'), strtotime( get_the_date('Y-m-d', $post_id) ) )); ?></td>
+                            <td><?php echo esc_html(get_the_date( get_option('date_format'), $post_id )); ?></td>
                         </tr>
                         <tr>
                             <td><?php esc_html_e('Booking Start Date', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html(date_i18n( get_option('date_format'), strtotime( $booking_start_date ) )); ?></td>
+                            <td><?php echo esc_html(ESHB_Helper::eshb_format_date( $booking_start_date )); ?></td>
                         </tr>
                         <tr>
                             <td><?php esc_html_e('Booking End Date', 'easy-hotel') ?></td>
-                            <td><?php echo esc_html(date_i18n( get_option('date_format'), strtotime( $booking_end_date ) )); ?></td>
+                            <td><?php echo esc_html(ESHB_Helper::eshb_format_date( $booking_end_date )); ?></td>
                         </tr>
                         <?php 
                             if(!empty($time_slot)) {

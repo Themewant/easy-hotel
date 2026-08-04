@@ -530,7 +530,7 @@ class ESHB_Dashboard_Data {
 		foreach ( $counts as $key => $count ) {
 			$series[] = array(
 				'date'  => $key,
-				'label' => date_i18n( 'M', strtotime( $key . '-01' ) ),
+				'label' => ESHB_Helper::eshb_format_date( $key . '-01', 'M' ),
 				'count' => $count,
 			);
 		}
@@ -577,7 +577,7 @@ class ESHB_Dashboard_Data {
 		return array(
 			'year'      => $year,
 			'month'     => $month,
-			'monthName' => date_i18n( 'F Y', strtotime( $this->today ) ),
+			'monthName' => ESHB_Helper::eshb_format_date( $this->today, 'F Y' ),
 			'firstDow'  => (int) gmdate( 'w', strtotime( sprintf( '%04d-%02d-01', $year, $month ) ) ),
 			'days'      => $cells,
 		);
@@ -613,8 +613,11 @@ class ESHB_Dashboard_Data {
 		if ( empty( $date ) ) {
 			return '—';
 		}
-		$ts = strtotime( $date );
+		// Read as site local: strtotime() would place the stored date at UTC
+		// midnight, which date_i18n() then rolls back a day on any site behind
+		// UTC.
+		$formatted = ESHB_Helper::eshb_format_date( $date, 'M j, Y' );
 
-		return $ts ? date_i18n( 'M j, Y', $ts ) : $date;
+		return '' !== $formatted ? $formatted : $date;
 	}
 }

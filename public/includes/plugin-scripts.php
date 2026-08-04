@@ -46,13 +46,11 @@ function eshb_wp_enqueue_scripts (){
 
      // Convert the WordPress "date_format" (Settings > General) into a moment.js format
      // so the calendar can display dates exactly as WordPress does, per the site locale.
-     $eshb_php_to_moment = array(
-         'd' => 'DD', 'j' => 'D', 'D' => 'ddd', 'l' => 'dddd', 'N' => 'E', 'w' => 'd', 'S' => '',
-         'm' => 'MM', 'n' => 'M', 'M' => 'MMM', 'F' => 'MMMM',
-         'Y' => 'YYYY', 'y' => 'YY',
-     );
-     $eshb_wp_date_format = get_option( 'date_format', 'F j, Y' );
-     $eshb_moment_format  = strtr( $eshb_wp_date_format, $eshb_php_to_moment );
+     // The conversion has to walk the format token by token rather than character by
+     // character: locales escape literal words with a backslash — Spanish ships
+     // "j \d\e F \d\e Y" — and a plain strtr() rewrites the "de" inside those escapes
+     // into date tokens, printing "4 DDe agosto DDe 2026".
+     $eshb_moment_format = ESHB_Helper::eshb_date_format_to_moment( get_option( 'date_format', 'F j, Y' ) );
 
      // Translated month + short weekday names (from WordPress translations, so they are
      // guaranteed localized even when moment.js has no bundled locale on the page).

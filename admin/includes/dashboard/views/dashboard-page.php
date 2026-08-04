@@ -35,6 +35,35 @@ $eshb_quick_actions = array(
 	array( __( 'Manage Availability', 'easy-hotel' ), 'calendar-alt', $links['availability'], 'orange' ),
 	array( __( 'Create Coupon', 'easy-hotel' ), 'tickets-alt', $links['coupons'], 'red' ),
 );
+
+/**
+ * The room rack lives in the optional PMS module. Adding the action only when
+ * that module is loaded keeps the quick actions free of a link that would 404
+ * on an install running the plugin without it.
+ */
+if ( class_exists( 'ESHB_PMS_Rack' ) ) {
+	$eshb_quick_actions[] = array( __( 'Open Room Rack', 'easy-hotel' ), 'grid-view', $links['rack'], 'teal' );
+}
+
+/**
+ * The two movement panels. Same shell, different data key and date column, so
+ * they are rendered from one loop instead of twice the markup.
+ *
+ * key, title, dashicon, accent, extra column heading.
+ */
+$eshb_movement_panels = array(
+	array( 'arrivals', __( 'Arriving', 'easy-hotel' ), 'arrow-down-alt', 'green', __( 'Check-out', 'easy-hotel' ) ),
+	array( 'departures', __( 'Departing', 'easy-hotel' ), 'arrow-up-alt', 'purple', __( 'Check-in', 'easy-hotel' ) ),
+);
+
+/**
+ * Day switch shown in every movement panel: value, label.
+ */
+$eshb_movement_days = array(
+	array( 'today', __( 'Today', 'easy-hotel' ) ),
+	array( 'tomorrow', __( 'Tomorrow', 'easy-hotel' ) ),
+	array( 'yesterday', __( 'Yesterday', 'easy-hotel' ) ),
+);
 ?>
 <div class="wrap eshb-dashboard-wrap">
 	<div class="eshb-dash-shell" id="eshb-dashboard" aria-busy="true">
@@ -151,6 +180,81 @@ $eshb_quick_actions = array(
 						<p><?php esc_html_e( 'Advanced pricing, diposit, ical syncronization, whatspp and many more with our premium add-ons.', 'easy-hotel' ); ?></p>
 						<a href="<?php echo esc_url( $links['addons'] ); ?>" class="eshb-dash-upsell-btn"><?php esc_html_e( 'Explore Now', 'easy-hotel' ); ?></a>
 					</div>
+				</div>
+
+				<!-- Arriving / Departing -->
+				<?php foreach ( $eshb_movement_panels as $eshb_panel ) : ?>
+					<div class="eshb-dash-card eshb-card-<?php echo esc_attr( $eshb_panel[0] ); ?> eshb-dash-movement" data-movement="<?php echo esc_attr( $eshb_panel[0] ); ?>">
+						<div class="eshb-dash-card-head">
+							<h3>
+								<span class="eshb-dash-head-icon accent-<?php echo esc_attr( $eshb_panel[3] ); ?> dashicons dashicons-<?php echo esc_attr( $eshb_panel[2] ); ?>"></span>
+								<?php echo esc_html( $eshb_panel[1] ); ?>
+								<span class="eshb-dash-count" data-count>0</span>
+							</h3>
+							<div class="eshb-dash-head-tools">
+								<div class="eshb-dash-search">
+									<input type="search" data-search placeholder="<?php esc_attr_e( 'Search', 'easy-hotel' ); ?>" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: panel name, e.g. Arriving. */ __( 'Search %s', 'easy-hotel' ), $eshb_panel[1] ) ); ?>" />
+									<button type="button" class="eshb-dash-search-clear dashicons dashicons-no-alt" data-clear hidden aria-label="<?php esc_attr_e( 'Clear search', 'easy-hotel' ); ?>"></button>
+								</div>
+								<div class="eshb-dash-segment" role="group">
+									<?php foreach ( $eshb_movement_days as $eshb_index => $eshb_day ) : ?>
+										<button type="button" data-day="<?php echo esc_attr( $eshb_day[0] ); ?>"<?php echo ( 0 === $eshb_index ) ? ' class="is-active"' : ''; ?>><?php echo esc_html( $eshb_day[1] ); ?></button>
+									<?php endforeach; ?>
+								</div>
+							</div>
+						</div>
+						<div class="eshb-dash-table-wrap">
+							<table class="eshb-dash-table">
+								<thead>
+									<tr>
+										<th><?php esc_html_e( 'ID', 'easy-hotel' ); ?></th>
+										<th><?php esc_html_e( 'Customer Name', 'easy-hotel' ); ?></th>
+										<th><?php esc_html_e( 'Room Type', 'easy-hotel' ); ?></th>
+										<th><?php esc_html_e( 'Adults', 'easy-hotel' ); ?></th>
+										<th><?php echo esc_html( $eshb_panel[4] ); ?></th>
+										<th><?php esc_html_e( 'Status', 'easy-hotel' ); ?></th>
+									</tr>
+								</thead>
+								<tbody data-rows>
+									<tr><td colspan="6" class="eshb-dash-empty"><?php esc_html_e( 'Loading…', 'easy-hotel' ); ?></td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				<?php endforeach; ?>
+
+				<!-- Check Availability -->
+				<div class="eshb-dash-card eshb-card-availability" id="eshb-availability">
+					<div class="eshb-dash-card-head">
+						<h3>
+							<span class="eshb-dash-head-icon accent-blue dashicons dashicons-calculator"></span>
+							<?php esc_html_e( 'Check Availability', 'easy-hotel' ); ?>
+						</h3>
+					</div>
+					<form class="eshb-dash-availability-form" data-availability-form>
+						<label class="eshb-dash-field">
+							<span class="eshb-dash-field-label"><?php esc_html_e( 'Check-in', 'easy-hotel' ); ?></span>
+							<input type="date" name="check_in" data-field="check_in" />
+						</label>
+						<label class="eshb-dash-field eshb-dash-field--sm">
+							<span class="eshb-dash-field-label"><?php esc_html_e( 'Nights', 'easy-hotel' ); ?></span>
+							<input type="number" name="nights" data-field="nights" min="1" max="365" step="1" value="1" />
+						</label>
+						<label class="eshb-dash-field eshb-dash-field--sm">
+							<span class="eshb-dash-field-label"><?php esc_html_e( 'Adults', 'easy-hotel' ); ?></span>
+							<input type="number" name="adults" data-field="adults" min="0" step="1" value="2" />
+						</label>
+						<label class="eshb-dash-field eshb-dash-field--sm">
+							<span class="eshb-dash-field-label"><?php esc_html_e( 'Children', 'easy-hotel' ); ?></span>
+							<input type="number" name="children" data-field="children" min="0" step="1" value="0" />
+						</label>
+						<button type="submit" class="eshb-dash-btn">
+							<span class="dashicons dashicons-admin-home"></span>
+							<?php esc_html_e( 'Calculate', 'easy-hotel' ); ?>
+						</button>
+					</form>
+					<p class="eshb-dash-availability-summary" data-availability-summary hidden></p>
+					<div class="eshb-dash-availability-result" data-availability-result></div>
 				</div>
 
 			</section>

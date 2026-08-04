@@ -459,8 +459,268 @@ class ESHB_Helper {
         return $booking_id;
     }
 
+    /**
+     * Splits a PHP date() format into its parts, honouring the backslash escape.
+     *
+     * Locales lean on that escape: Spanish stores "j \d\e F \d\e Y", where the
+     * "\d\e" pairs are the literal word "de" and not the day/timezone tokens.
+     * Anything that rewrites the format one character at a time (str_replace or
+     * strtr) turns that word back into tokens, which is how "4 de agosto de
+     * 2026" reached the booking calendar as "4 DDe agosto DDe 2026".
+     *
+     * @param  string $format PHP date() format.
+     * @return array  List of [ character, is_literal ] pairs.
+     */
+    protected static function eshb_split_date_format( $format ) {
+
+        $parts  = array();
+        $format = (string) $format;
+        $length = strlen( $format );
+
+        for ( $i = 0; $i < $length; $i++ ) {
+
+            if ( '\\' === $format[ $i ] && $i + 1 < $length ) {
+                $i++;
+                $parts[] = array( $format[ $i ], true );
+                continue;
+            }
+
+            $parts[] = array( $format[ $i ], false );
+        }
+
+        return $parts;
+    }
+
+    /**
+     * Wraps a run of literal text for moment.js.
+     *
+     * Pure punctuation — "/", "-", ", " — means nothing to moment and reads
+     * better raw; anything else is bracketed so no word inside the format can
+     * ever be mistaken for a token.
+     *
+     * @param  string $text
+     * @return string
+     */
+    protected static function eshb_moment_literal( $text ) {
+
+        if ( '' === $text ) {
+            return '';
+        }
+
+        // Brackets are moment's own literal delimiters, so they cannot sit
+        // inside one.
+        $text = str_replace( array( '[', ']' ), '', $text );
+
+        if ( '' === $text || ! preg_match( '/[^\s\/\-.,:;()]/u', $text ) ) {
+            return $text;
+        }
+
+        return '[' . $text . ']';
+    }
+
+    /**
+     * Converts a PHP date() format into a moment.js format.
+     *
+     * Escaped characters — and anything moment reads as a token but PHP does
+     * not define — come back as moment literals, so translated words inside the
+     * site date format survive the trip to JavaScript intact.
+     *
+     * @param  string $format PHP date() format, defaults to Settings > General.
+     * @return string
+     */
+    public static function eshb_date_format_to_moment( $format = '' ) {
+
+        $format = '' !== (string) $format ? $format : get_option( 'date_format', 'F j, Y' );
+
+        $tokens = array(
+            'd' => 'DD',   'j' => 'D',    'D' => 'ddd',  'l' => 'dddd',
+            'N' => 'E',    'w' => 'd',    'z' => 'DDD',  'W' => 'W',
+            'F' => 'MMMM', 'm' => 'MM',   'M' => 'MMM',  'n' => 'M',
+            'o' => 'GGGG', 'Y' => 'YYYY', 'y' => 'YY',
+            'a' => 'a',    'A' => 'A',    'g' => 'h',    'G' => 'H',
+            'h' => 'hh',   'H' => 'HH',   'i' => 'mm',   's' => 'ss',
+            'v' => 'SSS',  'u' => 'SSSSSS',
+            'O' => 'ZZ',   'P' => 'Z',    'p' => 'Z',    'T' => 'z',
+            'U' => 'X',
+        );
+
+        $moment  = '';
+        $literal = '';
+
+        foreach ( self::eshb_split_date_format( $format ) as $part ) {
+
+            list( $char, $is_literal ) = $part;
+
+            // "S" is the English ordinal suffix. moment folds it into the day
+            // token, so "jS" has to come out as "Do" rather than "D" plus junk.
+            if ( ! $is_literal && 'S' === $char ) {
+                if ( '' === $literal && 'D' === substr( $moment, -1 ) ) {
+                    $moment = rtrim( $moment, 'D' ) . 'Do';
+                }
+                continue;
+            }
+
+            if ( ! $is_literal && isset( $tokens[ $char ] ) ) {
+                $moment .= self::eshb_moment_literal( $literal ) . $tokens[ $char ];
+                $literal = '';
+                continue;
+            }
+
+            $literal .= $char;
+        }
+
+        return $moment . self::eshb_moment_literal( $literal );
+    }
+
+    /**
+     * A shape hint for the site date format — "DD/MM/YYYY" — shown as the date
+     * field placeholder while the calendar is open.
+     *
+     * Literal text is left as written, so a Spanish site reads "DD de MM de
+     * YYYY" instead of the mangled "DD \DD\e MM \DD\e YYYY".
+     *
+     * @param  string $format PHP date() format, defaults to Settings > General.
+     * @return string
+     */
+    public static function eshb_date_format_hint( $format = '' ) {
+
+        $format = '' !== (string) $format ? $format : get_option( 'date_format', 'm/d/Y' );
+
+        $tokens = array(
+            'd' => 'DD', 'j' => 'DD', 'l' => 'DD', 'D' => 'DD', 'N' => 'DD', 'w' => 'DD',
+            'm' => 'MM', 'n' => 'MM', 'F' => 'MM', 'M' => 'MM',
+            'Y' => 'YYYY', 'y' => 'YY', 'S' => '',
+        );
+
+        $hint = '';
+
+        foreach ( self::eshb_split_date_format( $format ) as $part ) {
+
+            list( $char, $is_literal ) = $part;
+
+            $hint .= ( ! $is_literal && isset( $tokens[ $char ] ) ) ? $tokens[ $char ] : $char;
+        }
+
+        return $hint;
+    }
+
+    /**
+     * Today's date in the site timezone.
+     *
+     * gmdate() answers in UTC, so between local midnight and UTC midnight the
+     * booking form offered yesterday as the default check-in: a Madrid site
+     * (UTC+2) shows the 3rd to anyone opening the form after 22:00 on the 3rd.
+     *
+     * @param  string $format
+     * @return string
+     */
+    public static function eshb_today( $format = 'Y-m-d' ) {
+        return current_time( $format );
+    }
+
+    /**
+     * Reads a stored string that carries no timezone of its own — a Y-m-d
+     * booking date, a "14:00" check-in time, a current_time('mysql') stamp — as
+     * a moment in the site timezone.
+     *
+     * strtotime() reads such a string as UTC, because WordPress pins PHP's
+     * default timezone there, and date_i18n()/wp_date() then convert it into
+     * the site timezone. That round trip moves the value by the site offset:
+     * a booking date lands on the day before on any site behind UTC, a 2:00 pm
+     * check-in prints as 4:00 pm in Madrid, and a cancellation stamp written by
+     * current_time() is shifted twice.
+     *
+     * @param  string $value
+     * @return int|false Timestamp, or false when the string is unreadable.
+     */
+    protected static function eshb_local_timestamp( $value ) {
+
+        $value = trim( (string) $value );
+
+        if ( '' === $value ) {
+            return false;
+        }
+
+        // A bare calendar date is anchored at midday, so no offset — and no DST
+        // jump — can push it onto a neighbouring day.
+        if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $value ) ) {
+            $value .= ' 12:00:00';
+        }
+
+        try {
+            $moment = new DateTime( $value, wp_timezone() );
+        } catch ( Exception $e ) {
+            return false;
+        }
+
+        return $moment->getTimestamp();
+    }
+
+    /**
+     * Renders a stored booking date with the site date format.
+     *
+     * @param  string $date   Date in Y-m-d, or anything DateTime accepts.
+     * @param  string $format PHP date() format, defaults to Settings > General.
+     * @return string
+     */
+    public static function eshb_format_date( $date, $format = '' ) {
+
+        $timestamp = self::eshb_local_timestamp( $date );
+
+        if ( false === $timestamp ) {
+            return '';
+        }
+
+        return wp_date( '' !== (string) $format ? $format : get_option( 'date_format' ), $timestamp );
+    }
+
+    /**
+     * Renders a wall clock time — a check-in or slot time such as "14:00" —
+     * with the site time format.
+     *
+     * The stored value is what the hotel typed, not an instant in time, so it
+     * has to come back out unchanged rather than shifted by the site offset.
+     *
+     * @param  string $time
+     * @param  string $format PHP date() format, defaults to Settings > General.
+     * @return string
+     */
+    public static function eshb_format_time( $time, $format = '' ) {
+
+        $timestamp = self::eshb_local_timestamp( $time );
+
+        if ( false === $timestamp ) {
+            return '';
+        }
+
+        return wp_date( '' !== (string) $format ? $format : get_option( 'time_format' ), $timestamp );
+    }
+
+    /**
+     * Renders a stamp written by current_time( 'mysql' ) — already site local —
+     * with the site date and time formats.
+     *
+     * @param  string $value
+     * @param  string $format PHP date() format, defaults to Settings > General.
+     * @return string
+     */
+    public static function eshb_format_datetime( $value, $format = '' ) {
+
+        $timestamp = self::eshb_local_timestamp( $value );
+
+        if ( false === $timestamp ) {
+            return '';
+        }
+
+        if ( '' === (string) $format ) {
+            $format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+        }
+
+        return wp_date( $format, $timestamp );
+    }
+
     public static function get_eshb_default_start_end_date(){
-        $today_date = gmdate('Y-m-d'); // Get today's date
+        $today_date = self::eshb_today(); // Today in the site timezone, not UTC
 
         // Create a DateTime object from today's date
         $date = new DateTime($today_date);
@@ -779,8 +1039,7 @@ class ESHB_Helper {
     }
 
     public static function format_to_wp_time($time_string){
-        $timestamp = strtotime( $time_string );
-        return date_i18n( get_option('time_format'), $timestamp );
+        return self::eshb_format_time( $time_string );
     }
 
     public static function eshb_set_accomodation_localize($accomodation_id = null) {

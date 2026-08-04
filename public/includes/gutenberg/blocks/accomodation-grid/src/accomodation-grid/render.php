@@ -20,7 +20,7 @@ $per_page = $eshb_attributes['per_page'] ?? -1;
 $eshb_room_order = $eshb_attributes['room_order'] ?? 'ASC';
 $eshb_room_orderby = $eshb_attributes['room_orderby'] ?? 'date';
 $eshb_room_offset = $eshb_attributes['room_offset'] ?? 0;
-$eshb_today_date = gmdate('Y-m-d'); // Get today's date
+$eshb_today_date = ESHB_Helper::eshb_today(); // Today in the site timezone, not UTC
 $cat = $eshb_attributes['category'] ?? '';
 $eshb_show_pagination = $eshb_attributes['show_pagination'] ?? false;
 // Create a DateTime object from today's date

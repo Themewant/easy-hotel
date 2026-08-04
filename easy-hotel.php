@@ -30,6 +30,9 @@
     include 'admin/includes/dashboard/init.php';
     include 'class.easy-hotel.php';
 
+    // PMS module. Self contained under /pms — remove this line to disable it entirely.
+    include 'pms/pms.php';
+
     register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
     add_action( 'plugins_loaded', function(){
             ESHB_MAIN::instance();
@@ -52,4 +55,5 @@
         $client->insights()->init();
 
     }
+
     add_action( 'plugins_loaded', 'eshb_appsero_init_tracker' );

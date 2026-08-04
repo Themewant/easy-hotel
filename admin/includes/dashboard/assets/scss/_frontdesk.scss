@@ -1,0 +1,302 @@
+/* =========================================================================
+   Easy Hotel – Dashboard front desk panels (arriving, departing, availability)
+   Same tokens and card shell as _dashboard.scss; only the pieces that did not
+   exist yet are defined here.
+   ========================================================================= */
+
+.eshb-dashboard-wrap {
+
+	.eshb-card-arrivals { grid-area: ar; }
+	.eshb-card-departures { grid-area: dp; }
+	.eshb-card-availability { grid-area: av; }
+
+	/* -------------------------------------------------------- card head bits
+	   Scoped to the new cards: the existing heads keep the plain inline h3 they
+	   were designed with. */
+	.eshb-dash-movement .eshb-dash-card-head h3,
+	.eshb-card-availability .eshb-dash-card-head h3 {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+	}
+
+	.eshb-dash-head-icon {
+		flex: 0 0 28px;
+		width: 28px;
+		height: 28px;
+		border-radius: 9px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 17px;
+
+		&.accent-blue { background: #e7edff; color: #3b62f6; }
+		&.accent-green { background: #def2e4; color: #1faa5b; }
+		&.accent-purple { background: #efe8fd; color: #7b5cf0; }
+		&.accent-orange { background: #fff0db; color: #f0a020; }
+	}
+
+	.eshb-dash-count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 26px;
+		height: 22px;
+		padding: 0 7px;
+		border-radius: 7px;
+		background: var(--eshb-d-blue-soft);
+		color: var(--eshb-d-blue);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.eshb-dash-head-tools {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	/* --------------------------------------------------------------- search */
+	.eshb-dash-search {
+		position: relative;
+
+		input[type="search"] {
+			width: 190px;
+			height: 34px;
+			margin: 0;
+			padding: 0 30px 0 12px;
+			border: 1px solid var(--eshb-d-border);
+			border-radius: 8px;
+			background: #fff;
+			color: var(--eshb-d-text);
+			font-size: 13px;
+			line-height: 1.4;
+			box-shadow: none;
+
+			&:focus {
+				border-color: #c3cef8;
+				box-shadow: 0 0 0 2px var(--eshb-d-blue-soft);
+				outline: none;
+			}
+		}
+
+		.eshb-dash-search-clear {
+			position: absolute;
+			top: 50%;
+			right: 4px;
+			transform: translateY(-50%);
+			border: none;
+			background: transparent;
+			color: #9aa3b4;
+			cursor: pointer;
+			padding: 2px;
+			line-height: 0;
+			font-size: 16px;
+
+			&:hover { color: var(--eshb-d-red); }
+			&[hidden] { display: none; }
+		}
+	}
+
+	/* ------------------------------------------------------- day switch */
+	.eshb-dash-segment {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		padding: 3px;
+		border: 1px solid var(--eshb-d-border);
+		border-radius: 9px;
+		background: #fff;
+
+		button {
+			border: none;
+			background: transparent;
+			color: #5b6577;
+			font-size: 12px;
+			font-weight: 500;
+			padding: 6px 12px;
+			border-radius: 7px;
+			cursor: pointer;
+			line-height: 1.4;
+			transition: background 0.15s ease, color 0.15s ease;
+
+			&:hover { background: var(--eshb-d-bg); }
+
+			&.is-active {
+				background: var(--eshb-d-blue);
+				color: #fff;
+			}
+		}
+	}
+
+	/* ---------------------------------------------------- movement panels */
+	.eshb-dash-movement {
+		.eshb-dash-card-head { flex-wrap: wrap; gap: 12px; }
+
+		.eshb-dash-table-wrap { min-height: 120px; }
+	}
+
+	/* -------------------------------------------------- availability form */
+	.eshb-dash-availability-form {
+		display: flex;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.eshb-dash-field {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		min-width: 0;
+
+		&.eshb-dash-field--sm {
+			width: 96px;
+			flex: 0 0 96px;
+		}
+
+		input {
+			height: 38px;
+			margin: 0;
+			padding: 0 12px;
+			border: 1px solid var(--eshb-d-border);
+			border-radius: 9px;
+			background: #fff;
+			color: var(--eshb-d-text);
+			font-size: 13px;
+			line-height: 1.4;
+			box-shadow: none;
+			min-height: 38px;
+
+			&:focus {
+				border-color: #c3cef8;
+				box-shadow: 0 0 0 2px var(--eshb-d-blue-soft);
+				outline: none;
+			}
+		}
+	}
+
+	.eshb-dash-field-label {
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--eshb-d-muted);
+	}
+
+	.eshb-dash-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 38px;
+		padding: 0 18px;
+		border: none;
+		border-radius: 9px;
+		background: var(--eshb-d-blue);
+		color: #fff;
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.15s ease;
+
+		&:hover { background: #2f52dd; }
+
+		&:disabled {
+			opacity: 0.6;
+			cursor: default;
+		}
+
+		.dashicons {
+			font-size: 16px;
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	/* ----------------------------------------------- availability results */
+	.eshb-dash-availability-summary {
+		margin: 16px 0 0;
+		font-size: 13px;
+		color: #5b6577;
+
+		&[hidden] { display: none; }
+	}
+
+	.eshb-dash-availability-result {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin-top: 8px;
+
+		&:empty { display: none; }
+
+		.eshb-dash-empty {
+			text-align: center;
+			color: var(--eshb-d-muted);
+			font-size: 13px;
+			padding: 18px 14px;
+		}
+	}
+
+	.eshb-dash-avail-row {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding: 12px 4px;
+		border-bottom: 1px solid #f4f6fa;
+
+		&:last-child { border-bottom: none; }
+
+		&.is-out { opacity: 0.6; }
+
+		.eshb-dash-avail-name {
+			flex: 1 1 auto;
+			min-width: 0;
+			font-size: 14px;
+			font-weight: 500;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+
+			a {
+				color: var(--eshb-d-text);
+				text-decoration: none;
+
+				&:hover { color: var(--eshb-d-blue); }
+			}
+		}
+
+		.eshb-dash-avail-count,
+		.eshb-dash-avail-sleeps {
+			flex: 0 0 auto;
+			font-size: 13px;
+			color: var(--eshb-d-muted);
+			white-space: nowrap;
+		}
+
+		.eshb-dash-badge {
+			flex: 0 0 auto;
+			min-width: 112px;
+			text-align: center;
+		}
+	}
+
+	.eshb-dash-badge {
+		&.is-ok { background: #e4f7ec; color: #16a34a; }
+		&.is-full { background: #fde7ea; color: #ef4444; }
+		&.is-small { background: #fff3df; color: #d98a00; }
+	}
+}
+
+/* --------------------------------------------------------------- responsive */
+@media (max-width: 782px) {
+	.eshb-dashboard-wrap {
+		.eshb-dash-search input[type="search"] { width: 140px; }
+
+		.eshb-dash-avail-row {
+			flex-wrap: wrap;
+			gap: 8px;
+
+			.eshb-dash-avail-name { flex: 1 1 100%; }
+		}
+	}
+}

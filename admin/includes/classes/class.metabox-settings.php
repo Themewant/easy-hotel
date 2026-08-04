@@ -57,7 +57,10 @@ class ESHB_Metabox_Settings {
 		$can_publish    = current_user_can( $postTypeObject->cap->publish_posts );
 		$postStatus     = get_post_status( $post->ID );
         $statuses = ESHB_Helper::eshb_get_booking_statuses();
-		$post_date = date_i18n( 'F j, Y g:i a', strtotime($post->post_date) );
+		// post_date is stored in the site timezone already (post_date_gmt is the
+		// UTC copy), so reading it with strtotime() shifted it by the offset a
+		// second time.
+		$post_date = ESHB_Helper::eshb_format_datetime( $post->post_date, 'F j, Y g:i a' );
 		?>
 		<div class="submitbox" id="submitpost">
 			<div id="minor-publishing">

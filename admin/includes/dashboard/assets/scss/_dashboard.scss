@@ -127,7 +127,9 @@
 		align-items: stretch;
 		grid-template-areas:
 			"cal cal cal cal cal qa qa qa tr tr tr tr"
-			"rb rb rb rb rb rb rb rb st st st st";
+			"rb rb rb rb rb rb rb rb st st st st"
+			"ar ar ar ar ar ar dp dp dp dp dp dp"
+			"av av av av av av av av av av av av";
 	}
 
 	.eshb-card-calendar { grid-area: cal; }
@@ -414,6 +416,7 @@
 			&.accent-purple { background: #efe8fd; color: #7b5cf0; }
 			&.accent-orange { background: #fff0db; color: #f0a020; }
 			&.accent-red { background: #fde7ea; color: #e8536b; }
+			&.accent-teal { background: #e2eefc; color: #3a93e0; }
 			&.accent-gray { background: #eef0f4; color: #6b7385; }
 		}
 
@@ -642,7 +645,10 @@
 			"cal cal cal cal cal cal qa qa qa qa qa qa"
 			"tr tr tr tr tr tr tr tr tr tr tr tr"
 			"rb rb rb rb rb rb rb rb rb rb rb rb"
-			"st st st st st st st st st st st st";
+			"st st st st st st st st st st st st"
+			"ar ar ar ar ar ar ar ar ar ar ar ar"
+			"dp dp dp dp dp dp dp dp dp dp dp dp"
+			"av av av av av av av av av av av av";
 	}
 }
 
@@ -661,7 +667,10 @@
 				"qa"
 				"tr"
 				"rb"
-				"st";
+				"st"
+				"ar"
+				"dp"
+				"av";
 		}
 	}
 }

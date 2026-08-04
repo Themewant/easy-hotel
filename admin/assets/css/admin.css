@@ -143,7 +143,7 @@
   grid-template-columns: repeat(12, 1fr);
   gap: 18px;
   align-items: stretch;
-  grid-template-areas: "cal cal cal cal cal qa qa qa tr tr tr tr" "rb rb rb rb rb rb rb rb st st st st";
+  grid-template-areas: "cal cal cal cal cal qa qa qa tr tr tr tr" "rb rb rb rb rb rb rb rb st st st st" "ar ar ar ar ar ar dp dp dp dp dp dp" "av av av av av av av av av av av av";
 }
 .eshb-dashboard-wrap .eshb-card-calendar {
   grid-area: cal;
@@ -448,6 +448,10 @@
   background: #fde7ea;
   color: #e8536b;
 }
+.eshb-dashboard-wrap .eshb-dash-action .eshb-dash-action-icon.accent-teal {
+  background: #e2eefc;
+  color: #3a93e0;
+}
 .eshb-dashboard-wrap .eshb-dash-action .eshb-dash-action-icon.accent-gray {
   background: #eef0f4;
   color: #6b7385;
@@ -681,7 +685,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
   .eshb-dashboard-wrap .eshb-dash-grid {
-    grid-template-areas: "cal cal cal cal cal cal qa qa qa qa qa qa" "tr tr tr tr tr tr tr tr tr tr tr tr" "rb rb rb rb rb rb rb rb rb rb rb rb" "st st st st st st st st st st st st";
+    grid-template-areas: "cal cal cal cal cal cal qa qa qa qa qa qa" "tr tr tr tr tr tr tr tr tr tr tr tr" "rb rb rb rb rb rb rb rb rb rb rb rb" "st st st st st st st st st st st st" "ar ar ar ar ar ar ar ar ar ar ar ar" "dp dp dp dp dp dp dp dp dp dp dp dp" "av av av av av av av av av av av av";
   }
 }
 @media (max-width: 782px) {
@@ -696,7 +700,313 @@
   }
   .eshb-dashboard-wrap .eshb-dash-grid {
     grid-template-columns: 100%;
-    grid-template-areas: "cal" "qa" "tr" "rb" "st";
+    grid-template-areas: "cal" "qa" "tr" "rb" "st" "ar" "dp" "av";
+  }
+}
+/* =========================================================================
+   Easy Hotel – Dashboard front desk panels (arriving, departing, availability)
+   Same tokens and card shell as _dashboard.scss; only the pieces that did not
+   exist yet are defined here.
+   ========================================================================= */
+.eshb-dashboard-wrap {
+  /* -------------------------------------------------------- card head bits
+     Scoped to the new cards: the existing heads keep the plain inline h3 they
+     were designed with. */
+  /* --------------------------------------------------------------- search */
+  /* ------------------------------------------------------- day switch */
+  /* ---------------------------------------------------- movement panels */
+  /* -------------------------------------------------- availability form */
+  /* ----------------------------------------------- availability results */
+}
+.eshb-dashboard-wrap .eshb-card-arrivals {
+  grid-area: ar;
+}
+.eshb-dashboard-wrap .eshb-card-departures {
+  grid-area: dp;
+}
+.eshb-dashboard-wrap .eshb-card-availability {
+  grid-area: av;
+}
+.eshb-dashboard-wrap .eshb-dash-movement .eshb-dash-card-head h3,
+.eshb-dashboard-wrap .eshb-card-availability .eshb-dash-card-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.eshb-dashboard-wrap .eshb-dash-head-icon {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+.eshb-dashboard-wrap .eshb-dash-head-icon.accent-blue {
+  background: #e7edff;
+  color: #3b62f6;
+}
+.eshb-dashboard-wrap .eshb-dash-head-icon.accent-green {
+  background: #def2e4;
+  color: #1faa5b;
+}
+.eshb-dashboard-wrap .eshb-dash-head-icon.accent-purple {
+  background: #efe8fd;
+  color: #7b5cf0;
+}
+.eshb-dashboard-wrap .eshb-dash-head-icon.accent-orange {
+  background: #fff0db;
+  color: #f0a020;
+}
+.eshb-dashboard-wrap .eshb-dash-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 7px;
+  background: var(--eshb-d-blue-soft);
+  color: var(--eshb-d-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+.eshb-dashboard-wrap .eshb-dash-head-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.eshb-dashboard-wrap .eshb-dash-search {
+  position: relative;
+}
+.eshb-dashboard-wrap .eshb-dash-search input[type=search] {
+  width: 190px;
+  height: 34px;
+  margin: 0;
+  padding: 0 30px 0 12px;
+  border: 1px solid var(--eshb-d-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--eshb-d-text);
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: none;
+}
+.eshb-dashboard-wrap .eshb-dash-search input[type=search]:focus {
+  border-color: #c3cef8;
+  box-shadow: 0 0 0 2px var(--eshb-d-blue-soft);
+  outline: none;
+}
+.eshb-dashboard-wrap .eshb-dash-search .eshb-dash-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #9aa3b4;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 0;
+  font-size: 16px;
+}
+.eshb-dashboard-wrap .eshb-dash-search .eshb-dash-search-clear:hover {
+  color: var(--eshb-d-red);
+}
+.eshb-dashboard-wrap .eshb-dash-search .eshb-dash-search-clear[hidden] {
+  display: none;
+}
+.eshb-dashboard-wrap .eshb-dash-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--eshb-d-border);
+  border-radius: 9px;
+  background: #fff;
+}
+.eshb-dashboard-wrap .eshb-dash-segment button {
+  border: none;
+  background: transparent;
+  color: #5b6577;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.eshb-dashboard-wrap .eshb-dash-segment button:hover {
+  background: var(--eshb-d-bg);
+}
+.eshb-dashboard-wrap .eshb-dash-segment button.is-active {
+  background: var(--eshb-d-blue);
+  color: #fff;
+}
+.eshb-dashboard-wrap .eshb-dash-movement .eshb-dash-card-head {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.eshb-dashboard-wrap .eshb-dash-movement .eshb-dash-table-wrap {
+  min-height: 120px;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.eshb-dashboard-wrap .eshb-dash-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.eshb-dashboard-wrap .eshb-dash-field.eshb-dash-field--sm {
+  width: 96px;
+  flex: 0 0 96px;
+}
+.eshb-dashboard-wrap .eshb-dash-field input {
+  height: 38px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--eshb-d-border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--eshb-d-text);
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: none;
+  min-height: 38px;
+}
+.eshb-dashboard-wrap .eshb-dash-field input:focus {
+  border-color: #c3cef8;
+  box-shadow: 0 0 0 2px var(--eshb-d-blue-soft);
+  outline: none;
+}
+.eshb-dashboard-wrap .eshb-dash-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--eshb-d-muted);
+}
+.eshb-dashboard-wrap .eshb-dash-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 9px;
+  background: var(--eshb-d-blue);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.eshb-dashboard-wrap .eshb-dash-btn:hover {
+  background: #2f52dd;
+}
+.eshb-dashboard-wrap .eshb-dash-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.eshb-dashboard-wrap .eshb-dash-btn .dashicons {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-summary {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #5b6577;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-summary[hidden] {
+  display: none;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-result:empty {
+  display: none;
+}
+.eshb-dashboard-wrap .eshb-dash-availability-result .eshb-dash-empty {
+  text-align: center;
+  color: var(--eshb-d-muted);
+  font-size: 13px;
+  padding: 18px 14px;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 4px;
+  border-bottom: 1px solid #f4f6fa;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row:last-child {
+  border-bottom: none;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row.is-out {
+  opacity: 0.6;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-name a {
+  color: var(--eshb-d-text);
+  text-decoration: none;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-name a:hover {
+  color: var(--eshb-d-blue);
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-count,
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-sleeps {
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: var(--eshb-d-muted);
+  white-space: nowrap;
+}
+.eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-badge {
+  flex: 0 0 auto;
+  min-width: 112px;
+  text-align: center;
+}
+.eshb-dashboard-wrap .eshb-dash-badge.is-ok {
+  background: #e4f7ec;
+  color: #16a34a;
+}
+.eshb-dashboard-wrap .eshb-dash-badge.is-full {
+  background: #fde7ea;
+  color: #ef4444;
+}
+.eshb-dashboard-wrap .eshb-dash-badge.is-small {
+  background: #fff3df;
+  color: #d98a00;
+}
+
+/* --------------------------------------------------------------- responsive */
+@media (max-width: 782px) {
+  .eshb-dashboard-wrap .eshb-dash-search input[type=search] {
+    width: 140px;
+  }
+  .eshb-dashboard-wrap .eshb-dash-avail-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .eshb-dashboard-wrap .eshb-dash-avail-row .eshb-dash-avail-name {
+    flex: 1 1 100%;
   }
 }
 :root {

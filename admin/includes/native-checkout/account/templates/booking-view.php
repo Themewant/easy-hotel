@@ -67,7 +67,7 @@ if ( empty( $b ) || empty( $b['id'] ) ) {
     <?php if ( 'cancelled' === $b['status'] && $b['cancelled_at'] ) : ?>
         <h4 class="eshb-account-detail-title"><?php esc_html_e( 'Cancellation', 'easy-hotel' ); ?></h4>
         <table class="eshb-account-detail-table">
-            <tr><th><?php esc_html_e( 'Cancelled on', 'easy-hotel' ); ?></th><td><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $b['cancelled_at'] ) ) ); ?></td></tr>
+            <tr><th><?php esc_html_e( 'Cancelled on', 'easy-hotel' ); ?></th><td><?php echo esc_html( ESHB_Helper::eshb_format_date( $b['cancelled_at'] ) ); ?></td></tr>
             <?php if ( $b['cancelled_by'] ) : ?>
                 <tr><th><?php esc_html_e( 'Cancelled by', 'easy-hotel' ); ?></th><td><?php echo esc_html( ucfirst( $b['cancelled_by'] ) ); ?></td></tr>
             <?php endif; ?>

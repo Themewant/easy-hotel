@@ -453,14 +453,14 @@ class ESHB_Booking_Calendar {
         $html .= '<tr>';
         $html .= '<th class="left-heading"><div class="table-heading">'. esc_html__('Accomodations', 'easy-hotel') .'</div></th>';
         foreach ($dates as $date) {
-            $wp_date_format = get_option('date_format');
-            $formatted_date = DateTime::createFromFormat('Y-m-d', $date)->format($wp_date_format);
+            // DateTime::format() only ever answers in English, so the month and
+            // weekday abbreviations in this header ignored the site language.
             $html .= '<th>';
-            $html .= '<div class="date">'; 
-            $html .= esc_html(  DateTime::createFromFormat('Y-m-d', $date)->format('j') ) . '<br />';
-			$html .= esc_html(  DateTime::createFromFormat('Y-m-d', $date)->format('M'), DateTime::createFromFormat('Y-m-d', $date)->format('F'). ' abbreviation') . '<br />'; 
-			$html .= '<small class="eshb-subscript">' .  DateTime::createFromFormat('Y-m-d', $date)->format('Y').'</small><br />';
-			$html .=  '<small class="eshb-subscript">' .  DateTime::createFromFormat('Y-m-d', $date)->format('D') . '</small>';
+            $html .= '<div class="date">';
+            $html .= esc_html( ESHB_Helper::eshb_format_date( $date, 'j' ) ) . '<br />';
+			$html .= esc_html( ESHB_Helper::eshb_format_date( $date, 'M' ) ) . '<br />';
+			$html .= '<small class="eshb-subscript">' . esc_html( ESHB_Helper::eshb_format_date( $date, 'Y' ) ) . '</small><br />';
+			$html .=  '<small class="eshb-subscript">' . esc_html( ESHB_Helper::eshb_format_date( $date, 'D' ) ) . '</small>';
             $html .= '</div>';
             $html .= '</th>';
         }
@@ -475,14 +475,13 @@ class ESHB_Booking_Calendar {
         $html .= '<tr>';
         $html .= '<th class="left-heading"><div class="table-heading">'. esc_html__('Accomodations', 'easy-hotel') .'</div></th>';
         foreach ($dates as $date) {
-            $wp_date_format = get_option('date_format');
-            $formatted_date = DateTime::createFromFormat('Y-m-d', $date)->format($wp_date_format);
+            // Same header repeated in the footer — same site language rule.
             $html .= '<th>';
-            $html .= '<div class="date">'; 
-            $html .= esc_html(  DateTime::createFromFormat('Y-m-d', $date)->format('j') ) . '<br />';
-			$html .= esc_html(  DateTime::createFromFormat('Y-m-d', $date)->format('M'), DateTime::createFromFormat('Y-m-d', $date)->format('F'). ' abbreviation' ) . '<br />'; 
-			$html .= '<small class="eshb-subscript">' .  DateTime::createFromFormat('Y-m-d', $date)->format('Y').'</small><br />';
-			$html .=  '<small class="eshb-subscript">' .  DateTime::createFromFormat('Y-m-d', $date)->format('D') . '</small>';
+            $html .= '<div class="date">';
+            $html .= esc_html( ESHB_Helper::eshb_format_date( $date, 'j' ) ) . '<br />';
+			$html .= esc_html( ESHB_Helper::eshb_format_date( $date, 'M' ) ) . '<br />';
+			$html .= '<small class="eshb-subscript">' . esc_html( ESHB_Helper::eshb_format_date( $date, 'Y' ) ) . '</small><br />';
+			$html .=  '<small class="eshb-subscript">' . esc_html( ESHB_Helper::eshb_format_date( $date, 'D' ) ) . '</small>';
             $html .= '</div>';
             $html .= '</th>';
         }

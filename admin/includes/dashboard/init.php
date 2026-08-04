@@ -13,8 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/class-eshb-dashboard-data.php';
+require_once __DIR__ . '/class-eshb-dashboard-frontdesk-data.php';
 require_once __DIR__ . '/class-eshb-dashboard-rest.php';
 require_once __DIR__ . '/class-eshb-dashboard-menu.php';
+require_once __DIR__ . '/class-eshb-dashboard-frontdesk.php';
 
 /**
  * Initialise the dashboard module.
@@ -22,5 +24,6 @@ require_once __DIR__ . '/class-eshb-dashboard-menu.php';
 function eshb_dashboard_init() {
 	new ESHB_Dashboard_Menu();
 	new ESHB_Dashboard_REST();
+	new ESHB_Dashboard_Frontdesk();
 }
 add_action( 'plugins_loaded', 'eshb_dashboard_init', 13 );

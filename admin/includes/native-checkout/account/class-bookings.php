@@ -446,7 +446,10 @@ class ESHB_Native_Account_Bookings {
         if ( '' === $date ) {
             return '';
         }
-        $ts = strtotime( $date );
-        return $ts ? date_i18n( get_option( 'date_format' ), $ts ) : $date;
+        // The stored date carries no timezone, so it has to be read as site
+        // local; strtotime() read it as UTC and slid it a day on every site
+        // behind UTC.
+        $formatted = ESHB_Helper::eshb_format_date( $date );
+        return '' !== $formatted ? $formatted : $date;
     }
 }

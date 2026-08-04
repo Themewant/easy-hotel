@@ -29,7 +29,9 @@ class ESHB_View extends ESHB_MAIN{
 
 
         if( $start_date == null || empty($start_date) ){
-            $today_date = gmdate('Y-m-d');
+            // Site timezone, not UTC: gmdate() hands back yesterday to everyone
+            // browsing between local midnight and UTC midnight.
+            $today_date = ESHB_Helper::eshb_today();
             $start_date = $today_date;
         }
 
@@ -44,7 +46,7 @@ class ESHB_View extends ESHB_MAIN{
             $required_max_nights = !empty($eshb_min_max_settings['required_max_nights']) ? $eshb_min_max_settings['required_max_nights'] : '';
             
 
-            $today_date = gmdate('Y-m-d'); // Get today's date
+            $today_date = ESHB_Helper::eshb_today(); // Today in the site timezone
 
             // Create a DateTime object from today's date
             $date = new DateTime($today_date);
@@ -110,7 +112,7 @@ class ESHB_View extends ESHB_MAIN{
                         <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_in));?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
-                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( strtr( get_option( 'date_format', 'm/d/Y' ), array( 'd' => 'DD', 'j' => 'DD', 'm' => 'MM', 'n' => 'MM', 'F' => 'MM', 'M' => 'MM', 'Y' => 'YYYY', 'y' => 'YY', 'l' => 'DD', 'D' => 'DD', 'N' => 'DD', 'w' => 'DD', 'S' => '' ) ) ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( wp_date( get_option( 'date_format' ), strtotime( $start_date ) ) ) ?>">
+                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $start_date ) ) ?>">
                                 <input type="text" id="date-picker_start_date" class="search-date-picker form-control eshb-date-machine" name="start_date" value="<?php echo esc_attr( $start_date ) ?>">
                             </span>
                             <?php if($has_search_calendar_icon){ ?>
@@ -122,7 +124,7 @@ class ESHB_View extends ESHB_MAIN{
                         <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_out));?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
-                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( strtr( get_option( 'date_format', 'm/d/Y' ), array( 'd' => 'DD', 'j' => 'DD', 'm' => 'MM', 'n' => 'MM', 'F' => 'MM', 'M' => 'MM', 'Y' => 'YYYY', 'y' => 'YY', 'l' => 'DD', 'D' => 'DD', 'N' => 'DD', 'w' => 'DD', 'S' => '' ) ) ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( wp_date( get_option( 'date_format' ), strtotime( $end_date ) ) ) ?>">
+                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $end_date ) ) ?>">
                                 <input type="text" id="date-picker_end_date" class="search-date-picker form-control eshb-date-machine" name="end_date" value="<?php echo esc_attr( $end_date ) ?>">
                             </span>
                             <?php if($has_search_calendar_icon){ ?>
@@ -263,7 +265,7 @@ class ESHB_View extends ESHB_MAIN{
 
         $calendar_start_date_buffer = !empty($eshb_min_max_settings['calendar_start_date_buffer']) ? $eshb_min_max_settings['calendar_start_date_buffer'] : 0;
 
-        $today_date = gmdate('Y-m-d'); 
+        $today_date = ESHB_Helper::eshb_today(); // Today in the site timezone
         $today_date =  gmdate( 'Y-m-d', strtotime($today_date . ' +' . $calendar_start_date_buffer . ' day')); // Get today's date
 
         // Create a DateTime object from today's date
@@ -477,7 +479,7 @@ class ESHB_View extends ESHB_MAIN{
                         </h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
-                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( strtr( get_option( 'date_format', 'm/d/Y' ), array( 'd' => 'DD', 'j' => 'DD', 'm' => 'MM', 'n' => 'MM', 'F' => 'MM', 'M' => 'MM', 'Y' => 'YYYY', 'y' => 'YY', 'l' => 'DD', 'D' => 'DD', 'N' => 'DD', 'w' => 'DD', 'S' => '' ) ) ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( wp_date( get_option( 'date_format' ), strtotime( $start_date ) ) ) ?>">
+                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $start_date ) ) ?>">
                                 <input type="text" id="booking-date-picker_start_date" class="booking-date-picker form-control eshb-date-machine" name="start_date" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
                             </span>
                             <?php if($has_calendar_icon){ ?>
@@ -489,7 +491,7 @@ class ESHB_View extends ESHB_MAIN{
                         <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_check_out) );?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
-                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( strtr( get_option( 'date_format', 'm/d/Y' ), array( 'd' => 'DD', 'j' => 'DD', 'm' => 'MM', 'n' => 'MM', 'F' => 'MM', 'M' => 'MM', 'Y' => 'YYYY', 'y' => 'YY', 'l' => 'DD', 'D' => 'DD', 'N' => 'DD', 'w' => 'DD', 'S' => '' ) ) ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( wp_date( get_option( 'date_format' ), strtotime( $end_date ) ) ) ?>">
+                                <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $end_date ) ) ?>">
                                 <input type="text" id="booking-date-picker_end_date" class="booking-date-picker form-control eshb-date-machine" name="end_date" value="<?php echo esc_attr( $end_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">
                             </span>
                             <?php if($has_calendar_icon){ ?>
@@ -812,7 +814,7 @@ class ESHB_View extends ESHB_MAIN{
             $accomodation_id = $post->ID;
         }
         
-        $today_date = gmdate('Y-m-d'); // Get today's date
+        $today_date = ESHB_Helper::eshb_today(); // Today in the site timezone
 
         $min_max_settings = [
             'calendar_start_date_buffer' => 0,
@@ -1036,13 +1038,13 @@ class ESHB_View extends ESHB_MAIN{
                 <div class="eshb-check-in-out-times">
                     <?php 
                         if(!empty($check_in_time)){
-                            $check_in_time = date_i18n( get_option( 'time_format' ), strtotime($check_in_time) );
+                            $check_in_time = ESHB_Helper::eshb_format_time( $check_in_time );
                             ?>
                             <p class="eshb-check-in-time"><span class="eshb-check-in-label"><?php echo esc_html__( 'Check In Time:', 'easy-hotel' ); ?></span> <span class="eshb-check-in-time-value"><?php echo esc_html($check_in_time); ?></span></p>
                             <?php
                         }
                         if(!empty($check_out_time)){
-                            $check_out_time = date_i18n( get_option( 'time_format' ), strtotime($check_out_time) );
+                            $check_out_time = ESHB_Helper::eshb_format_time( $check_out_time );
                             ?>
                             <p class="eshb-check-out-time"><span class="eshb-check-out-label"><?php echo esc_html__( 'Check Out Time:', 'easy-hotel' ); ?></span> <span class="eshb-check-out-time-value"><?php echo esc_html($check_out_time); ?></span></p>
                             <?php

@@ -708,7 +708,7 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 		$pricing_prefix = isset($settings['pricing_prefix']) ? $settings['pricing_prefix'] : '';
 		$thumbnail_size = isset($settings['thumbnail_size']) ? $settings['thumbnail_size'] : 'eshb_thumbnail';
 
-		$today_date = gmdate('Y-m-d'); // Get today's date
+		$today_date = ESHB_Helper::eshb_today(); // Today in the site timezone, not UTC
 
         // Create a DateTime object from today's date
 

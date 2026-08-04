@@ -80,7 +80,7 @@ class ESHB_Native_Account_Admin {
             echo '<p>' . esc_html__( 'This booking has not been cancelled.', 'easy-hotel' ) . '</p>';
             echo '<p style="color:#6b7280;font-size:12px;">' . esc_html__( 'Set the status to “Cancelled” and update to cancel this booking. The customer and admin will be notified.', 'easy-hotel' ) . '</p>';
         } else {
-            $when = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $cancelled_at ) );
+            $when = ESHB_Helper::eshb_format_datetime( $cancelled_at );
             $by   = (string) ( get_post_meta( $post->ID, ESHB_Native_Account_Bookings::META_CANCELLED_BY, true ) ?: ( $meta['cancelled_by'] ?? '' ) );
             $why  = (string) ( get_post_meta( $post->ID, ESHB_Native_Account_Bookings::META_CANCEL_REASON, true ) ?: ( $meta['cancellation_reason'] ?? '' ) );
             ?>
@@ -116,7 +116,7 @@ class ESHB_Native_Account_Admin {
                 <ul class="eshb-refund-log" data-eshb-refund-log style="margin:0 0 8px;padding-left:16px;font-size:12px;color:#4b5563;">
                     <?php foreach ( $log as $entry ) :
                         $amt  = $core->eshb_price( (float) ( $entry['amount'] ?? 0 ) );
-                        $date = ! empty( $entry['date'] ) ? date_i18n( get_option( 'date_format' ), strtotime( $entry['date'] ) ) : '';
+                        $date = ! empty( $entry['date'] ) ? ESHB_Helper::eshb_format_date( $entry['date'] ) : '';
                         ?>
                         <li><?php echo wp_kses_post( $amt ); ?> — <?php echo esc_html( $date ); ?> (<?php echo esc_html( ucfirst( (string) ( $entry['by'] ?? 'admin' ) ) ); ?>)</li>
                     <?php endforeach; ?>

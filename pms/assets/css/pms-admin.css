@@ -1,0 +1,423 @@
+/**
+ * Easy Hotel - PMS module admin styles.
+ *
+ * Every selector is namespaced with `eshb-pms-` so the module cannot leak into the styles
+ * shipped by the booking engine.
+ */
+
+.eshb-pms-hint {
+    color: #646970;
+    font-size: 12px;
+    margin: 6px 0;
+}
+
+.eshb-pms-hint--warn {
+    color: #996800;
+}
+
+/* -------------------------------------------------------------------------
+ * Stacked field layout
+ *
+ * The framework lays a field out as a 20% title column floated left and an 80% control
+ * column floated right. Opt a single field out of that with `'class' => 'eshb-pms-stacked'`
+ * in its declaration — the title and subtitle then sit on their own full width row and the
+ * control follows underneath. The `> ` child combinator keeps this off any nested field the
+ * control renders (repeater rows carry their own `.csf-title` / `.csf-fieldset` pairs), and
+ * the extra class beats the framework's own two class selector on specificity.
+ * ---------------------------------------------------------------------- */
+
+.csf-field.eshb-pms-stacked > .csf-title,
+.csf-field.eshb-pms-stacked > .csf-fieldset {
+    float: none;
+    width: 100%;
+}
+
+.csf-field.eshb-pms-stacked > .csf-title {
+    margin-bottom: 12px;
+}
+
+.csf-field.eshb-pms-stacked > .csf-title .csf-subtitle-text {
+    margin-top: 4px;
+}
+
+/* -------------------------------------------------------------------------
+ * Framework callback fields
+ *
+ * The unit editor and the assignment selects are rendered by the plugin's own settings
+ * framework, so they inherit its `csf-*` styling. A `callback` field, though, is a single
+ * field that renders several stacked blocks, and the framework only spaces *sibling*
+ * fields — so the blocks inside one callback need their own rhythm.
+ * ---------------------------------------------------------------------- */
+
+/* Sits on top of the framework's own `.csf-desc-text`, which only gives it 6px. */
+.eshb-pms-desc {
+    padding-left: 15px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.eshb-pms-desc--lead {
+    margin-top: 0;
+    margin-bottom: 4px;
+}
+
+/* Separates the two stacked blocks of the units summary callback. */
+.eshb-pms-desc + .csf-notice,
+.csf-notice + .eshb-pms-desc {
+    margin-top: 12px;
+}
+
+.eshb-pms-assign {
+    clear: both;
+}
+
+/* -------------------------------------------------------------------------
+ * Duplicate room number warning
+ *
+ * Four stacked blocks — heading, the offending numbers, why it matters, and one caveat.
+ * `.csf-notice` has no margin of its own and WordPress strips list styling inside a metabox,
+ * so every gap here has to be stated explicitly.
+ * ---------------------------------------------------------------------- */
+
+/*
+ * `.eshb-pms-desc + .csf-notice` above already matches this notice at two classes, so the
+ * wider gap has to be claimed at the same specificity or the 12px rule keeps winning.
+ */
+.eshb-pms-dupes,
+.eshb-pms-desc + .eshb-pms-dupes,
+.eshb-pms-dupes + .csf-notice {
+    margin-top: 16px;
+}
+
+.eshb-pms-dupes {
+    padding: 14px 16px;
+    line-height: 1.6;
+}
+
+.eshb-pms-dupes-title {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.eshb-pms-dupes-list {
+    margin: 0 0 12px;
+    padding-left: 20px;
+    list-style: disc;
+}
+
+.eshb-pms-dupes-list li {
+    margin: 0 0 4px;
+    list-style: disc;
+}
+
+.eshb-pms-dupes-list code {
+    padding: 1px 6px;
+    font-size: 12px;
+}
+
+/* Separated from the list above it, since it explains rather than lists. */
+.eshb-pms-dupes-hint {
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f1;
+    color: #50575e;
+}
+
+.eshb-pms-dupes-note {
+    margin: 8px 0 0;
+    color: #8c8f94;
+    font-size: 12px;
+}
+
+/*
+ * One assignment slot. Deliberately not a `.csf-field`: the callback is already one, and
+ * nesting would double the padding and add the sibling separator border.
+ */
+.eshb-pms-slot {
+    padding-top: 12px;
+    clear: both;
+}
+
+.eshb-pms-slot + .eshb-pms-slot {
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.eshb-pms-slot .csf-title,
+.eshb-pms-slot .csf-fieldset {
+    float: none;
+    width: 100%;
+}
+
+.eshb-pms-slot .csf-title {
+    margin-bottom: 6px;
+}
+
+.eshb-pms-slot select {
+    width: 100%;
+    max-width: 100%;
+}
+
+.eshb-pms-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #edf6ff;
+    border: 1px solid #b9d8f5;
+    color: #0b4b8f;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.eshb-pms-badge--empty {
+    background: #fbf5e6;
+    border-color: #eadfc1;
+    color: #8a6d1f;
+}
+
+/* -------------------------------------------------------------------------
+ * Room rack
+ * ---------------------------------------------------------------------- */
+
+.eshb-pms-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+}
+
+.eshb-pms-filters label {
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.eshb-pms-filters label:first-of-type {
+    margin-left: 0;
+}
+
+.eshb-pms-chart-scroll {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+}
+
+.eshb-pms-chart {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 720px;
+}
+
+.eshb-pms-chart th,
+.eshb-pms-chart td {
+    border: 1px solid #e6e6e9;
+    padding: 0;
+}
+
+.eshb-pms-chart thead th {
+    background: #f6f7f7;
+    padding: 6px 2px;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    min-width: 38px;
+}
+
+.eshb-pms-chart thead th.is-weekend {
+    background: #eef1f4;
+}
+
+.eshb-pms-chart thead th.is-today {
+    background: #2271b1;
+    color: #fff;
+}
+
+.eshb-pms-day-dow,
+.eshb-pms-day-num,
+.eshb-pms-day-mon {
+    display: block;
+    line-height: 1.3;
+}
+
+.eshb-pms-day-num {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.eshb-pms-day-mon {
+    color: inherit;
+    opacity: 0.7;
+    font-size: 10px;
+}
+
+.eshb-pms-chart .eshb-pms-unit-head {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #f6f7f7;
+    text-align: left;
+    padding: 6px 10px;
+    min-width: 150px;
+    font-weight: 600;
+    box-shadow: 1px 0 0 #dcdcde;
+}
+
+.eshb-pms-unit-label {
+    display: block;
+}
+
+.eshb-pms-unit-label--warn {
+    color: #8a6d1f;
+}
+
+.eshb-pms-unit-floor {
+    display: block;
+    font-weight: 400;
+    font-size: 11px;
+    color: #646970;
+}
+
+.eshb-pms-unit-row {
+    height: 40px;
+}
+
+.eshb-pms-cell.is-free {
+    background: #fff;
+}
+
+.eshb-pms-cell.is-free.is-today {
+    background: #f0f6fc;
+}
+
+.eshb-pms-unassigned-row {
+    background: #fffdf6;
+}
+
+.eshb-pms-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    height: 32px;
+    margin: 3px 2px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: #2271b1;
+    color: #fff;
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.eshb-pms-bar-guest {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eshb-pms-bar-edit {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    flex: 0 0 auto;
+}
+
+.eshb-pms-bar-edit:hover,
+.eshb-pms-bar-edit:focus {
+    color: #fff;
+}
+
+.eshb-pms-cell.status-completed .eshb-pms-bar {
+    background: #1e7e57;
+}
+
+.eshb-pms-cell.status-processing .eshb-pms-bar {
+    background: #2271b1;
+}
+
+.eshb-pms-cell.status-pending .eshb-pms-bar,
+.eshb-pms-cell.status-deposit-payment .eshb-pms-bar {
+    background: #9a6700;
+}
+
+.eshb-pms-cell.status-on-hold .eshb-pms-bar {
+    background: #6c6f74;
+}
+
+.eshb-pms-cell.is-unassigned .eshb-pms-bar {
+    background: #fff;
+    color: #8a6d1f;
+    border: 1px dashed #c9a227;
+}
+
+.eshb-pms-cell.is-unassigned .eshb-pms-bar-edit {
+    color: #8a6d1f;
+}
+
+.eshb-pms-cell.starts .eshb-pms-bar {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+}
+
+.eshb-pms-cell.ends .eshb-pms-bar {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+/* -------------------------------------------------------------------------
+ * Assignment popover
+ * ---------------------------------------------------------------------- */
+
+.eshb-pms-popover {
+    position: absolute;
+    z-index: 9999;
+    min-width: 220px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.eshb-pms-popover strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.eshb-pms-popover select {
+    width: 100%;
+}
+
+.eshb-pms-popover-status {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #646970;
+}
+
+.eshb-pms-popover-status.is-error {
+    color: #b32d2e;
+}
+
+/* -------------------------------------------------------------------------
+ * Settings block
+ * ---------------------------------------------------------------------- */
+
+.eshb-pms-settings {
+    margin-top: 24px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    max-width: 720px;
+}
+
+.eshb-pms-settings h2 {
+    margin-top: 0;
+}

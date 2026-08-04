@@ -96,10 +96,9 @@ class ESHB_Native_Account_Email {
                 (int) $booking_id
             );
 
-        $cancelled_label = $b['cancelled_at'] ? date_i18n(
-            get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
-            strtotime( $b['cancelled_at'] )
-        ) : '';
+        // Written by current_time( 'mysql' ), i.e. already site local, so the
+        // old strtotime() read shifted it by the site offset a second time.
+        $cancelled_label = $b['cancelled_at'] ? ESHB_Helper::eshb_format_datetime( $b['cancelled_at'] ) : '';
 
         ob_start();
         ?>

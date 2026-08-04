@@ -68,10 +68,10 @@ add_action( 'init', function(){
                     echo esc_html($customer_full_name);
                     break;
                 case 'booking_start_date':
-                    echo esc_html(date_i18n( get_option('date_format'), strtotime( $eshb_booking_metaboxes['booking_start_date'] ) ));
+                    echo esc_html(ESHB_Helper::eshb_format_date( $eshb_booking_metaboxes['booking_start_date'] ));
                     break;
                 case 'booking_end_date':
-                    echo esc_html(date_i18n( get_option('date_format'), strtotime( $eshb_booking_metaboxes['booking_end_date'] ) ));
+                    echo esc_html(ESHB_Helper::eshb_format_date( $eshb_booking_metaboxes['booking_end_date'] ));
                     break;
                 case 'booking_time_slot':
                     echo esc_html( $time_slot );

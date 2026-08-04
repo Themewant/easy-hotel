@@ -704,9 +704,9 @@ class ESHB_Booking {
 				$subtotal_price = $pricing['subtotalPrice'];
 				$total_price = $pricing['totalPrice'];
 
-				$dates = date_i18n( get_option('date_format'), strtotime( $start_date ) ) .' - '. date_i18n( get_option('date_format'), strtotime( $end_date ) );
+				$dates = ESHB_Helper::eshb_format_date( $start_date ) .' - '. ESHB_Helper::eshb_format_date( $end_date );
 				if($start_date == $end_date){
-					$dates = date_i18n( get_option('date_format'), strtotime( $start_date ) );
+					$dates = ESHB_Helper::eshb_format_date( $start_date );
 				}
 
 				
@@ -748,7 +748,7 @@ class ESHB_Booking {
 				$message .= '<h3>Booking  Details</h3>';
 				$message .= '<table style="text-align:left;">';
 				$message .= '<tr><th>Accomodation: ' . $accomodation_title . '</th></tr>';
-				$message .= '<tr><th>Date: ' . date_i18n( get_option('date_format'), strtotime( $start_date ) ) .' - '. date_i18n( get_option('date_format'), strtotime( $end_date ) ) . '</th></tr>';
+				$message .= '<tr><th>Date: ' . ESHB_Helper::eshb_format_date( $start_date ) .' - '. ESHB_Helper::eshb_format_date( $end_date ) . '</th></tr>';
 				
 				if(!empty($times)) {
 					$message .= '<tr><th>Times: ' . $times . '</th></tr>';
@@ -1832,9 +1832,9 @@ class ESHB_Booking {
 				$extra_services_html = implode(", ",$extra_service_titles);
 			}
 
-			$dates = date_i18n( get_option('date_format'), strtotime( $start_date ) ) .' - '. date_i18n( get_option('date_format'), strtotime( $end_date ) );
+			$dates = ESHB_Helper::eshb_format_date( $start_date ) .' - '. ESHB_Helper::eshb_format_date( $end_date );
 			if($start_date == $end_date){
-				$dates = date_i18n( get_option('date_format'), strtotime( $start_date ) );
+				$dates = ESHB_Helper::eshb_format_date( $start_date );
 			}
 
 			$formated_start_timestamp = strtotime( $start_time );

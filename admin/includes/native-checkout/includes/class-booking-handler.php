@@ -29,11 +29,11 @@ class ESHB_Native_Booking_Handler {
             ? $reservation['extra_services'] : [];
 
         // Build human-readable strings for backwards-compatibility with existing booking screens.
-        $dates_label = date_i18n( get_option( 'date_format' ), strtotime( $reservation['start_date'] ?? 'now' ) )
+        $dates_label = ESHB_Helper::eshb_format_date( $reservation['start_date'] ?? 'now' )
             . ' - '
-            . date_i18n( get_option( 'date_format' ), strtotime( $reservation['end_date'] ?? 'now' ) );
+            . ESHB_Helper::eshb_format_date( $reservation['end_date'] ?? 'now' );
         if ( ! empty( $reservation['start_date'] ) && $reservation['start_date'] === ( $reservation['end_date'] ?? '' ) ) {
-            $dates_label = date_i18n( get_option( 'date_format' ), strtotime( $reservation['start_date'] ) );
+            $dates_label = ESHB_Helper::eshb_format_date( $reservation['start_date'] );
         }
 
         $extra_services_html = '';

@@ -155,6 +155,9 @@ class ESHB_Dashboard_Menu {
 			'addRoom'      => admin_url( 'post-new.php?post_type=eshb_accomodation' ),
 			'addBooking'   => admin_url( 'post-new.php?post_type=eshb_booking' ),
 			'availability' => admin_url( 'edit.php?post_type=eshb_accomodation&page=eshb_bookings_calendar' ),
+			// Room rack. Belongs to the optional PMS module, so whoever links to
+			// it checks that the module is loaded first.
+			'rack'         => admin_url( self::PARENT_SLUG . '&page=eshb-pms-rack' ),
 			'pricing'      => admin_url( 'edit.php?post_type=eshb_session' ),
 			'coupons'      => admin_url( 'edit.php?post_type=eshb_coupon' ),
 			'services'     => admin_url( 'edit.php?post_type=eshb_service' ),
