@@ -2343,7 +2343,13 @@
     },
     eshbBookingQtyNumberIncreamentFrontEnd: async function (e) {
       const element = e.target;
-      const input = $(element).prev("input");
+      // The services stepper wraps its input in .quantity-wrapper, so prev()
+      // finds nothing there. Fall back to the stepper row — without this the
+      // service branch below never runs and the quantity has no ceiling.
+      let input = $(element).prev("input");
+      if (!input.length) {
+        input = $(element).parent().find("input").first();
+      }
       ESHBPUBLICBOOKING.eshbBookingQtyNumberIncreament(element, input);
     },
     eshbBookingQtyNumberIncreamentAdmin: async function (e) {
@@ -2543,6 +2549,17 @@
           } else {
             maxCount = adultQuantity + childrenQuantity;
           }
+
+          // Service Options → Max Quantity. When a cap is configured it *is*
+          // the limit, so a 3-per-booking service stays selectable up to 3 even
+          // for a single guest. 0 / empty means "no cap", and only then does the
+          // guest-count limit above stand. This matches the field description
+          // and the Native Checkout / server-side clamp, which never look at the
+          // guest count.
+          let serviceMaxQty = ESHBPUBLICBOOKING.getServiceMaxQuantity(input);
+          if (serviceMaxQty > 0) {
+            maxCount = serviceMaxQty;
+          }
         }
 
         if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
@@ -2710,6 +2727,51 @@
     showServiceQtyDropdown: function (e, element) {
       $(".service-quantity-selector").removeClass("show-dropdown");
       $(e.currentTarget).addClass("show-dropdown");
+    },
+    /**
+     * Max Quantity configured on the service (Service Options → Max Quantity).
+     * Returns 0 when no cap is set.
+     */
+    getServiceMaxQuantity: function (input) {
+      let max = parseInt($(input).attr("max_quantity"), 10);
+      return isNaN(max) || max < 1 ? 0 : max;
+    },
+    /**
+     * Clamp every service quantity box in the form to its configured cap.
+     * Covers direct typing and the case where the cap is lower than the
+     * value already sitting in the box.
+     */
+    enforceServiceMaxQuantity: function ($form) {
+      if (!$form || !$form.length) return;
+
+      $form.find('input[name="service-quantity"]').each(function () {
+        let maxQty = ESHBPUBLICBOOKING.getServiceMaxQuantity(this);
+        if (maxQty < 1) return;
+
+        let current = parseInt($(this).val(), 10);
+        if (isNaN(current)) return;
+
+        if (current > maxQty) {
+          $(this).val(maxQty);
+
+          let $errContainer = $(this)
+            .closest(".service-item")
+            .find(".eshb-service-qty-err-msg");
+
+          if ($errContainer.length) {
+            $errContainer.html(
+              (eshb_ajax.translations && eshb_ajax.translations.maximumCapacity
+                ? eshb_ajax.translations.maximumCapacity
+                : "") +
+                " " +
+                maxQty
+            );
+            setTimeout(function () {
+              $errContainer.html("");
+            }, 2000);
+          }
+        }
+      });
     },
     getExtraServices: function (selectedServices = [], $form) {
       let serviceID, quantity, title, chargeType;
@@ -2972,6 +3034,10 @@
       let $form = $(this).closest('.eshb-booking-form');
       if (!$form.length) $form = $(".eshb-booking-form").first();
       if ($form.length === 0) return;
+
+      // Typing straight into the qty box bypasses the +/- stepper, so clamp
+      // here before anything is priced.
+      ESHBPUBLICBOOKING.enforceServiceMaxQuantity($form);
 
       const getInputVal = (selector) => $form.find(selector).val();
       const getAttr = (selector, attr) => $form.find(selector).attr(attr);

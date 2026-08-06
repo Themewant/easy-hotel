@@ -629,10 +629,14 @@ class ESHB_View extends ESHB_MAIN{
                                     $is_checked = $service_metaboxes['is_checked'] ?? false;
                                     $is_mandatory = $service_metaboxes['is_mandatory'] ?? false;
 
+                                    // 0 means "no cap configured" — the quantity stepper then
+                                    // falls back to its natural limit (the total guest count).
+                                    $service_max_quantity = ESHB_Helper::eshb_get_service_max_quantity( $service_id, $service_metaboxes );
+
                                     ?>
                                     <li class="service-item">
                                         <label for="eshb-service-message-<?php echo esc_attr( $service_id )?>" class="label-checkbox">
-                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" is_mandatory="<?php echo esc_attr( $is_mandatory ) ?>" title="<?php echo esc_attr($service_name) ?>" <?php checked( $is_checked ); ?>>
+                                            <input id="eshb-service-message-<?php echo esc_attr( $service_id )?>" type="checkbox" name="extra_services[]" value="<?php echo esc_attr($service_price) ?>" price="<?php echo esc_attr($service_price) ?>" service_id="<?php echo esc_attr( $service_id )?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" is_mandatory="<?php echo esc_attr( $is_mandatory ) ?>" max_quantity="<?php echo esc_attr( $service_max_quantity ) ?>" title="<?php echo esc_attr($service_name) ?>" <?php checked( $is_checked ); ?>>
                                             <div class="eshb-styled-checkbox"></div>
                                             <span class="service-name"><?php echo esc_html($service_name, 'easy-hotel'); ?></span>
                                         </label>
@@ -675,11 +679,12 @@ class ESHB_View extends ESHB_MAIN{
                                                         <div class="de-number">
                                                             <span class="d-minus"><?php echo esc_html('-')?></span>
                                                                 <span class="quantity-wrapper">
-                                                                    <input type="text" value="1" name="service-quantity" price="<?php echo esc_attr($service_price) ?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>">
+                                                                    <input type="text" value="1" name="service-quantity" price="<?php echo esc_attr($service_price) ?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" max_quantity="<?php echo esc_attr( $service_max_quantity ) ?>">
                                                                     <span class="dropdown-arrow dashicons dashicons-arrow-down"></span>
                                                                 </span>
                                                             <span class="d-plus"><?php echo esc_html('+')?></span>
                                                         </div>
+                                                        <p class="err-msg eshb-service-qty-err-msg"></p>
                                                     </div>
                                                     <?php
                                                 }

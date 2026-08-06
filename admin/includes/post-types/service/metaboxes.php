@@ -56,6 +56,17 @@ if( class_exists( 'ESHB' ) ) {
             'default'     => 'room'
         ),
         array(
+            'id'         => 'service_max_quantity',
+            'type'       => 'number',
+            'title'      => 'Max Quantity',
+            'desc'       => 'Highest quantity a customer may select for this service. Leave empty (or 0) for no limit — the quantity is then capped by the number of guests.',
+            'default'    => '',
+            'attributes' => array(
+                'min' => 0,
+            ),
+            'dependency' => array( 'service_charge_type', '==', 'guest' ),
+        ),
+        array(
             'id'         => 'is_checked', // field id
             'type'       => 'switcher',
             'title'      => 'Checked by Default',

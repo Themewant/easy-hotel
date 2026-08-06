@@ -2714,6 +2714,7 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  flex-wrap: wrap;
   border: 1px solid var(--eshb-border-color);
   padding: 15px 10px;
   position: absolute;
@@ -2722,6 +2723,20 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   width: 180px;
   right: 0;
   z-index: 2;
+}
+.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg {
+  flex: 0 0 100%;
+  width: 100%;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg:empty {
+  display: none;
+}
+.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg:not(:empty) {
+  margin-top: 6px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number {
   margin-top: 0;
@@ -2771,7 +2786,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-minus,
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-plus {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.cost-calculator-wrapper .total-cost-label {
   display: flex;
@@ -2957,7 +2975,10 @@ nav.eshb-pagination ul.pagination-list li span:hover {
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-minus,
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-plus {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-err .status {
   color: var(--eshb-white-color);

@@ -60,6 +60,31 @@
     /* -----------------------------------------------------------------
      * Collect per-item service selections for the server
      * --------------------------------------------------------------- */
+    /**
+     * Service Options → Max Quantity for a .eshb-service-option element.
+     * 0 means no cap was configured.
+     */
+    function serviceMaxQty($opt) {
+        var max = parseInt($opt.attr('data-service-max-qty'), 10);
+        return isNaN(max) || max < 1 ? 0 : max;
+    }
+
+    /**
+     * Clamp a qty box to its service cap and return the value actually kept.
+     */
+    function clampServiceQty($opt) {
+        var $input = $opt.find('input[data-service-qty]');
+        var qty = parseInt($input.val(), 10) || 1;
+        var max = serviceMaxQty($opt);
+
+        if (qty < 1) qty = 1;
+        if (max > 0 && qty > max) qty = max;
+
+        if (String(qty) !== String($input.val())) $input.val(qty);
+
+        return qty;
+    }
+
     function collectItemsServices() {
         var out = {};
         $('.eshb-cart-item').each(function () {
@@ -71,8 +96,7 @@
                 if (!$opt.find('input[type="checkbox"]').prop('checked')) return;
                 var id = parseInt($opt.attr('data-service-id'), 10);
                 if (!id) return;
-                var qty = parseInt($opt.find('input[data-service-qty]').val(), 10) || 1;
-                svcs.push({ id: id, quantity: Math.max(1, qty) });
+                svcs.push({ id: id, quantity: clampServiceQty($opt) });
             });
             out[key] = svcs;
         });
@@ -142,7 +166,7 @@
             var $opt = $(this);
             if (!$opt.find('input[type="checkbox"]').prop('checked')) return;
             var title = ($opt.find('.eshb-choice-title').text() || '').trim();
-            var qty = parseInt($opt.find('input[data-service-qty]').val(), 10) || 1;
+            var qty = clampServiceQty($opt);
             titles.push(qty > 1 ? title + ' × ' + qty : title);
         });
         var fallback = (state.config.i18n && state.config.i18n.noServicesSelected) || 'None selected';
@@ -173,14 +197,21 @@
 
         $(document).on('click', '.eshb-service-option .eshb-qty-btn', function () {
             var dir = parseInt($(this).data('dir'), 10);
+            var $opt = $(this).closest('.eshb-service-option');
             var $input = $(this).siblings('input[data-service-qty]');
+            var max = serviceMaxQty($opt);
             var next = (parseInt($input.val(), 10) || 1) + dir;
-            $input.val(Math.max(1, next));
+
+            if (next < 1) next = 1;
+            if (max > 0 && next > max) next = max;
+
+            $input.val(next);
             updateItemSummary($(this).closest('.eshb-cart-item'));
             scheduleRecalc();
         });
 
         $(document).on('input change', '.eshb-service-option input[data-service-qty]', function () {
+            clampServiceQty($(this).closest('.eshb-service-option'));
             updateItemSummary($(this).closest('.eshb-cart-item'));
             scheduleRecalc();
         });

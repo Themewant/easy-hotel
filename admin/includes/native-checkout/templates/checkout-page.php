@@ -192,8 +192,10 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                                     $eshb_quantity   = $eshb_selected ? (int) $eshb_item['selected_services'][ $eshb_svc_id ] : 1;
                                     $eshb_price_html = $eshb_core->eshb_price( $eshb_service['price'] );
                                     $eshb_field_id   = 'eshb-service-' . esc_attr( $eshb_item_key ) . '-' . $eshb_svc_id;
+                                    // 0 means no cap was configured for this service.
+                                    $eshb_max_qty    = (int) ( $eshb_service['max_quantity'] ?? 0 );
                                     ?>
-                                    <div class="eshb-choice-option eshb-service-option" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>">
+                                    <div class="eshb-choice-option eshb-service-option" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>" data-service-max-qty="<?php echo esc_attr( $eshb_max_qty ); ?>">
                                         <input type="checkbox" id="<?php echo esc_attr( $eshb_field_id ); ?>" value="<?php echo esc_attr( $eshb_svc_id ); ?>" <?php checked( $eshb_selected ); ?>>
                                         <label for="<?php echo esc_attr( $eshb_field_id ); ?>">
                                             <span class="eshb-choice-title"><?php echo esc_html( $eshb_service['title'] ); ?></span>
@@ -203,7 +205,7 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                                         </label>
                                         <div class="eshb-service-qty" style="display:<?php echo $eshb_selected ? 'flex' : 'none'; ?>;">
                                             <button type="button" class="eshb-qty-btn" data-dir="-1">&minus;</button>
-                                            <input type="number" min="1" value="<?php echo esc_attr( max( 1, $eshb_quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $eshb_svc_id ); ?>">
+                                            <input type="number" min="1"<?php echo $eshb_max_qty > 0 ? ' max="' . esc_attr( $eshb_max_qty ) . '"' : ''; ?> value="<?php echo esc_attr( $eshb_max_qty > 0 ? min( $eshb_max_qty, max( 1, $eshb_quantity ) ) : max( 1, $eshb_quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $eshb_svc_id ); ?>">
                                             <button type="button" class="eshb-qty-btn" data-dir="1">+</button>
                                         </div>
                                     </div>

@@ -1598,6 +1598,9 @@ nav.eshb-pagination {
                                     display: flex;
                                     align-items: center;
                                     justify-content: space-around;
+                                    // The quantity-limit notice sits below the
+                                    // stepper instead of squeezing in beside it.
+                                    flex-wrap: wrap;
                                     border: 1px solid var(--eshb-border-color);
                                     padding: 15px 10px;
                                     position: absolute;
@@ -1606,6 +1609,23 @@ nav.eshb-pagination {
                                     width: 180px;
                                     right: 0;
                                     z-index: 2;
+                                }
+
+                                p.eshb-service-qty-err-msg {
+                                    flex: 0 0 100%;
+                                    width: 100%;
+                                    margin: 0;
+                                    font-size: 12px;
+                                    line-height: 1.4;
+                                    text-align: center;
+
+                                    &:empty {
+                                        display: none;
+                                    }
+
+                                    &:not(:empty) {
+                                        margin-top: 6px;
+                                    }
                                 }
 
                                 .de-number {
@@ -1665,7 +1685,14 @@ nav.eshb-pagination {
 
                                     .d-minus,
                                     .d-plus {
-                                        display: inline-block;
+                                        // The minus is drawn with a centred
+                                        // pseudo-bar, but the plus is a real
+                                        // glyph — line-height alone leaves it
+                                        // sitting off-centre in the circle.
+                                        display: inline-flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        line-height: 1;
                                     }
                                 }
                             }
@@ -1921,7 +1948,10 @@ nav.eshb-pagination {
 
                                         .d-minus,
                                         .d-plus {
-                                            display: inline;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            line-height: 1;
                                         }
                                     }
                                 }

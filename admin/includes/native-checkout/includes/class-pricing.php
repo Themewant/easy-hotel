@@ -289,6 +289,9 @@ class ESHB_Native_Pricing {
             if ( $service_charge_type === 'room' ) {
                 //$price *= $room_quantity;
                 $quantity = $room_quantity;
+            } else {
+                // Everything else honours the service's Max Quantity cap.
+                $quantity = ESHB_Helper::eshb_clamp_service_quantity( $service_id, $quantity, $meta );
             }
 
 

@@ -364,6 +364,86 @@ class ESHB_Helper {
         return $services;
     }
 
+    /**
+     * Quantity cap configured on a service (Service Options → Max Quantity).
+     *
+     * Only meaningful for services that expose a quantity stepper, i.e.
+     * charge type other than "Per Room". Returns 0 when no cap is set, in
+     * which case the caller keeps its own natural limit (the guest count).
+     *
+     * @param int        $service_id Service post ID.
+     * @param array|null $meta       Pre-fetched eshb_service_metaboxes, if available.
+     * @return int Cap, or 0 for "no limit".
+     */
+    public static function eshb_get_service_max_quantity( $service_id, $meta = null ) {
+
+        $service_id = (int) $service_id;
+
+        if ( ! is_array( $meta ) ) {
+            $meta = get_post_meta( $service_id, 'eshb_service_metaboxes', true );
+        }
+
+        $max = is_array( $meta ) && isset( $meta['service_max_quantity'] )
+            ? (int) $meta['service_max_quantity']
+            : 0;
+
+        if ( $max < 1 ) {
+            $max = 0;
+        }
+
+        return (int) apply_filters( 'eshb_service_max_quantity', $max, $service_id, $meta );
+    }
+
+    /**
+     * Clamp a requested service quantity to the configured Max Quantity.
+     *
+     * The browser already blocks the stepper, so this is the server-side
+     * guard for hand-crafted requests and for admin-created bookings.
+     *
+     * @param int        $service_id Service post ID.
+     * @param int        $quantity   Requested quantity.
+     * @param array|null $meta       Pre-fetched eshb_service_metaboxes, if available.
+     * @return int
+     */
+    public static function eshb_clamp_service_quantity( $service_id, $quantity, $meta = null ) {
+
+        $quantity = (int) $quantity;
+        $max      = self::eshb_get_service_max_quantity( $service_id, $meta );
+
+        if ( $max > 0 && $quantity > $max ) {
+            $quantity = $max;
+        }
+
+        return $quantity;
+    }
+
+    /**
+     * Clamp every line of a selected-services list to its Max Quantity.
+     *
+     * @param mixed $selected_services Decoded [ ['id' => .., 'quantity' => ..], .. ].
+     * @return array
+     */
+    public static function eshb_clamp_selected_services( $selected_services ) {
+
+        if ( ! is_array( $selected_services ) ) {
+            return [];
+        }
+
+        foreach ( $selected_services as $index => $service ) {
+
+            if ( ! is_array( $service ) || empty( $service['id'] ) ) {
+                continue;
+            }
+
+            $selected_services[ $index ]['quantity'] = self::eshb_clamp_service_quantity(
+                $service['id'],
+                $service['quantity'] ?? 0
+            );
+        }
+
+        return $selected_services;
+    }
+
     // Record a payment (deposit or subsequent) against an order.
     public static function eshb_assign_payment_to_booking( $payment_id, $order_id, $booking_id, $amount_paid, $update = false, $args = [] ) {
 

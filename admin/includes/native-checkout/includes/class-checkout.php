@@ -251,9 +251,10 @@ class ESHB_Native_Checkout {
             if ( is_array( $decoded ) ) {
                 foreach ( $decoded as $svc ) {
                     if ( ! is_array( $svc ) ) continue;
+                    $svc_id = isset( $svc['id'] ) ? (int) $svc['id'] : 0;
                     $selected_services[] = [
-                        'id'       => isset( $svc['id'] ) ? (int) $svc['id'] : 0,
-                        'quantity' => isset( $svc['quantity'] ) ? (int) $svc['quantity'] : 0,
+                        'id'       => $svc_id,
+                        'quantity' => ESHB_Helper::eshb_clamp_service_quantity( $svc_id, $svc['quantity'] ?? 0 ),
                     ];
                 }
             }
@@ -613,6 +614,7 @@ class ESHB_Native_Checkout {
                 'price'        => floatval( $svc_meta['service_price'] ?? 0 ),
                 'periodicity'  => $svc_meta['service_periodicity'] ?? 'once',
                 'charge_type'  => $svc_meta['service_charge_type'] ?? 'room',
+                'max_quantity' => ESHB_Helper::eshb_get_service_max_quantity( $service_id, $svc_meta ),
             ];
         }
 
@@ -621,7 +623,10 @@ class ESHB_Native_Checkout {
         if ( ! empty( $reservation['extra_services'] ) && is_array( $reservation['extra_services'] ) ) {
             foreach ( $reservation['extra_services'] as $sel ) {
                 if ( ! empty( $sel['id'] ) ) {
-                    $selected[ (int) $sel['id'] ] = (int) ( $sel['quantity'] ?? 1 );
+                    $selected[ (int) $sel['id'] ] = ESHB_Helper::eshb_clamp_service_quantity(
+                        $sel['id'],
+                        $sel['quantity'] ?? 1
+                    );
                 }
             }
         }
@@ -989,7 +994,10 @@ class ESHB_Native_Checkout {
                             if ( ! is_array( $svc ) || empty( $svc['id'] ) ) continue;
                             $services[] = [
                                 'id'       => (int) $svc['id'],
-                                'quantity' => max( 0, (int) ( $svc['quantity'] ?? 0 ) ),
+                                'quantity' => ESHB_Helper::eshb_clamp_service_quantity(
+                                    $svc['id'],
+                                    max( 0, (int) ( $svc['quantity'] ?? 0 ) )
+                                ),
                             ];
                         }
                         $cart['items'][ $item_key ]['extra_services'] = $services;

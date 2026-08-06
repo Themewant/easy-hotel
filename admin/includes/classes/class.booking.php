@@ -114,7 +114,11 @@ class ESHB_Booking {
 					],
 					'selectedServices' => [
 						'sanitize_callback' => function($param) {
-							return json_decode(sanitize_text_field($param), true);
+							// Cap each line at the service's Max Quantity so the
+							// quoted price can never exceed the configured limit.
+							return ESHB_Helper::eshb_clamp_selected_services(
+								json_decode(sanitize_text_field($param), true)
+							);
 						}
 					],
 					'nonce' => [
@@ -586,7 +590,11 @@ class ESHB_Booking {
 
 				$selected_services = sanitize_text_field(wp_unslash($_POST['selectedServices']));
 				$selected_services = json_decode($selected_services, true);
-				
+
+				// Cap each line at the service's Max Quantity before it is
+				// priced, described or stored on the booking.
+				$selected_services = ESHB_Helper::eshb_clamp_selected_services($selected_services);
+
 			}
 
 
@@ -1355,7 +1363,11 @@ class ESHB_Booking {
 				$price = $meta['service_price'] ?? 0;
 				$periodicity = $meta['service_periodicity'] ?? 'once';
 				$charge_type = $meta['service_charge_type'] ?? 'room';
-	
+
+				// Never price more than the service's configured Max Quantity,
+				// whatever the request asked for.
+				$service_quantity = ESHB_Helper::eshb_clamp_service_quantity( $service_id, $service_quantity, $meta );
+
 				//$single_price = $price * $service_quantity;
 				$single_price = $price ? $price : 0;
 	
@@ -1498,7 +1510,11 @@ class ESHB_Booking {
 
 				$selected_services = sanitize_text_field(wp_unslash($_POST['selectedServices']));
 				$selected_services = json_decode($selected_services, true);
-				
+
+				// Cap each line at the service's Max Quantity before it is
+				// priced, described or stored on the booking.
+				$selected_services = ESHB_Helper::eshb_clamp_selected_services($selected_services);
+
 			}
 
 			$eshb_settings = get_option( 'eshb_settings', [] );
@@ -1983,7 +1999,11 @@ class ESHB_Booking {
 
 				$selected_services = sanitize_text_field(wp_unslash($_POST['selectedServices']));
 				$selected_services = json_decode($selected_services, true);
-				
+
+				// Cap each line at the service's Max Quantity before it is
+				// priced, described or stored on the booking.
+				$selected_services = ESHB_Helper::eshb_clamp_selected_services($selected_services);
+
 			}
 			
 
