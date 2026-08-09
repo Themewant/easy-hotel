@@ -2544,21 +2544,20 @@
         ) {
           let chargeType = $(input).attr("charge_type");
 
-          if (chargeType == "room") {
-            maxCount = rooms;
-          } else {
-            maxCount = adultQuantity + childrenQuantity;
-          }
-
-          // Service Options → Max Quantity. When a cap is configured it *is*
-          // the limit, so a 3-per-booking service stays selectable up to 3 even
-          // for a single guest. 0 / empty means "no cap", and only then does the
-          // guest-count limit above stand. This matches the field description
-          // and the Native Checkout / server-side clamp, which never look at the
-          // guest count.
+          // Service Options → Max Quantity is the only cap on a service. When
+          // it is left at 0 / empty the service is uncapped — the guest count
+          // must not limit it, since a service like breakfast or a camping
+          // pitch has nothing to do with how many adults or children were
+          // picked. This matches the Native Checkout / server-side clamp,
+          // which never look at the guest count either.
           let serviceMaxQty = ESHBPUBLICBOOKING.getServiceMaxQuantity(input);
+
           if (serviceMaxQty > 0) {
             maxCount = serviceMaxQty;
+          } else if (chargeType == "room") {
+            maxCount = rooms;
+          } else {
+            maxCount = Infinity;
           }
         }
 

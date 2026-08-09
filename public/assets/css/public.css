@@ -3618,3 +3618,7 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 .eshb-booking-form .eshb-input-wrapper .eshb-date-field input {
   border: 0 !important;
 }
+
+.eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-plus {
+  padding: 1px 2px 5px 1px;
+}

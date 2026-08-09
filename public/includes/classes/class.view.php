@@ -103,13 +103,20 @@ class ESHB_View extends ESHB_MAIN{
          $string_room = isset($eshb_settings['string_room']) && !empty($eshb_settings['string_room']) ? $eshb_settings['string_room'] : 'Room';
          $has_search_calendar_icon = isset($eshb_settings['search-form-calendar-icon']) && !empty($eshb_settings['search-form-calendar-icon']) ? true : false;
 
+        // Passed to every label below so filters know where they are firing.
+        // The search form spans all accommodations, hence the empty id.
+        $label_ctx = array(
+            'accomodation_id' => 0,
+            'form'            => 'search',
+        );
+
         ?>
         <div class="eshb-search style-one">
             <form action="<?php echo esc_url($search_result_page_url); ?>" method="get" class="eshb-search-form <?php echo esc_attr($has_search_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>">
                 <?php ESHB_Helper::eshb_nonce_field('eshb_global_nonce_action', 'nonce', true); ?>
                 <div class="eshb-form-group dates-wrapper">
                     <div class="eshb-form-group">
-                        <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_in));?></h6>
+                        <h6 class="field-label"><?php echo esc_html(eshb_get_form_label($string_check_in, 'string_check_in', $label_ctx));?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
                                 <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $start_date ) ) ?>">
@@ -121,7 +128,7 @@ class ESHB_View extends ESHB_MAIN{
                         </div>
                     </div>
                     <div class="eshb-form-group">
-                        <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_check_out));?></h6>
+                        <h6 class="field-label"><?php echo esc_html(eshb_get_form_label($string_check_out, 'string_check_out', $label_ctx));?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
                                 <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $end_date ) ) ?>">
@@ -136,7 +143,7 @@ class ESHB_View extends ESHB_MAIN{
                 <?php 
                     if(in_array('adults', $seach_form_fileds)){ ?>
                     <div class="eshb-form-group">
-                        <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_adult));?></h6>
+                        <h6 class="field-label"><?php echo esc_html(eshb_get_form_label($string_adult, 'string_adult', $label_ctx));?></h6>
                         <div class="de-number">
                             <span class="d-minus"><?php echo esc_html('-')?></span>
                             <input class="form-control" type="text" value="<?php echo esc_attr( $min_adult_quantity ) ?>" name="adult_quantity" max="<?php echo esc_attr( $adult_capacity ) ?>" min="<?php echo esc_attr( $min_adult_quantity ) ?>">
@@ -148,7 +155,7 @@ class ESHB_View extends ESHB_MAIN{
                 
                     if(in_array('childrens', $seach_form_fileds)){ ?>
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_children));?></h6>
+                            <h6 class="field-label"><?php echo esc_html(eshb_get_form_label($string_children, 'string_children', $label_ctx));?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
                                 <input class="form-control" type="text" value="<?php echo esc_attr( $min_children_quantity ) ?>" name="children_quantity" max="<?php echo esc_attr( $children_capacity ) ?>" min="<?php echo esc_attr( $min_children_quantity ) ?>">
@@ -159,7 +166,7 @@ class ESHB_View extends ESHB_MAIN{
 
                         if(in_array('rooms', $seach_form_fileds)){ ?>
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html(eshb_get_translated_string($string_room));?></h6>
+                            <h6 class="field-label"><?php echo esc_html(eshb_get_form_label($string_room, 'string_room', $label_ctx));?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
                                 <input class="form-control" type="text" value="0" name="room_quantity" max="<?php echo esc_attr( $room_capacity ) ?>">
@@ -169,7 +176,7 @@ class ESHB_View extends ESHB_MAIN{
                     <?php }
                 ?>                        
                 <div class="eshb-form-group submition-wrapper py-0">
-                    <button class="eshb-form-submit-btn" href="#"><?php echo esc_html(eshb_get_translated_string($string_check_availability));?></button>
+                    <button class="eshb-form-submit-btn" href="#"><?php echo esc_html(eshb_get_form_label($string_check_availability, 'string_check_availability', $label_ctx));?></button>
                 </div>
                 <p class="err-msg"></p>
             </form>
@@ -396,7 +403,15 @@ class ESHB_View extends ESHB_MAIN{
         $string_guest = isset($eshb_settings['string_guest']) && !empty($eshb_settings['string_guest']) ? $eshb_settings['string_guest'] : 'guest';
         $string_time_slots = isset($eshb_settings['string_time_slots']) && !empty($eshb_settings['string_time_slots']) ? $eshb_settings['string_time_slots'] : 'Available Time Slots';
         $string_please_wait = isset($eshb_settings['string_please_wait']) && !empty($eshb_settings['string_please_wait']) ? $eshb_settings['string_please_wait'] : 'Please Wait';
-        
+
+        // Passed to every label below so filters know which accommodation is
+        // being rendered — that is what makes a per-room override possible from
+        // a child theme without any per-room setting in the admin.
+        $label_ctx = array(
+            'accomodation_id' => $accomodation_id,
+            'form'            => 'booking',
+        );
+
         $included_service_ids = !empty($accomodation_metaboxes['accomodation_services']) ? $accomodation_metaboxes['accomodation_services'] : [];
         $total_rooms = !empty($accomodation_metaboxes['total_rooms']) ? $accomodation_metaboxes['total_rooms'] : 0; 
         $eshb_bookings = new ESHB_Booking();
@@ -439,7 +454,7 @@ class ESHB_View extends ESHB_MAIN{
             <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get"<?php echo $form_attr_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes are escaped per key/value above. ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?> <?php echo esc_attr($has_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
 
                 <div class="eshb-form-loader">
-                    <span class="eshb-form-loader__text"><?php echo esc_html( eshb_get_translated_string( $string_please_wait ) ); ?></span>
+                    <span class="eshb-form-loader__text"><?php echo esc_html( eshb_get_form_label( $string_please_wait, 'string_please_wait', $label_ctx ) ); ?></span>
                 </div>
 
                 <div class="hidden-fields">
@@ -452,15 +467,15 @@ class ESHB_View extends ESHB_MAIN{
                 </div>
 
                 <div class="eshb-form-group form-title-wrapper">
-                    <h3 class="form-title"><?php echo esc_html( eshb_get_translated_string($string_reserve) );?></h3>
+                    <h3 class="form-title"><?php echo esc_html( eshb_get_form_label($string_reserve, 'string_reserve', $label_ctx) );?></h3>
                     <?php if( $price > 0 ):?>
-                        <span class="pricing"><?php echo esc_html(eshb_get_translated_string($string_from));?> 
+                        <span class="pricing"><?php echo esc_html(eshb_get_form_label($string_from, 'string_from', $label_ctx));?>
                             <h4 class="base-price"><?php echo wp_kses_post($per_night_price_html);?> / </h4>
-                            <?php 
+                            <?php
                             if($pricing_periodicity && $pricing_periodicity == 'per_hour'){
-                                echo esc_html( eshb_get_translated_string($string_hour) );
+                                echo esc_html( eshb_get_form_label($string_hour, 'string_hour', $label_ctx) );
                             }else{
-                                echo esc_html( eshb_get_translated_string($string_night) );
+                                echo esc_html( eshb_get_form_label($string_night, 'string_night', $label_ctx) );
                             }
                             ?>
                         </span>
@@ -471,9 +486,9 @@ class ESHB_View extends ESHB_MAIN{
                         <h6 class="field-label">
                         <?php 
                             if($pricing_periodicity) { ?>
-                                <?php echo esc_html( eshb_get_translated_string($string_check_in)) .'/'. esc_html( eshb_get_translated_string($string_check_out) );?>
+                                <?php echo esc_html( eshb_get_form_label($string_check_in, 'string_check_in', $label_ctx)) .'/'. esc_html( eshb_get_form_label($string_check_out, 'string_check_out', $label_ctx) );?>
                         <?php }else{ ?>
-                                <?php echo esc_html( eshb_get_translated_string($string_check_in) );?>
+                                <?php echo esc_html( eshb_get_form_label($string_check_in, 'string_check_in', $label_ctx) );?>
                         <?php }
                             ?>
                         </h6>
@@ -488,7 +503,7 @@ class ESHB_View extends ESHB_MAIN{
                         </div>
                     </div>
                     <div class="eshb-form-group end-date-pickers-wrapper">
-                        <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_check_out) );?></h6>
+                        <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_check_out, 'string_check_out', $label_ctx) );?></h6>
                         <div class="eshb-input-wrapper">
                             <span class="eshb-date-field">
                                 <input type="text" readonly tabindex="-1" class="form-control eshb-date-display" data-eshb-empty="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" data-eshb-hint="<?php echo esc_attr( ESHB_Helper::eshb_date_format_hint() ) ?>" placeholder="<?php echo esc_attr__( 'Add date', 'easy-hotel' ) ?>" value="<?php echo esc_attr( ESHB_Helper::eshb_format_date( $end_date ) ) ?>">
@@ -508,7 +523,7 @@ class ESHB_View extends ESHB_MAIN{
                 if($pricing_periodicity && $pricing_periodicity == 'per_hour' && count($available_times) > 0){ ?>
                     <div class="eshb-form-groups time-slots-wrapper <?php echo count($available_slots) > 0 ? 'has-time-slots' : ''?>">
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_time_slots) );?></h6>
+                            <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_time_slots, 'string_time_slots', $label_ctx) );?></h6>
                             <p class="empty-slot-msg err-msg"><?php echo esc_html__( 'All slots are Booked!', 'easy-hotel' ); ?></p>
                             <div class="time-slots">
                                 <?php  
@@ -548,7 +563,7 @@ class ESHB_View extends ESHB_MAIN{
                     <?php 
                         if(is_array($booking_form_fileds) && in_array('adults', $booking_form_fileds)){ ?>
                             <div class="eshb-form-group">
-                                <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_adult) );?></h6>
+                                <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_adult, 'string_adult', $label_ctx) );?></h6>
                                 <div class="de-number">
                                     <span class="d-minus"><?php echo esc_html('-')?></span>
                                     <input type="text" value="<?php echo esc_attr( $adult_quantity ); ?>" name="adult_quantity">
@@ -560,7 +575,7 @@ class ESHB_View extends ESHB_MAIN{
                     
                     if(is_array($booking_form_fileds) && in_array('childrens', $booking_form_fileds)){ ?>
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_children) );?></h6>
+                            <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_children, 'string_children', $label_ctx) );?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
                                 <input type="text" value="<?php echo esc_attr( $children_quantity ); ?>" name="children_quantity">
@@ -573,20 +588,20 @@ class ESHB_View extends ESHB_MAIN{
                         
                         ?>
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_rooms) );?></h6>
+                            <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_rooms, 'string_rooms', $label_ctx) );?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
                                 <input type="text" value="<?php echo $available_rooms > 0 ? 1 : 0 ?>" name="room_quantity">
                                 <span class="d-plus" max="5"><?php echo esc_html('+')?></span>
                             </div>
-                            <p class="capacity-status room-capacity-status"><?php echo esc_html( eshb_get_translated_string($string_available_rooms) ) . ' '; ?><span class="room-capacity-number"><?php echo esc_html( abs($available_rooms) ); ?></span></p>
+                            <p class="capacity-status room-capacity-status"><?php echo esc_html( eshb_get_form_label($string_available_rooms, 'available_rooms', $label_ctx) ) . ' '; ?><span class="room-capacity-number"><?php echo esc_html( abs($available_rooms) ); ?></span></p>
                             <p class="err-msg"></p>
                             
                         </div>
                     <?php }
                     if(is_array($booking_form_fileds) && in_array('extra_beds', $booking_form_fileds)){ ?>
                         <div class="eshb-form-group">
-                            <h6 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_extra_bed) );?></h6>
+                            <h6 class="field-label"><?php echo esc_html( eshb_get_form_label($string_extra_bed, 'string_extra_bed', $label_ctx) );?></h6>
                             <div class="de-number">
                                 <span class="d-minus"><?php echo esc_html('-')?></span>
                                 <input type="text" value="0" name="extra_bed_quantity">
@@ -600,7 +615,7 @@ class ESHB_View extends ESHB_MAIN{
                 <?php 
                 if(is_array($included_service_ids) && count($included_service_ids) > 0 && $eshb_settings['extra-services-switcher'] == true){ ?>
                     <div class="eshb-form-group extra-services-wrapper">
-                        <h3 class="field-label"><?php echo esc_html( eshb_get_translated_string($string_extra_services) );?></h3>
+                        <h3 class="field-label"><?php echo esc_html( eshb_get_form_label($string_extra_services, 'string_extra_services', $label_ctx) );?></h3>
                         <ul class="service-list">
                             <?php 
 
@@ -647,10 +662,14 @@ class ESHB_View extends ESHB_MAIN{
 
                                                     if($service_charge_type == 'room'){
                                                         $string_service_charge_type_translated = $string_room;
+                                                        $string_service_charge_type_key = 'string_room';
                                                     }else if($service_charge_type == 'guest'){
                                                         $string_service_charge_type_translated = $string_guest;
+                                                        $string_service_charge_type_key = 'string_guest';
                                                     }else{
+                                                        // Raw charge type, not one of the configurable strings.
                                                         $string_service_charge_type_translated = $service_charge_type;
+                                                        $string_service_charge_type_key = '';
                                                     }
 
                                                     if ( ! empty( $service_price ) ) {
@@ -663,7 +682,7 @@ class ESHB_View extends ESHB_MAIN{
                                                         if ( ! $room_visibility && $service_charge_type === 'room' ) {
                                                             echo wp_kses_post( $service_price_html );
                                                         } else {
-                                                            echo wp_kses_post( $service_price_html ) . esc_html( ' / ' . eshb_get_translated_string( $string_service_charge_type_translated ) );
+                                                            echo wp_kses_post( $service_price_html ) . esc_html( ' / ' . eshb_get_form_label( $string_service_charge_type_translated, $string_service_charge_type_key, $label_ctx ) );
                                                         }
                                                     } else {
                                                         echo esc_html__( 'Free', 'easy-hotel' );
@@ -705,11 +724,11 @@ class ESHB_View extends ESHB_MAIN{
                
                 <div class="eshb-form-group cost-calculator-wrapper">
                     <h3 class="field-label total-cost-label eshb-booking-total-pricing">
-                        <?php echo esc_html(eshb_get_translated_string($string_total_cost));?>
+                        <?php echo esc_html(eshb_get_form_label($string_total_cost, 'string_total_cost', $label_ctx));?>
                         <div class="eshb-booking-value" id="eshb-booking-total-price" currency_symbol="<?php echo esc_html( $currency_symbol ) ?>" subtotal_price=""><?php echo wp_kses_post($price_html);?></div>
                     </h3>
                     <h3 class="field-label total-cost-label eshb-booking-total-discounted-pricing">
-                        <?php echo esc_html(eshb_get_translated_string($string_disocunted_price));?>
+                        <?php echo esc_html(eshb_get_form_label($string_disocunted_price, 'string_disocunted_price', $label_ctx));?>
                         <div class="eshb-booking-value" id="eshb-booking-discounted-price" currency_symbol="<?php echo esc_html( $currency_symbol ) ?>" subtotal_price=""><?php echo wp_kses_post($price_html);?></div>
                     </h3>
                 </div>
@@ -744,15 +763,15 @@ class ESHB_View extends ESHB_MAIN{
                         <div class="eshb-form-group submition-wrapper"> 
                             <?php 
                                 if($booking_type == 'woocommerce'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_form_label($string_book_your_stay, 'string_book_your_stay', $label_ctx) );?></button>
                                 <?php }else if($booking_type == 'surecart'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_form_label($string_book_your_stay, 'string_book_your_stay', $label_ctx) );?> </button>
                                 <?php }else if($booking_type == 'native_checkout'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_form_label($string_book_your_stay, 'string_book_your_stay', $label_ctx) );?></button>
                                 <?php }else if($booking_type == 'booking_request'){ ?>
-                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?></button>
+                                    <button class="eshb-form-submit-btn" accomodation_id="<?php echo esc_attr($accomodation_id); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"><?php echo esc_html( eshb_get_form_label($string_book_your_stay, 'string_book_your_stay', $label_ctx) );?></button>
                                 <?php }else{ ?>
-                                    <a class="eshb-form-submit-btn" href="<?php echo esc_url( $external_booking_link ); ?>" target="_blank" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_translated_string($string_book_your_stay) );?> </a>
+                                    <a class="eshb-form-submit-btn" href="<?php echo esc_url( $external_booking_link ); ?>" target="_blank" accomodation_id="<?php echo esc_attr(get_the_ID()); ?>" booking_type="<?php echo esc_attr($booking_type); ?>"> <?php echo esc_html( eshb_get_form_label($string_book_your_stay, 'string_book_your_stay', $label_ctx) );?> </a>
                                 <?php }
 
                             ?>
@@ -837,7 +856,7 @@ class ESHB_View extends ESHB_MAIN{
         ?>
         <div class="eshb-availability-calendars-area">
             <?php if($show_title){ ?>
-            <h3 class="calendar-title"><?php echo esc_html( eshb_get_translated_string($availability_calendar_title) );?></h3>
+            <h3 class="calendar-title"><?php echo esc_html( eshb_get_form_label($availability_calendar_title, 'string_availability_calendar', array( 'accomodation_id' => $accomodation_id, 'form' => 'calendar' )) );?></h3>
             <?php } ?>
             <div class="eshb-availability-calendars">
                 <input type="hidden" id="booking-date-picker_start_date" class="booking-date-picker form-control" name="available_date_picker" value="<?php echo esc_attr( $start_date ) ?>" accomodation_id="<?php echo esc_attr( $accomodation_id )?>">

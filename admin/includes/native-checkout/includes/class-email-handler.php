@@ -19,17 +19,56 @@ class ESHB_Native_Email_Handler {
         return array_values( array_filter( $ids ) );
     }
 
+    /**
+     * Switch WordPress to the language the booking was made in.
+     *
+     * Checkout completes over admin-ajax.php, so without this the subject and
+     * the fallback body below are built in the site's default language even
+     * when the customer booked from the Bangla site. Only the EHB Email
+     * Template add-on knows how to resolve a booking's language, so this is a
+     * no-op when it is not installed.
+     *
+     * @param int $booking_id Booking post id.
+     * @return bool Pass the return value to restore_booking_locale().
+     */
+    private static function switch_to_booking_locale( $booking_id ) {
+
+        if ( ! class_exists( 'ESHB_Email_Language' ) ) {
+            return false;
+        }
+
+        return ESHB_Email_Language::switch_to( ESHB_Email_Language::for_booking( $booking_id ) );
+    }
+
+    /**
+     * Undo switch_to_booking_locale().
+     *
+     * @param bool $switched Its return value.
+     */
+    private static function restore_booking_locale( $switched ) {
+
+        if ( $switched && class_exists( 'ESHB_Email_Language' ) ) {
+            ESHB_Email_Language::restore( $switched );
+        }
+    }
+
     public static function send_customer_confirmation( $booking_ids, array $customer ) {
         $ids = self::normalize_ids( $booking_ids );
         if ( empty( $ids ) || empty( $customer['email'] ) ) return false;
 
-        return self::send_templated_email( $ids, $customer, 'customer', 'customer_processing_order', $customer['email'],
-            sprintf(
-                /* translators: %s: site name */
-                __( 'Your booking confirmation - %s', 'easy-hotel' ),
-                get_bloginfo( 'name' )
-            )
-        );
+        $switched = self::switch_to_booking_locale( reset( $ids ) );
+
+        try {
+            return self::send_templated_email( $ids, $customer, 'customer', 'customer_processing_order', $customer['email'],
+                sprintf(
+                    /* translators: %s: site name */
+                    __( 'Your booking confirmation - %s', 'easy-hotel' ),
+                    get_bloginfo( 'name' )
+                )
+            );
+        } finally {
+            self::restore_booking_locale( $switched );
+        }
     }
 
     public static function send_admin_notification( $booking_ids, array $customer ) {
@@ -39,13 +78,19 @@ class ESHB_Native_Email_Handler {
         $settings = get_option( 'eshb_settings', [] );
         $to = ! empty( $settings['recipent_email'] ) ? $settings['recipent_email'] : get_option( 'admin_email' );
 
-        return self::send_templated_email( $ids, $customer, 'admin', 'new_order', $to,
-            sprintf(
-                /* translators: %d: booking ID */
-                __( 'New booking received - #%d', 'easy-hotel' ),
-                reset( $ids )
-            )
-        );
+        $switched = self::switch_to_booking_locale( reset( $ids ) );
+
+        try {
+            return self::send_templated_email( $ids, $customer, 'admin', 'new_order', $to,
+                sprintf(
+                    /* translators: %d: booking ID */
+                    __( 'New booking received - #%d', 'easy-hotel' ),
+                    reset( $ids )
+                )
+            );
+        } finally {
+            self::restore_booking_locale( $switched );
+        }
     }
 
     /**

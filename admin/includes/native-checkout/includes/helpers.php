@@ -426,9 +426,118 @@ if ( ! function_exists( 'eshb_native_checkout_ensure_page' ) ) {
     }
 }
 
+if ( ! function_exists( 'eshb_native_checkout_post_language' ) ) {
+    /**
+     * Language slug a post belongs to, '' when unknown or not multilingual.
+     *
+     * @param  int $post_id
+     * @return string
+     */
+    function eshb_native_checkout_post_language( $post_id ) {
+
+        $post_id = (int) $post_id;
+
+        if ( ! $post_id ) {
+            return '';
+        }
+
+        if ( function_exists( 'pll_get_post_language' ) ) {
+            $lang = pll_get_post_language( $post_id, 'slug' );
+            if ( ! empty( $lang ) ) {
+                return (string) $lang;
+            }
+        }
+
+        if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML.
+            $details = apply_filters( 'wpml_post_language_details', null, $post_id );
+            if ( is_array( $details ) && ! empty( $details['language_code'] ) ) {
+                return (string) $details['language_code'];
+            }
+        }
+
+        return '';
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_request_language' ) ) {
+    /**
+     * The language the visitor is actually browsing in, read off the referer.
+     *
+     * Every checkout step runs over admin-ajax.php, whose URL carries no language
+     * segment — Polylang and WPML both answer with the site default there. That is
+     * why a "Book now" clicked on the Bangla accommodation page redirected to the
+     * English checkout page. The referer still points at the page the request was
+     * fired from, so it is the only signal in that request that knows the truth.
+     *
+     * Returns '' when the referer says nothing, which callers pass straight through
+     * as "use the current language" — the correct answer for the default language,
+     * whose slug Polylang hides from the URL.
+     *
+     * @return string Language slug, '' when undeterminable.
+     */
+    function eshb_native_checkout_request_language() {
+
+        $slugs = [];
+
+        if ( function_exists( 'pll_languages_list' ) ) {
+            $slugs = (array) pll_languages_list( [ 'fields' => 'slug' ] );
+        } elseif ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Third-party filter provided by WPML.
+            $languages = apply_filters( 'wpml_active_languages', null );
+            if ( is_array( $languages ) ) {
+                $slugs = array_keys( $languages );
+            }
+        }
+
+        if ( empty( $slugs ) ) {
+            return '';
+        }
+
+        $referer = wp_get_referer();
+
+        if ( empty( $referer ) ) {
+            return '';
+        }
+
+        $parts = wp_parse_url( $referer );
+
+        if ( ! is_array( $parts ) ) {
+            return '';
+        }
+
+        // Query-var mode: ?lang=bn
+        if ( ! empty( $parts['query'] ) ) {
+            $query = [];
+            wp_parse_str( $parts['query'], $query );
+
+            if ( ! empty( $query['lang'] ) && in_array( $query['lang'], $slugs, true ) ) {
+                return (string) $query['lang'];
+            }
+        }
+
+        // Directory mode: /bn/room-x/. Strip the site's own path first so
+        // subdirectory installs (themewant.com/luxera/bn/…) still line up.
+        $path      = isset( $parts['path'] ) ? (string) $parts['path'] : '';
+        $home_path = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+
+        if ( '' !== $home_path && '/' !== $home_path && 0 === strpos( $path, $home_path ) ) {
+            $path = substr( $path, strlen( $home_path ) );
+        }
+
+        $segment = strtok( ltrim( $path, '/' ), '/' );
+
+        if ( ! empty( $segment ) && in_array( $segment, $slugs, true ) ) {
+            return (string) $segment;
+        }
+
+        return '';
+    }
+}
+
 if ( ! function_exists( 'eshb_native_checkout_translated_page_id' ) ) {
     /**
-     * The current language's version of a page, when a translation plugin is running.
+     * A page's version in a given language, when a translation plugin is running.
      *
      * Mirrors what ESHB_View does for the search result page: ask Polylang first, then
      * WPML, and fall back to the id we were given when neither is installed or the page
@@ -440,9 +549,12 @@ if ( ! function_exists( 'eshb_native_checkout_translated_page_id' ) ) {
      *                           carries this shortcode. A translated page created
      *                           without it would render empty, which is worse than the
      *                           original language rendering correctly.
+     * @param  string $lang      Optional. Language slug to resolve against. Defaults to
+     *                           the request's own language, which is only meaningful on
+     *                           the front end — see eshb_native_checkout_request_language().
      * @return int
      */
-    function eshb_native_checkout_translated_page_id( $page_id, $shortcode = '' ) {
+    function eshb_native_checkout_translated_page_id( $page_id, $shortcode = '', $lang = '' ) {
 
         $page_id = (int) $page_id;
 
@@ -450,10 +562,14 @@ if ( ! function_exists( 'eshb_native_checkout_translated_page_id' ) ) {
             return 0;
         }
 
+        $lang = (string) $lang;
+
         if ( function_exists( 'pll_get_post' ) ) {
-            $translated = pll_get_post( $page_id );
+            $translated = ( '' !== $lang ) ? pll_get_post( $page_id, $lang ) : pll_get_post( $page_id );
         } elseif ( function_exists( 'icl_object_id' ) ) {
-            $translated = icl_object_id( $page_id, 'page', true );
+            $translated = ( '' !== $lang )
+                ? icl_object_id( $page_id, 'page', true, $lang )
+                : icl_object_id( $page_id, 'page', true );
         } else {
             return $page_id;
         }
@@ -517,15 +633,23 @@ if ( ! function_exists( 'eshb_native_checkout_page_translation_ids' ) ) {
 }
 
 if ( ! function_exists( 'eshb_native_checkout_url' ) ) {
-    function eshb_native_checkout_url() {
+    function eshb_native_checkout_url( $lang = '' ) {
 
         $page_id = eshb_native_checkout_ensure_page();
 
         if ( $page_id ) {
+            // Callers inside an AJAX handler have no language of their own, so
+            // fall back to the referer rather than to the site default — see
+            // eshb_native_checkout_request_language(). Still '' on the front end,
+            // where the request's own language is already correct.
+            if ( '' === $lang ) {
+                $lang = eshb_native_checkout_request_language();
+            }
+
             // Translated at the URL, not at the stored option: `eshb_native_checkout_page_id`
             // has to keep pointing at the one canonical page, or the next lookup would
             // save whichever language happened to be showing.
-            $url = get_permalink( eshb_native_checkout_translated_page_id( $page_id, 'eshb_native_checkout' ) );
+            $url = get_permalink( eshb_native_checkout_translated_page_id( $page_id, 'eshb_native_checkout', $lang ) );
         } else {
             // Avoid colliding with WooCommerce's /checkout/ as a last resort —
             // surface the home URL so the user notices instead of landing on
@@ -533,7 +657,7 @@ if ( ! function_exists( 'eshb_native_checkout_url' ) ) {
             $url = home_url( '/' );
         }
 
-        return apply_filters( 'eshb_native_checkout_url', $url, $page_id );
+        return apply_filters( 'eshb_native_checkout_url', $url, $page_id, $lang );
     }
 }
 

@@ -138,7 +138,16 @@ class ESHB_Native_Checkout {
         // truth and the cookie is a best-effort backup. Force a
         // trailing slash before adding the query arg so WP's canonical
         // redirect can't bounce the URL and drop the param.
-        $checkout_url = trailingslashit( eshb_native_checkout_url() );
+        // Keep the visitor in the language they were browsing. This handler runs
+        // over admin-ajax.php, so the referer is the only thing that knows it;
+        // the booked accommodation is the backstop when the browser sends none.
+        $checkout_lang = eshb_native_checkout_request_language();
+
+        if ( '' === $checkout_lang ) {
+            $checkout_lang = eshb_native_checkout_post_language( $reservation['accomodation_id'] );
+        }
+
+        $checkout_url = trailingslashit( eshb_native_checkout_url( $checkout_lang ) );
         $checkout_url = add_query_arg( eshb_native_checkout_request_param(), $token, $checkout_url );
 
         wp_send_json_success( [
@@ -926,9 +935,22 @@ class ESHB_Native_Checkout {
         }
 
         $first_booking = (int) reset( $booking_ids );
+
+        // Same language handling as the checkout redirect above: this is an
+        // AJAX handler, so the referer (the checkout page) is what knows the
+        // language, with the booked accommodation as the backstop.
+        $thankyou_lang = eshb_native_checkout_request_language();
+
+        if ( '' === $thankyou_lang ) {
+            $first_meta    = get_post_meta( $first_booking, 'eshb_booking_metaboxes', true );
+            $thankyou_lang = is_array( $first_meta ) && ! empty( $first_meta['booking_accomodation_id'] )
+                ? eshb_native_checkout_post_language( $first_meta['booking_accomodation_id'] )
+                : '';
+        }
+
         $redirect = add_query_arg(
             [ 'booking' => $first_booking, 'group' => $group_id ],
-            eshb_native_checkout_url()
+            eshb_native_checkout_url( $thankyou_lang )
         );
 
         wp_send_json_success( [

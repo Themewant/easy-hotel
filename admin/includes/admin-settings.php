@@ -1270,29 +1270,96 @@ add_action( 'plugins_loaded', function(){
 
 
   // Register the string for translation
-  function eshb_get_translated_string($option_key, $option_name = 'eshb_settings') {
+  /**
+   * Resolve a settings string, run it through the active translation plugin
+   * and expose the result to filters.
+   *
+   * The optional $context tells a filter *which* label this is and where it is
+   * being rendered, so a child theme can retarget a single label — on a single
+   * accommodation if it wants — without having to match on the printed text.
+   * Matching on text is unreliable here: it changes with the active language
+   * under Polylang, and several settings resolve to the same words. Call sites
+   * that pass no context keep working exactly as before.
+   *
+   * @param string       $option_key  Text the caller already resolved from settings.
+   * @param string       $option_name Option the value came from.
+   * @param array|string $context     Context array, or just the settings key as a string.
+   *
+   * @return string
+   */
+  function eshb_get_translated_string($option_key, $option_name = 'eshb_settings', $context = array()) {
     if (empty($option_key) || empty($option_name)) {
         return '';
     }
 
+    // Shorthand: eshb_get_translated_string( $text, 'eshb_settings', 'string_adult' ).
+    if (!is_array($context)) {
+        $context = array('key' => (string) $context);
+    }
+
+    $context = wp_parse_args($context, array(
+        'key'             => '',   // settings key, e.g. 'string_adult'
+        'accomodation_id' => 0,    // 0 when the string is not tied to one room
+        'form'            => '',   // 'booking' | 'search' | 'calendar'
+    ));
+
+    $key = $context['key'];
+
     $settings = get_option($option_name);
 
-    $default_text = isset($settings[$option_key]) && !empty($settings[$option_key]) 
-        ? $settings[$option_key] 
+    $default_text = isset($settings[$option_key]) && !empty($settings[$option_key])
+        ? $settings[$option_key]
         : $option_key;
+
+    /**
+     * Filter the text *before* it reaches Polylang / WPML, so a replacement
+     * supplied here is still translatable on a multilingual site.
+     */
+    $default_text = apply_filters('eshb_label_raw', $default_text, $key, $context);
 
     // Polylang exists
     if (function_exists('pll__')) {
-        return pll__($default_text);
+        $output = pll__($default_text);
     }
     // WPML exists
     else if (function_exists('icl_t')) {
-        return icl_t('Easy Hotel Booking', $option_key, $default_text);
+        $output = icl_t('Easy Hotel Booking', $option_key, $default_text);
     }
     // No translation plugin
     else {
-        return $default_text;
+        $output = $default_text;
     }
+
+    /**
+     * Catch-all. Fires for every string the plugin and its add-ons translate,
+     * including the call sites that pass no context.
+     */
+    $output = apply_filters('eshb_translated_string', $output, $option_key, $option_name, $context);
+
+    // Key aware hooks, only for call sites that identified the string.
+    if (!empty($key)) {
+        $output = apply_filters('eshb_label', $output, $key, $context);
+        $output = apply_filters("eshb_label_{$key}", $output, $context);
+    }
+
+    return $output;
+  }
+
+  /**
+   * Wrapper for the form templates. Keeps the call sites short while still
+   * handing the settings key and the surrounding context to the filters above.
+   *
+   * @param string $text    Text already resolved from settings.
+   * @param string $key     Settings key, e.g. 'string_adult'.
+   * @param array  $context Extra context — 'accomodation_id', 'form'.
+   *
+   * @return string
+   */
+  function eshb_get_form_label($text, $key, $context = array()) {
+    $context = is_array($context) ? $context : array();
+    $context['key'] = $key;
+
+    return eshb_get_translated_string($text, 'eshb_settings', $context);
   }
 
 

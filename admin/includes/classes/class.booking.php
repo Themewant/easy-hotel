@@ -1053,12 +1053,6 @@ class ESHB_Booking {
 		$order_status = $order->get_status();
 		$booking_status = $order_status;
 
-		// A deposit order still has a balance owed, so auto-approval must
-		// NOT mark it completed — it has to stay 'deposit-payment' until the
-		// remaining balance is collected. Detect a deposit by the captured
-		// deposit meta (set only on the deposit path, before this runs) or
-		// the deposit-payment status. A FULL payment has neither, so it must
-		// auto-complete normally.
 		$is_deposit_order = ( (float) get_post_meta( $order_id, 'initial_deposit', true ) > 0 )
 			|| ( 'deposit-payment' === $order->get_status() );
 
@@ -2436,11 +2430,6 @@ class ESHB_Booking {
 	
 		if ($booking_post_id) {
 
-			// Auto-approval: a fully-paid, non-deposit hotel order must not be
-			// synced down to 'processing' — it should be 'completed'. Without
-			// this, a later order transition to 'processing' (gateway / IPN)
-			// overwrites the 'completed' status set at checkout. Deposits keep
-			// their status (they still owe a balance).
 			if ( 'processing' === $new_status && $order ) {
 				$eshb_settings = get_option( 'eshb_settings', [] );
 				$auto_approve  = ! empty( $eshb_settings['booking-auto-approval'] ) && $eshb_settings['booking-auto-approval'] == true;
@@ -2526,8 +2515,7 @@ class ESHB_Booking {
 		try {
 			$order->update_status($booking_status, 'Booking status updated to: ' . $booking_status);
 		} catch (Exception $e) {
-			// Log error for debugging
-			//error_log('Error updating order status: ' . $e->getMessage());
+			
 		}
 	}
 
@@ -2615,11 +2603,7 @@ class ESHB_Booking {
 	// -------------------------------------------------------------------------
 
 	private function eshb_get_session_token() {
-		// Native Checkout does not use a WooCommerce session — the visitor
-		// is identified by the per-visitor reservation token instead. Use
-		// that as the hold key so holds created during the native flow are
-		// attributed to (and excludable for) the right user across the
-		// booking form, calendar and checkout page.
+		
 		if ( function_exists( 'eshb_native_checkout_is_enabled' ) && eshb_native_checkout_is_enabled()
 			&& function_exists( 'eshb_native_checkout_get_token' ) ) {
 			$native_token = eshb_native_checkout_get_token( false );
@@ -2784,15 +2768,7 @@ class ESHB_Booking {
 		$blocked_ranges = [];
 		if ( is_array( $holds ) ) {
 			$now = time();
-			// Show every active hold as "Reserved" on the calendar,
-			// including the current visitor's own. The native flow keys
-			// holds by a cookie token that is reliably present on this
-			// AJAX request, so skipping the own session here would hide
-			// the held dates from the holder (whereas the WooCommerce
-			// session token isn't consistently resolved here, so its
-			// holds always showed). Own-hold exclusion is kept only in
-			// the booking-validation path so the holder can still finish
-			// their own reservation.
+			
 			foreach ( $holds as $token => $hold ) {
 				if ( $hold['until'] < $now ) continue;
 				$blocked_ranges[] = [
@@ -2822,10 +2798,7 @@ class ESHB_Booking {
 		$blocked_ranges = [];
 		if ( is_array( $holds ) ) {
 			$now = time();
-			// Include every active hold (own included) so the calendar
-			// renders the held dates as "Reserved" consistently across
-			// the WooCommerce and Native Checkout flows. See the note in
-			// eshb_add_blocked_dates_to_calendar().
+			
 			foreach ( $holds as $token => $hold ) {
 				if ( $hold['until'] < $now ) continue;
 				$blocked_ranges[] = [
