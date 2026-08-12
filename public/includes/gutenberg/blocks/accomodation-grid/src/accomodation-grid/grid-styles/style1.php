@@ -20,7 +20,7 @@
 			<!-- Text -->
 			<div class="contents-col col-lg-6 col-sm-12 col-12 py-5 pe-lg-5" style="background-size: cover; background-repeat: no-repeat;">
 			
-				<h3 class="p-title" style="<?php echo esc_attr($eshb_title_inline_style); ?>"><a href="<?php echo esc_url(get_the_permalink($eshb_accomodation_id)); ?>" style="color: inherit;"><?php echo esc_html(get_the_title($eshb_accomodation_id)); ?></a></h3>
+				<h3 class="p-title" style="<?php echo esc_attr($eshb_title_inline_style); ?>"><a href="<?php echo esc_url(get_the_permalink($eshb_accomodation_id)); ?>" style="color: inherit;"><?php echo wp_kses_post(get_the_title($eshb_accomodation_id)); ?></a></h3>
 				<div class="capacities fs-14 mb-3" style="background-size: cover; background-repeat: no-repeat;">
 					<?php 
 						if ( ! empty( $eshb_accomodation_info_group ) && is_array($eshb_accomodation_info_group) && count($eshb_accomodation_info_group) > 0) {

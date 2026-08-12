@@ -47,7 +47,7 @@
 			</div>
 			<div class="hover-bg-two"></div>
 		</div>
-		<h4 class="title mt-3 eshb-text-center"><?php echo esc_html(get_the_title($accomodation_id)); ?></h4>
+		<h4 class="title mt-3 eshb-text-center"><?php echo wp_kses_post(get_the_title($accomodation_id)); ?></h4>
 	</div>
 </div>
 		

@@ -19,7 +19,7 @@
 			<!-- Text -->
 			<div class="contents-col col-lg-6 col-sm-12 col-12 py-5 pe-lg-5" style="background-size: cover; background-repeat: no-repeat;">
 			
-				<h3 class="p-title"><a href="<?php echo esc_url(get_the_permalink($accomodation_id)); ?>"><?php echo esc_html(get_the_title($accomodation_id)); ?></a></h3>
+				<h3 class="p-title"><a href="<?php echo esc_url(get_the_permalink($accomodation_id)); ?>"><?php echo wp_kses_post(get_the_title($accomodation_id)); ?></a></h3>
 				<div class="capacities fs-14 mb-3" style="background-size: cover; background-repeat: no-repeat;">
 					<?php 
 						if ( ! empty( $accomodation_info_group ) && is_array($accomodation_info_group) && count($accomodation_info_group) > 0) {

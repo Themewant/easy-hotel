@@ -233,6 +233,34 @@ if ( class_exists( 'ESHB' ) ) {
     } );
 
     /**
+     * jQuery UI datepicker for the "Booking Blocked Dates" fields.
+     *
+     * The framework enqueues a field type's own assets only for the types it has seen
+     * through ESHB::createSection(), which is the one place ESHB::set_used_fields() is
+     * called from. This tab is registered through the sections filter above instead, so
+     * ESHB_Field_date::enqueue() never runs and jquery-ui-datepicker is never printed.
+     *
+     * Without it eshb_field_date() throws on the first date field it touches, and the
+     * repeater initialises its saved rows before binding Add / Duplicate / Delete — so
+     * one saved blocked date was enough to leave all three buttons dead. main.js now
+     * guards against the missing plugin and binds before initialising, but the field is
+     * still meant to have a calendar, which is what this puts back.
+     *
+     * Only the script is needed; the framework stylesheet already carries the
+     * .ui-datepicker rules.
+     */
+    add_action( 'admin_enqueue_scripts', function(){
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read only page check.
+        if ( ! isset( $_GET['page'] ) || sanitize_key( wp_unslash( $_GET['page'] ) ) !== 'easy-hotel-settings' ) {
+            return;
+        }
+
+        wp_enqueue_script( 'jquery-ui-datepicker' );
+
+    } );
+
+    /**
      * Turn each rules repeater into a plain admin list: an "Add Rule" button, a table
      * of the rules already configured, and Edit / Delete per row.
      *

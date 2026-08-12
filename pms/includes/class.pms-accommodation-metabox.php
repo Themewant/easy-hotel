@@ -309,7 +309,8 @@ class ESHB_PMS_Accommodation_Metabox {
                 . '<p class="eshb-pms-dupes-note">%4$s</p>'
             . '</div>',
             esc_html__( 'The same room number is used twice in this accommodation:', 'easy-hotel' ),
-            $items,
+            // Every part of $items was escaped as it was built; kses keeps the markup and satisfies the sniff.
+            wp_kses_post( $items ),
             esc_html__( 'Nothing breaks if you leave it — a booking tracks the row position, not the number. But the room rack and the bookings list will show two rooms with the same name, so staff cannot tell which guest is in which room.', 'easy-hotel' ),
             esc_html__( 'Reusing a number in a different accommodation is fine and is never reported here.', 'easy-hotel' )
         );

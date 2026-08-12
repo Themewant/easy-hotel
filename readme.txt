@@ -4,7 +4,7 @@ Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.7
+Stable tag: 2.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,6 +93,13 @@ Unlike other hotel booking plugins, it provides flexibility, an easy-to-use book
 - Displaying form by shortcode
 
 
+**🏢 Built-in PMS (Property Management System)**
+
+- Manage daily operations from one dashboard with arrival & departure lists.
+- Assign guests to rooms and track occupancy on a visual Room Rack calendar timeline.
+- Check real-time room availability before confirming any reservation.
+
+
 **📌 Additional Features to Enhance Your Hotel Business**
 
 - **Set holiday restrictions** to prevent bookings on specific dates.
@@ -112,10 +119,12 @@ Unlike other hotel booking plugins, it provides flexibility, an easy-to-use book
 * [EHB SureCart](https://themewant.com/downloads/ehb-surecart/) It is a lightweight, powerful extension that integrates Easy Hotel with SureCart.
 * [EHB Currency](https://themewant.com/downloads/ehb-currency/) Multi Currency Converter plugin for easy hotel.
 * [EHB Manual Booking](https://themewant.com/downloads/ehb-manual-booking/) Manual Booking solution for easy hotel.
-* [EHB Deposit](https://themewant.com/downloads/ehb-manual-booking/) Deposit / Paritial payment solution for easy hotel.
+* [EHB Deposit](https://themewant.com/downloads/ehb-deposit/) Deposit / Paritial payment solution for easy hotel.
 * [EHB PDF Invoice](https://themewant.com/downloads/ehb-pdf-invoice/) PDF Invoice generator for easy hotel.
-* [EHB Mailchimp](https://themewant.com/downloads/ehb-mailchimp/) PDF Invoice generator for easy hotel.
-
+* [EHB Mailchimp](https://themewant.com/downloads/ehb-mailchimp/) Easy Hotel Mailchimp Plugin — collect guest data and sync it to your Mailchimp audience.
+* [EHB WhatsApp](https://themewant.com/downloads/ehb-whatsapp/) Easy Hotel WhatsApp Plugin — send booking notifications & updates to guests over WhatsApp.
+* [EHB Email Template](https://themewant.com/downloads/ehb-email-template/) Easy Hotel Email Template Plugin — build custom email templates for your booking emails.
+* [EHB Bricks](https://themewant.com/downloads/ehb-bricks/) Easy Hotel Bricks Plugin — Bricks Builder elements for Easy Hotel Booking.
 
 
 ==Who Can Use Easy Hotel Booking?==
@@ -203,6 +212,9 @@ If you like The Our Plugin, then consider checking out other WordPress Plugins:
 * [Easy Currency](https://wordpress.org/plugins/easy-currency/) Easy Currency Converter plugin for easy hotel.
 * [Easy Elements](https://wordpress.org/plugins/easy-elements/) Easy Elements for Elementor
 * [Easy Menu Iocns](https://wordpress.org/plugins/easy-menu-icons/) WordPress Menu Icon Plugin
+* [BoldReview](https://wordpress.org/plugins/boldreview/) Multi-Criteria Reviews for WooCommerce with Google Reviews
+* [BoldForm](https://wordpress.org/plugins/boldform-lite/) Drag & Drop Form Builder, Contact Form, Survey & Multi-Step Form
+* [Product gallery](https://wordpress.org/plugins/themewant-product-gallery/) Product Gallery Slider, Variation Images, Video, Zoom & Lightbox for WooCommerce
 
 
 == Installation ==
@@ -258,6 +270,8 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 * Added: Dashboard Arrival & Departure Management
 * Added: Real-Time Room Availability Checker
 * Added: Room Rack – Visual room assignment board with a calendar timeline.
+* Fixed: Service, coupon, sesion post title alert issue fix.
+* Fixed: Blocked date entry issue fixes.
 
 = 2.0.7 =
 * Fixed: Account page language translation issues.

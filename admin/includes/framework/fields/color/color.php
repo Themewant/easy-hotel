@@ -16,10 +16,18 @@ if ( ! class_exists( 'ESHB_Field_color' ) ) {
 
     public function render() {
 
+      /*
+       * Both attribute strings are escaped as they are built, so they are
+       * echoed as-is. Running esc_attr() over them a second time turned the
+       * quotes into &quot;, and the browser then read the value as the literal
+       * text "#ffffff" — which is why the picker's Default button pasted a
+       * quoted colour that no CSS could use.
+       */
       $default_attr = ( ! empty( $this->field['default'] ) ) ? ' data-default-color="'. esc_attr( $this->field['default'] ) .'"' : '';
+      $field_attr   = $this->field_attributes_html();
 
       echo wp_kses_post($this->field_before());
-      echo '<input type="text" name="'. esc_attr( $this->field_name() ) .'" value="'. esc_attr( $this->value ) .'" class="csf-color"'. esc_attr($default_attr) . esc_attr($this->field_attributes()) .'/>';
+      echo '<input type="text" name="'. esc_attr( $this->field_name() ) .'" value="'. esc_attr( $this->value ) .'" class="csf-color"'. $default_attr . $field_attr .'/>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped where each attribute is built.
       echo wp_kses_post($this->field_after());
 
     }

@@ -32,7 +32,7 @@
 					do_action( 'eshb_before_details_info_html', $accomodation_id, $eshb_settings );
 				?>
 
-				<h3 class="title"><?php echo esc_html(get_the_title($accomodation_id)); ?></h3>
+				<h3 class="title"><?php echo wp_kses_post(get_the_title($accomodation_id)); ?></h3>
 				<div class="capacities eshb-text-center">
 					<?php 
 						$eshb_i = 0;

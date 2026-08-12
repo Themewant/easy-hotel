@@ -50,6 +50,9 @@ function eshb_coupon_post_type_init() {
  
 add_action( 'init', 'eshb_coupon_post_type_init' );
 
+// The coupon title is kept free of markup by the shared guard in
+// admin/includes/post-types/init.php.
+
 include 'metaboxes.php';
 
 

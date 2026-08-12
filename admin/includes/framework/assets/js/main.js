@@ -632,6 +632,16 @@
   $.fn.eshb_field_date = function() {
     return this.each( function() {
 
+      // jQuery UI datepicker is enqueued by ESHB_Field_date::enqueue(), which only runs
+      // for field types the framework has seen through ESHB::createSection(). A date
+      // field registered any other way — through the sections filter, say — arrives
+      // without it, and throwing here would take down the rest of the
+      // eshb_reload_script() call that got us here. Leave the inputs as the plain text
+      // fields they already are instead.
+      if ( ! $.fn.datepicker ) {
+        return;
+      }
+
       var $this    = $(this),
           $inputs  = $this.find('input'),
           settings = $this.find('.csf-date-settings').data('settings'),
@@ -1431,8 +1441,6 @@
           max       = parseInt( $wrapper.data('max') ),
           min       = parseInt( $wrapper.data('min') );
 
-      $wrapper.children('.csf-repeater-item').children('.csf-repeater-content').eshb_reload_script();
-
       $wrapper.sortable({
         axis: 'y',
         handle: '.csf-repeater-sort',
@@ -1536,6 +1544,13 @@
 
       $wrapper.children('.csf-repeater-item').children('.csf-repeater-helper').on('click', '.csf-repeater-remove', event_remove);
       $repeater.children('.csf-repeater-hidden').children('.csf-repeater-helper').on('click', '.csf-repeater-remove', event_remove);
+
+      // Last, not first. This walks into every saved row and starts up whatever plugins
+      // its fields need, which is the one step here that can throw — a field whose
+      // script never loaded takes the rest of the function with it. Running it after the
+      // handlers above are bound means such a row can no longer leave the repeater
+      // without its Add, Duplicate and Delete buttons.
+      $wrapper.children('.csf-repeater-item').children('.csf-repeater-content').eshb_reload_script();
 
     });
   };
