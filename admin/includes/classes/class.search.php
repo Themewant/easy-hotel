@@ -313,6 +313,116 @@ class ESHB_Search {
         return $dates_array;
     }
 
+    /**
+     * Booking Blocked Dates ("holidays") from the settings, normalised once.
+     *
+     * The calendar expands these per accommodation on every request; the search
+     * loops over every accommodation, so it reads the option once and keeps the
+     * rules as [ accomodation_ids, dates ] pairs instead of re-expanding the
+     * same ranges for each room.
+     *
+     * An empty accomodation_ids list means the rule closes every accommodation,
+     * which is the same reading used in eshb_get_disabled_dates_by_accomodation_id().
+     */
+    private function eshb_get_blocked_date_rules() {
+
+        $eshb_settings = get_option('eshb_settings', []);
+        $holidays      = isset($eshb_settings['holidays']) ? $eshb_settings['holidays'] : [];
+        $rules         = [];
+
+        if (empty($holidays) || !is_array($holidays)) {
+            return $rules;
+        }
+
+        foreach ($holidays as $holiday) {
+            $accommodation_ids = $holiday['accomodation-ids'] ?? [];
+            $holiday_date      = $holiday['holiday-date'] ?? null;
+
+            if (empty($holiday_date)) {
+                continue;
+            }
+
+            $dates = [];
+
+            if (is_array($holiday_date) && isset($holiday_date['from'], $holiday_date['to'])) {
+                $start = DateTime::createFromFormat('Y-m-d', $holiday_date['from']);
+                $end   = DateTime::createFromFormat('Y-m-d', $holiday_date['to']);
+
+                if ($start && $end) {
+                    $end->modify('+1 day'); // Include end date
+                    $dateRange = new DatePeriod($start, new DateInterval('P1D'), $end);
+
+                    foreach ($dateRange as $date) {
+                        $dates[] = $date->format('Y-m-d');
+                    }
+                }
+            } else {
+                $dates[] = $holiday_date;
+            }
+
+            if (empty($dates)) {
+                continue;
+            }
+
+            $rules[] = [
+                'accomodation_ids' => is_array($accommodation_ids) ? $accommodation_ids : [],
+                'dates'            => $dates,
+            ];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Every date of a stay, checkout day included.
+     *
+     * Inclusive on purpose: get_holiday_dates_in_date_ranges() — the check that
+     * rejects the booking on submit — builds its range the same way, so search
+     * hides exactly what booking would refuse.
+     */
+    private function eshb_get_dates_in_range($start_date, $end_date) {
+
+        $dates = [];
+
+        if (empty($start_date) || empty($end_date) || !strtotime($start_date) || !strtotime($end_date)) {
+            return $dates;
+        }
+
+        $current_date = new DateTime($start_date);
+        $end_date_obj = new DateTime($end_date);
+
+        while ($current_date <= $end_date_obj) {
+            $dates[] = $current_date->format('Y-m-d');
+            $current_date->modify('+1 day');
+        }
+
+        return $dates;
+    }
+
+    /**
+     * Does any Booking Blocked Date rule close this accommodation inside the stay?
+     */
+    private function eshb_is_blocked_in_date_range($accomodation_id, $range_dates, $rules) {
+
+        if (empty($range_dates)) {
+            return false;
+        }
+
+        foreach ($rules as $rule) {
+
+            // Empty list = the rule applies to all accommodations.
+            if (!empty($rule['accomodation_ids']) && !in_array($accomodation_id, $rule['accomodation_ids'])) {
+                continue;
+            }
+
+            if (array_intersect($range_dates, $rule['dates'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function eshb_get_available_accomodation_ids($start_date, $end_date, $adult_quantity = 0, $children_quantity = 0, $rooms_quantity = 0) {
         $available_accomodation_ids = [];
     
@@ -324,7 +434,12 @@ class ESHB_Search {
                 'posts_per_page' => -1,
                 'fields'         => 'ids',
             );
-    
+
+            // Narrows what the search may offer at all — a tax_query here keeps a
+            // whole category (packages, day trips…) out of the results. Filtered
+            // before the loops below so excluded rooms cost no booking lookups.
+            $accomodations_args = apply_filters('eshb_search_accomodations_query_args', $accomodations_args, $start_date, $end_date);
+
             $accomodations = new WP_Query($accomodations_args);
     
             if ($accomodations->have_posts()) {
@@ -413,10 +528,33 @@ class ESHB_Search {
                         }
                     }
                 }
+
+                // Step 6: Drop accommodations closed by a Booking Blocked Date rule.
+                // Bookings and capacity alone are not enough — the calendar greys these
+                // dates out and the booking check refuses them, so listing the room as
+                // available here advertises a stay that can never be completed.
+                if (!empty($available_accomodation_ids)) {
+
+                    $blocked_rules = $this->eshb_get_blocked_date_rules();
+
+                    if (!empty($blocked_rules)) {
+
+                        $range_dates = $this->eshb_get_dates_in_range($start_date, $end_date);
+
+                        foreach ($available_accomodation_ids as $key => $available_accomodation_id) {
+                            if ($this->eshb_is_blocked_in_date_range($available_accomodation_id, $range_dates, $blocked_rules)) {
+                                unset($available_accomodation_ids[$key]);
+                            }
+                        }
+                    }
+                }
             }
         }
-    
-        return $available_accomodation_ids;
+
+        // The last word on what the search offers, once bookings, capacity and
+        // blocked dates have had theirs. For rules that cannot be written as query
+        // args — use eshb_search_accomodations_query_args when they can, it is cheaper.
+        return apply_filters('eshb_available_accomodation_ids', $available_accomodation_ids, $start_date, $end_date, $adult_quantity, $children_quantity, $rooms_quantity);
     }
     
     public function eshb_register_page_template($templates) {
