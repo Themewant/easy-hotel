@@ -128,8 +128,17 @@ class ESHB_PRO_ADDONS {
                     'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/currency.png',
                     'desc' => 'Easily enable multi-currency pricing on your hotel booking website. This add-on allowing guests to view and pay in their preferred currency.',
                     'is_pro' => true
+                ),
+                array(
+                    'name' => 'EHB AI Chatbot',
+                    'slug' => 'ehb-ai-chatbot/ehb-ai-chatbot.php',
+                    'external_url'  => 'https://themewant.com/downloads/ehb-ai-chatbot/',
+                    'demo_url'  => 'https://themewant.com/downloads/ehb-ai-chatbot/',
+                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/ai-chatbot.png',
+                    'desc' => 'Add an AI powered chatbot to your hotel booking website. It answers guest questions instantly and helps them find and book the right room.',
+                    'is_pro' => true
                 )
-               
+
             );
         return $addons;
     }
