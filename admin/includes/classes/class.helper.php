@@ -271,7 +271,8 @@ class ESHB_Helper {
     public static function eshb_get_payment_gateways() {
         $gateways = [
             'manual' => 'Manual Payment',
-            'cod' => 'Cash On Delivey'
+            'cod' => 'Cash On Delivey',
+            'bacs' => 'Direct Bank Transfer'
         ];
         return $gateways;
     }

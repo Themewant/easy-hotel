@@ -28,6 +28,7 @@ class ESHB_Native_Gateway_Manager {
         // Built-in gateways. Cash on Delivery is registered first so it
         // is the natural fallback default when no online gateway is set up.
         $this->register_gateway( new ESHB_Native_COD_Gateway() );
+        $this->register_gateway( new ESHB_Native_BACS_Gateway() );
         $this->register_gateway( new ESHB_Native_PayPal_Gateway() );
 
         /**

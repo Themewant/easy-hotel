@@ -666,6 +666,92 @@ add_action( 'plugins_loaded', function(){
                           ),
                         )
                       ),
+                      // --- Direct Bank Transfer ---------------------------------
+                      array(
+                        'title'     => 'Direct Bank Transfer',
+                        'icon'      => 'fas fa-university',
+                        'fields'    => array(
+                          array(
+                            'id'      => 'gateway-bacs-enable',
+                            'type'    => 'switcher',
+                            'title'   => 'Enable Direct Bank Transfer',
+                            'desc'    => 'Let customers pay by transferring the amount into your bank account.',
+                            'default' => false,
+                          ),
+                          array(
+                            'id'         => 'bacs-title',
+                            'type'       => 'text',
+                            'title'      => 'Title',
+                            'desc'       => 'This controls the title which the user sees during checkout.',
+                            'default'    => 'Direct bank transfer',
+                            'dependency' => array( 'gateway-bacs-enable', '==', true ),
+                          ),
+                          array(
+                            'id'         => 'bacs-description',
+                            'type'       => 'textarea',
+                            'title'      => 'Description',
+                            'desc'       => 'Payment method description that the customer will see on your checkout.',
+                            'default'    => 'Make your payment directly into our bank account. Please use your Booking ID as the payment reference. Your booking will not be confirmed until the funds have cleared in our account.',
+                            'dependency' => array( 'gateway-bacs-enable', '==', true ),
+                          ),
+                          array(
+                            'id'         => 'bacs-instructions',
+                            'type'       => 'textarea',
+                            'title'      => 'Instructions',
+                            'desc'       => 'Instructions that will be added to the thank you page and emails.',
+                            'default'    => '',
+                            'dependency' => array( 'gateway-bacs-enable', '==', true ),
+                          ),
+                          array(
+                            'id'                     => 'bacs-accounts',
+                            'type'                   => 'group',
+                            'title'                  => 'Account Details',
+                            'desc'                   => 'These account details will be displayed within the booking thank you page and confirmation email.',
+                            'button_title'           => 'Add Account',
+                            'accordion_title_number' => true,
+                            'accordion_title_by'     => array( 'account_name' ),
+                            'dependency'             => array( 'gateway-bacs-enable', '==', true ),
+                            'fields'                 => array(
+                              array(
+                                'id'          => 'account_name',
+                                'type'        => 'text',
+                                'title'       => 'Account Name',
+                                'placeholder' => 'Your Hotel Ltd.',
+                              ),
+                              array(
+                                'id'    => 'account_number',
+                                'type'  => 'text',
+                                'title' => 'Account Number',
+                              ),
+                              array(
+                                'id'    => 'bank_name',
+                                'type'  => 'text',
+                                'title' => 'Bank Name',
+                              ),
+                              array(
+                                'id'    => 'sort_code',
+                                'type'  => 'text',
+                                // Countries that call this something else
+                                // (US "Routing number", AU "BSB", …) get
+                                // their own label, as in WooCommerce.
+                                'title' => class_exists( 'ESHB_Native_BACS_Gateway' )
+                                  ? ESHB_Native_BACS_Gateway::sortcode_label( ESHB_Native_BACS_Gateway::base_country() )
+                                  : 'Sort code',
+                              ),
+                              array(
+                                'id'    => 'iban',
+                                'type'  => 'text',
+                                'title' => 'IBAN',
+                              ),
+                              array(
+                                'id'    => 'bic',
+                                'type'  => 'text',
+                                'title' => 'BIC / Swift',
+                              ),
+                            ),
+                          ),
+                        )
+                      ),
                       array(
                         'title'     => 'PayPal',
                         'icon'      => 'fab fa-paypal',

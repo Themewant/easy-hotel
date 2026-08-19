@@ -487,6 +487,32 @@
         font-size: 14px;
     }
 
+    .eshb-bacs-bank-details {
+        display: block;
+        margin: 16px 0;
+        text-align: left;
+
+        .eshb-bacs-bank-details-heading {
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .eshb-bacs-account-name {
+            margin: 16px 0 4px;
+            font-size: 15px;
+        }
+
+        .eshb-bacs-details {
+            margin: 0;
+            padding: 0 0 0 18px;
+            line-height: 1.7;
+
+            li {
+                word-break: break-word;
+            }
+        }
+    }
+
     .eshb-card--success {
         border-color: var(--eshb-primary-color);
         background: var(--eshb-secondary-color);

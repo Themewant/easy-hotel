@@ -866,8 +866,18 @@ class ESHB_Native_Checkout {
         }
 
         // 5. Transition every booking to its completed/processing status.
+        //
+        // The announcements are held back until step 6 has mailed the
+        // customer. Listeners on eshb_native_checkout_booking_status_changed
+        // send their own status email, and they fire once per booking — so
+        // announcing here would beat the group email to the inbox and turn
+        // one checkout into several messages.
         $eshb_settings = get_option( 'eshb_settings', [] );
         $new_status    = ! empty( $eshb_settings['booking-auto-approval'] ) ? 'completed' : 'processing';
+        // Offline gateways that wait for funds (bank transfer) keep the
+        // booking on hold instead of moving it straight to processing.
+        $new_status    = $gateway->get_completed_status( $new_status );
+        $announce = [];
         foreach ( $booking_ids as $bid ) {
             $completed_status = apply_filters(
                 'eshb_native_checkout_completed_status',
@@ -876,7 +886,8 @@ class ESHB_Native_Checkout {
                 $items,
                 $pricing
             );
-            ESHB_Native_Booking_Handler::update_status( $bid, $completed_status );
+            ESHB_Native_Booking_Handler::update_status( $bid, $completed_status, false );
+            $announce[ $bid ] = $completed_status;
         }
 
         // 5b. Record coupon usage ONCE for the whole checkout (logged
@@ -914,6 +925,13 @@ class ESHB_Native_Checkout {
             ESHB_Native_Email_Handler::send_admin_notification( $booking_ids, $customer );
         } catch ( \Throwable $e ) {
             unset( $e );
+        }
+
+        // 6b. Now that the customer has their one email, let the rest of the
+        // system know the bookings changed status. Listeners that mail on a
+        // status change find it already recorded as sent and stay quiet.
+        foreach ( $announce as $bid => $status ) {
+            ESHB_Native_Booking_Handler::announce_status( $bid, $status );
         }
 
         // 7. Release every hold and clear the cart — no double-bookings on

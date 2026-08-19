@@ -15,6 +15,17 @@ class ESHB_Booking {
 
     private static $_instance = null;
     private $eshb_notice_printed = false;
+
+	/**
+	 * Booking post IDs whose status changed in this request, as id => new status.
+	 *
+	 * Collected on `transition_post_status`, which is the only place the old
+	 * status is still readable, and acted on later in the same request once the
+	 * metabox has finished writing its own copy of the status.
+	 *
+	 * @var array<int,string>
+	 */
+	private $native_status_changes = [];
 	
 	public static function instance() {
 
@@ -45,6 +56,13 @@ class ESHB_Booking {
 		add_action(	'woocommerce_order_status_changed', [$this, 'update_booking_status_on_woocommerce_order_status_change'], 10, 4 );
 		add_action(	'save_post_eshb_booking', [$this, 'update_woocommerce_order_status_on_booking_status_change'], 20, 3 );
 		add_action(	'save_post_eshb_booking', [$this, 'send_booking_email_notification_for_booking_status'], 20, 3 );
+
+		// Native Checkout bookings have no WooCommerce order, so the
+		// woocommerce_order_status_* hooks above never fire for them and a
+		// status changed from wp-admin used to reach nobody. These two catch
+		// the change and hand it to the native handler.
+		add_action(	'transition_post_status', [$this, 'record_native_booking_status_change'], 10, 3 );
+		add_action(	'save_post_eshb_booking', [$this, 'notify_native_booking_status_change'], 30, 3 );
 		add_filter('woocommerce_payment_complete_order_status', [$this, 'filter_status_based_on_booking_meta'], 10, 2);
 		
 		add_action( "wp_ajax_nopriv_eshb_get_extra_services_charge", [$this, 'eshb_get_extra_services_charge'] );
@@ -2517,6 +2535,85 @@ class ESHB_Booking {
 		} catch (Exception $e) {
 			
 		}
+	}
+
+	/**
+	 * Remember that a booking's post status changed.
+	 *
+	 * `transition_post_status` is the only hook that still knows the previous
+	 * status, but it runs before the metabox has saved, so the change is only
+	 * recorded here and acted on in notify_native_booking_status_change().
+	 *
+	 * @param string  $new_status
+	 * @param string  $old_status
+	 * @param WP_Post $post
+	 */
+	public function record_native_booking_status_change( $new_status, $old_status, $post ) {
+
+		if ( ! $post instanceof WP_Post || 'eshb_booking' !== $post->post_type ) {
+			return;
+		}
+
+		if ( $new_status === $old_status ) {
+			return;
+		}
+
+		// A booking being created is announced by the checkout flow itself,
+		// and restoring one from the trash is not a change the guest made.
+		if ( in_array( $old_status, array( 'new', 'auto-draft', 'trash' ), true ) ) {
+			return;
+		}
+
+		// Only real booking statuses. Keeps trash, drafts and revisions out.
+		if ( ! array_key_exists( $new_status, ESHB_Helper::eshb_get_booking_statuses() ) ) {
+			return;
+		}
+
+		$this->native_status_changes[ (int) $post->ID ] = $new_status;
+	}
+
+	/**
+	 * Notify the customer that a native booking changed status.
+	 *
+	 * Runs at priority 30, after the metabox (and the two handlers above) have
+	 * saved, so the stored status can be corrected before anything reads it.
+	 *
+	 * @param int     $post_id
+	 * @param WP_Post $post
+	 * @param bool    $update
+	 */
+	public function notify_native_booking_status_change( $post_id, $post, $update ) {
+
+		$post_id = (int) $post_id;
+
+		if ( empty( $this->native_status_changes[ $post_id ] ) ) {
+			return;
+		}
+
+		$new_status = $this->native_status_changes[ $post_id ];
+		unset( $this->native_status_changes[ $post_id ] );
+
+		if ( ! class_exists( 'ESHB_Native_Booking_Handler' ) ) {
+			return;
+		}
+
+		$booking_meta = get_post_meta( $post_id, 'eshb_booking_metaboxes', true );
+
+		// WooCommerce bookings are notified through the order status hooks, so
+		// leave them alone or the customer would get two emails.
+		if ( is_array( $booking_meta ) && ! empty( $booking_meta['order_id'] ) ) {
+			return;
+		}
+
+		// The booking status is stored twice: as the post status and inside the
+		// metabox. Changing it in the sidebar only moves the post status, so
+		// bring the metabox copy along instead of leaving the two disagreeing.
+		if ( is_array( $booking_meta ) && ( isset( $booking_meta['booking_status'] ) ? $booking_meta['booking_status'] : '' ) !== $new_status ) {
+			$booking_meta['booking_status'] = $new_status;
+			update_post_meta( $post_id, 'eshb_booking_metaboxes', $booking_meta );
+		}
+
+		ESHB_Native_Booking_Handler::announce_status( $post_id, $new_status );
 	}
 
 	public function send_booking_email_notification_for_booking_status($post_id, $post, $update){

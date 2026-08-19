@@ -38,6 +38,21 @@ if ( $eshb_booking_id_param && get_post_type( $eshb_booking_id_param ) === 'eshb
                 <h2><?php esc_html_e( 'Thank you! Your booking is confirmed.', 'easy-hotel' ); ?></h2>
                 <p><?php esc_html_e( 'A confirmation email has been sent with your booking details.', 'easy-hotel' ); ?></p>
 
+                <?php
+                // Gateway instructions (Direct Bank Transfer details, …) sit
+                // above the booking summary — the same slot WooCommerce uses
+                // for 'woocommerce_thankyou_bacs'. Resolved from the gateway
+                // stored on the first booking of the group.
+                $eshb_ty_meta    = get_post_meta( (int) reset( $eshb_thankyou_ids ), 'eshb_booking_metaboxes', true );
+                $eshb_ty_gw_id   = is_array( $eshb_ty_meta ) ? ( $eshb_ty_meta['payment_gateway'] ?? '' ) : '';
+                $eshb_ty_gateway = $eshb_ty_gw_id && class_exists( 'ESHB_Native_Gateway_Manager' )
+                    ? ESHB_Native_Gateway_Manager::instance()->get_gateway( $eshb_ty_gw_id )
+                    : null;
+                if ( $eshb_ty_gateway ) {
+                    echo wp_kses_post( $eshb_ty_gateway->get_instructions_html( $eshb_thankyou_ids ) );
+                }
+                ?>
+
                 <?php foreach ( $eshb_thankyou_ids as $eshb_tid ) :
                     $eshb_booking_meta = get_post_meta( $eshb_tid, 'eshb_booking_metaboxes', true );
                     if ( ! is_array( $eshb_booking_meta ) ) continue;

@@ -12,6 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class ESHB_Native_Booking_Handler {
 
     /**
+     * Last status announced to the customer for a booking.
+     *
+     * A native booking's status can move from two places: this handler during
+     * checkout, and the booking edit screen in wp-admin. Both funnel into
+     * announce_status(), and this meta stops the same change being announced
+     * twice when one triggers the other.
+     */
+    const NOTIFIED_META = '_eshb_native_notified_status';
+
+    /**
      * Insert booking with status 'on-hold' (per spec).
      *
      * @return int|false Booking post ID on success.
@@ -200,7 +210,7 @@ class ESHB_Native_Booking_Handler {
     /**
      * Transition a booking's status.
      */
-    public static function update_status( $booking_id, $new_status ) {
+    public static function update_status( $booking_id, $new_status, $announce = true ) {
         if ( ! $booking_id ) return false;
 
         $meta = get_post_meta( $booking_id, 'eshb_booking_metaboxes', true );
@@ -214,7 +224,62 @@ class ESHB_Native_Booking_Handler {
             'post_status' => $new_status,
         ] );
 
+        // wp_update_post() above already fires the transition that wp-admin
+        // uses, so this may well be a no-op by now. announce_status() keeps
+        // it to one notification either way.
+        //
+        // $announce = false lets a caller set the status first and announce
+        // afterwards. The checkout does exactly that: it needs the final
+        // status in place before it can pick the right customer email, but
+        // the listeners must not mail ahead of it and cause a second copy.
+        if ( $announce ) {
+            self::announce_status( $booking_id, $new_status );
+        }
+
+        return true;
+    }
+
+    /**
+     * Tell the rest of the system a booking reached a new status.
+     *
+     * Fires `eshb_native_checkout_booking_status_changed` at most once per
+     * status, whichever code path got there first. Add-ons such as EHB Email
+     * Template listen on that action to mail the customer.
+     *
+     * @param int    $booking_id
+     * @param string $new_status
+     * @return bool Whether the action was fired.
+     */
+    public static function announce_status( $booking_id, $new_status ) {
+
+        $booking_id = (int) $booking_id;
+        $new_status = (string) $new_status;
+
+        if ( ! $booking_id || '' === $new_status ) {
+            return false;
+        }
+
+        if ( get_post_meta( $booking_id, self::NOTIFIED_META, true ) === $new_status ) {
+            return false;
+        }
+
+        // Recorded before the action so a listener that saves the booking
+        // again cannot loop back in here.
+        update_post_meta( $booking_id, self::NOTIFIED_META, $new_status );
+
+        // Entering a status re-arms the emails of every other status, so a
+        // booking put back on hold and confirmed again notifies the customer
+        // both times. The email for the status being entered is left on
+        // record — the checkout may have just sent it.
+        if ( class_exists( 'ESHB_Native_Email_Handler' ) ) {
+            ESHB_Native_Email_Handler::reset_status_emails(
+                $booking_id,
+                ESHB_Native_Email_Handler::email_id_for_status( $new_status )
+            );
+        }
+
         do_action( 'eshb_native_checkout_booking_status_changed', $booking_id, $new_status );
+
         return true;
     }
 

@@ -453,6 +453,27 @@
   border-radius: 6px;
   font-size: 14px;
 }
+.eshb-native-checkout .eshb-bacs-bank-details {
+  display: block;
+  margin: 16px 0;
+  text-align: left;
+}
+.eshb-native-checkout .eshb-bacs-bank-details .eshb-bacs-bank-details-heading {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.eshb-native-checkout .eshb-bacs-bank-details .eshb-bacs-account-name {
+  margin: 16px 0 4px;
+  font-size: 15px;
+}
+.eshb-native-checkout .eshb-bacs-bank-details .eshb-bacs-details {
+  margin: 0;
+  padding: 0 0 0 18px;
+  line-height: 1.7;
+}
+.eshb-native-checkout .eshb-bacs-bank-details .eshb-bacs-details li {
+  word-break: break-word;
+}
 .eshb-native-checkout .eshb-card--success {
   border-color: var(--eshb-primary-color);
   background: var(--eshb-secondary-color);
@@ -3621,4 +3642,8 @@ body.rtl .eshb-availability-calendars-area .eshb-availability-calendars .dateran
 
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-plus {
   padding: 1px 2px 5px 1px;
+}
+
+.eshb-global-rating-area .eshb-add-review-button {
+  text-decoration: none !important;
 }

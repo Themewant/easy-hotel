@@ -11,6 +11,163 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class ESHB_Native_Email_Handler {
 
     /**
+     * Which emails a booking has already been sent.
+     *
+     * Holds a list of email ids. Both the checkout and the status-change
+     * listener want to mail the customer the instant a payment succeeds, and
+     * a multi-room checkout announces a status once per room — without a
+     * record of what already went out, the same notice reaches the customer
+     * several times for one booking.
+     */
+    const SENT_META = '_eshb_native_emails_sent';
+
+    /**
+     * Booking status -> the customer email that belongs to it.
+     *
+     * Statuses with no entry fall back to the processing email.
+     */
+    const STATUS_EMAILS = [
+        'completed'  => 'customer_completed_order',
+        'processing' => 'customer_processing_order',
+        'on-hold'    => 'customer_on_hold_order',
+        'cancelled'  => 'customer_cancelled_order',
+        'refunded'   => 'customer_refunded_order',
+        'failed'     => 'customer_failed_order',
+    ];
+
+    /**
+     * Whether a booking has already been sent a given email.
+     *
+     * Public so add-ons that mail on their own (EHB Email Template sends the
+     * status-change emails itself) can share the one record instead of
+     * keeping a second, disagreeing one.
+     *
+     * @param int    $booking_id
+     * @param string $email_id
+     * @return bool
+     */
+    public static function already_sent( $booking_id, $email_id ) {
+        $sent = get_post_meta( (int) $booking_id, self::SENT_META, true );
+        return is_array( $sent ) && in_array( (string) $email_id, $sent, true );
+    }
+
+    /**
+     * Record that an email went out, for every booking in the group.
+     *
+     * Recorded against all of them, not just the primary: the customer copy
+     * covers the whole checkout, so a later per-booking status announcement
+     * must see it too.
+     *
+     * @param int|int[] $booking_ids
+     * @param string    $email_id
+     */
+    public static function mark_sent( $booking_ids, $email_id ) {
+
+        $email_id = (string) $email_id;
+
+        foreach ( self::normalize_ids( $booking_ids ) as $bid ) {
+
+            $sent = get_post_meta( $bid, self::SENT_META, true );
+            if ( ! is_array( $sent ) ) {
+                $sent = [];
+            }
+
+            if ( ! in_array( $email_id, $sent, true ) ) {
+                $sent[] = $email_id;
+                update_post_meta( $bid, self::SENT_META, $sent );
+            }
+        }
+    }
+
+    /**
+     * Forget the status emails a booking has been sent, except one.
+     *
+     * Called when a booking enters a status: the record for that status is
+     * kept — the checkout may have just mailed it and must not be doubled —
+     * while every other status is re-armed. A booking put back on hold and
+     * then confirmed again notifies the customer both times, which the plain
+     * send-once record would have swallowed.
+     *
+     * Only the status emails are cleared. The admin's new-booking notice is
+     * tied to the booking existing, not to where it currently sits, so it
+     * stays recorded for good.
+     *
+     * @param int    $booking_id
+     * @param string $keep Email id to leave in the record.
+     */
+    public static function reset_status_emails( $booking_id, $keep = '' ) {
+
+        $booking_id = (int) $booking_id;
+        $sent       = get_post_meta( $booking_id, self::SENT_META, true );
+
+        if ( ! is_array( $sent ) || empty( $sent ) ) {
+            return;
+        }
+
+        $status_emails = array_values( self::STATUS_EMAILS );
+        $kept          = [];
+
+        foreach ( $sent as $email_id ) {
+            if ( $email_id === $keep || ! in_array( $email_id, $status_emails, true ) ) {
+                $kept[] = $email_id;
+            }
+        }
+
+        if ( $kept !== $sent ) {
+            update_post_meta( $booking_id, self::SENT_META, $kept );
+        }
+    }
+
+    /**
+     * The status a booking group is in.
+     *
+     * Read from the primary booking: every booking in one checkout moves
+     * through the same statuses together.
+     *
+     * @param int[] $ids
+     * @return string
+     */
+    public static function group_status( array $ids ) {
+
+        $primary = (int) reset( $ids );
+        if ( ! $primary ) {
+            return '';
+        }
+
+        $meta   = get_post_meta( $primary, 'eshb_booking_metaboxes', true );
+        $status = is_array( $meta ) ? (string) ( $meta['booking_status'] ?? '' ) : '';
+
+        return '' !== $status ? $status : (string) get_post_status( $primary );
+    }
+
+    /**
+     * The customer email that belongs to a booking status.
+     *
+     * The checkout sets the booking's final status before it mails, so a
+     * booking paid with an online gateway is already `completed` by then and
+     * gets the completed email — not the "awaiting payment" one it used to
+     * send regardless of what actually happened.
+     *
+     * @param string $status
+     * @param int[]  $ids
+     * @return string
+     */
+    public static function email_id_for_status( $status, array $ids = [] ) {
+
+        $email_id = self::STATUS_EMAILS[ $status ] ?? 'customer_processing_order';
+
+        /**
+         * Filter which email a booking status sends.
+         *
+         * @param string $email_id
+         * @param string $status
+         * @param int[]  $ids
+         */
+        return (string) apply_filters( 'eshb_native_checkout_email_id_for_status', $email_id, $status, $ids );
+    }
+
+
+    /**
      * Normalize a single booking id or an array of ids (one
      * multi-accommodation checkout) into a clean list of ints.
      */
@@ -59,17 +216,45 @@ class ESHB_Native_Email_Handler {
         $switched = self::switch_to_booking_locale( reset( $ids ) );
 
         try {
-            return self::send_templated_email( $ids, $customer, 'customer', 'customer_processing_order', $customer['email'],
-                sprintf(
-                    /* translators: %s: site name */
-                    __( 'Your booking confirmation - %s', 'easy-hotel' ),
-                    get_bloginfo( 'name' )
-                )
+            $status = self::group_status( $ids );
+
+            return self::send_templated_email(
+                $ids,
+                $customer,
+                'customer',
+                self::email_id_for_status( $status, $ids ),
+                $customer['email'],
+                self::default_customer_subject( $status )
             );
         } finally {
             self::restore_booking_locale( $switched );
         }
     }
+
+    /**
+     * Fallback subject for the customer email, used when no template
+     * defines one of its own.
+     *
+     * @param string $status Booking status the email is being sent for.
+     * @return string
+     */
+    private static function default_customer_subject( $status ) {
+
+        if ( 'completed' === $status ) {
+            return sprintf(
+                /* translators: %s: site name */
+                __( 'Your booking is confirmed - %s', 'easy-hotel' ),
+                get_bloginfo( 'name' )
+            );
+        }
+
+        return sprintf(
+            /* translators: %s: site name */
+            __( 'Your booking confirmation - %s', 'easy-hotel' ),
+            get_bloginfo( 'name' )
+        );
+    }
+
 
     public static function send_admin_notification( $booking_ids, array $customer ) {
         $ids = self::normalize_ids( $booking_ids );
@@ -108,10 +293,8 @@ class ESHB_Native_Email_Handler {
      * @param string $default_subject Subject used if no extension overrides it.
      */
     private static function send_templated_email( $booking_ids, array $customer, $context, $email_id, $to, $default_subject ) {
-        $ids          = self::normalize_ids( $booking_ids );
-        $primary_id   = reset( $ids );
-        $core         = new ESHB_Core();
-        $default_body = self::build_email_body( $ids, $customer, $context );
+        $ids        = self::normalize_ids( $booking_ids );
+        $primary_id = reset( $ids );
 
         $args = [
             'context'     => $context,
@@ -120,6 +303,31 @@ class ESHB_Native_Email_Handler {
             'booking_ids' => $booking_ids,
             'customer'    => $customer,
         ];
+
+        // One email of a kind per booking. The checkout and the status-change
+        // listener both want to mail the customer the moment a payment
+        // succeeds, and a multi-room checkout announces its status once per
+        // room — without this the customer gets the same notice two or three
+        // times for a single booking.
+        if ( self::already_sent( $primary_id, $email_id ) ) {
+            return false;
+        }
+
+        /**
+         * Whether to send this email at all.
+         *
+         * Returning false cancels the send before the subject and body are
+         * built. The EHB Email Template add-on hooks this to honour a
+         * deleted template: an email whose template the admin moved to the
+         * trash is skipped rather than silently going out with the built-in
+         * default HTML below.
+         *
+         * @param bool  $send
+         * @param array $args Context, email_id, booking_id, booking_ids, customer.
+         */
+        if ( ! apply_filters( 'eshb_native_checkout_send_email', true, $args ) ) {
+            return false;
+        }
 
         /**
          * Filter the subject of a native-checkout email. Extensions can
@@ -132,6 +340,10 @@ class ESHB_Native_Email_Handler {
          */
         $subject = apply_filters( 'eshb_native_checkout_email_subject', $default_subject, $args );
 
+        // Built only once the send is certain — rendering the fallback body
+        // for an email that is about to be skipped is wasted work.
+        $default_body = self::build_email_body( $ids, $customer, $context );
+
         /**
          * Filter the HTML body of a native-checkout email. Extensions
          * can return a fully-rendered builder template here.
@@ -141,8 +353,13 @@ class ESHB_Native_Email_Handler {
          */
         $message = apply_filters( 'eshb_native_checkout_email_body', $default_body, $args );
 
+        $core       = new ESHB_Core();
         $from_name  = get_bloginfo( 'name' );
         $from_email = self::get_from_email();
+
+        // Recorded before the send, not after: a mail server that hangs or a
+        // listener that re-enters must not be able to produce a second copy.
+        self::mark_sent( $ids, $email_id );
 
         return $core->eshb_send_html_email( $to, $subject, $message, $from_name, $from_email );
     }
@@ -151,6 +368,107 @@ class ESHB_Native_Email_Handler {
         $host = wp_parse_url( home_url(), PHP_URL_HOST );
         $host = preg_replace( '/^www\./i', '', (string) $host );
         return $host ? ( 'no-reply@' . $host ) : get_option( 'admin_email' );
+    }
+
+    /**
+     * The gateway a booking group was placed with, or null when it cannot
+     * be resolved.
+     *
+     * @param int[] $ids
+     * @param array $customer Customer payload captured at checkout.
+     * @return object|null
+     */
+    private static function gateway_for( array $ids, array $customer = [] ) {
+
+        if ( empty( $ids ) || ! class_exists( 'ESHB_Native_Gateway_Manager' ) ) {
+            return null;
+        }
+
+        $meta       = get_post_meta( (int) reset( $ids ), 'eshb_booking_metaboxes', true );
+        $meta       = is_array( $meta ) ? $meta : [];
+        $gateway_id = $meta['payment_gateway'] ?? '';
+
+        if ( '' === $gateway_id ) {
+            $gateway_id = $customer['gateway'] ?? '';
+        }
+
+        if ( '' === $gateway_id ) {
+            return null;
+        }
+
+        return ESHB_Native_Gateway_Manager::instance()->get_gateway( $gateway_id );
+    }
+
+    /**
+     * The opening line of the built-in customer email.
+     *
+     * The status says what happened to the booking; the gateway says what
+     * happened to the money, and the two do not always agree. A
+     * pay-on-arrival booking is `completed` without a penny having moved,
+     * so the gateway is given the first say and the status wording is the
+     * fallback.
+     *
+     * @param string $status   Booking status the email is being sent for.
+     * @param int[]  $ids      Bookings in the group.
+     * @param array  $customer Customer payload captured at checkout.
+     * @return string
+     */
+    private static function customer_intro( $status, array $ids = [], array $customer = [] ) {
+
+        $intro   = self::status_intro( $status );
+        $gateway = self::gateway_for( $ids, $customer );
+
+        if ( $gateway && method_exists( $gateway, 'get_email_intro' ) ) {
+            $from_gateway = (string) $gateway->get_email_intro( $status );
+            if ( '' !== $from_gateway ) {
+                $intro = $from_gateway;
+            }
+        }
+
+        /**
+         * Filter the opening line of the built-in customer email.
+         *
+         * @param string      $intro
+         * @param string      $status  Booking status.
+         * @param int[]       $ids     Bookings in the group.
+         * @param object|null $gateway Gateway the booking was placed with.
+         */
+        return (string) apply_filters( 'eshb_native_checkout_email_intro', $intro, $status, $ids, $gateway );
+    }
+
+    /**
+     * The opening line of the built-in customer email.
+     *
+     * Status-aware, because this body is what goes out when no template
+     * exists for the email: telling somebody whose card has just been
+     * charged that their reservation is "on hold pending payment" is worse
+     * than sending nothing at all.
+     *
+     * @param string $status Booking status the email is being sent for.
+     * @return string
+     */
+    private static function status_intro( $status ) {
+
+        switch ( $status ) {
+
+            case 'completed':
+                return __( 'Your payment went through and your booking is confirmed. The details are below.', 'easy-hotel' );
+
+            case 'processing':
+                return __( 'We have received your booking and are getting it ready. The details are below.', 'easy-hotel' );
+
+            case 'cancelled':
+                return __( 'Your booking has been cancelled. The details are below.', 'easy-hotel' );
+
+            case 'refunded':
+                return __( 'Your booking has been refunded. The details are below.', 'easy-hotel' );
+
+            case 'failed':
+                return __( 'Your payment could not be completed, so your booking is not confirmed yet.', 'easy-hotel' );
+
+            default:
+                return __( 'Your reservation is on hold and will be confirmed once we process your payment.', 'easy-hotel' );
+        }
     }
 
     private static function build_email_body( $booking_ids, array $customer, $context ) {
@@ -192,11 +510,20 @@ class ESHB_Native_Email_Handler {
             <div style="padding:24px;background:#fff;border:1px solid #e5e7eb;border-top:none;">
                 <p style="margin:0 0 16px;">
                     <?php echo $context === 'customer'
-                        ? esc_html__( 'Your reservation is on hold and will be confirmed once we process your payment.', 'easy-hotel' )
+                        ? esc_html( self::customer_intro( self::group_status( $ids ), $ids, $customer ) )
                         : esc_html__( 'A new booking has been created from the native checkout.', 'easy-hotel' ); ?>
                 </p>
 
                 <?php
+                // Gateway instructions sit above the booking tables, the
+                // same slot WooCommerce uses for BACS details
+                // (woocommerce_email_before_order_table). Customer-only —
+                // the admin copy does not carry payment instructions.
+                if ( $context === 'customer' ) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the gateway.
+                    echo self::render_gateway_instructions( $ids, $customer );
+                }
+
                 foreach ( $ids as $index => $bid ) {
                     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside helper.
                     echo self::render_booking_table( $bid, $customer, $multiple ? ( (int) $index + 1 ) : 0 );
@@ -250,6 +577,44 @@ class ESHB_Native_Email_Handler {
         </div>
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Post-checkout instructions from the gateway the booking was placed
+     * with (e.g. where to wire the money for a bank transfer). Empty for
+     * gateways that already took the payment online.
+     *
+     * Like WooCommerce, the instructions are only mailed while the
+     * booking is still awaiting payment — once the admin confirms the
+     * transfer, later emails no longer ask for it.
+     *
+     * @param int[] $ids      Bookings in the group.
+     * @param array $customer Customer details captured at checkout.
+     */
+    private static function render_gateway_instructions( array $ids, array $customer ) {
+        $gateway = self::gateway_for( $ids, $customer );
+        if ( ! $gateway ) {
+            return '';
+        }
+
+        $meta = get_post_meta( (int) reset( $ids ), 'eshb_booking_metaboxes', true );
+        $meta = is_array( $meta ) ? $meta : [];
+
+        /**
+         * Booking status the instructions are mailed for. Mirrors
+         * WooCommerce's 'woocommerce_bacs_email_instructions_order_status'.
+         *
+         * @param string $status
+         * @param int[]  $ids
+         */
+        $awaiting_status = apply_filters( 'eshb_native_checkout_email_instructions_status', 'on-hold', $ids );
+        $booking_status  = (string) ( $meta['booking_status'] ?? get_post_status( (int) reset( $ids ) ) );
+
+        if ( $booking_status !== $awaiting_status ) {
+            return '';
+        }
+
+        return $gateway->get_instructions_html( $ids, true );
     }
 
     /**

@@ -64,11 +64,16 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 
 	protected function register_controls() {
 
-		$eshb_categories = get_terms( 'eshb_category' );
+		$eshb_categories = get_terms( array(
+			'taxonomy'   => 'eshb_category',
+			'hide_empty' => false,
+		) );
 
         $cat_array = [];
-        foreach ( $eshb_categories as $category ) {
-            $cat_array[ $category->slug ] = $category->name;
+        if ( ! is_wp_error( $eshb_categories ) ) {
+            foreach ( $eshb_categories as $category ) {
+                $cat_array[ $category->slug ] = $category->name;
+            }
         }
 
 
@@ -127,6 +132,19 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => -1,
 				'separator' => 'before',
+			]
+		);
+
+		$this->add_control(
+			'show_pagination',
+			[
+				'label' => esc_html__( 'Show Pagination', 'easy-hotel' ),
+				'type' => Controls_Manager::SWITCHER,
+				'label_on' => esc_html__( 'Yes', 'easy-hotel' ),
+				'label_off' => esc_html__( 'No', 'easy-hotel' ),
+				'return_value' => 'yes',
+				'default' => '',
+				'description' => esc_html__( 'Works only when "Project Show Per Page" is a positive number. Offset is ignored while pagination is on.', 'easy-hotel' ),
 			]
 		);
 
@@ -702,7 +720,7 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 		$settings = $this->get_settings_for_display();
 
 		$room_columns = $settings['room_columns'];
-		$cat = $settings['category'];
+		$cat = $this->eshb_get_selected_categories( $settings );
 		$grid_style = 'style'.$settings['room_grid_style'];
 		$btn_text = $settings['btn_text'];
 		$pricing_prefix = isset($settings['pricing_prefix']) ? $settings['pricing_prefix'] : '';
@@ -737,25 +755,41 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 				$string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
 				
 				
+				$per_page = ( '' === $settings['per_page'] || null === $settings['per_page'] ) ? -1 : (int) $settings['per_page'];
+				$show_pagination = isset( $settings['show_pagination'] ) && 'yes' === $settings['show_pagination'] && $per_page > 0;
+
 				$args = array(
 					'post_type'      => 'eshb_accomodation',
-					'posts_per_page' => $settings['per_page'],	
+					'post_status'    => 'publish',
+					'posts_per_page' => $per_page,
 					'orderby' 		 => $settings['room_orderby'],
 					'order' 		 => $settings['room_order'],
-					'offset' 		 => $settings['room_offset'],							
 				);
 
+				// `offset` and `paged` are mutually exclusive in WP_Query: whenever an offset is
+				// passed, WordPress silently drops `paged` and every page renders the same rooms.
+				if ( $show_pagination ) {
+					$paged = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : get_query_var( 'page' );
+					$args['paged'] = max( 1, (int) $paged );
+				} elseif ( (int) $settings['room_offset'] > 0 ) {
+					$args['offset'] = (int) $settings['room_offset'];
+				}
+
 				if(!empty($cat)){
+					// `include_children` is false because `eshb_category` is hierarchical: without it
+					// selecting a parent category also pulls in every child category's accommodation.
 					$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- necessary taxonomy filter, limited query
 						array(
-							'taxonomy' => 'eshb_category',
-							'field'    => 'slug', 
-							'terms'    => $cat 
+							'taxonomy'         => 'eshb_category',
+							'field'            => 'slug',
+							'terms'            => $cat,
+							'operator'         => 'IN',
+							'include_children' => (bool) apply_filters( 'eshb_room_grid_include_children', false, $cat ),
 						),
 					);
 				}
 
-				$best_wp = new WP_Query($args);	  
+				$best_wp = new WP_Query($args);
 
 				$i = 0;
 				$animation_delay = 0.2;
@@ -783,11 +817,61 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 				endwhile;
 				wp_reset_postdata();
 				?>
-			
+
 		</div>
 
-		<?php	
-		
+		<?php
+		if ( $show_pagination ) {
+			$hotel_view->eshb_get_pagination( $best_wp );
+		}
+
+	}
+
+	/**
+	 * Normalize the saved `category` control value into a clean list of term slugs.
+	 *
+	 * Elementor can hand back a bare string, an array holding empty entries, or (on data saved by
+	 * older versions of the widget) term IDs. Passing any of those straight into `tax_query`
+	 * silently drops the taxonomy filter, so every accommodation shows up regardless of category.
+	 *
+	 * @param array $settings Widget settings.
+	 * @return array List of valid `eshb_category` slugs.
+	 */
+	private function eshb_get_selected_categories( $settings ) {
+
+		$raw = isset( $settings['category'] ) ? $settings['category'] : array();
+
+		if ( ! is_array( $raw ) ) {
+			$raw = ( '' === $raw || null === $raw ) ? array() : array( $raw );
+		}
+
+		$slugs = array();
+
+		foreach ( $raw as $value ) {
+
+			if ( ! is_scalar( $value ) ) {
+				continue;
+			}
+
+			$value = trim( (string) $value );
+
+			if ( '' === $value ) {
+				continue;
+			}
+
+			$term = is_numeric( $value )
+				? get_term( (int) $value, 'eshb_category' )
+				: get_term_by( 'slug', $value, 'eshb_category' );
+
+			if ( $term && ! is_wp_error( $term ) ) {
+				$slugs[] = $term->slug;
+			} else {
+				// Keep the raw value so a stale selection returns nothing instead of everything.
+				$slugs[] = $value;
+			}
+		}
+
+		return array_values( array_unique( $slugs ) );
 	}
 
 

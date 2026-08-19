@@ -39,6 +39,19 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     /**
+     * Nothing was paid online, whatever status the booking landed on, so
+     * the email must not tell the customer their payment went through.
+     */
+    public function get_email_intro( $status ) {
+
+        if ( in_array( $status, [ 'completed', 'processing', 'on-hold' ], true ) ) {
+            return __( 'Your booking is confirmed. No payment was taken online — the total below is due on arrival.', 'easy-hotel' );
+        }
+
+        return '';
+    }
+
+    /**
      * No remote order to create for an offline gateway — succeed
      * immediately so the checkout flow can proceed to completion.
      */
@@ -83,34 +96,11 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     /**
-     * Resolve an ISO-4217 currency code for the payment record. Prefers
-     * WooCommerce's configured currency (the plugin already integrates
-     * with it for symbol formatting), then maps the configured symbol,
-     * then falls back to USD.
+     * Resolve an ISO-4217 currency code for the payment record. The
+     * WooCommerce / symbol / USD cascade lives on the base class; only
+     * the fallback filter name is gateway-specific.
      */
     private function get_currency_code() {
-        if ( function_exists( 'get_woocommerce_currency' ) ) {
-            $code = get_woocommerce_currency();
-            if ( ! empty( $code ) ) return $code;
-        }
-
-        $settings = get_option( 'eshb_settings', [] );
-        $symbol   = isset( $settings['currency_symbol'] ) ? trim( (string) $settings['currency_symbol'] ) : '';
-        $map = [
-            '$'  => 'USD',
-            '€'  => 'EUR',
-            '£'  => 'GBP',
-            '¥'  => 'JPY',
-            'A$' => 'AUD',
-            'C$' => 'CAD',
-            '₹'  => 'INR',
-            '₺'  => 'TRY',
-            '₽'  => 'RUB',
-        ];
-        if ( ! empty( $symbol ) && isset( $map[ $symbol ] ) ) {
-            return $map[ $symbol ];
-        }
-
-        return apply_filters( 'eshb_native_cod_currency', 'USD' );
+        return $this->resolve_currency_code( 'eshb_native_cod_currency' );
     }
 }

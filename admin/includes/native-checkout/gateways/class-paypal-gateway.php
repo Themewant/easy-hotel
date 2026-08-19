@@ -63,33 +63,10 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     private function get_currency_code() {
-        // PayPal needs an ISO-4217 currency code. Prefer WooCommerce's
-        // configured currency (since the plugin already integrates with
-        // it for currency symbol formatting), then fall back to a guess
-        // from the symbol setting, then USD.
-        if ( function_exists( 'get_woocommerce_currency' ) ) {
-            $code = get_woocommerce_currency();
-            if ( ! empty( $code ) ) return $code;
-        }
-
-        $settings = get_option( 'eshb_settings', [] );
-        $symbol   = isset( $settings['currency_symbol'] ) ? trim( (string) $settings['currency_symbol'] ) : '';
-        $map = [
-            '$' => 'USD',
-            '€' => 'EUR',
-            '£' => 'GBP',
-            '¥' => 'JPY',
-            'A$' => 'AUD',
-            'C$' => 'CAD',
-            '₹' => 'INR',
-            '₺' => 'TRY',
-            '₽' => 'RUB',
-        ];
-        if ( ! empty( $symbol ) && isset( $map[ $symbol ] ) ) {
-            return $map[ $symbol ];
-        }
-
-        return apply_filters( 'eshb_native_paypal_currency', 'USD' );
+        // PayPal needs an ISO-4217 currency code. The WooCommerce /
+        // symbol / USD cascade lives on the base class; only the
+        // fallback filter name is gateway-specific.
+        return $this->resolve_currency_code( 'eshb_native_paypal_currency' );
     }
 
     /**
