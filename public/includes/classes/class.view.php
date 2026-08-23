@@ -427,7 +427,11 @@ class ESHB_View extends ESHB_MAIN{
         foreach($included_service_ids as $service_id){
             $service_metaboxes = get_post_meta($service_id, 'eshb_service_metaboxes', true);
             $is_checked = isset($service_metaboxes['is_checked']) && !empty($service_metaboxes['is_checked']) ? true : false;
-            if($is_checked){
+            // A mandatory service is ticked whatever "Checked by Default" says,
+            // so it has to be part of the first server-rendered price too —
+            // otherwise the total jumps as soon as the JS ticks the box.
+            $is_mandatory = ESHB_Helper::eshb_is_service_mandatory($service_id, $service_metaboxes);
+            if($is_checked || $is_mandatory){
                 $checked_services[] = $service_id;
             }
         }
@@ -642,7 +646,10 @@ class ESHB_View extends ESHB_MAIN{
                                     }
 
                                     $is_checked = $service_metaboxes['is_checked'] ?? false;
-                                    $is_mandatory = $service_metaboxes['is_mandatory'] ?? false;
+                                    $is_mandatory = ESHB_Helper::eshb_is_service_mandatory( $service_id, $service_metaboxes );
+                                    // Rendered ticked server-side as well, so the box is right
+                                    // even before booking.js locks it.
+                                    $is_checked = $is_checked || $is_mandatory;
 
                                     // 0 means "no cap configured" — the quantity stepper then
                                     // falls back to its natural limit (the total guest count).
@@ -898,7 +905,18 @@ class ESHB_View extends ESHB_MAIN{
         $accomodation_gallery = !empty($eshb_accomodation_metaboxes_side['accomodation_gallery']) ? $eshb_accomodation_metaboxes_side['accomodation_gallery'] : '';
         $accomodation_video = !empty($eshb_accomodation_metaboxes_side['accomodation_video']) ? $eshb_accomodation_metaboxes_side['accomodation_video'] : '';
         $accomodation_video_source = !empty($eshb_accomodation_metaboxes_side['accomodation_video_source']) ? $eshb_accomodation_metaboxes_side['accomodation_video_source'] : '';
-        $accomodation_gallery_ids = explode( ',', $accomodation_gallery );
+        // The gallery meta is a comma separated attachment list. An ID whose
+        // media was deleted afterwards stays in that list and renders as an
+        // empty <img> — a blank slide in the carousel. The admin gallery field
+        // already hides those, so drop them here too, before anything counts
+        // or renders them.
+        $accomodation_gallery_ids = is_array( $accomodation_gallery ) ? $accomodation_gallery : explode( ',', (string) $accomodation_gallery );
+        $accomodation_gallery_ids = array_values( array_filter(
+            array_map( 'trim', $accomodation_gallery_ids ),
+            function( $gallery_item_id ) {
+                return '' !== $gallery_item_id && false !== wp_get_attachment_image_src( $gallery_item_id, 'thumbnail' );
+            }
+        ) );
         $accomodation_gallery_slides_per_view = !empty($eshb_accomodation_metaboxes_side['slides_per_view']) ? $eshb_accomodation_metaboxes_side['slides_per_view'] : '2.1';
         $accomodation_video_height = !empty($eshb_accomodation_metaboxes_side['accomodation_video_height']) ? $eshb_accomodation_metaboxes_side['accomodation_video_height'] : 0;
 

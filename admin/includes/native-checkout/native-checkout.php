@@ -16,6 +16,24 @@ if ( ! defined( 'ESHB_NATIVE_CHECKOUT_URL' ) ) {
     define( 'ESHB_NATIVE_CHECKOUT_URL', plugin_dir_url( __FILE__ ) );
 }
 
+/**
+ * Revision of the checkout-field extension points.
+ *
+ * Add-ons that replace or extend the customer fields check for this instead
+ * of sniffing the plugin version, so they keep working whatever the release
+ * number happens to be. Bump it when the contract below changes.
+ *
+ * 1 — `eshb_native_checkout_customer_fields` (template),
+ *     `eshb_native_checkout_customer_section_title`,
+ *     `eshb_native_checkout_customer_from_post`,
+ *     `eshb_native_checkout_required_customer_fields`,
+ *     `eshb_native_account_guest_detail_rows`,
+ *     and the `customerFields` branch in checkout.js.
+ */
+if ( ! defined( 'ESHB_CHECKOUT_FIELDS_API' ) ) {
+    define( 'ESHB_CHECKOUT_FIELDS_API', 1 );
+}
+
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/helpers.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-coupon.php';
 require_once ESHB_NATIVE_CHECKOUT_PATH . 'includes/class-pricing.php';

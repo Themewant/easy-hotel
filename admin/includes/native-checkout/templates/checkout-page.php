@@ -203,17 +203,24 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                                 <h4><?php esc_html_e( 'Choose Additional Services', 'easy-hotel' ); ?></h4>
                                 <?php foreach ( $eshb_item['services'] as $eshb_service ) :
                                     $eshb_svc_id     = (int) $eshb_service['id'];
-                                    $eshb_selected   = isset( $eshb_item['selected_services'][ $eshb_svc_id ] );
-                                    $eshb_quantity   = $eshb_selected ? (int) $eshb_item['selected_services'][ $eshb_svc_id ] : 1;
+                                    // Mandatory services are always part of the booking and cannot
+                                    // be unticked here — the same rule the booking form applies.
+                                    $eshb_mandatory  = ! empty( $eshb_service['is_mandatory'] );
+                                    $eshb_selected   = $eshb_mandatory || isset( $eshb_item['selected_services'][ $eshb_svc_id ] );
+                                    $eshb_quantity   = isset( $eshb_item['selected_services'][ $eshb_svc_id ] ) ? (int) $eshb_item['selected_services'][ $eshb_svc_id ] : 1;
                                     $eshb_price_html = $eshb_core->eshb_price( $eshb_service['price'] );
                                     $eshb_field_id   = 'eshb-service-' . esc_attr( $eshb_item_key ) . '-' . $eshb_svc_id;
                                     // 0 means no cap was configured for this service.
                                     $eshb_max_qty    = (int) ( $eshb_service['max_quantity'] ?? 0 );
                                     ?>
-                                    <div class="eshb-choice-option eshb-service-option" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>" data-service-max-qty="<?php echo esc_attr( $eshb_max_qty ); ?>">
-                                        <input type="checkbox" id="<?php echo esc_attr( $eshb_field_id ); ?>" value="<?php echo esc_attr( $eshb_svc_id ); ?>" <?php checked( $eshb_selected ); ?>>
+                                    <div class="eshb-choice-option eshb-service-option<?php echo $eshb_mandatory ? ' eshb-service-option--mandatory' : ''; ?>" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>" data-service-max-qty="<?php echo esc_attr( $eshb_max_qty ); ?>" data-service-mandatory="<?php echo $eshb_mandatory ? '1' : '0'; ?>">
+                                        <input type="checkbox" id="<?php echo esc_attr( $eshb_field_id ); ?>" value="<?php echo esc_attr( $eshb_svc_id ); ?>" <?php checked( $eshb_selected ); ?><?php disabled( $eshb_mandatory ); ?><?php echo $eshb_mandatory ? ' title="' . esc_attr__( 'This service is mandatory and cannot be removed.', 'easy-hotel' ) . '"' : ''; ?>>
                                         <label for="<?php echo esc_attr( $eshb_field_id ); ?>">
                                             <span class="eshb-choice-title"><?php echo esc_html( $eshb_service['title'] ); ?></span>
+                                            <?php if ( $eshb_mandatory ) : ?>
+                                                <?php // Kept outside .eshb-choice-title — the JS summary reads that node's text. ?>
+                                                <span class="eshb-service-required-badge"><?php esc_html_e( 'Required', 'easy-hotel' ); ?></span>
+                                            <?php endif; ?>
                                             <span class="eshb-choice-meta"><?php echo wp_kses_post( $eshb_price_html ); ?>
                                                 <?php echo $eshb_service['periodicity'] === 'per_day' ? ' / ' . esc_html__( 'day', 'easy-hotel' ) : ''; ?>
                                             </span>
@@ -305,7 +312,35 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
             </div>
 
             <div class="eshb-card">
-                <h2><?php esc_html_e( 'Your Information', 'easy-hotel' ); ?></h2>
+                <h2>
+                    <?php
+                    /**
+                     * Filter the heading of the customer information card.
+                     *
+                     * @param string $title Card heading.
+                     */
+                    echo esc_html( apply_filters( 'eshb_native_checkout_customer_section_title', __( 'Your Information', 'easy-hotel' ) ) );
+                    ?>
+                </h2>
+                <?php
+                /**
+                 * Replace the built-in customer fields with a custom set.
+                 *
+                 * Add-ons (e.g. EHB Checkout Field Manager) hook here to render
+                 * an admin-configured field list instead. While nothing is
+                 * hooked the default fields below render unchanged, so checkout
+                 * keeps working with the add-on absent or deactivated.
+                 *
+                 * A replacement MUST keep the existing input `name` attributes
+                 * (firstName, lastName, email, phone, country, state, city,
+                 * postcode, notes) and the eshbCountrySelect / eshbStateSelect /
+                 * eshbStateGroup ids, which checkout.js and gateway add-ons
+                 * rely on.
+                 */
+                if ( has_action( 'eshb_native_checkout_customer_fields' ) ) :
+                    do_action( 'eshb_native_checkout_customer_fields' );
+                else :
+                    ?>
                 <div class="eshb-grid-2">
                     <div class="eshb-form-group">
                         <label><?php esc_html_e( 'First Name', 'easy-hotel' ); ?> *</label>
@@ -354,6 +389,7 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                     <label><?php esc_html_e( 'Notes', 'easy-hotel' ); ?></label>
                     <textarea rows="2" name="notes" placeholder="<?php esc_attr_e( 'Special requests, dietary requirements, etc.', 'easy-hotel' ); ?>"></textarea>
                 </div>
+                <?php endif; ?>
             </div>
 
             <div class="eshb-card">

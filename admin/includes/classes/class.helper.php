@@ -445,6 +445,172 @@ class ESHB_Helper {
         return $selected_services;
     }
 
+    /**
+     * Service IDs assigned to an accommodation.
+     *
+     * Mirrors Accommodation Options → Services (the `accomodation_services`
+     * multi-select). Used to decide which services a booking is actually
+     * allowed to carry.
+     *
+     * @param int $accomodation_id Accommodation post ID.
+     * @return int[]
+     */
+    public static function eshb_get_accomodation_service_ids( $accomodation_id ) {
+
+        $accomodation_id = (int) $accomodation_id;
+
+        if ( ! $accomodation_id ) {
+            return [];
+        }
+
+        $meta = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
+        $ids  = is_array( $meta ) && ! empty( $meta['accomodation_services'] ) && is_array( $meta['accomodation_services'] )
+            ? $meta['accomodation_services']
+            : [];
+
+        return array_values( array_filter( array_map( 'intval', $ids ) ) );
+    }
+
+    /**
+     * Is a service flagged Mandatory (Service Options → Mandatory)?
+     *
+     * @param int        $service_id Service post ID.
+     * @param array|null $meta       Pre-fetched eshb_service_metaboxes, if available.
+     * @return bool
+     */
+    public static function eshb_is_service_mandatory( $service_id, $meta = null ) {
+
+        $service_id = (int) $service_id;
+
+        if ( ! is_array( $meta ) ) {
+            $meta = get_post_meta( $service_id, 'eshb_service_metaboxes', true );
+        }
+
+        $mandatory = is_array( $meta ) && ! empty( $meta['is_mandatory'] );
+
+        return (bool) apply_filters( 'eshb_is_service_mandatory', $mandatory, $service_id, $meta );
+    }
+
+    /**
+     * Mandatory services of one accommodation, keyed by service ID.
+     *
+     * Only services assigned to that accommodation are considered — a
+     * mandatory service belonging to another room must never be forced
+     * onto this booking.
+     *
+     * @param int $accomodation_id Accommodation post ID.
+     * @return array<int,bool> [ service_id => true ]
+     */
+    public static function eshb_get_mandatory_service_ids( $accomodation_id ) {
+
+        $mandatory = [];
+
+        foreach ( self::eshb_get_accomodation_service_ids( $accomodation_id ) as $service_id ) {
+            if ( self::eshb_is_service_mandatory( $service_id ) ) {
+                $mandatory[ $service_id ] = true;
+            }
+        }
+
+        return $mandatory;
+    }
+
+    /**
+     * Drop selected services that the accommodation does not offer.
+     *
+     * The booking form and the checkout services editor both only list the
+     * accommodation's own services, so this is the server-side guard for
+     * hand-crafted requests — and for carts built while a service was still
+     * assigned. An accommodation with nothing assigned offers no extras at
+     * all, so everything is dropped.
+     *
+     * @param mixed $selected_services [ ['id' => .., 'quantity' => ..], .. ].
+     * @param int   $accomodation_id   Accommodation the booking is for.
+     * @return array
+     */
+    public static function eshb_filter_services_by_accomodation( $selected_services, $accomodation_id ) {
+
+        if ( ! is_array( $selected_services ) ) {
+            return [];
+        }
+
+        // Without an accommodation there is nothing to validate against —
+        // better to leave the selection alone than to silently empty it.
+        if ( ! (int) $accomodation_id ) {
+            return array_values( $selected_services );
+        }
+
+        $allowed = array_flip( self::eshb_get_accomodation_service_ids( $accomodation_id ) );
+        $kept    = [];
+
+        foreach ( $selected_services as $service ) {
+
+            if ( ! is_array( $service ) || empty( $service['id'] ) ) {
+                continue;
+            }
+
+            if ( ! isset( $allowed[ (int) $service['id'] ] ) ) {
+                continue;
+            }
+
+            $kept[] = $service;
+        }
+
+        return $kept;
+    }
+
+    /**
+     * Make sure every mandatory service of an accommodation is present in a
+     * selected-services list.
+     *
+     * The browser locks mandatory checkboxes, so this is the server-side
+     * guard for hand-crafted requests — the same role
+     * eshb_clamp_selected_services() plays for quantities. Existing lines are
+     * left untouched (the customer may legitimately have raised the quantity);
+     * only missing ones are appended.
+     *
+     * @param mixed $selected_services [ ['id' => .., 'quantity' => ..], .. ].
+     * @param int   $accomodation_id   Accommodation the booking is for.
+     * @return array
+     */
+    public static function eshb_enforce_mandatory_services( $selected_services, $accomodation_id ) {
+
+        $selected_services = is_array( $selected_services ) ? array_values( $selected_services ) : [];
+        $mandatory         = self::eshb_get_mandatory_service_ids( $accomodation_id );
+
+        if ( empty( $mandatory ) ) {
+            return $selected_services;
+        }
+
+        foreach ( $selected_services as $index => $service ) {
+
+            if ( ! is_array( $service ) || empty( $service['id'] ) ) {
+                continue;
+            }
+
+            $service_id = (int) $service['id'];
+
+            if ( ! isset( $mandatory[ $service_id ] ) ) {
+                continue;
+            }
+
+            // Present but zeroed out counts as removed — put it back at 1.
+            if ( (int) ( $service['quantity'] ?? 0 ) < 1 ) {
+                $selected_services[ $index ]['quantity'] = self::eshb_clamp_service_quantity( $service_id, 1 );
+            }
+
+            unset( $mandatory[ $service_id ] );
+        }
+
+        foreach ( array_keys( $mandatory ) as $service_id ) {
+            $selected_services[] = [
+                'id'       => (int) $service_id,
+                'quantity' => self::eshb_clamp_service_quantity( $service_id, 1 ),
+            ];
+        }
+
+        return array_values( $selected_services );
+    }
+
     // Record a payment (deposit or subsequent) against an order.
     public static function eshb_assign_payment_to_booking( $payment_id, $order_id, $booking_id, $amount_paid, $update = false, $args = [] ) {
 

@@ -43,6 +43,18 @@ if ( empty( $b ) || empty( $b['id'] ) ) {
         <?php if ( $b['customer_phone'] ) : ?>
             <tr><th><?php esc_html_e( 'Phone', 'easy-hotel' ); ?></th><td><?php echo esc_html( $b['customer_phone'] ); ?></td></tr>
         <?php endif; ?>
+        <?php
+        /**
+         * Extra rows in the guest-details table.
+         *
+         * Add-ons that collect their own checkout fields (e.g. EHB Checkout
+         * Field Manager) print `<tr><th>…</th><td>…</td></tr>` here. Output
+         * must be escaped by the callback.
+         *
+         * @param array $b Booking detail view-model.
+         */
+        do_action( 'eshb_native_account_guest_detail_rows', $b );
+        ?>
     </table>
 
     <?php if ( $b['extra_services'] ) : ?>

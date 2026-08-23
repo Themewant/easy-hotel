@@ -282,6 +282,19 @@ class ESHB_Native_Checkout {
             'extra_services'      => $selected_services,
         ];
         // phpcs:enable WordPress.Security.NonceVerification.Missing
+
+        // The booking form only offers this accommodation's services and locks
+        // the mandatory ones, but the payload is still just a POST — both rules
+        // are re-applied before anything is stored.
+        $payload['extra_services'] = ESHB_Helper::eshb_filter_services_by_accomodation(
+            $payload['extra_services'],
+            $payload['accomodation_id']
+        );
+        $payload['extra_services'] = ESHB_Helper::eshb_enforce_mandatory_services(
+            $payload['extra_services'],
+            $payload['accomodation_id']
+        );
+
         return $payload;
     }
 
@@ -595,23 +608,15 @@ class ESHB_Native_Checkout {
      */
     public function build_reservation_view( array $reservation ) {
         $accomodation_id = (int) ( $reservation['accomodation_id'] ?? 0 );
-        $accom_meta      = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
 
         $services = [];
-        $available_services = ! empty( $accom_meta['extra_services'] ) && is_array( $accom_meta['extra_services'] )
-            ? $accom_meta['extra_services']
-            : [];
 
-        if ( empty( $available_services ) ) {
-            // Fallback: any service tagged for this accommodation.
-            $service_query = get_posts( [
-                'post_type'      => 'eshb_service',
-                'post_status'    => 'publish',
-                'posts_per_page' => -1,
-                'fields'         => 'ids',
-            ] );
-            $available_services = $service_query;
-        }
+        // Only what the accommodation actually offers (Accommodation Options →
+        // Services). An empty list means this room has no extras, in which case
+        // the template drops the Additional Services block entirely.
+        $available_services = ESHB_Helper::eshb_get_accomodation_service_ids( $accomodation_id );
+
+        $mandatory_ids = ESHB_Helper::eshb_get_mandatory_service_ids( $accomodation_id );
 
         foreach ( $available_services as $service_id ) {
             $service_id  = (int) $service_id;
@@ -624,6 +629,7 @@ class ESHB_Native_Checkout {
                 'periodicity'  => $svc_meta['service_periodicity'] ?? 'once',
                 'charge_type'  => $svc_meta['service_charge_type'] ?? 'room',
                 'max_quantity' => ESHB_Helper::eshb_get_service_max_quantity( $service_id, $svc_meta ),
+                'is_mandatory' => isset( $mandatory_ids[ $service_id ] ),
             ];
         }
 
@@ -637,6 +643,14 @@ class ESHB_Native_Checkout {
                         $sel['quantity'] ?? 1
                     );
                 }
+            }
+        }
+
+        // A mandatory service is part of the reservation whether or not the
+        // stored selection still carries it (older cart, tampered request).
+        foreach ( array_keys( $mandatory_ids ) as $mandatory_id ) {
+            if ( empty( $selected[ $mandatory_id ] ) ) {
+                $selected[ $mandatory_id ] = ESHB_Helper::eshb_clamp_service_quantity( $mandatory_id, 1 );
             }
         }
 
@@ -1040,7 +1054,13 @@ class ESHB_Native_Checkout {
                                 ),
                             ];
                         }
-                        $cart['items'][ $item_key ]['extra_services'] = $services;
+                        $accom_id = (int) ( $cart['items'][ $item_key ]['accomodation_id'] ?? 0 );
+
+                        // The editor only offers this accommodation's services
+                        // and locks the mandatory ones; a hand-crafted request
+                        // does neither, so both rules are re-applied here.
+                        $services = ESHB_Helper::eshb_filter_services_by_accomodation( $services, $accom_id );
+                        $cart['items'][ $item_key ]['extra_services'] = ESHB_Helper::eshb_enforce_mandatory_services( $services, $accom_id );
                     }
                     eshb_native_checkout_save_cart( $cart );
                 }
@@ -1070,7 +1090,22 @@ class ESHB_Native_Checkout {
             'notes'      => isset( $_POST['notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['notes'] ) ) : '',
         ];
         // phpcs:enable WordPress.Security.NonceVerification.Missing
-        return $customer;
+
+        /**
+         * Filter the customer data collected from the checkout request.
+         *
+         * Add-ons that put extra fields on the checkout (e.g. EHB Checkout
+         * Field Manager) append their own sanitized keys here. Whatever this
+         * returns is stored verbatim as the booking's
+         * `eshb_booking_customer_details_metaboxes` meta, so anything added
+         * must already be sanitized and should be a scalar.
+         *
+         * The nine built-in keys must not be renamed or removed — every
+         * booking ever placed is stored under them.
+         *
+         * @param array $customer Sanitized customer data.
+         */
+        return (array) apply_filters( 'eshb_native_checkout_customer_from_post', $customer );
     }
 
     private function validate_customer( array $customer ) {
@@ -1079,12 +1114,28 @@ class ESHB_Native_Checkout {
         // so the JS layer disables the field and we mirror that here by
         // skipping the state requirement when it's absent.
         $required = [ 'first_name', 'last_name', 'email', 'phone', 'country', 'city' ];
+
+        /**
+         * Filter which customer keys must be filled in.
+         *
+         * Add-ons that let the site owner turn checkout fields off (e.g. EHB
+         * Checkout Field Manager) narrow this list so the server mirrors the
+         * form actually shown. `state` is deliberately never in the default
+         * list — see the note above.
+         *
+         * @param string[] $required Customer array keys that must be non-empty.
+         * @param array    $customer The sanitized customer data.
+         */
+        $required = (array) apply_filters( 'eshb_native_checkout_required_customer_fields', $required, $customer );
+
         foreach ( $required as $key ) {
             if ( empty( $customer[ $key ] ) ) {
                 return new WP_Error( 'missing_field', __( 'Please fill in all required fields.', 'easy-hotel' ) );
             }
         }
-        if ( ! is_email( $customer['email'] ) ) {
+        // Only enforce the format when an address was actually collected; the
+        // emptiness check above already covers the required case.
+        if ( ! empty( $customer['email'] ) && ! is_email( $customer['email'] ) ) {
             return new WP_Error( 'invalid_email', __( 'Please enter a valid email address.', 'easy-hotel' ) );
         }
         return true;

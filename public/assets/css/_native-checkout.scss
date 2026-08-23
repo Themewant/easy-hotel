@@ -202,6 +202,32 @@
         }
     }
 
+    // A mandatory service is rendered ticked + disabled: it stays in the
+    // booking, only its quantity is still editable.
+    .eshb-service-option--mandatory {
+        input[type="checkbox"] {
+            cursor: not-allowed;
+        }
+
+        label {
+            cursor: default;
+        }
+    }
+
+    .eshb-service-required-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 1px 8px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+    }
+
     .eshb-choice-title {
         font-weight: 500;
     }

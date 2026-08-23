@@ -103,9 +103,22 @@
         return out;
     }
 
+    /**
+     * Read one input by name. Checkboxes report '1' or '' rather than their
+     * markup value, so an unticked box posts an empty string like any other
+     * skipped field instead of dropping out of the payload entirely.
+     */
+    function readField($form, name) {
+        var $el = $form.find('[name="' + name + '"]');
+        if (!$el.length) return '';
+        if ($el.is(':checkbox')) return $el.prop('checked') ? '1' : '';
+        if ($el.is(':radio')) return $form.find('[name="' + name + '"]:checked').val() || '';
+        return $el.val();
+    }
+
     function getCustomer() {
         var $form = $('#eshbNativeCheckoutForm');
-        return {
+        var customer = {
             firstName: $form.find('[name="firstName"]').val(),
             lastName: $form.find('[name="lastName"]').val(),
             email: $form.find('[name="email"]').val(),
@@ -116,25 +129,35 @@
             postcode: $form.find('[name="postcode"]').val(),
             notes: $form.find('textarea[name="notes"]').val()
         };
+
+        // Fields added by a field-manager add-on. The nine above are read
+        // explicitly so this stays a no-op when no add-on is present.
+        var configured = state.config.customerFields;
+        if (Array.isArray(configured)) {
+            for (var i = 0; i < configured.length; i++) {
+                var f = configured[i] || {};
+                if (!f.name || !f.enabled) continue;
+                if (Object.prototype.hasOwnProperty.call(customer, f.name)) continue;
+                customer[f.name] = readField($form, f.name);
+            }
+        }
+
+        return customer;
     }
 
+    // Payload keys the checkout itself owns. A custom field is never allowed
+    // to be named one of these (the add-on rejects them), but building the
+    // payload in this order means a stray one still cannot break a request.
     function ajaxData(extra) {
-        var customer = getCustomer();
-        var payload = {
+        var payload = $.extend({}, getCustomer());
+
+        $.extend(payload, {
             nonce: state.config.nonce,
             gateway: state.gateway,
             coupon: state.coupon.valid ? state.coupon.code : '',
-            itemsServices: JSON.stringify(collectItemsServices()),
-            firstName: customer.firstName,
-            lastName: customer.lastName,
-            email: customer.email,
-            phone: customer.phone,
-            country: customer.country,
-            state: customer.state,
-            city: customer.city,
-            postcode: customer.postcode,
-            notes: customer.notes
-        };
+            itemsServices: JSON.stringify(collectItemsServices())
+        });
+
         // Reservation token: cookies can be stripped on some live hosts, so
         // always carry it in the request body.
         if (state.config.token && state.config.tokenParam) {
@@ -190,6 +213,14 @@
 
         $(document).on('change', '.eshb-service-option input[type="checkbox"]', function () {
             var $opt = $(this).closest('.eshb-service-option');
+
+            // Mandatory services stay ticked. The box is rendered disabled, so
+            // this only catches programmatic changes; the authoritative guard
+            // lives server-side in eshb_enforce_mandatory_services().
+            if ($opt.attr('data-service-mandatory') === '1' && !this.checked) {
+                this.checked = true;
+            }
+
             $opt.find('.eshb-service-qty').css('display', this.checked ? 'flex' : 'none');
             updateItemSummary($opt.closest('.eshb-cart-item'));
             scheduleRecalc();
@@ -361,26 +392,56 @@
         return $field;
     }
 
+    // The default required set. An add-on that lets the site owner switch
+    // fields off (EHB Checkout Field Manager) publishes its own list as
+    // `customerFields`; when that is absent the defaults below apply, so the
+    // core checkout behaves exactly as before.
+    var DEFAULT_REQUIRED = ['firstName', 'lastName', 'email', 'phone', 'country', 'city'];
+
+    /**
+     * Input names that must be filled in, excluding `state` — that one is
+     * conditional on the chosen country and handled separately.
+     */
+    function requiredFieldNames() {
+        var configured = state.config.customerFields;
+        if (!Array.isArray(configured)) return DEFAULT_REQUIRED.slice();
+
+        var names = [];
+        for (var i = 0; i < configured.length; i++) {
+            var f = configured[i] || {};
+            if (!f.name || !f.enabled || !f.required) continue;
+            if (f.name === 'state') continue;
+            names.push(f.name);
+        }
+        return names;
+    }
+
+    /** Whether the state select should be validated when it is active. */
+    function stateIsRequired() {
+        var configured = state.config.customerFields;
+        if (!Array.isArray(configured)) return true;
+        for (var i = 0; i < configured.length; i++) {
+            var f = configured[i] || {};
+            if (f.name === 'state') return !!(f.enabled && f.required);
+        }
+        return false;
+    }
+
     function validateForm() {
         clearFieldErrors();
         var customer = getCustomer();
-        var requiredFields = [
-            { key: 'firstName', selector: '[name="firstName"]' },
-            { key: 'lastName',  selector: '[name="lastName"]' },
-            { key: 'email',     selector: '[name="email"]' },
-            { key: 'phone',     selector: '[name="phone"]' },
-            { key: 'country',   selector: '[name="country"]' },
-            { key: 'city',      selector: '[name="city"]' }
-        ];
+        var requiredFields = requiredFieldNames();
 
         var firstInvalid = null;
         for (var i = 0; i < requiredFields.length; i++) {
-            if (!customer[requiredFields[i].key]) {
-                var $marked = markFieldError(requiredFields[i].selector);
+            if (!customer[requiredFields[i]]) {
+                var $marked = markFieldError('[name="' + requiredFields[i] + '"]');
                 if (!firstInvalid && $marked) firstInvalid = $marked;
             }
         }
-        if (!$('#eshbStateSelect').prop('disabled') && !customer.state) {
+        // The state select is disabled for countries that have no states, so
+        // only enforce it while it is actually active on screen.
+        if (stateIsRequired() && $('#eshbStateSelect').length && !$('#eshbStateSelect').prop('disabled') && !customer.state) {
             var $stateMarked = markFieldError('[name="state"]');
             if (!firstInvalid && $stateMarked) firstInvalid = $stateMarked;
         }
@@ -390,8 +451,12 @@
             firstInvalid.trigger('focus');
             return null;
         }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
-            markFieldError('[name="email"]').trigger('focus');
+        // Only check the format once something was typed — an empty value is
+        // already covered by the required pass above (and the email field can
+        // be switched off entirely by a field-manager add-on).
+        if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
+            var $email = markFieldError('[name="email"]');
+            if ($email) $email.trigger('focus');
             showError(state.config.i18n.invalidEmail);
             return null;
         }
