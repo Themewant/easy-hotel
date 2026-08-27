@@ -366,6 +366,41 @@ class ESHB_Helper {
     }
 
     /**
+     * Whether a service has a guest-selectable quantity at all.
+     *
+     * "Per Room" services do not. Their line is priced as
+     * price × nights × rooms — the room count comes from the booking, never
+     * from a stepper, so a quantity the guest picked would be silently
+     * discarded at pricing time and then still be shown on the confirmation.
+     * The booking form has always hidden the stepper for these; this is the
+     * shared rule so the native checkout and the server agree with it.
+     *
+     * Mirrored by Max Quantity in the admin, which is only offered when the
+     * charge type is "Per Guest" (see service metaboxes `dependency`).
+     *
+     * @param int        $service_id Service post ID.
+     * @param array|null $meta       Pre-fetched eshb_service_metaboxes, if available.
+     * @return bool
+     */
+    public static function eshb_service_allows_quantity( $service_id, $meta = null ) {
+
+        $service_id = (int) $service_id;
+
+        if ( ! is_array( $meta ) ) {
+            $meta = get_post_meta( $service_id, 'eshb_service_metaboxes', true );
+        }
+
+        // 'room' is the engine's default charge type everywhere it is read.
+        $charge_type = is_array( $meta ) && ! empty( $meta['service_charge_type'] )
+            ? $meta['service_charge_type']
+            : 'room';
+
+        $allows = ( 'room' !== $charge_type );
+
+        return (bool) apply_filters( 'eshb_service_allows_quantity', $allows, $service_id, $meta );
+    }
+
+    /**
      * Quantity cap configured on a service (Service Options → Max Quantity).
      *
      * Only meaningful for services that expose a quantity stepper, i.e.
@@ -396,10 +431,16 @@ class ESHB_Helper {
     }
 
     /**
-     * Clamp a requested service quantity to the configured Max Quantity.
+     * Normalise a requested service quantity.
      *
      * The browser already blocks the stepper, so this is the server-side
-     * guard for hand-crafted requests and for admin-created bookings.
+     * guard for hand-crafted requests and for admin-created bookings. It is
+     * the one choke point every selection passes through — the cart, the
+     * checkout recalc, the mandatory-service backfill and the booking write —
+     * so the quantity that reaches storage is the quantity that was priced.
+     *
+     * Zero is left alone: throughout the engine an entry with quantity 0 means
+     * "not selected", so it must never be promoted to 1 here.
      *
      * @param int        $service_id Service post ID.
      * @param int        $quantity   Requested quantity.
@@ -409,7 +450,25 @@ class ESHB_Helper {
     public static function eshb_clamp_service_quantity( $service_id, $quantity, $meta = null ) {
 
         $quantity = (int) $quantity;
-        $max      = self::eshb_get_service_max_quantity( $service_id, $meta );
+
+        // Not selected (or a negative from a crafted request).
+        if ( $quantity < 1 ) {
+            return 0;
+        }
+
+        if ( ! is_array( $meta ) ) {
+            $meta = get_post_meta( (int) $service_id, 'eshb_service_metaboxes', true );
+        }
+
+        // A "Per Room" service has no quantity of its own — the room count is
+        // the multiplier. Pricing ignores whatever was sent, so normalise it
+        // here too, otherwise the confirmation reports a quantity nobody was
+        // charged for ("Additional Fees / Night × 8" on a correct total).
+        if ( ! self::eshb_service_allows_quantity( $service_id, $meta ) ) {
+            return 1;
+        }
+
+        $max = self::eshb_get_service_max_quantity( $service_id, $meta );
 
         if ( $max > 0 && $quantity > $max ) {
             $quantity = $max;
@@ -443,6 +502,192 @@ class ESHB_Helper {
         }
 
         return $selected_services;
+    }
+
+
+    /**
+     * Nights between two booking dates.
+     *
+     * The pricing array already carries `daysCount`; this is the fallback for
+     * the places that only have the stored booking meta to work from (the
+     * email templates, mainly).
+     *
+     * @param string $start_date Booking start date.
+     * @param string $end_date   Booking end date.
+     * @return int At least 1 — a same-day booking is still one charged night.
+     */
+    public static function eshb_count_nights( $start_date, $end_date ) {
+
+        $start_date = (string) $start_date;
+        $end_date   = (string) $end_date;
+
+        if ( '' === $start_date || '' === $end_date ) {
+            return 1;
+        }
+
+        $start = strtotime( $start_date );
+        $end   = strtotime( $end_date );
+
+        if ( ! $start || ! $end || $end <= $start ) {
+            return 1;
+        }
+
+        return max( 1, (int) round( ( $end - $start ) / DAY_IN_SECONDS ) );
+    }
+
+    /**
+     * Units a service line was actually charged for.
+     *
+     * The stored `quantity` is only what the stepper held, which for a
+     * "Per Room" per-night service is always 1 — so a confirmation that
+     * prints it verbatim reads "Nebenkostenpauschale / Nacht × 1" on a
+     * four-night stay whose total was built from four nights. This returns
+     * the multiplier the price was actually built from, so the label and the
+     * total tell the same story.
+     *
+     * Mirrors the math in ESHB_Native_Pricing::calculate_native_extras_charge():
+     *   - charge type 'room'   → the room count replaces the stepper value
+     *   - per_day periodicity  → × number of nights
+     *
+     * @param int        $service_id    Service post ID.
+     * @param int        $quantity      Stored (stepper) quantity.
+     * @param int        $days_count    Nights in the booking.
+     * @param int        $room_quantity Rooms in the booking.
+     * @param array|null $meta          Pre-fetched eshb_service_metaboxes, if available.
+     * @return int 0 when the service was not selected.
+     */
+    public static function eshb_service_billed_quantity( $service_id, $quantity, $days_count = 1, $room_quantity = 1, $meta = null ) {
+
+        $service_id = (int) $service_id;
+        $quantity   = (int) $quantity;
+
+        // Zero means "not selected" everywhere in the engine — keep it.
+        if ( $service_id < 1 || $quantity < 1 ) {
+            return 0;
+        }
+
+        if ( ! is_array( $meta ) ) {
+            $meta = get_post_meta( $service_id, 'eshb_service_metaboxes', true );
+        }
+
+        $days_count    = max( 1, (int) $days_count );
+        $room_quantity = max( 1, (int) $room_quantity );
+
+        // 'room' / 'once' are the engine's defaults everywhere they are read.
+        $charge_type = is_array( $meta ) && ! empty( $meta['service_charge_type'] )
+            ? $meta['service_charge_type']
+            : 'room';
+        $periodicity = is_array( $meta ) && ! empty( $meta['service_periodicity'] )
+            ? $meta['service_periodicity']
+            : 'once';
+
+        $units = ( 'room' === $charge_type )
+            ? $room_quantity
+            : self::eshb_clamp_service_quantity( $service_id, $quantity, $meta );
+
+        if ( $units < 1 ) {
+            return 0;
+        }
+
+        if ( 'per_day' === $periodicity || 'perday' === $periodicity ) {
+            $units *= $days_count;
+        }
+
+        return (int) apply_filters(
+            'eshb_service_billed_quantity',
+            $units,
+            $service_id,
+            $quantity,
+            $days_count,
+            $room_quantity,
+            $meta
+        );
+    }
+
+    /**
+     * Human-readable "Title × units" list for a booking's selected services.
+     *
+     * This is the string the confirmation email prints, so the number in it
+     * is the billed unit count from eshb_service_billed_quantity(), not the
+     * raw stepper value.
+     *
+     * @param mixed $selected_services Decoded [ ['id' => .., 'quantity' => ..], .. ].
+     * @param int   $days_count        Nights in the booking.
+     * @param int   $room_quantity     Rooms in the booking.
+     * @return string Empty when nothing was selected.
+     */
+    public static function eshb_format_selected_services( $selected_services, $days_count = 1, $room_quantity = 1 ) {
+
+        if ( ! is_array( $selected_services ) || empty( $selected_services ) ) {
+            return '';
+        }
+
+        $titles = [];
+
+        foreach ( $selected_services as $service ) {
+
+            if ( ! is_array( $service ) || empty( $service['id'] ) ) {
+                continue;
+            }
+
+            $service_id = (int) $service['id'];
+            $units      = self::eshb_service_billed_quantity(
+                $service_id,
+                isset( $service['quantity'] ) ? $service['quantity'] : 1,
+                $days_count,
+                $room_quantity
+            );
+
+            if ( $units < 1 ) {
+                continue;
+            }
+
+            $titles[] = get_the_title( $service_id ) . ' × ' . $units;
+        }
+
+        return implode( ', ', $titles );
+    }
+
+    /**
+     * Extra-services label for a stored booking.
+     *
+     * Rebuilt from the stored selection rather than read back from
+     * `extra_services_html`, so the unit count is the billed one even for
+     * bookings written before that was true and for the flows that still
+     * store the raw stepper value. Falls back to the stored string when the
+     * selection itself is not available.
+     *
+     * @param array $booking_meta eshb_booking_metaboxes payload.
+     * @return string
+     */
+    public static function eshb_booking_services_label( $booking_meta ) {
+
+        if ( ! is_array( $booking_meta ) ) {
+            return '';
+        }
+
+        $stored = isset( $booking_meta['extra_services_html'] )
+            ? (string) $booking_meta['extra_services_html']
+            : '';
+
+        $selected = isset( $booking_meta['extra_services'] ) && is_array( $booking_meta['extra_services'] )
+            ? $booking_meta['extra_services']
+            : [];
+
+        if ( empty( $selected ) ) {
+            return $stored;
+        }
+
+        $label = self::eshb_format_selected_services(
+            $selected,
+            self::eshb_count_nights(
+                $booking_meta['booking_start_date'] ?? '',
+                $booking_meta['booking_end_date'] ?? ''
+            ),
+            (int) ( $booking_meta['room_quantity'] ?? 1 )
+        );
+
+        return '' !== $label ? $label : $stored;
     }
 
     /**

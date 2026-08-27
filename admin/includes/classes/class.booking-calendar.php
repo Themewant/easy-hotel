@@ -253,14 +253,8 @@ class ESHB_Booking_Calendar {
             }
 
             $booking_status = $metaboxes['booking_status'] ?? '';
-            $customer = '';
-            
+            $customer = $this->get_customer_name($booking_id, $metaboxes, $order_id);
 
-            if (class_exists('WooCommerce') && wc_get_order($order_id)) {
-                $order = wc_get_order($order_id);
-                $customer = trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
-            }
-            
             $customer = apply_filters( 'eshb_customer_data_in_calendar',  $customer, $order_id, $booked_type);
             
             
@@ -289,7 +283,55 @@ class ESHB_Booking_Calendar {
         $this->bookings = array_merge($this->bookings, $bookings);
     }
 
-    
+    /**
+     * Who the booking is for.
+     *
+     * A booking can be created from the admin, the booking form, the native
+     * checkout or WooCommerce, and each of those leaves the name somewhere
+     * else, so every source the engine's own screens read is checked, in the
+     * order they read them:
+     *
+     *   1. the customer details metabox (admin, native checkout, payment flow);
+     *   2. `eshb_booking_metaboxes['customer']['name']` (booking form);
+     *   3. the WooCommerce order's billing name (WooCommerce checkout).
+     *
+     * The name is NOT inside `eshb_booking_metaboxes` for most bookings, which
+     * is why reading only the WooCommerce order left every non-WooCommerce
+     * booking on the calendar with nothing but its id. The bookings list table
+     * and the front desk lists resolve the name the same way.
+     *
+     * @param int    $booking_id Booking post id.
+     * @param array  $metaboxes  Booking metaboxes, already loaded by the caller.
+     * @param string $order_id   Linked order id, if any.
+     * @return string
+     */
+    private function get_customer_name($booking_id, $metaboxes, $order_id) {
+
+        $name = '';
+        $details = get_post_meta($booking_id, 'eshb_booking_customer_details_metaboxes', true);
+
+        if (is_array($details)) {
+            $first = isset($details['first_name']) ? $details['first_name'] : '';
+            $last  = isset($details['last_name']) ? $details['last_name'] : '';
+            $name  = trim($first . ' ' . $last);
+        }
+
+        if ('' === $name && !empty($metaboxes['customer']['name'])) {
+            $name = trim((string) $metaboxes['customer']['name']);
+        }
+
+        if ('' === $name && !empty($order_id) && function_exists('wc_get_order')) {
+            $order = wc_get_order($order_id);
+
+            if ($order) {
+                $name = trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
+            }
+        }
+
+        return $name;
+    }
+
+
 
     private function get_bookings_for_accomodation($accomodation_id) {
         return array_filter($this->bookings, function($booking) use ($accomodation_id) {
@@ -379,9 +421,19 @@ class ESHB_Booking_Calendar {
                             
                             if($source_type == 'internal'){
                                 $status_class = 'status-' . esc_attr($booking['status']);
-                                $html .= '<a href="#" class="booking-info ' . esc_attr($status_class) . '" data-source-type="internal" data-booking-id="' . esc_attr($booking['id']) . '" data-accomodation-id="' . esc_attr($accomodation_id) . '">';
+                                $customer_name = isset($booking['customer']) ? trim((string) $booking['customer']) : '';
+
+                                // The cell can be a single day wide, so the name is
+                                // clipped in the CSS and repeated in the tooltip.
+                                $tooltip = '#' . $booking['id'] . ( '' !== $customer_name ? ' - ' . $customer_name : '' );
+
+                                $html .= '<a href="#" class="booking-info ' . esc_attr($status_class) . '" title="' . esc_attr($tooltip) . '" data-source-type="internal" data-booking-id="' . esc_attr($booking['id']) . '" data-accomodation-id="' . esc_attr($accomodation_id) . '">';
                                 $html .= '<span class="booking-id">#' . esc_html($booking['id']) . '</span>';
-                                $html .= '<span class="booking-customer">' . esc_html($booking['customer']) . '</span>';
+
+                                if ('' !== $customer_name) {
+                                    $html .= '<span class="booking-customer">' . esc_html($customer_name) . '</span>';
+                                }
+
                                 $html .= '</a>';
                             }
 

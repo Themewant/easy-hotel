@@ -126,7 +126,7 @@ class ESHB_Native_Account_Bookings {
             'adults'          => (int) ( $meta['adult_quantity'] ?? 0 ),
             'children'        => (int) ( $meta['children_quantity'] ?? 0 ),
             'extra_beds'      => (int) ( $meta['extra_bed_quantity'] ?? 0 ),
-            'extra_services'  => (string) ( $meta['extra_services_html'] ?? '' ),
+            'extra_services'  => ESHB_Helper::eshb_booking_services_label( $meta ),
             'coupon_code'     => (string) ( $meta['coupon_code'] ?? '' ),
             'coupon_html'     => $core->eshb_price( (float) ( $meta['coupon_discount'] ?? 0 ) ),
             'tax_html'        => $core->eshb_price( (float) ( $meta['tax_amount'] ?? 0 ) ),

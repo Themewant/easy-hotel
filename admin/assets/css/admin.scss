@@ -781,6 +781,23 @@ body.rtl {
                     align-items: center;
                     padding: 3px 5px;
                     font-size: 12px;
+                    min-width: 0;
+                    text-align: center;
+
+                    // A booking can be one day wide, so the guest name is clipped
+                    // rather than allowed to stretch the column. The full name is
+                    // on the link's title attribute.
+                    .booking-id,
+                    .booking-customer {
+                        max-width: 100%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+
+                    .booking-customer {
+                        line-height: 1.3;
+                    }
 
                     &.ical-status-completed {
                         background: var(--eshb-calendar-ical-completed-color);

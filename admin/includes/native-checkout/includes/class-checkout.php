@@ -629,6 +629,9 @@ class ESHB_Native_Checkout {
                 'periodicity'  => $svc_meta['service_periodicity'] ?? 'once',
                 'charge_type'  => $svc_meta['service_charge_type'] ?? 'room',
                 'max_quantity' => ESHB_Helper::eshb_get_service_max_quantity( $service_id, $svc_meta ),
+                // "Per Room" services are priced by the room count, so the
+                // editor shows no stepper for them — same rule as the form.
+                'allows_qty'   => ESHB_Helper::eshb_service_allows_quantity( $service_id, $svc_meta ),
                 'is_mandatory' => isset( $mandatory_ids[ $service_id ] ),
             ];
         }

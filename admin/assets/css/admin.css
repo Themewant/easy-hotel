@@ -1685,6 +1685,18 @@ body.rtl .csf-content {
   align-items: center;
   padding: 3px 5px;
   font-size: 12px;
+  min-width: 0;
+  text-align: center;
+}
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info .booking-id,
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info .booking-customer {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info .booking-customer {
+  line-height: 1.3;
 }
 .eshb-booking-info-calendar .eshb-booking-info-calendar-tables table td .booking-info.ical-status-completed {
   background: var(--eshb-calendar-ical-completed-color);

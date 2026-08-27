@@ -46,16 +46,22 @@ class ESHB_Native_Booking_Handler {
             $dates_label = ESHB_Helper::eshb_format_date( $reservation['start_date'] );
         }
 
-        $extra_services_html = '';
-        if ( ! empty( $extra_services ) ) {
-            $titles = [];
-            foreach ( $extra_services as $svc ) {
-                if ( ! is_array( $svc ) || empty( $svc['id'] ) ) continue;
-                $qty = ! empty( $svc['quantity'] ) ? (int) $svc['quantity'] : 1;
-                $titles[] = get_the_title( (int) $svc['id'] ) . ' × ' . $qty;
-            }
-            $extra_services_html = implode( ', ', $titles );
+        // Nights and rooms drive what an extra service is actually charged
+        // for, so the label has to be built from them too — printing the raw
+        // stepper value gave "… / Nacht × 1" on a four-night stay.
+        $nights = (int) ( $pricing['daysCount'] ?? 0 );
+        if ( $nights < 1 ) {
+            $nights = ESHB_Helper::eshb_count_nights(
+                $reservation['start_date'] ?? '',
+                $reservation['end_date'] ?? ''
+            );
         }
+
+        $extra_services_html = ESHB_Helper::eshb_format_selected_services(
+            $extra_services,
+            $nights,
+            (int) ( $reservation['room_quantity'] ?? 1 )
+        );
 
         $meta = [
             'booking_status'          => 'on-hold',

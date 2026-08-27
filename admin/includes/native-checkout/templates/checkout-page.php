@@ -212,6 +212,10 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                                     $eshb_field_id   = 'eshb-service-' . esc_attr( $eshb_item_key ) . '-' . $eshb_svc_id;
                                     // 0 means no cap was configured for this service.
                                     $eshb_max_qty    = (int) ( $eshb_service['max_quantity'] ?? 0 );
+                                    // A "Per Room" service is priced by the room count, so it has
+                                    // no quantity to pick — the stepper is left out rather than
+                                    // shown and then ignored at pricing time.
+                                    $eshb_allows_qty = ! empty( $eshb_service['allows_qty'] );
                                     ?>
                                     <div class="eshb-choice-option eshb-service-option<?php echo $eshb_mandatory ? ' eshb-service-option--mandatory' : ''; ?>" data-service-id="<?php echo esc_attr( $eshb_svc_id ); ?>" data-service-price="<?php echo esc_attr( $eshb_service['price'] ); ?>" data-service-periodicity="<?php echo esc_attr( $eshb_service['periodicity'] ); ?>" data-service-charge-type="<?php echo esc_attr( $eshb_service['charge_type'] ); ?>" data-service-max-qty="<?php echo esc_attr( $eshb_max_qty ); ?>" data-service-mandatory="<?php echo $eshb_mandatory ? '1' : '0'; ?>">
                                         <input type="checkbox" id="<?php echo esc_attr( $eshb_field_id ); ?>" value="<?php echo esc_attr( $eshb_svc_id ); ?>" <?php checked( $eshb_selected ); ?><?php disabled( $eshb_mandatory ); ?><?php echo $eshb_mandatory ? ' title="' . esc_attr__( 'This service is mandatory and cannot be removed.', 'easy-hotel' ) . '"' : ''; ?>>
@@ -225,11 +229,13 @@ $eshb_multi             = count( $eshb_items_view ) > 1;
                                                 <?php echo $eshb_service['periodicity'] === 'per_day' ? ' / ' . esc_html__( 'day', 'easy-hotel' ) : ''; ?>
                                             </span>
                                         </label>
-                                        <div class="eshb-service-qty" style="display:<?php echo $eshb_selected ? 'flex' : 'none'; ?>;">
-                                            <button type="button" class="eshb-qty-btn" data-dir="-1">&minus;</button>
-                                            <input type="number" min="1"<?php echo $eshb_max_qty > 0 ? ' max="' . esc_attr( $eshb_max_qty ) . '"' : ''; ?> value="<?php echo esc_attr( $eshb_max_qty > 0 ? min( $eshb_max_qty, max( 1, $eshb_quantity ) ) : max( 1, $eshb_quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $eshb_svc_id ); ?>">
-                                            <button type="button" class="eshb-qty-btn" data-dir="1">+</button>
-                                        </div>
+                                        <?php if ( $eshb_allows_qty ) : ?>
+                                            <div class="eshb-service-qty" style="display:<?php echo $eshb_selected ? 'flex' : 'none'; ?>;">
+                                                <button type="button" class="eshb-qty-btn" data-dir="-1">&minus;</button>
+                                                <input type="number" min="1"<?php echo $eshb_max_qty > 0 ? ' max="' . esc_attr( $eshb_max_qty ) . '"' : ''; ?> value="<?php echo esc_attr( $eshb_max_qty > 0 ? min( $eshb_max_qty, max( 1, $eshb_quantity ) ) : max( 1, $eshb_quantity ) ); ?>" data-service-qty="<?php echo esc_attr( $eshb_svc_id ); ?>">
+                                                <button type="button" class="eshb-qty-btn" data-dir="1">+</button>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

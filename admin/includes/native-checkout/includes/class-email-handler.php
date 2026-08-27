@@ -674,8 +674,9 @@ class ESHB_Native_Email_Handler {
             <tr><td style="padding:6px 0;"><?php esc_html_e( 'Check-out', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['booking_end_date'] ?? '' ); ?></td></tr>
             <tr><td style="padding:6px 0;"><?php esc_html_e( 'Guests', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( (int) ( $meta['adult_quantity'] ?? 0 ) + (int) ( $meta['children_quantity'] ?? 0 ) ); ?></td></tr>
             <tr><td style="padding:6px 0;"><?php esc_html_e( 'Rooms', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['room_quantity'] ?? 1 ); ?></td></tr>
-            <?php if ( ! empty( $meta['extra_services_html'] ) ) : ?>
-                <tr><td style="padding:6px 0;"><?php esc_html_e( 'Extra services', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['extra_services_html'] ); ?></td></tr>
+            <?php $eshb_services_label = ESHB_Helper::eshb_booking_services_label( $meta ); ?>
+            <?php if ( ! empty( $eshb_services_label ) ) : ?>
+                <tr><td style="padding:6px 0;"><?php esc_html_e( 'Extra services', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $eshb_services_label ); ?></td></tr>
             <?php endif; ?>
             <?php if ( ! empty( $meta['coupon_code'] ) ) : ?>
                 <tr><td style="padding:6px 0;"><?php esc_html_e( 'Coupon', 'easy-hotel' ); ?></td><td style="padding:6px 0;text-align:right;"><?php echo esc_html( $meta['coupon_code'] ); ?></td></tr>
