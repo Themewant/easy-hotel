@@ -350,8 +350,8 @@ if($eshb_is_related_post){
                     $eshb_accomodation_metaboxes = get_post_meta($eshb_accomodation_id, 'eshb_accomodation_metaboxes', true);
                     $eshb_accomodation_info_group = $eshb_accomodation_metaboxes['accomodation_info_group'];
                     $eshb_booking_url = get_the_permalink($eshb_accomodation_id);
-                    $eshb_price = $eshb_hotel_core->get_eshb_price_html('', '', $eshb_accomodation_id);
-                    $eshb_numeric_price = $eshb_hotel_core->get_eshb_price('', '', $eshb_accomodation_id);
+                    $eshb_price = $eshb_hotel_core->get_eshb_min_price_html($eshb_accomodation_id);
+                    $eshb_numeric_price = $eshb_hotel_core->get_eshb_min_price($eshb_accomodation_id);
                     $eshb_excerpt = $eshb_hotel_view->eshb_custom_excerpt(35, $eshb_accomodation_id);
                     $eshb_perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $eshb_string_night, $eshb_accomodation_id, $eshb_settings);
                     include ESHB_PL_PATH . 'public/includes/gutenberg/blocks/accomodation-slider/src/accomodation-slider/grid-styles/' . $eshb_sstyle .".php";  

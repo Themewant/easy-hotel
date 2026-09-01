@@ -19,8 +19,8 @@ if (isset($_GET['nonce']) && wp_verify_nonce( sanitize_text_field(wp_unslash($_G
 
 $eshb_booking_type = isset($eshb_settings['booking-type']) && !empty($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
 $eshb_hotel_core = new ESHB_Core();
-$eshb_price = $eshb_hotel_core->get_eshb_price_html('', '', $eshb_accomodation_id);
-$eshb_numeric_price = $eshb_hotel_core->get_eshb_price('', '', $eshb_accomodation_id);
+$eshb_price = $eshb_hotel_core->get_eshb_min_price_html($eshb_accomodation_id);
+$eshb_numeric_price = $eshb_hotel_core->get_eshb_min_price($eshb_accomodation_id);
 $eshb_booking_form = $eshb_settings['booking-form'] ?? true;
 $eshb_post_class = 'eshb-details-page';
 $eshb_post_class = !$eshb_booking_form || $eshb_booking_type == 'disable' || empty($eshb_numeric_price) ? $eshb_post_class . ' eshb-disabled-booking' : $eshb_post_class;

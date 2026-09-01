@@ -4,7 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Core {
 
     private static $_instance = null;
-	
+
+    /** Sessions (seasons) are read once per request - see get_eshb_all_sessions(). */
+    private static $sessions_cache = null;
+
 	public static function instance() {
 
 		if ( is_null( self::$_instance ) ) {
@@ -476,7 +479,27 @@ class ESHB_Core {
             return '';
         }
 
-        
+        return $this->eshb_render_price_html( $price, $show_currency, $currency_symbol, $is_wc_price );
+    }
+
+    /**
+     * Turns a price value into the plugin's price markup.
+     *
+     * $price is either a single amount or a ['regular_price' => .., 'sale_price' => ..]
+     * pair, which renders as a struck through regular price next to the sale one.
+     */
+    public function eshb_render_price_html( $price, $show_currency = true, $currency_symbol = null, $is_wc_price = null ) {
+
+        if ( $currency_symbol === null ) {
+            $currency_symbol = $this->get_eshb_currency_symbol();
+        }
+
+        if ( $is_wc_price === null ) {
+            $eshb_settings = get_option('eshb_settings');
+            $booking_type = isset($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
+            $is_wc_price = ( $booking_type == 'woocommerce' && class_exists('WooCommerce') );
+        }
+
         // Prepare the price HTML, with or without currency symbol
         $currency_position = $this->get_eshb_currency_position();
         $price_html = '';
@@ -533,6 +556,178 @@ class ESHB_Core {
         return $price_html;
     }
     
+    /**
+     * Every published session (season), read once per request.
+     */
+    public function get_eshb_all_sessions() {
+
+        if ( self::$sessions_cache !== null ) {
+            return self::$sessions_cache;
+        }
+
+        $sessions = array();
+
+        $query = new WP_Query( array(
+            'post_type'      => 'eshb_session',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+        ) );
+
+        foreach ( $query->posts as $session_post ) {
+
+            $metaboxes = maybe_unserialize( get_post_meta( $session_post->ID, 'eshb_session_metaboxes', true ) );
+
+            if ( empty( $metaboxes['start_date'] ) || empty( $metaboxes['end_date'] ) ) continue;
+
+            $sessions[] = array(
+                'id'               => $session_post->ID,
+                'start_date'       => $metaboxes['start_date'],
+                'end_date'         => $metaboxes['end_date'],
+                'price'            => isset( $metaboxes['session_price'] ) ? $metaboxes['session_price'] : '',
+                'accomodation_ids' => isset( $metaboxes['accomodation_ids'] ) ? $metaboxes['accomodation_ids'] : array(),
+                'longstay_pricing' => isset( $metaboxes['longstay_pricing'] ) ? $metaboxes['longstay_pricing'] : array(),
+                'variable_pricing' => isset( $metaboxes['variable_pricing'] ) ? $metaboxes['variable_pricing'] : array(),
+                'days'             => isset( $metaboxes['days'] ) ? $metaboxes['days'] : array(),
+            );
+        }
+
+        self::$sessions_cache = $sessions;
+
+        return $sessions;
+    }
+
+    /**
+     * Drops the session cache, so a season saved mid request is picked up.
+     */
+    public static function flush_eshb_sessions_cache() {
+        self::$sessions_cache = null;
+    }
+
+    /**
+     * Lowest per night price a room can be booked at.
+     *
+     * The "From" price on room grids, sliders and the single room page carries
+     * no date, so it has to be the cheapest rate the room offers across every
+     * current and upcoming season - not whichever season happens to cover
+     * today, which is what a plain get_eshb_price() call with no dates returns.
+     */
+    public function get_eshb_min_price( $accomodation_id = null, $sale = true, $single_day = true ) {
+
+        if ( empty( $accomodation_id ) ) {
+            global $post;
+            $accomodation_id = ! empty( $post->ID ) ? $post->ID : 0;
+        }
+
+        if ( empty( $accomodation_id ) ) return 0;
+
+        $metaboxes = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
+
+        // Amounts are kept as they are stored rather than cast, so the winning
+        // one prints exactly the way get_eshb_price_html() has always printed it.
+        $regular_price = ! empty( $metaboxes['regular_price'] ) ? $metaboxes['regular_price'] : 0;
+        $sale_price    = ! empty( $metaboxes['sale_price'] ) ? $metaboxes['sale_price'] : 0;
+
+        if ( $single_day ) {
+            $single_day_price      = apply_filters( 'eshb_single_day_price', 0, $accomodation_id );
+            $single_day_sale_price = apply_filters( 'eshb_single_day_sale_price', 0, $accomodation_id );
+            $regular_price = ! empty( $single_day_price ) ? $single_day_price : $regular_price;
+            $sale_price    = ! empty( $single_day_sale_price ) ? $single_day_sale_price : $sale_price;
+        }
+
+        $base_price = ( $sale && ! empty( $sale_price ) ) ? $sale_price : $regular_price;
+
+        $candidates = array();
+
+        if ( floatval( $base_price ) > 0 ) {
+            $candidates[] = $base_price;
+        }
+
+        // Day wise pricing: every weekday carries its own rate.
+        $day_wise_price = ! empty( $metaboxes['day_wise_price'][0] ) ? $metaboxes['day_wise_price'][0] : array();
+
+        if ( is_array( $day_wise_price ) ) {
+            foreach ( $day_wise_price as $day_price ) {
+                if ( floatval( $day_price ) > 0 ) {
+                    $candidates[] = $day_price;
+                }
+            }
+        }
+
+        // Seasons. One that has already ended can never be booked again, so
+        // only today's and the upcoming ones are worth comparing.
+        $today            = ESHB_Helper::eshb_today();
+        $include_longstay = apply_filters( 'eshb_min_price_include_longstay', false, $accomodation_id );
+
+        foreach ( $this->get_eshb_all_sessions() as $session ) {
+
+            if ( empty( $session['accomodation_ids'] ) ) continue;
+            if ( ! in_array( $accomodation_id, $session['accomodation_ids'] ) ) continue;
+            if ( $session['end_date'] < $today ) continue;
+
+            if ( floatval( $session['price'] ) > 0 ) {
+                $candidates[] = $session['price'];
+            }
+
+            if ( ! empty( $session['variable_pricing'] ) && is_array( $session['variable_pricing'] ) ) {
+                foreach ( $session['variable_pricing'] as $vp ) {
+                    if ( ! empty( $vp['price'] ) && floatval( $vp['price'] ) > 0 ) {
+                        $candidates[] = $vp['price'];
+                    }
+                }
+            }
+
+            // Long stay rates only unlock past a minimum number of nights, so
+            // they are not reachable at the single night "From" implies. Opt in
+            // through the filter for hotels that want them counted anyway.
+            if ( $include_longstay && ! empty( $session['longstay_pricing'] ) && is_array( $session['longstay_pricing'] ) ) {
+                foreach ( $session['longstay_pricing'] as $ls ) {
+                    if ( ! empty( $ls['price'] ) && floatval( $ls['price'] ) > 0 ) {
+                        $candidates[] = $ls['price'];
+                    }
+                }
+            }
+        }
+
+        $min_price = 0;
+
+        foreach ( $candidates as $candidate ) {
+            if ( empty( $min_price ) || floatval( $candidate ) < floatval( $min_price ) ) {
+                $min_price = $candidate;
+            }
+        }
+
+        return apply_filters( 'eshb_min_price', $min_price, $accomodation_id, $candidates );
+    }
+
+    /**
+     * Price markup for the dateless "From" label - see get_eshb_min_price().
+     */
+    public function get_eshb_min_price_html( $accomodation_id = null, $show_currency = true, $format = 'sale' ) {
+
+        $min_price = $this->get_eshb_min_price( $accomodation_id );
+
+        if ( empty( $min_price ) ) {
+            return '';
+        }
+
+        $price = $min_price;
+
+        // The struck through regular price only makes sense while the room's
+        // own sale price is what drives the minimum; a season rate below that
+        // has no "was" figure to show against it.
+        if ( $format == 'sale' ) {
+            $regular_min = $this->get_eshb_min_price( $accomodation_id, false );
+            if ( floatval( $regular_min ) > floatval( $min_price ) ) {
+                $price = array(
+                    'regular_price' => $regular_min,
+                    'sale_price'    => $min_price,
+                );
+            }
+        }
+
+        return $this->eshb_render_price_html( $price, $show_currency );
+    }
+
     public function get_eshb_day_names_from_date_ranges($start_date, $end_date){
         $period = new DatePeriod(
             new DateTime($start_date),

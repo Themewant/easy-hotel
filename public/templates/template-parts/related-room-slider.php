@@ -101,7 +101,7 @@ if($eshb_best_wp->have_posts() && $eshb_best_wp->found_posts > 1){
                             $eshb_x++;
 
                             $accomodation_id = get_the_ID();
-                            $price = $eshb_hotel_core->get_eshb_price_html('', '', $accomodation_id);
+                            $price = $eshb_hotel_core->get_eshb_min_price_html($accomodation_id);
                             $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
                             $eshb_adult_quantity = isset($eshb_accomodation_metaboxes['adult_capacity']) ? intval($eshb_accomodation_metaboxes['adult_capacity']) : 1;
                             $eshb_children_quantity = isset($eshb_accomodation_metaboxes['children_capacity']) ? intval($eshb_accomodation_metaboxes['children_capacity']) : 0;
@@ -109,8 +109,8 @@ if($eshb_best_wp->have_posts() && $eshb_best_wp->found_posts > 1){
                             $accomodation_info_group = !empty($eshb_accomodation_metaboxes['accomodation_info_group']) ? $eshb_accomodation_metaboxes['accomodation_info_group'] : array();
 
 
-                            $price = $eshb_hotel_core->get_eshb_price_html('', '', $accomodation_id);
-                            $numeric_price = $eshb_hotel_core->get_eshb_price('', '', $accomodation_id);
+                            $price = $eshb_hotel_core->get_eshb_min_price_html($accomodation_id);
+                            $numeric_price = $eshb_hotel_core->get_eshb_min_price($accomodation_id);
                             $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $eshb_string_night, $accomodation_id, $eshb_settings);
 
                             $booking_url = add_query_arg(

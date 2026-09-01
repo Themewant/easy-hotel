@@ -367,7 +367,7 @@ class ESHB_View extends ESHB_MAIN{
 
 
         $currency_symbol = $hotel_core->get_eshb_currency_symbol();
-        $per_night_price_html = $hotel_core->get_eshb_price_html('', '', $accomodation_id, true, false, true, true);
+        $per_night_price_html = $hotel_core->get_eshb_min_price_html($accomodation_id);
         $price_html = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, true, false, true, true, 'regular');
         $price = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, false, true, true, false);
         $price = !empty($price) ? $price : 0;

@@ -23,8 +23,8 @@ if (isset($_GET['nonce']) && wp_verify_nonce( sanitize_text_field(wp_unslash($_G
     $eshb_booking_form_style = !empty($_GET['booking-form-style']) ? sanitize_text_field(wp_unslash($_GET['booking-form-style'])) : $eshb_booking_form_style;
 }
 
-$eshb_price = $eshb_hotel_core->get_eshb_price_html('', '', $eshb_accomodation_id);
-$eshb_numeric_price = $eshb_hotel_core->get_eshb_price('', '', $eshb_accomodation_id);
+$eshb_price = $eshb_hotel_core->get_eshb_min_price_html($eshb_accomodation_id);
+$eshb_numeric_price = $eshb_hotel_core->get_eshb_min_price($eshb_accomodation_id);
 
 // Translations
 $eshb_string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';

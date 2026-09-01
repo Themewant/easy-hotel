@@ -31,7 +31,7 @@
             $eshb_total_capacity = !empty($eshb_metaboxes['total_capacity']) ? $eshb_metaboxes['total_capacity'] : $eshb_adult_capacity + $eshb_children_capacity;
             $eshb_accomodation_info_group = !empty($eshb_metaboxes['accomodation_info_group']) ? $eshb_metaboxes['accomodation_info_group'] : array();
             $eshb_price = $eshb_hotel_core->get_eshb_price_html($start_date, $end_date, $eshb_accomodation_id);
-            $eshb_numeric_price = $eshb_hotel_core->get_eshb_price('', '', $eshb_accomodation_id);
+            $eshb_numeric_price = $eshb_hotel_core->get_eshb_min_price($eshb_accomodation_id);
             $title = get_the_title($eshb_accomodation_id);
             $eshb_perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $eshb_string_night, $eshb_accomodation_id, $eshb_settings);
             

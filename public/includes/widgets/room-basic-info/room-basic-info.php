@@ -336,7 +336,7 @@ class Eshb_Room_Basic_Info_Widget extends \Elementor\Widget_Base {
         $accomodation_id = get_the_ID();
 
         $hotel_core = new ESHB_Core();   
-        $price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
+        $price = $hotel_core->get_eshb_min_price_html($accomodation_id);
         $eshb_settings = get_option('eshb_settings');
 		$string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
         $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $string_night, $accomodation_id, $eshb_settings);

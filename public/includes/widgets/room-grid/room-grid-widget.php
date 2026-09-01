@@ -805,8 +805,8 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 					
 					$booking_url = get_the_permalink($accomodation_id);
 					
-					$price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
-					$numeric_price = $hotel_core->get_eshb_price('', '', $accomodation_id);
+					$price = $hotel_core->get_eshb_min_price_html($accomodation_id);
+					$numeric_price = $hotel_core->get_eshb_min_price($accomodation_id);
 					
 					$excerpt = $hotel_view->eshb_custom_excerpt(35, $accomodation_id);
 

@@ -1119,13 +1119,13 @@ class Eshb_Room_Slider_Widget  extends \Elementor\Widget_Base {
                                 $x++;
                                 
                                 $accomodation_id = get_the_ID();
-                                $price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
+                                $price = $hotel_core->get_eshb_min_price_html($accomodation_id);
                                 $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
                                 $accomodation_info_group = $eshb_accomodation_metaboxes['accomodation_info_group'];
                                 $booking_url = get_the_permalink($accomodation_id);
                                 $total_capacity = $eshb_accomodation_metaboxes['total_capacity'];
-                                $price = $hotel_core->get_eshb_price_html('', '', $accomodation_id);
-                                $numeric_price = $hotel_core->get_eshb_price('', '', $accomodation_id);
+                                $price = $hotel_core->get_eshb_min_price_html($accomodation_id);
+                                $numeric_price = $hotel_core->get_eshb_min_price($accomodation_id);
                                 
                                 $perodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $string_night, $accomodation_id, $eshb_settings);
 
