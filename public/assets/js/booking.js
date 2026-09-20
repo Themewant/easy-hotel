@@ -16,7 +16,7 @@
    * @property {function} getCustomerDetailsFromMetabox - Extracts customer details from metabox form.
    * @property {function} bindEventsForAccomodationMetas - Binds change events for accommodation selection.
    * @property {object} calendarDefaultsOps - Default options for date range picker/calendar.
-   * @property {function} isDatePrevious - Checks if a date is after yesterday (UTC).
+   * @property {function} isDatePrevious - Checks if a date is still ahead at the hotel.
    * @property {function} isDateBooked - Checks if a date is booked.
    * @property {function} isDateCheckIn - Checks if a date is a check-in date.
    * @property {function} isDateCheckOut - Checks if a date is a check-out date.
@@ -48,8 +48,6 @@
    * @property {function} eshbBookingQtyNumberIncreamentFrontEnd - Handles increment for frontend booking quantities.
    * @property {function} eshbBookingQtyNumberIncreamentAdmin - Handles increment for admin booking quantities.
    * @property {function} eshbBookingQtyNumberIncreament - Main increment logic for booking quantities.
-   * @property {function} hideServiceQtyDropdown - Hides service quantity dropdown if clicked outside.
-   * @property {function} showServiceQtyDropdown - Shows service quantity dropdown.
    * @property {function} getExtraServices - Gets selected extra services and their quantities.
    * @property {function} updatePricingTable - Updates pricing table based on current selections.
    * @property {function} formatPrice - Formats price with currency symbol.
@@ -77,6 +75,71 @@
       }
       moment.locale(eshbLoc);
     } catch (e) {}
+  }
+
+  /**
+   * "Today" as the hotel reckons it, as a plain local moment at midnight.
+   *
+   * Every date in the booking calendar belongs to the property, not to whoever
+   * is looking at it. A hotel in Denver is still on 19 September while a guest
+   * in Dhaka is already on the 20th, so deriving the earliest bookable day from
+   * the visitor's clock hid the property's own current day from guests to the
+   * east, offered an already-past day to guests to the west, and left the
+   * calendar disagreeing with the dates PHP prints into the form.
+   *
+   * The zone NAME is used in preference to anything precomputed on the server:
+   * it is evaluated against the browser's live clock, so the date stays right
+   * on a page left open past midnight, on a page served from a cache, and
+   * across the property's daylight saving changes.
+   */
+  function eshbSiteToday() {
+    let cfg = typeof eshb_ajax !== "undefined" && eshb_ajax ? eshb_ajax : {};
+    let tz = cfg.siteTimezone;
+    let fromYmd = function (ymd) {
+      let m = moment(ymd, "YYYY-MM-DD", true);
+      return m.isValid() ? m.startOf("day") : null;
+    };
+
+    // A named zone ("America/Denver"), resolved through the browser's own
+    // timezone database.
+    if (tz && !/^[+-]\d{1,2}:\d{2}$/.test(tz)) {
+      try {
+        let parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).formatToParts(new Date());
+        let part = function (type) {
+          for (let i = 0; i < parts.length; i++) {
+            if (parts[i].type === type) return parts[i].value;
+          }
+          return "";
+        };
+        let named = fromYmd(part("year") + "-" + part("month") + "-" + part("day"));
+        if (named) return named;
+      } catch (e) {}
+    }
+
+    // A site configured with a bare UTC offset instead of a city.
+    if (tz) {
+      let match = /^([+-])(\d{1,2}):(\d{2})$/.exec(tz);
+      if (match) {
+        let minutes =
+          (match[1] === "-" ? -1 : 1) *
+          (parseInt(match[2], 10) * 60 + parseInt(match[3], 10));
+        // Shift the instant, then read it back in UTC: that spells out the
+        // hotel's wall clock date.
+        let shifted = fromYmd(
+          new Date(Date.now() + minutes * 60000).toISOString().slice(0, 10)
+        );
+        if (shifted) return shifted;
+      }
+    }
+
+    // Whatever the server said when the page was built, then the visitor's own
+    // clock. Both can be a day out, so they are only ever a last resort.
+    return fromYmd(cfg.siteToday) || moment().startOf("day");
   }
 
   let ESHBPUBLICBOOKING = {
@@ -235,12 +298,6 @@
         )
         .on(
           "click.ESHBPUBLICBOOKING",
-          ".eshb-booking-form .service-quantity-selector",
-          this.showServiceQtyDropdown
-        )
-        .on("click.ESHBPUBLICBOOKING", "", this.hideServiceQtyDropdown)
-        .on(
-          "click.ESHBPUBLICBOOKING",
           ".eshb-booking-form .d-plus",
           this.eshbBookingQtyNumberIncreamentFrontEnd
         )
@@ -345,6 +402,28 @@
 
 
     },
+    /**
+     * The availability calendar input belonging to one accommodation.
+     *
+     * The availability calendar sits OUTSIDE the booking form — it is its own
+     * block and its own widget, each taking an accommodation id — so it cannot
+     * be scoped with $form.find(). Returning every calendar on the page instead
+     * let one accommodation's booking form drive another accommodation's
+     * calendar. The accommodation is the scope that actually matters.
+     *
+     * Falls back to all of them when the accommodation is unknown (the search
+     * form, the admin metabox) or when the page only has one anyway.
+     */
+    eshbAvailabilityInput: function (accomodationId) {
+      let $all = $('input[name="available_date_picker"]');
+      if (!accomodationId || $all.length < 2) return $all;
+      // Compared as a value rather than built into a selector, so an unexpected
+      // id can never turn into a broken or injected selector.
+      let $scoped = $all.filter(function () {
+        return $(this).attr("accomodation_id") == accomodationId;
+      });
+      return $scoped.length ? $scoped : $all;
+    },
     eshbCalVars: function ($form) {
       if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
         accomodationId = $(
@@ -372,7 +451,8 @@
         endTimeInput: $form
           ? $form.find('.eshb-time-slot.selected input[name="end_time"]')
           : $('#eshb_booking_metaboxes input[name="eshb_booking_metaboxes[booking_end_time]"], .eshb-time-slot.selected input[name="end_time"]'),
-        availableDatePickerInput: $('input[name="available_date_picker"]'),
+        availableDatePickerInput:
+          ESHBPUBLICBOOKING.eshbAvailabilityInput(accomodationId),
         adultQuantityInput: $form
           ? $form.find('input[name="adult_quantity"]')
           : $('.eshb-booking-form input[name="adult_quantity"], .eshb-search-form input[name="adult_quantity"], input[name="eshb_booking_metaboxes[adult_quantity]"]'),
@@ -541,10 +621,10 @@
       },
       linkedCalendars: true,
       showCustomRangeLabel: false,
-      startDate: moment().startOf("day"),
-      endDate: moment().startOf("hour").add(24, "hour"),
+      startDate: eshbSiteToday(),
+      endDate: eshbSiteToday().add(1, "day"),
       opens: "right",
-      minDate: moment().startOf("day"), // Disable previous dates
+      minDate: eshbSiteToday(), // Disable dates already past at the hotel
       isInvalidDate: function (date) {
         // Disable the booked dates
         if (ESHBPUBLICBOOKING.isDateBooked(date, bookedDates)) {
@@ -576,25 +656,18 @@
       },
     },
     isDatePrevious: function (dateStr) {
-      // Split and parse date string safely
+      // "YYYY, MM, DD", the shape the calendar renderer passes in.
       const [year, month, day] = dateStr
         .split(",")
         .map((s) => parseInt(s.trim(), 10));
 
-      // Build a date object explicitly in UTC (no local time confusion)
-      const givenDate = new Date(Date.UTC(year, month - 1, day));
+      const given = moment({ year: year, month: month - 1, day: day });
 
-      // Get current date in UTC (not local time)
-      const now = new Date();
-      const utcToday = new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-      );
-
-      // Get yesterday in UTC
-      const utcYesterday = new Date(utcToday.getTime() - 86400000); // 86400000ms = 1 day
-
-      // Compare raw timestamps to avoid string format issues
-      return givenDate.getTime() > utcYesterday.getTime();
+      // Still ahead = not before the hotel's own today. Which of the property's
+      // holidays have passed is the property's clock to decide, not the
+      // visitor's — and not UTC's, which is a day ahead of the Americas for
+      // part of every day.
+      return given.isSameOrAfter(eshbSiteToday(), "day");
     },
     isDateBooked: function (date, bookedDates) {
       // Split and parse date string safely
@@ -652,15 +725,13 @@
 
       // Ensure both dates are not empty and valid
       if (newStartDate && newEndDate) {
-        // Update daterangepicker start and end date
+        // Update daterangepicker start and end date. The check-out field shares
+        // the check-in field's picker, so there is a single instance to sync.
         let startDatePicker = startDateInput.data("daterangepicker");
-        let endDatePicker = endDateInput.data("daterangepicker");
-
-        startDatePicker.setStartDate(newStartDate);
-        startDatePicker.setEndDate(newEndDate);
-
-        endDatePicker.setStartDate(newStartDate);
-        endDatePicker.setEndDate(newEndDate);
+        if (startDatePicker) {
+          startDatePicker.setStartDate(newStartDate);
+          startDatePicker.setEndDate(newEndDate);
+        }
 
         if (availableDatePickerInput.length) {
           let availableDatePicker =
@@ -1067,8 +1138,8 @@
     resetCalendar: function (minNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form) {
 
       let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
-      let startDate = moment().startOf("day").add(startDateBuffer, "days");
-      let endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
+      let startDate = eshbSiteToday().add(startDateBuffer, "days");
+      let endDate = eshbSiteToday().add(minNights + startDateBuffer, "days");
 
       let formatedStartDate = startDate.format("YYYY-MM-DD");
       let formatedEndDate = endDate.format("YYYY-MM-DD");
@@ -1105,7 +1176,15 @@
       blockedRanges = [],
       sessionMinNightsRules = []
     ) {
-      let options = this.calendarDefaultsOps;
+      // Work on a copy. calendarDefaultsOps is one shared object, reused by
+      // every form on the page and by every re-initialisation of this one, so
+      // writing to it in place leaked one accommodation's settings into the
+      // next. singleDatePicker was the worst of it: it is only ever set to
+      // true, never back to false, so a single per-day/hourly accommodation
+      // turned every calendar rendered after it into a single-date picker.
+      // A shallow copy is enough — only top level keys are assigned below, and
+      // it leaves the moment objects and the locale untouched.
+      let options = $.extend({}, this.calendarDefaultsOps);
       options.startDate = $(startDateInput).val();
       options.endDate = $(endDateInput).val();
 
@@ -1134,12 +1213,50 @@
         return ESHBPUBLICBOOKING.resolveMinNights(picker.startDate, picker.endDate, minNights, sessionMinNightsRules);
       };
 
-      options.minDate = moment().startOf("day").add(startDateBuffer, "days");
-      options.endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
+      options.minDate = eshbSiteToday().add(startDateBuffer, "days");
+      options.endDate = eshbSiteToday().add(minNights + startDateBuffer, "days");
 
       if (minNights > 1 && options.startDate !== options.endDate) {
         allowSingleDate = false;
       }
+
+      // The dates PHP printed into the form can already be in the past by the
+      // time the page is looked at — a page cache serving yesterday's HTML, or
+      // a site timezone that sits behind the guest's own clock. daterangepicker
+      // clamps its OWN startDate to minDate, but autoUpdateInput is off, so the
+      // visible field was left showing the stale day: the form displayed, and
+      // submitted, a check-in earlier than the first bookable date. Pull the
+      // fields forward so what is on screen is always bookable.
+      let earliestDate = options.minDate.format("YYYY-MM-DD");
+      let datesRepaired = false;
+
+      if (options.startDate && options.startDate < earliestDate) {
+        options.startDate = earliestDate;
+        $(startDateInput).val(earliestDate);
+
+        let currentEnd = $(endDateInput).val();
+        if (!currentEnd || currentEnd <= earliestDate) {
+          $(endDateInput).val(
+            options.minDate.clone().add(minNights, "days").format("YYYY-MM-DD")
+          );
+        }
+        datesRepaired = true;
+      }
+
+      // A per-hour / single-day stay checks out on the day it checks in — the
+      // same rule the server applies when it prints the form. Asserting it here
+      // too keeps the pair consistent after the repair above, which runs before
+      // the AJAX response reveals that this accommodation is an hourly one.
+      if (
+        allowSingleDate === true &&
+        $(startDateInput).val() &&
+        $(endDateInput).val() !== $(startDateInput).val()
+      ) {
+        $(endDateInput).val($(startDateInput).val());
+        datesRepaired = true;
+      }
+
+      if (datesRepaired) ESHBPUBLICBOOKING.updateDateDisplay();
 
       if (allowedDays != "") {
         let nextAllowedStartDate = ESHBPUBLICBOOKING.getnextAllowedStartDate(
@@ -1286,27 +1403,57 @@
       };
 
 
-      // Initialize the first date range picker
+      // ONE picker owns the whole stay.
+      //
+      // Check-in and check-out used to be two independent daterangepicker
+      // instances, each holding its own start/end. A range picker reads its
+      // FIRST click as a new start date, so clicking a day in the check-out
+      // calendar overwrote the check-in field and blanked the check-out one —
+      // the guest could only complete a booking by clicking twice inside the
+      // check-in calendar. Now a single instance holds the range and the
+      // check-out field is just a second way to open it (see
+      // eshbOpenRangePicker below), so no click can change the meaning of the
+      // other field.
       $(startDateInput).daterangepicker(options, function (start, end) {
         $(startDateInput).val(start.format("YYYY-MM-DD"));
-        $(startDateInput).data("daterangepicker").setStartDate(start);
-        $(endDateInput).data("daterangepicker").setEndDate(end);
+        $(endDateInput).val(end.format("YYYY-MM-DD"));
       });
 
-      // Initialize the second date range picker
-      let endDatePickerOptions = { ...options };
-      endDatePickerOptions.opens = "left";
-      $(endDateInput).daterangepicker(
-        endDatePickerOptions,
-        function (start, end) {
-          $(endDateInput).val(end.format("YYYY-MM-DD"));
-          $(startDateInput).data("daterangepicker").setStartDate(start);
-          $(startDateInput).data("daterangepicker").setEndDate(end);
-        }
-      );
+      // Drop a check-out picker left over from an earlier initialisation of
+      // this form, otherwise its old handlers keep competing for the range.
+      let staleEndPicker = $(endDateInput).data("daterangepicker");
+      if (staleEndPicker) staleEndPicker.remove();
 
-      // Initialize the availability date range picker
-      let parentEl = $(".eshb-availability-calendars");
+      // Initialize the availability date range picker.
+      // Render into the calendar this accommodation owns, not into whichever
+      // one happens to come first in the page.
+      let parentEl = $(availableDatePickerInput).closest(
+        ".eshb-availability-calendars"
+      );
+      if (!parentEl.length) parentEl = $(".eshb-availability-calendars");
+
+      // Same for the message line under that calendar.
+      let $availabilityErr = $(availableDatePickerInput)
+        .closest(".eshb-availability-calendars-area")
+        .find(".eshb-availability-calendars-err");
+      if (!$availabilityErr.length) {
+        $availabilityErr = $(".eshb-availability-calendars-err");
+      }
+
+      // The booking forms this calendar speaks for. It still reaches every form
+      // of the same accommodation — a page may show the form more than once —
+      // but no longer rewrites a DIFFERENT accommodation's dates.
+      let eshbCalendarForms = function () {
+        let $all = $(".eshb-booking-form");
+        if (!accomodationId || $all.length < 2) return $all;
+        let $scoped = $all.filter(function () {
+          return (
+            $(this).find('input[name="accomodation_id"]').val() == accomodationId
+          );
+        });
+        return $scoped.length ? $scoped : $all;
+      };
+
       let optionsavailabilityCal = { ...options };
 
       optionsavailabilityCal.parentEl = parentEl;
@@ -1332,15 +1479,29 @@
       );
       availableDatePickerInput.trigger("click");
 
+      // Two-stage placeholder: while the calendar is closed and the field is
+      // empty, show the friendly "Add date" label; when the calendar opens,
+      // reveal the date-format hint (e.g. "Dec 31, 2025"). This only swaps the
+      // placeholder text — a date is added ONLY when a calendar day is clicked.
+      function eshbSwapPlaceholder($input, calendarOpen) {
+        let $ph = $($input).closest(".eshb-date-field").find(".eshb-date-display");
+        if (!$ph.length) return;
+        let text = calendarOpen
+          ? $ph.attr("data-eshb-hint")
+          : $ph.attr("data-eshb-empty");
+        // Once closed the hint is only useful while the field is still empty.
+        if (text && (calendarOpen || !$ph.val())) $ph.attr("placeholder", text);
+      }
+
       // Mirror the picked start date to the visible inputs on every calendar click,
       // before apply fires. The bundled daterangepicker does not emit a
-      // setStartDate event and its clickDate handler calls stopPropagation on
-      // mousedown — so we must bind on the same .calendar elements it does and
-      // rely on registration-order execution. We read picker.startDate after
-      // clickDate has updated state (deferred via setTimeout). The second click
-      // is still gated by the existing apply.daterangepicker validation
-      // (autoApply fires it automatically).
-      function eshbBindInstantStartMirror($input) {
+      // setStartDate event and its clickDate handler binds on mousedown — so we
+      // bind on the same .drp-calendar elements it does and rely on
+      // registration-order execution. We read picker.startDate after clickDate
+      // has updated state (deferred via setTimeout). The second click is still
+      // gated by the existing apply.daterangepicker validation (autoApply fires
+      // it automatically).
+      function eshbBindInstantStartMirror($input, isRangeOwner) {
         let picker = $input.data("daterangepicker");
         if (!picker || !picker.container) return;
         $(picker.container).find(".drp-calendar")
@@ -1361,43 +1522,129 @@
             }, 0);
           });
 
-        // Do NOT restore or inject any checkout date when the calendar closes.
-        // Checkout is filled ONLY by an explicit calendar day-click (the apply
-        // handler, which runs after hide) and cleared by the start-pick mirror
-        // above. So merely opening/closing the calendar — or clicking outside it
-        // — leaves an empty checkout empty ("Add date") instead of the picker
-        // injecting its default next-day date.
-        $input.off("show.eshbInstant hide.eshbInstant")
-          .on("hide.daterangepicker.eshbInstant", function (ev, p) {
-            if (p && p.startDate) {
-              $(startDateInput).val(p.startDate.format("YYYY-MM-DD"));
+        // daterangepicker rolls its own state back to the PREVIOUS range when
+        // the calendar closes on a half-finished selection (see hide() in
+        // date-range-picker.js). That revert is what used to wipe a check-in the
+        // guest had already clicked — merely opening and closing the calendar
+        // reset the field to today. Wrap hide() so the check-in is restored
+        // right after the library has reverted it. The wrapper reads endDate
+        // BEFORE hide() runs, which is the only moment the two cases can still
+        // be told apart.
+        if (!picker._eshbHidePatched) {
+          picker._eshbHidePatched = true;
+          let originalHide = picker.hide;
+          picker.hide = function (e) {
+            let wasComplete = !!this.endDate;
+            let pickedStart = this.startDate ? this.startDate.clone() : null;
+            let anchor = this._eshbEndModeAnchor;
+            this._eshbEndModeAnchor = null;
+            originalHide.call(this, e);
+            if (wasComplete || !pickedStart) return;
+            // Opened from the check-out field and closed again without clicking
+            // any day: nothing was picked, so this is not a half-finished
+            // selection — put the stay back exactly as it was.
+            if (anchor && pickedStart.isSame(anchor.start, "day")) {
+              this.setStartDate(anchor.start);
+              this.setEndDate(anchor.end);
+              return;
             }
+            // Half-finished: keep the guest's check-in and leave the check-out
+            // on "Add date", and anchor the picker on that check-in so
+            // reopening continues from the same month.
+            this.setStartDate(pickedStart);
+            this.setEndDate(pickedStart);
+            $(startDateInput).val(pickedStart.format("YYYY-MM-DD"));
+            $(endDateInput).val("");
+            ESHBPUBLICBOOKING.updateDateDisplay();
+          };
+        }
+
+        // Note this handler deliberately only re-renders. The check-out is
+        // filled ONLY by an explicit calendar day-click (the apply handler) and
+        // cleared by the start-pick mirror above, so merely opening and closing
+        // the calendar leaves an empty check-out empty ("Add date") instead of
+        // the picker injecting its default next-day date.
+        $input.off(".eshbInstant").off(".eshbPh")
+          .on("hide.daterangepicker.eshbInstant", function () {
             // reformat the Y-m-d values into the visible display fields
             ESHBPUBLICBOOKING.updateDateDisplay();
           });
 
-        // Two-stage placeholder: while the calendar is closed and the field is
-        // empty, show the friendly "Add date" label; when the calendar opens,
-        // reveal the date-format hint (e.g. "Dec 31, 2025"). This only swaps the
-        // placeholder text — a date is added ONLY when a calendar day is clicked.
-        var $ph = $input.closest(".eshb-date-field").find(".eshb-date-display");
-        if ($ph.length) {
-          $input.off(".eshbPh")
-            .on("show.daterangepicker.eshbPh", function () {
-              var hint = $ph.attr("data-eshb-hint");
-              if (hint) $ph.attr("placeholder", hint);
-            })
-            .on("hide.daterangepicker.eshbPh", function () {
-              if (!$ph.val()) {
-                var empty = $ph.attr("data-eshb-empty");
-                if (empty) $ph.attr("placeholder", empty);
-              }
-            });
-        }
+        // Only the form's own picker drives the placeholders. The availability
+        // calendar is rendered inline and stays open, so letting it swap them
+        // would leave both date fields stuck on the format hint.
+        if (!isRangeOwner) return;
+        $input
+          .on("show.daterangepicker.eshbInstant", function () {
+            eshbSwapPlaceholder(startDateInput, true);
+            eshbSwapPlaceholder(endDateInput, true);
+          })
+          .on("hide.daterangepicker.eshbInstant", function () {
+            eshbSwapPlaceholder(startDateInput, false);
+            eshbSwapPlaceholder(endDateInput, false);
+          });
       }
-      eshbBindInstantStartMirror($(startDateInput));
-      eshbBindInstantStartMirror($(endDateInput));
-      eshbBindInstantStartMirror($(availableDatePickerInput));
+      eshbBindInstantStartMirror($(startDateInput), true);
+      eshbBindInstantStartMirror($(availableDatePickerInput), false);
+
+      // The check-out field is a second door to the SAME picker. Opening it
+      // keeps the check-in that is already there and puts the picker straight
+      // into "now pick the check-out" state, so the guest's next click lands on
+      // the check-out — the behaviour every hotel site has. Clicking a day
+      // BEFORE the current check-in still starts a fresh range, which is the
+      // only reset that makes sense.
+      function eshbOpenRangePicker(mode) {
+        let picker = $(startDateInput).data("daterangepicker");
+        if (!picker || picker.isShowing) return;
+
+        let checkIn = $(startDateInput).val();
+        if (mode !== "end" || !checkIn || picker.singleDatePicker) {
+          picker._eshbEndModeAnchor = null;
+          picker.show();
+          return;
+        }
+
+        // show() clones endDate, so it has to still be a date at that point;
+        // the "no check-out chosen yet" state is entered immediately after.
+        picker.setStartDate(checkIn);
+        picker.setEndDate($(endDateInput).val() || checkIn);
+        picker.show();
+        // Remember what was on screen so that closing the calendar without
+        // clicking a day restores it instead of reading as a half-finished pick.
+        picker._eshbEndModeAnchor = {
+          start: picker.startDate.clone(),
+          end: picker.endDate.clone(),
+        };
+        picker.endDate = null;
+        picker.updateView();
+      }
+
+      // The check-out input has no picker of its own any more, so give it the
+      // click/focus opening that daterangepicker would normally bind.
+      $(endDateInput)
+        .off(".eshbEndTrigger")
+        .on("click.eshbEndTrigger focus.eshbEndTrigger", function () {
+          eshbOpenRangePicker("end");
+        });
+
+      // And clicking the check-in field always means "I want to (re)pick the
+      // check-in" — including when the calendar is already open in check-out
+      // mode because the guest opened it from the other field and changed their
+      // mind. Without this the next day they click would land on the check-out.
+      $(startDateInput)
+        .off(".eshbStartTrigger")
+        .on("click.eshbStartTrigger focus.eshbStartTrigger", function () {
+          let picker = $(startDateInput).data("daterangepicker");
+          // The picker's own click/focus handler runs first and opens it; only
+          // the "already open, waiting for a check-out" state needs re-arming.
+          if (!picker || picker.singleDatePicker) return;
+          if (!picker.isShowing || picker.endDate) return;
+          // A non-null endDate is what makes clickDate read the next click as a
+          // new start date.
+          picker._eshbEndModeAnchor = null;
+          picker.setEndDate(picker.startDate);
+          picker.updateView();
+        });
 
       // Event listener for the first date range picker
       $(startDateInput).on("apply.daterangepicker", function (ev, picker) {
@@ -1485,7 +1732,6 @@
               startDate,
               [
                 picker,
-                $(endDateInput).data("daterangepicker"),
                 $(availableDatePickerInput).data("daterangepicker"),
               ],
               startDateInput,
@@ -1520,133 +1766,29 @@
         ESHBPUBLICBOOKING.updatePricingTable(form);
       });
 
-      // Event listener for the second date range picker
-      $(endDateInput).on("apply.daterangepicker", function (ev, picker) {
-        $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-        if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
-
-        // validate min max nights
-        ESHBPUBLICBOOKING.minMaxErr(effectiveMinNights(picker), maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
-
-        let startDate = picker.startDate.format("YYYY-MM-DD");
-        let endDate = picker.endDate.format("YYYY-MM-DD");
-
-        // check seleceted day in allowedDays and show errors
-        selectedDay = picker.startDate.format("dddd").toLowerCase();
-        startDate = ESHBPUBLICBOOKING.checkInDayErrors(
-          allowedDays,
-          selectedDay,
-          options.startDate,
-          startDate,
-          form
-        );
-
-        // set closest next checkout date as start date if start date is same as end date and booked
-        if (
-          startDate == endDate &&
-          ESHBPUBLICBOOKING.isDateBooked(startDate, bookedDates)
-        ) {
-          let closestNextCheckoutDate =
-            ESHBPUBLICBOOKING.getNextAvailableStartDate(
-              startDate,
-              endDate,
-              bookedDates
-            );
-          if (closestNextCheckoutDate) {
-            startDate = closestNextCheckoutDate;
-            picker.setStartDate(startDate);
-          }
-        }
-
-        // set closest next checkout date as start date
-        if (Array.isArray(checkedInOutDates?.checked_out)) {
-          if (
-            ESHBPUBLICBOOKING.hasBookedDatesInRange(
-              startDate,
-              endDate,
-              bookedDates,
-              checkedInOutDates
-            )
-          ) {
-            let closestNextCheckoutDate =
-              ESHBPUBLICBOOKING.getNextAvailableStartDate(
-                startDate,
-                endDate,
-                bookedDates
-              );
-            if (closestNextCheckoutDate) {
-              startDate = closestNextCheckoutDate;
-              picker.setStartDate(startDate);
-            }
-          }
-        }
-
-        if (allowSingleDate != true) {
-          var diff = picker.endDate.diff(picker.startDate, "days"); // check the difference in days
-
-          // Required nights not satisfied: reject the selection instead of
-          // silently moving the check-out date.
-          if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
-            ESHBPUBLICBOOKING.rejectNightsSelection(
-              startDate,
-              [
-                picker,
-                $(startDateInput).data("daterangepicker"),
-                $(availableDatePickerInput).data("daterangepicker"),
-              ],
-              startDateInput,
-              endDateInput,
-              availableDatePickerInput,
-              form
-            );
-            return;
-          }
-        }
-
-        $(startDateInput).val(startDate);
-        $(endDateInput).val(endDate);
-
-        $(availableDatePickerInput).val(startDate);
-        $(availableDatePickerInput).val(endDate);
-
-        // keep the visible (formatted) fields in sync with the machine values
-        ESHBPUBLICBOOKING.updateDateDisplay();
-
-        // // Update first date picker
-        ESHBPUBLICBOOKING.updateEshbCalendar(
-          startDateInput,
-          endDateInput,
-          availableDatePickerInput,
-          roomQuantityInput,
-          accomodationId,
-          form
-        );
-        //ESHBPUBLICBOOKING.updatePricingTable();
-      });
-
       // Event listener for the first date range picker
       $(availableDatePickerInput).on(
         "apply.daterangepicker",
         function (ev, picker) {
           if (startDateInput.length) {
-            $('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
-            $('.eshb-booking-form').find('.eshb-form-submit-btn').prop("disabled", true);
+            let $calendarForms = eshbCalendarForms();
+            $calendarForms.find('.eshb-form-loader').addClass('is-active');
+            $calendarForms.find('.eshb-form-submit-btn').prop("disabled", true);
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
 
             var diff = picker.endDate.diff(picker.startDate, "days");
             let nightsErrMsg = ESHBPUBLICBOOKING.getNightsErrorMsg(diff, effectiveMinNights(picker), maxNights, null, picker.startDate);
 
-            document.querySelector('.eshb-availability-calendars-err').innerHTML = '';
+            $availabilityErr.html('');
             if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
-              document.querySelector('.eshb-availability-calendars-err').innerHTML = nightsErrMsg;
+              $availabilityErr.html(nightsErrMsg);
 
               ESHBPUBLICBOOKING.rejectNightsSelection(
                 startDate,
                 [
                   picker,
                   $(startDateInput).data("daterangepicker"),
-                  $(endDateInput).data("daterangepicker"),
                 ],
                 startDateInput,
                 endDateInput,
@@ -1712,8 +1854,8 @@
 
             $(availableDatePickerInput).val(startDate);
 
-            // Broadcast selected dates to every booking form on the page
-            $('.eshb-booking-form').each(function () {
+            // Broadcast selected dates to this accommodation's booking forms
+            $calendarForms.each(function () {
               let $thisForm = $(this);
               let vars = ESHBPUBLICBOOKING.eshbCalVars($thisForm);
               vars.startDateInput.val(startDate);
@@ -1738,8 +1880,8 @@
       $(availableDatePickerInput).on('cancel.daterangepicker', function (ev, picker) {
 
         let startDateBuffer = parseFloat(eshb_ajax.calendar_start_date_buffer);
-        let startDate = moment().startOf("day").add(startDateBuffer, "days");
-        let endDate = moment().startOf("hour").add(minNights + startDateBuffer, "days");
+        let startDate = eshbSiteToday().add(startDateBuffer, "days");
+        let endDate = eshbSiteToday().add(minNights + startDateBuffer, "days");
 
         let formatedStartDate = startDate.format("YYYY-MM-DD");
         let formatedEndDate = endDate.format("YYYY-MM-DD");
@@ -2710,23 +2852,6 @@
         input.change();
       }
     },
-    hideServiceQtyDropdown: function (event) {
-      let serviceQtyDropdown = $(".service-quantity-selector"); // Replace .target-element with your element's class or ID
-      // Check if the click was outside the target element
-      if (
-        !serviceQtyDropdown.is(event.target) &&
-        serviceQtyDropdown.has(event.target).length === 0
-      ) {
-        if (serviceQtyDropdown.hasClass("show-dropdown")) {
-          // Remove the class
-          serviceQtyDropdown.removeClass("show-dropdown"); // Replace 'your-class' with the class you want to remove
-        }
-      }
-    },
-    showServiceQtyDropdown: function (e, element) {
-      $(".service-quantity-selector").removeClass("show-dropdown");
-      $(e.currentTarget).addClass("show-dropdown");
-    },
     /**
      * Max Quantity configured on the service (Service Options → Max Quantity).
      * Returns 0 when no cap is set.
@@ -2953,13 +3078,18 @@
           }
 
           if (!isWcPrice) {
-            if (currencyPosition === "right") {
-              totalPrice = totalPrice + currencySymbol;
-              regularTotalPrice = regularTotalPrice + currencySymbol;
-            } else {
-              totalPrice = currencySymbol + totalPrice;
-              regularTotalPrice = currencySymbol + regularTotalPrice;
-            }
+            // Raw concatenation dropped the decimals and separators entirely,
+            // so a 568 total printed as "€568" next to a "234,00 €" rate.
+            totalPrice = ESHBPUBLICBOOKING.formatPrice(
+              totalPrice,
+              currencySymbol,
+              currencyPosition
+            );
+            regularTotalPrice = ESHBPUBLICBOOKING.formatPrice(
+              regularTotalPrice,
+              currencySymbol,
+              currencyPosition
+            );
           } else {
             totalPrice = prices.totalPriceHtml;
             regularTotalPrice = prices.regularTotalPriceHtml;
@@ -2978,8 +3108,48 @@
 
 
     },
-    formatPrice: function (totalPrice, currencySymbol = "$") {
-      return currencySymbol + ESHBPUBLICBOOKING.formatAmount(totalPrice);
+    /**
+     * Currency shape the server rendered the page with. Falls back to the old
+     * en-US defaults when the localized data is missing.
+     */
+    currency: function () {
+      const c =
+        typeof eshb_ajax !== "undefined" && eshb_ajax.currency
+          ? eshb_ajax.currency
+          : {};
+      return {
+        symbol: typeof c.symbol === "string" ? c.symbol : "$",
+        position: c.position || "left",
+        decimalSeparator:
+          typeof c.decimalSeparator === "string" ? c.decimalSeparator : ".",
+        thousandSeparator:
+          typeof c.thousandSeparator === "string" ? c.thousandSeparator : ",",
+        decimals: typeof c.decimals === "number" ? c.decimals : 2,
+      };
+    },
+    /**
+     * Amount + symbol, with the symbol on the side the shop is configured for.
+     * Pass symbol / position to override what the localized settings say.
+     */
+    formatPrice: function (totalPrice, currencySymbol, currencyPosition) {
+      const c = ESHBPUBLICBOOKING.currency();
+      const symbol =
+        typeof currencySymbol === "string" && currencySymbol !== ""
+          ? currencySymbol
+          : c.symbol;
+      const position = currencyPosition || c.position;
+      const amount = ESHBPUBLICBOOKING.formatAmount(totalPrice);
+
+      switch (position) {
+        case "right":
+          return amount + symbol;
+        case "right_space":
+          return amount + "\u00a0" + symbol;
+        case "left_space":
+          return symbol + "\u00a0" + amount;
+        default:
+          return symbol + amount;
+      }
     },
    
     updateDateDisplay: function () {
@@ -2993,10 +3163,20 @@
       });
     },
     formatAmount: function (totalPrice) {
-      // Match wc_price() default: 2 decimals + thousand separators (e.g. 1,359.00)
-      return Number(totalPrice)
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      // Match whatever wc_price() / the plugin settings print on the server:
+      // the decimal places and both separators come from eshb_ajax.currency, so
+      // a Spanish shop keeps "1.359,00" instead of being forced to "1,359.00".
+      const c = ESHBPUBLICBOOKING.currency();
+      const number = Number(totalPrice);
+
+      if (!isFinite(number)) return String(totalPrice);
+
+      const parts = Math.abs(number).toFixed(c.decimals).split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, function () {
+        return c.thousandSeparator;
+      });
+
+      return (number < 0 ? "-" : "") + parts.join(c.decimalSeparator);
     },
     getDefaultExtraServicesPrice: function ($form) {
       if (!$form || !$form.length) $form = $(".eshb-booking-form").first();
@@ -3014,19 +3194,45 @@
 
     },
     updateAmountOnly: function ($el, amount) {
+      const c = ESHBPUBLICBOOKING.currency();
       const formatted = ESHBPUBLICBOOKING.formatAmount(amount);
-      const $bdi = $el.find('bdi').first();
-      if ($bdi.length) {
-        const $symbol = $bdi.find('.woocommerce-Price-currencySymbol');
+
+      // wc_price() nests its own <bdi> inside the one eshb_render_price_html()
+      // wraps around it, and a sale price renders <del> before <ins> - so the
+      // innermost bdi is the one holding the amount that is actually shown.
+      const $bdi = $el.find('bdi').last();
+
+      if (!$bdi.length) {
+        $el.text(ESHBPUBLICBOOKING.formatPrice(amount, $el.attr('currency_symbol')));
+        return;
+      }
+
+      const $symbol = $bdi.find('.woocommerce-Price-currencySymbol').first();
+
+      if (!$symbol.length) {
+        // No symbol element: the symbol was part of the text being replaced, so
+        // it has to be printed back together with the amount.
         $bdi.contents().filter(function () { return this.nodeType === 3; }).remove();
-        if ($symbol.length) {
-          $symbol.after(document.createTextNode(formatted));
-        } else {
-          $bdi.append(document.createTextNode(formatted));
-        }
+        $bdi.append(
+          document.createTextNode(
+            ESHBPUBLICBOOKING.formatPrice(amount, $el.attr('currency_symbol'))
+          )
+        );
+        return;
+      }
+
+      // Keep the symbol element and swap only the number - on the side the shop
+      // is configured for, separated the way wc_price() separates it.
+      const symbolLast = c.position === "right" || c.position === "right_space";
+      const space =
+        c.position === "left_space" || c.position === "right_space" ? "\u00a0" : "";
+
+      $bdi.contents().filter(function () { return this.nodeType === 3; }).remove();
+
+      if (symbolLast) {
+        $symbol.before(document.createTextNode(formatted + space));
       } else {
-        const sym = $el.attr('currency_symbol') || '';
-        $el.text(sym + formatted);
+        $symbol.after(document.createTextNode(space + formatted));
       }
     },
     calculateExtraServicesPricing: function () {

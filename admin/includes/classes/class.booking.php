@@ -1321,6 +1321,7 @@ class ESHB_Booking {
 		$base_price = $hotel_core->get_eshb_day_wise_price($start_date, $end_date, $accomodation_id, true, $days_count, $adult_quantity, $children_quantity);
 		$base_price = !empty($single_day_price) ? $single_day_price : $base_price;
 		$has_session_price = $hotel_core->has_upcoming_or_current_session_price($accomodation_id, $start_date, $end_date, $days_count, $adult_quantity, $children_quantity);
+		$session_price = 0;
 
 		if($has_session_price){
 			$session_price = $hotel_core->get_eshb_price_by_session($accomodation_id, $start_date, $end_date, $days_count, $adult_quantity, $children_quantity);
@@ -1344,8 +1345,12 @@ class ESHB_Booking {
 		: $regular_base_price * $total_guest_quantity;
 
 	
+		// A per stay rate covers the whole booking, so the extra bed billed
+		// alongside it is charged once rather than once per night.
+		$bed_nights = ESHB_Helper::eshb_is_per_stay_pricing($accomodation_id, $metaboxes) ? 1 : $days_count;
+
 		$extra_bed_price = $extra_bed_quantity > 0
-			? $extra_bed_quantity * $bed_price * $days_count
+			? $extra_bed_quantity * $bed_price * $bed_nights
 			: 0;
 	
 		

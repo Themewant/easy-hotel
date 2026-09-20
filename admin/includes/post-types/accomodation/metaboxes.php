@@ -90,6 +90,18 @@ add_action( 'plugins_loaded', function(){
             ),
 
             array(
+                'id'      => 'pricing_mode',
+                'type'    => 'select',
+                'title'   => 'Charge Mode',
+                'options' => array(
+                    'per_night' => 'Per Night',
+                    'per_stay'  => 'Per Stay (fixed price)',
+                ),
+                'default' => 'per_night',
+                'desc'    => 'Per Night multiplies the rate by the nights booked. Per Stay charges the rate once for the whole booking - use it for packages such as a fixed two night experience, and pair it with Minimum/Maximum Nights so the stay length matches what the price assumes. The " / night" suffix is dropped from the price display while Per Stay is selected.',
+            ),
+
+            array(
                 'id'    => 'regular_price',
                 'type'  => 'number',
                 'title' => 'Regular Price',

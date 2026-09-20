@@ -336,7 +336,15 @@ class ESHB_Core {
             $per_day_prices[] = $matched_price;
         }
 
-        $total_price = array_sum($per_day_prices);
+        // A per stay rate is the price of the whole booking rather than of one
+        // night, so the check-in date's rate is charged once instead of summed
+        // across the stay. See ESHB_Helper::eshb_get_pricing_mode().
+        if ( ESHB_Helper::eshb_is_per_stay_pricing( $accomodation_id ) ) {
+            $total_price = ! empty( $per_day_prices ) ? (float) reset( $per_day_prices ) : 0;
+        } else {
+            $total_price = array_sum($per_day_prices);
+        }
+
         $total_price = apply_filters('eshb_session_price', $total_price);
         return $total_price;
     }
@@ -779,11 +787,17 @@ class ESHB_Core {
         
         $metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
         $day_wise_price = isset($metaboxes['day_wise_price']) && !empty($metaboxes['day_wise_price']) ? $metaboxes['day_wise_price'] : '';
-        
+
+        // Per stay: the rate covers the whole booking, so only the check-in day
+        // decides it and it is charged once. See ESHB_Helper::eshb_get_pricing_mode().
+        $is_per_stay = ESHB_Helper::eshb_is_per_stay_pricing($accomodation_id, $metaboxes);
+
         $price_by_day = 0;
     
         if(!empty($day_wise_price) && isset($day_wise_price[0]) && !empty($day_wise_price[0])){
             $day_wise_price = $day_wise_price[0];
+            $dayNames = $is_per_stay ? array_slice($dayNames, 0, 1) : $dayNames;
+
             foreach ($dayNames as $key => $day) {
                 if( !empty($day_wise_price[$day]) ){
                     $price_by_day += $day_wise_price[$day];
@@ -794,7 +808,7 @@ class ESHB_Core {
             }
         }else{
             
-            $price_by_day = $regular_price  * $days_count;
+            $price_by_day = $is_per_stay ? $regular_price : $regular_price * $days_count;
             
         }
         $price_by_day = apply_filters('eshb_day_wise_price', $price_by_day);

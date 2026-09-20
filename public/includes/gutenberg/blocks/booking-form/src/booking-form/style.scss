@@ -38,10 +38,6 @@
             }
         }
 
-        .service-quantity-selector.show-dropdown {
-            background-color: var(--eshb-bkf-bg, inherit) !important;
-        }
-
         .eshb-form-group {
             h6.field-label {
                 color: var(--eshb-bkf-field-label-color);
@@ -85,10 +81,6 @@
                 &:hover {
                     color: var(--eshb-bkf-field-text-color-hover, var(--eshb-bkf-field-text-color));
                 }
-            }
-
-            .dropdown-arrow {
-                color: var(--eshb-bkf-field-text-color);
             }
 
             // .d-plus {

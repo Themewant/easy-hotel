@@ -55,7 +55,9 @@ $ESHB_View = new ESHB_View();
                                             <div class="left-col eshb-text-light eshb-p-4 eshb-h-100 fadeInRight">
                                                 <div class="de_count fs-15 fadeInRight animated">
                                                     <h2 class="eshb-mb-0"><?php echo wp_kses_post($eshb_price); ?></h2>
-                                                    <span><?php echo esc_html( $eshb_string_night ) ?></span>
+                                                    <?php if ( ! ESHB_Helper::eshb_is_per_stay_pricing( $eshb_accomodation_id ) ) { ?>
+                                                        <span><?php echo esc_html( $eshb_string_night ) ?></span>
+                                                    <?php } ?>
                                                 </div>
                                             </div>
                                         </div>

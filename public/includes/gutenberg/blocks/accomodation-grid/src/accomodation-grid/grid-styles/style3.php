@@ -37,7 +37,7 @@
                     <?php 
                 if(!empty($eshb_numeric_price)){
                 ?>
-                    <span class="mx-2 capacity" style="<?php echo esc_attr($eshb_price_inline_style); ?>"><?php echo wp_kses_post($eshb_price); ?><span class="label pricing-perodicity" style="<?php echo esc_attr($eshb_price_periodicity_inline_style); ?>"> / <?php echo esc_html( eshb_get_translated_string($eshb_perodicity_string) );?></span></span>
+                    <span class="mx-2 capacity" style="<?php echo esc_attr($eshb_price_inline_style); ?>"><?php echo wp_kses_post($eshb_price); ?><?php echo wp_kses_post( ESHB_Helper::eshb_price_periodicity_label_html( $eshb_accomodation_id, $eshb_perodicity_string, array( 'tag' => 'span', 'class' => 'label pricing-perodicity', 'style' => $eshb_price_periodicity_inline_style ) ) ); ?></span>
                 <?php 
                     } 
                 ?>

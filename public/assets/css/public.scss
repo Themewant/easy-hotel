@@ -1592,39 +1592,29 @@ nav.eshb-pagination {
                             }
 
                             .service-quantity-selector {
-                                &.show-dropdown {
-                                    margin-left: 10px;
-                                    text-align: center;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: space-around;
-                                    // The quantity-limit notice sits below the
-                                    // stepper instead of squeezing in beside it.
-                                    flex-wrap: wrap;
-                                    border: 1px solid var(--eshb-border-color);
-                                    padding: 15px 10px;
-                                    position: absolute;
-                                    background: var(--eshb-white-color);
-                                    box-shadow: 0px 0px 2px 2px #bfbbbb21;
-                                    width: 180px;
-                                    right: 0;
-                                    z-index: 2;
-                                }
+                                // The stepper sits inline in the row: a plain
+                                // "- n +" control, same as the guest steppers.
+                                // It used to be a click-to-open popup behind a
+                                // dashicon arrow, which read as a mystery
+                                // control and covered the rows underneath it.
+                                position: relative;
 
                                 p.eshb-service-qty-err-msg {
-                                    flex: 0 0 100%;
-                                    width: 100%;
-                                    margin: 0;
+                                    // Sits under the stepper rather than beside
+                                    // it, so the quantity-limit notice never
+                                    // squeezes the service row.
+                                    margin: 2px 0 0 0;
+                                    // Wraps instead of running past the form
+                                    // edge — "Maximum Capacity 2" is wider
+                                    // than the stepper it sits under.
+                                    max-width: 150px;
+                                    margin-left: auto;
                                     font-size: 12px;
                                     line-height: 1.4;
-                                    text-align: center;
+                                    text-align: right;
 
                                     &:empty {
                                         display: none;
-                                    }
-
-                                    &:not(:empty) {
-                                        margin-top: 6px;
                                     }
                                 }
 
@@ -1632,56 +1622,8 @@ nav.eshb-pagination {
                                     margin-top: 0;
                                     display: flex;
                                     align-items: center;
-                                    justify-content: space-around;
-                                    width: 100%;
-
-                                    .d-minus,
-                                    .d-plus {
-                                        display: none;
-                                    }
-
-                                    span.quantity-wrapper {
-                                        display: flex;
-                                        align-items: center;
-                                        border: 1px solid var(--eshb-border-color);
-                                    }
-
-                                    input {
-                                        border: none;
-                                        outline: none;
-                                        width: 25px;
-                                        font-size: 17px;
-                                        margin-bottom: 0;
-                                        height: 20px;
-                                    }
-                                }
-
-                                &.show-dropdown {
-                                    position: absolute;
-
-                                    &::before {
-                                        content: '';
-                                        position: absolute;
-                                        top: 20px;
-                                        right: -7px;
-                                        border-top: 7px solid transparent;
-                                        border-bottom: 7px solid transparent;
-                                        border-left: 7px solid var(--eshb-primary-color);
-                                    }
-
-                                    span.quantity-wrapper {
-                                        border: none;
-                                        gap: 10px;
-
-                                        input {
-                                            width: 50px;
-                                        }
-
-                                        .dropdown-arrow {
-                                            display: none;
-                                        }
-
-                                    }
+                                    justify-content: flex-end;
+                                    gap: 6px;
 
                                     .d-minus,
                                     .d-plus {
@@ -1693,6 +1635,33 @@ nav.eshb-pagination {
                                         align-items: center;
                                         justify-content: center;
                                         line-height: 1;
+                                        width: 28px;
+                                        height: 28px;
+                                    }
+
+                                    // .d-minus draws its bar with a pseudo
+                                    // element and relies on font-size: 0 to
+                                    // hide the literal glyph, so only the plus
+                                    // gets a font size here.
+                                    .d-plus {
+                                        font-size: 20px;
+                                    }
+
+                                    span.quantity-wrapper {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        border: 1px solid var(--eshb-border-color);
+                                    }
+
+                                    input {
+                                        border: none;
+                                        outline: none;
+                                        width: 34px;
+                                        font-size: 17px;
+                                        margin-bottom: 0;
+                                        height: 20px;
+                                        text-align: center;
                                     }
                                 }
                             }
@@ -1920,38 +1889,32 @@ nav.eshb-pagination {
                                         margin-top: 0;
                                         display: flex;
                                         align-items: center;
-                                        justify-content: space-around;
+                                        justify-content: flex-end;
+                                        gap: 6px;
 
                                         .d-minus,
                                         .d-plus {
                                             padding: 3px 5px 3px 3px;
-                                            display: none;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            line-height: 1;
                                         }
 
                                         span.quantity-wrapper {
                                             display: flex;
                                             align-items: center;
+                                            justify-content: center;
                                             border: 1px solid var(--eshb-border-color);
                                         }
 
                                         input {
                                             border: none;
                                             outline: none;
-                                            width: 25px;
+                                            width: 34px;
                                             font-size: 17px;
                                             margin-bottom: 0;
-                                        }
-                                    }
-
-                                    &.show-dropdown {
-                                        background: var(--eshb-dark-color);
-
-                                        .d-minus,
-                                        .d-plus {
-                                            display: inline-flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            line-height: 1;
+                                            text-align: center;
                                         }
                                     }
                                 }

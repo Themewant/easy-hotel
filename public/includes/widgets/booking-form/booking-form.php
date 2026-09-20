@@ -660,17 +660,6 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
                 ],
             ]
         );
-        $this->add_control(
-            'services_item_pricing_popup_border_color',
-            [
-                'label' => esc_html__( 'Popup Border Color', 'easy-hotel' ),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector' => 'border-color: {{VALUE}};',
-                    '{{WRAPPER}} .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector::before' => 'border-left-color: {{VALUE}};'
-                ],
-            ]
-        );
         $this->end_controls_section();
 
 

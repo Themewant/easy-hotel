@@ -1626,6 +1626,34 @@ class ESHB_Helper {
         $eshb_translations = apply_filters( 'eshb_booking_action_messages', $eshb_translations, [$accomodation_id, $eshb_settings] );
         $show_count = apply_filters( 'eshb_booking_capacity_count_show', true, [$accomodation_id, $eshb_settings] );
 
+        // Currency formatting, so the JS that re-renders a total after a service
+        // is ticked prints it exactly the way the server rendered it on load -
+        // separators, decimals and symbol side included. Without this the JS
+        // falls back to an en-US shape and a Spanish "234,00 EUR" total comes
+        // back as "EUR568.00" the moment anything changes.
+        $eshb_core         = new ESHB_Core();
+        $eshb_booking_type = isset( $eshb_settings['booking-type'] ) ? $eshb_settings['booking-type'] : 'woocommerce';
+        $eshb_is_wc_price  = ( 'woocommerce' === $eshb_booking_type && class_exists( 'WooCommerce' ) );
+
+        $eshb_currency = array(
+            'symbol'            => html_entity_decode( $eshb_core->get_eshb_currency_symbol(), ENT_QUOTES, 'UTF-8' ),
+            'position'          => $eshb_core->get_eshb_currency_position(),
+            'decimalSeparator'  => '.',
+            'thousandSeparator' => ',',
+            'decimals'          => 2,
+            'isWcPrice'         => $eshb_is_wc_price,
+        );
+
+        if ( $eshb_is_wc_price ) {
+            // wc_price() produced the markup on the page, so mirror its settings.
+            $eshb_currency['position']          = get_option( 'woocommerce_currency_pos', 'left' );
+            $eshb_currency['decimalSeparator']  = wc_get_price_decimal_separator();
+            $eshb_currency['thousandSeparator'] = wc_get_price_thousand_separator();
+            $eshb_currency['decimals']          = (int) wc_get_price_decimals();
+        }
+
+        $eshb_currency = apply_filters( 'eshb_currency_js_settings', $eshb_currency, $eshb_booking_type );
+
         $nonce_action = ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action');
         wp_localize_script(
             'eshb-public-script', 
@@ -1644,6 +1672,22 @@ class ESHB_Helper {
                     'version'          => ESHB_VERSION,
                     'pluginURL'        => ESHB_DIR_URL,
                     'dateFormat'       => get_option( 'date_format' ),
+                    // The hotel's own clock, for the booking calendar.
+                    //
+                    // Every date in that calendar belongs to the property, not
+                    // to whoever is looking at it: a hotel in Denver is still on
+                    // 19 September while a guest in Dhaka is already on the
+                    // 20th. Left to the browser's own zone, the calendar hid the
+                    // property's current day from guests to the east and offered
+                    // an already-past day to guests to the west, and disagreed
+                    // with the dates PHP prints into the form.
+                    //
+                    // The zone name is what the browser works from, so the date
+                    // stays right past midnight and across the property's
+                    // daylight saving changes. The plain date is only a fallback
+                    // for a site configured with a bare UTC offset.
+                    'siteTimezone'     => wp_timezone_string(),
+                    'siteToday'        => self::eshb_today(),
                     'requiredMinNights' => $required_min_nights,
                     'requiredMaxNights' => $required_max_nights,
                     'calendar_start_date_buffer' => $calendar_start_date_buffer,
@@ -1657,6 +1701,7 @@ class ESHB_Helper {
                     'cart_blocking_time'        => ! empty( $eshb_settings['cart-blocking-time'] ) ? (int) $eshb_settings['cart-blocking-time'] : 5,
                     'cart_blocking_color'       => ! empty( $eshb_settings['cart-blocking-color'] ) ? esc_attr( $eshb_settings['cart-blocking-color'] ) : '#720eec',
                     'cart_blocking_notice_msg'  => ! empty( $eshb_settings['cart-blocking-notice-msg'] ) ? esc_html( $eshb_settings['cart-blocking-notice-msg'] ) : esc_html__( 'Your reservation is held for', 'easy-hotel' ),
+                    'currency'                  => $eshb_currency,
                 ]
         );
     }
@@ -1760,5 +1805,97 @@ class ESHB_Helper {
         }
 
         return $min_stay_night;
+    }
+
+    /**
+     * How an accomodation's rate is charged.
+     *
+     * "per_night" is the historic behaviour: the rate is multiplied by the
+     * number of nights booked. "per_stay" charges the rate once for the whole
+     * booking, which is what a fixed package - "two nights, dinner and
+     * breakfast, 234" - actually means.
+     *
+     * @param  int        $accomodation_id
+     * @param  array|null $metaboxes Already loaded accomodation metaboxes, if any.
+     * @return string     'per_night' or 'per_stay'.
+     */
+    public static function eshb_get_pricing_mode( $accomodation_id = 0, $metaboxes = null ) {
+
+        $accomodation_id = (int) $accomodation_id;
+
+        if ( null === $metaboxes && $accomodation_id ) {
+            $metaboxes = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
+        }
+
+        $mode = ( is_array( $metaboxes ) && ! empty( $metaboxes['pricing_mode'] ) )
+            ? $metaboxes['pricing_mode']
+            : 'per_night';
+
+        if ( ! in_array( $mode, array( 'per_night', 'per_stay' ), true ) ) {
+            $mode = 'per_night';
+        }
+
+        return apply_filters( 'eshb_pricing_mode', $mode, $accomodation_id, $metaboxes );
+    }
+
+    /**
+     * True when the accomodation's rate covers the whole stay - see
+     * eshb_get_pricing_mode().
+     */
+    public static function eshb_is_per_stay_pricing( $accomodation_id = 0, $metaboxes = null ) {
+        return 'per_stay' === self::eshb_get_pricing_mode( $accomodation_id, $metaboxes );
+    }
+
+    /**
+     * The " / night" suffix printed next to a price in the loops and widgets.
+     *
+     * Returns an empty string - so nothing at all is printed, separator
+     * included - when the accomodation is priced per stay, or when the Night
+     * string has been deliberately blanked out in the settings.
+     *
+     * @param  int         $accomodation_id
+     * @param  string|null $periodicity_string Already resolved label, if the caller has one.
+     * @param  array       $args               'tag', 'class' and 'style' for the wrapper.
+     * @return string      Markup, already escaped.
+     */
+    public static function eshb_price_periodicity_label_html( $accomodation_id = 0, $periodicity_string = null, $args = array() ) {
+
+        if ( self::eshb_is_per_stay_pricing( $accomodation_id ) ) {
+            return '';
+        }
+
+        if ( null === $periodicity_string ) {
+            $eshb_settings = get_option( 'eshb_settings' );
+
+            $periodicity_string = ( is_array( $eshb_settings ) && isset( $eshb_settings['string_night'] ) && '' !== trim( (string) $eshb_settings['string_night'] ) )
+                ? $eshb_settings['string_night']
+                : 'night';
+
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
+            $periodicity_string = apply_filters( 'eshb_perodicity_string_in_loop', $periodicity_string, $accomodation_id, $eshb_settings );
+        }
+
+        if ( '' === trim( (string) $periodicity_string ) ) {
+            return '';
+        }
+
+        $label = function_exists( 'eshb_get_translated_string' )
+            ? eshb_get_translated_string( $periodicity_string )
+            : $periodicity_string;
+
+        if ( '' === trim( (string) $label ) ) {
+            return '';
+        }
+
+        $args = wp_parse_args( $args, array(
+            'tag'   => 'div',
+            'class' => 'label',
+            'style' => '',
+        ) );
+
+        $tag   = preg_match( '/^[a-z][a-z0-9]*$/', (string) $args['tag'] ) ? $args['tag'] : 'div';
+        $style = '' !== trim( (string) $args['style'] ) ? ' style="' . esc_attr( $args['style'] ) . '"' : '';
+
+        return '<' . $tag . ' class="' . esc_attr( $args['class'] ) . '"' . $style . '> / ' . esc_html( $label ) . '</' . $tag . '>';
     }
 }

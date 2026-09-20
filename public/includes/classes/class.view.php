@@ -368,13 +368,12 @@ class ESHB_View extends ESHB_MAIN{
 
         $currency_symbol = $hotel_core->get_eshb_currency_symbol();
         $per_night_price_html = $hotel_core->get_eshb_min_price_html($accomodation_id);
-        $price_html = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, true, false, true, true, 'regular');
-        $price = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, false, true, true, false);
-        $price = !empty($price) ? $price : 0;
-        
-        // discounted pricing
-        $discountedPrice = $hotel_core->get_eshb_price_html($start_date, $end_date, $accomodation_id, false, true, true, true);
-        $discountedPrice = !empty($discountedPrice) ? $discountedPrice : 0;
+
+        // $price_html, $price and $discountedPrice are all taken from the
+        // calculate_booking_pricing() call further down - the only source that
+        // knows about room quantity, guests and the services ticked on load.
+        // Seeding them here as well cost three more passes over every season
+        // for values that were overwritten before anything read them.
 
 
         
@@ -418,8 +417,6 @@ class ESHB_View extends ESHB_MAIN{
         $available_rooms = $eshb_bookings->get_available_room_count_by_date_range($accomodation_id, $start->format('Y-m-d'), $end->format('Y-m-d'));
         $available_rooms = $available_rooms < 0 ? 0 : $available_rooms;
         $available_times = ESHB_Helper::get_available_times_by_date($accomodation_id, $start->format('Y-m-d'));
-        $price_html = $available_rooms < 1 ? $hotel_core->eshb_price(0) : $price_html;
-        $defaultExtraServicePrice = 0;
 
         $has_calendar_icon = isset($eshb_settings['booking-form-calendar-icon']) && !empty($eshb_settings['booking-form-calendar-icon']) ? true : false;
 
@@ -453,6 +450,38 @@ class ESHB_View extends ESHB_MAIN{
         $price_html = $pricing['totalPriceHtml'];
         $regular_total_price_html = $pricing['regularTotalPriceHtml'];
 
+        // The hidden inputs below feed the JS that re-totals the form when a
+        // service is ticked, so they have to carry the same plain numbers the
+        // pricing request would put there. Seeding them with price *markup* left
+        // parseFloat() with NaN, so the first tick of a service before any
+        // pricing request had run dropped the room out of the total entirely.
+        $price                    = $pricing['regularTotalPrice'];
+        $discountedPrice          = $pricing['subtotalPrice'];
+
+        // Services already ticked on load are part of the total above; the JS
+        // subtracts this figure before adding its own tally, so leaving it at 0
+        // billed them a second time.
+        $defaultExtraServicePrice = $pricing['extraServicesPrice'];
+
+        // Same guard the JS applies: a total above the regular one is not a
+        // discount, so both are shown as the single price.
+        if ( $price != $discountedPrice && $discountedPrice > $price ) {
+            $price                    = $discountedPrice;
+            $regular_total_price_html = $price_html;
+        }
+
+        $has_discounted_price = ( $discountedPrice < $price );
+
+        // Nothing bookable on these dates, so the form totals a zero.
+        if ( $available_rooms < 1 ) {
+            $price_html               = $hotel_core->eshb_price( 0 );
+            $regular_total_price_html = $price_html;
+            $price                    = 0;
+            $discountedPrice          = 0;
+            $defaultExtraServicePrice = 0;
+            $has_discounted_price     = false;
+        }
+
         ?>
         <div class="eshb-booking">
             <div action="<?php echo esc_url(home_url('easy-hotel-search-result')); ?>" method="get"<?php echo $form_attr_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attributes are escaped per key/value above. ?> class="eshb-booking-form <?php echo esc_attr($style_class); ?> <?php echo esc_attr($has_calendar_icon ? 'eshb-has-calendar-icon' : ''); ?>" data-booking-form-type="<?php echo esc_attr($booking_form_type); ?>" data-pricing-periodicity="<?php echo esc_attr( $pricing_periodicity )?>">
@@ -472,14 +501,21 @@ class ESHB_View extends ESHB_MAIN{
 
                 <div class="eshb-form-group form-title-wrapper">
                     <h3 class="form-title"><?php echo esc_html( eshb_get_form_label($string_reserve, 'string_reserve', $label_ctx) );?></h3>
+                    <?php
+                        // A per stay rate is the price of the whole booking, so the
+                        // separator and the "night" suffix are both dropped here.
+                        $eshb_show_periodicity = ! ESHB_Helper::eshb_is_per_stay_pricing( $accomodation_id, $accomodation_metaboxes );
+                    ?>
                     <?php if( $price > 0 ):?>
                         <span class="pricing"><?php echo esc_html(eshb_get_form_label($string_from, 'string_from', $label_ctx));?>
-                            <h4 class="base-price"><?php echo wp_kses_post($per_night_price_html);?> / </h4>
+                            <h4 class="base-price"><?php echo wp_kses_post($per_night_price_html);?><?php echo $eshb_show_periodicity ? ' / ' : ''; ?></h4>
                             <?php
-                            if($pricing_periodicity && $pricing_periodicity == 'per_hour'){
-                                echo esc_html( eshb_get_form_label($string_hour, 'string_hour', $label_ctx) );
-                            }else{
-                                echo esc_html( eshb_get_form_label($string_night, 'string_night', $label_ctx) );
+                            if($eshb_show_periodicity){
+                                if($pricing_periodicity && $pricing_periodicity == 'per_hour'){
+                                    echo esc_html( eshb_get_form_label($string_hour, 'string_hour', $label_ctx) );
+                                }else{
+                                    echo esc_html( eshb_get_form_label($string_night, 'string_night', $label_ctx) );
+                                }
                             }
                             ?>
                         </span>
@@ -706,7 +742,6 @@ class ESHB_View extends ESHB_MAIN{
                                                             <span class="d-minus"><?php echo esc_html('-')?></span>
                                                                 <span class="quantity-wrapper">
                                                                     <input type="text" value="1" name="service-quantity" price="<?php echo esc_attr($service_price) ?>" charge_type="<?php echo esc_attr( $service_charge_type ) ?>" periodicity="<?php echo esc_attr( $service_periodicity ) ?>" max_quantity="<?php echo esc_attr( $service_max_quantity ) ?>">
-                                                                    <span class="dropdown-arrow dashicons dashicons-arrow-down"></span>
                                                                 </span>
                                                             <span class="d-plus"><?php echo esc_html('+')?></span>
                                                         </div>
@@ -729,10 +764,10 @@ class ESHB_View extends ESHB_MAIN{
                <?php }
                 ?>
                
-                <div class="eshb-form-group cost-calculator-wrapper">
+                <div class="eshb-form-group cost-calculator-wrapper<?php echo $has_discounted_price ? ' has-discounted-price' : ''; ?>">
                     <h3 class="field-label total-cost-label eshb-booking-total-pricing">
                         <?php echo esc_html(eshb_get_form_label($string_total_cost, 'string_total_cost', $label_ctx));?>
-                        <div class="eshb-booking-value" id="eshb-booking-total-price" currency_symbol="<?php echo esc_html( $currency_symbol ) ?>" subtotal_price=""><?php echo wp_kses_post($price_html);?></div>
+                        <div class="eshb-booking-value" id="eshb-booking-total-price" currency_symbol="<?php echo esc_html( $currency_symbol ) ?>" subtotal_price=""><?php echo wp_kses_post($regular_total_price_html);?></div>
                     </h3>
                     <h3 class="field-label total-cost-label eshb-booking-total-discounted-pricing">
                         <?php echo esc_html(eshb_get_form_label($string_disocunted_price, 'string_disocunted_price', $label_ctx));?>

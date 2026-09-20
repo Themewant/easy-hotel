@@ -35,7 +35,12 @@ function eshb_admin_enqueue_scripts (){
             'pluginURL' => ESHB_DIR_URL,
             'admin_translations' => $eshb_admin_translations,
             'calendar_start_date_buffer' => $calendar_start_date_buffer,
-        ) 
+            // The booking metabox calendar books for the property, so it counts
+            // days on the property's clock, not on the clock of whoever happens
+            // to be at the desk. Same pair the front end gets.
+            'siteTimezone' => wp_timezone_string(),
+            'siteToday'    => ESHB_Helper::eshb_today(),
+        )
     );
 
 

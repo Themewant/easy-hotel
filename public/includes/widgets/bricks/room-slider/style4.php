@@ -19,7 +19,7 @@
 			if(!empty($numeric_price)){
 			?>
 				<div class="label"><?php echo esc_html( $pricing_prefix ); ?></div>
-				<h3 class="price"><?php echo wp_kses_post($price); ?><div class="label"> / <?php echo esc_html( eshb_get_translated_string($string_night) );?></div></h3>
+				<h3 class="price"><?php echo wp_kses_post($price); ?><?php echo wp_kses_post( ESHB_Helper::eshb_price_periodicity_label_html( $accomodation_id, $perodicity_string ) ); ?></h3>
 			<?php 
 				} 
 			?>

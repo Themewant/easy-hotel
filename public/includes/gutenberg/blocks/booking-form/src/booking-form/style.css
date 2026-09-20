@@ -31,9 +31,6 @@
 .eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group.form-title-wrapper h3:hover {
   color: var(--eshb-bkf-form-title-color-hover, var(--eshb-bkf-form-title-color));
 }
-.eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .service-quantity-selector.show-dropdown {
-  background-color: var(--eshb-bkf-bg, inherit) !important;
-}
 .eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group h6.field-label {
   color: var(--eshb-bkf-field-label-color);
   font-size: var(--eshb-bkf-fl-fs, inherit);
@@ -71,9 +68,6 @@
 .eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group .form-control:hover,
 .eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group .de-number input:hover {
   color: var(--eshb-bkf-field-text-color-hover, var(--eshb-bkf-field-text-color));
-}
-.eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group .dropdown-arrow {
-  color: var(--eshb-bkf-field-text-color);
 }
 .eshb-booking-form-block-wrapper .eshb-booking .eshb-booking-form .eshb-form-group .d-minus::before {
   display: none;

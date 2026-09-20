@@ -2748,88 +2748,53 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   text-transform: capitalize;
   font-size: 14px;
 }
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown {
-  margin-left: 10px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  border: 1px solid var(--eshb-border-color);
-  padding: 15px 10px;
-  position: absolute;
-  background: var(--eshb-white-color);
-  box-shadow: 0px 0px 2px 2px rgba(191, 187, 187, 0.1294117647);
-  width: 180px;
-  right: 0;
-  z-index: 2;
+.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector {
+  position: relative;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg {
-  flex: 0 0 100%;
-  width: 100%;
-  margin: 0;
+  margin: 2px 0 0 0;
+  max-width: 150px;
+  margin-left: auto;
   font-size: 12px;
   line-height: 1.4;
-  text-align: center;
+  text-align: right;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg:empty {
   display: none;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector p.eshb-service-qty-err-msg:not(:empty) {
-  margin-top: 6px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number {
   margin-top: 0;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: 100%;
+  justify-content: flex-end;
+  gap: 6px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-minus,
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-plus {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+}
+.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-plus {
+  font-size: 20px;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number span.quantity-wrapper {
   display: flex;
   align-items: center;
+  justify-content: center;
   border: 1px solid var(--eshb-border-color);
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number input {
   border: none;
   outline: none;
-  width: 25px;
+  width: 34px;
   font-size: 17px;
   margin-bottom: 0;
   height: 20px;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown {
-  position: absolute;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  right: -7px;
-  border-top: 7px solid transparent;
-  border-bottom: 7px solid transparent;
-  border-left: 7px solid var(--eshb-primary-color);
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown span.quantity-wrapper {
-  border: none;
-  gap: 10px;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown span.quantity-wrapper input {
-  width: 50px;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown span.quantity-wrapper .dropdown-arrow {
-  display: none;
-}
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-minus,
-.eshb-booking .eshb-booking-form .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-plus {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+  text-align: center;
 }
 .eshb-booking .eshb-booking-form .eshb-form-group.cost-calculator-wrapper .total-cost-label {
   display: flex;
@@ -2991,34 +2956,30 @@ nav.eshb-pagination ul.pagination-list li span:hover {
   margin-top: 0;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: flex-end;
+  gap: 6px;
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-minus,
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number .d-plus {
   padding: 3px 5px 3px 3px;
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number span.quantity-wrapper {
   display: flex;
   align-items: center;
+  justify-content: center;
   border: 1px solid var(--eshb-border-color);
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector .de-number input {
   border: none;
   outline: none;
-  width: 25px;
+  width: 34px;
   font-size: 17px;
   margin-bottom: 0;
-}
-.eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown {
-  background: var(--eshb-dark-color);
-}
-.eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-minus,
-.eshb-booking .eshb-booking-form.style-two .eshb-form-group.extra-services-wrapper .service-list .service-item .price-quantity .service-quantity-selector.show-dropdown .d-plus {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+  text-align: center;
 }
 .eshb-booking .eshb-booking-form.style-two .eshb-form-err .status {
   color: var(--eshb-white-color);

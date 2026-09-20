@@ -37,7 +37,7 @@
                     <?php 
                 if(!empty($numeric_price)){
                 ?>
-                    <span class="mx-2 capacity"><?php echo wp_kses_post($price); ?><div class="label"> / <?php echo esc_html( eshb_get_translated_string($string_night) );?></div></span>
+                    <span class="mx-2 capacity"><?php echo wp_kses_post($price); ?><?php echo wp_kses_post( ESHB_Helper::eshb_price_periodicity_label_html( $accomodation_id, $perodicity_string ) ); ?></span>
                 <?php 
                     } 
                 ?>

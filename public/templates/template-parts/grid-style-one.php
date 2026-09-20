@@ -70,7 +70,7 @@
                                 <?php } ?>                           
                             </div>
                             <h3 class="price"><?php echo wp_kses_post($eshb_price); ?>
-                            <div class="label"> / <?php echo esc_html( eshb_get_translated_string($eshb_perodicity_string) );?></div></h3>
+                            <?php echo wp_kses_post( ESHB_Helper::eshb_price_periodicity_label_html( $eshb_accomodation_id, $eshb_perodicity_string ) ); ?></h3>
                         <?php 
                             } 
                         ?>
