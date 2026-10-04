@@ -137,6 +137,65 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     }
     add_filter( 'the_title', 'eshb_sanitize_post_title_on_output', 10, 2 );
 
+    /**
+     * Capabilities for the hotel's back-office post types (bookings,
+     * payments, coupons, booking requests, services, seasons).
+     *
+     * With `capability_type => 'post'` these followed the blog's post
+     * capabilities, so an Author could publish a 100% coupon and an Editor
+     * could read every guest's booking. Every primitive capability now maps
+     * to one capability (manage_options by default, the same as their admin
+     * menus); meta checks such as edit_post / delete_post resolve to it
+     * through map_meta_cap.
+     *
+     * Use the `eshb_post_type_capability` filter to let another role (e.g. a
+     * hotel manager) manage them.
+     *
+     * @param string $post_type Post type being registered.
+     * @return array
+     */
+    function eshb_admin_post_type_capabilities( $post_type ) {
+        $cap = apply_filters( 'eshb_post_type_capability', 'manage_options', $post_type );
+
+        // Bookings and payments are created by the checkout, so they have no
+        // "Add New" screen in the admin.
+        $create_cap = in_array( $post_type, array( 'eshb_booking', 'eshb_payment' ), true ) ? 'do_not_allow' : $cap;
+
+        return array(
+            'edit_posts'             => $cap,
+            'edit_others_posts'      => $cap,
+            'edit_private_posts'     => $cap,
+            'edit_published_posts'   => $cap,
+            'publish_posts'          => $cap,
+            'read_private_posts'     => $cap,
+            'delete_posts'           => $cap,
+            'delete_others_posts'    => $cap,
+            'delete_private_posts'   => $cap,
+            'delete_published_posts' => $cap,
+            'create_posts'           => $create_cap,
+        );
+    }
+
+    /**
+     * Registration args that keep a post type out of the front end and the
+     * REST API (/wp-json/wp/v2/...) while leaving its admin screens intact.
+     * Used for records that hold customer or pricing data.
+     *
+     * @return array
+     */
+    function eshb_private_post_type_args() {
+        return array(
+            'public'              => false,
+            'publicly_queryable'  => false,
+            'exclude_from_search' => true,
+            'show_in_nav_menus'   => false,
+            'query_var'           => false,
+            'rewrite'             => false,
+            'has_archive'         => false,
+            'show_in_rest'        => false,
+        );
+    }
+
     include 'accomodation/accomodation.php';
     include 'session/session.php';
     include 'service/service.php';

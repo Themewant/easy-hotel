@@ -37,9 +37,8 @@ class Eshb_Room_Slider_Widget_Bricks  extends \Bricks\Element {
 	}
 
     public function enqueue_scripts() {
-		wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), '1.0.0', 'all' );
-        wp_enqueue_script( 'swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array('jquery'),'1.0.0',true );
-		wp_enqueue_script( 'eshb-public-script', ESHB_PL_URL . 'public/assets/js/public.js', array(),'1.0.0',true );
+		// The shared plugin assets (one Swiper copy, the plugin's own version).
+		eshb_enqueue_frontend_assets();
 	}
 
     // Set builder control groups
@@ -1092,7 +1091,8 @@ class Eshb_Room_Slider_Widget_Bricks  extends \Bricks\Element {
             $seffect = '';
         }
      
-        $sstyle = 'style' . $settings['rt_room_slider_style'];
+        // Part of an include path below; only accept the styles the control offers.
+        $sstyle = 'style' . ESHB_Helper::eshb_allowed_style( $settings['rt_room_slider_style'] ?? '1', [ '1', '2', '3' ], '1' );
 
         $eshb_settings = get_option('eshb_settings');
         $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
@@ -1211,7 +1211,6 @@ class Eshb_Room_Slider_Widget_Bricks  extends \Bricks\Element {
                     setTimeout(() => {
                         document.querySelectorAll('[data-swiper]').forEach(function(el) {
                             let config = JSON.parse(el.getAttribute('data-swiper'));
-                            console.log('config', config);
                             new Swiper(el.querySelector('.swiper'), config);
                         });
                     }, swiperTimeout);

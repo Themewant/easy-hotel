@@ -49,6 +49,12 @@ class ESHB_PMS_Ajax {
             wp_send_json_error( [ 'message' => esc_html__( 'Booking not found.', 'easy-hotel' ) ], 404 );
         }
 
+        // The screen capability is not enough: the user must be allowed to
+        // edit this particular booking.
+        if ( ! current_user_can( 'edit_post', $booking_id ) ) {
+            wp_send_json_error( [ 'message' => esc_html__( 'You are not allowed to do that.', 'easy-hotel' ) ], 403 );
+        }
+
         return $booking;
     }
 
@@ -151,6 +157,10 @@ class ESHB_PMS_Ajax {
         );
 
         foreach ( $pending as $booking_id => $booking ) {
+            // Skip bookings this user may not edit.
+            if ( ! current_user_can( 'edit_post', $booking_id ) ) {
+                continue;
+            }
             $assigned += ESHB_PMS_Assignment::auto_assign( $booking_id );
         }
 

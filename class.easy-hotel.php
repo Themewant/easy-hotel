@@ -25,7 +25,6 @@ class ESHB_MAIN {
 		$this->init();
 		add_action( 'init', [$this, 'enable_elementor_for_custom_post_type'] );
 		add_filter( 'admin_body_class',  [$this, 'add_admin_body_class'] );
-		add_action( 'phpmailer_init', [$this, 'enable_local_mail'] );
 		add_action( 'pre_get_posts', [$this, 'eshb_archive_posts_query_modify'] );
 	}
 
@@ -165,19 +164,6 @@ class ESHB_MAIN {
         	$classes .= ' eshb-plugin-page ';
     	}
 		return $classes;
-	}
-
-	public function enable_local_mail($phpmailer){
-		// Check if running on localhost
-		if ( 
-			!empty($_SERVER['HTTP_HOST']) &&
-			strpos(sanitize_text_field( wp_unslash($_SERVER['HTTP_HOST'] ) ), 'localhost') !== false ||
-    		strpos(sanitize_text_field( wp_unslash($_SERVER['HTTP_HOST'] ) ), '127.0.0.1') !== false 
-		) {
-			$phpmailer->isSMTP();
-			$phpmailer->Host = 'localhost';
-			$phpmailer->Port = 1025;
-		}
 	}
 
 	public function eshb_archive_posts_query_modify($query){

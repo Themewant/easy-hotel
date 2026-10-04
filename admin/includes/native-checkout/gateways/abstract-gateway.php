@@ -85,12 +85,40 @@ abstract class ESHB_Native_Abstract_Gateway {
     }
 
     /**
+     * Note saved on a booking's payment record at checkout, shown in the
+     * admin Payments table. Offline gateways use it to say what is still
+     * owed (e.g. "€500 due on arrival") while the recorded amount stays 0.
+     *
+     * @param float $booking_total Total of the booking the payment belongs to.
+     * @return string Plain text, or '' for no note.
+     */
+    public function get_payment_note( $booking_total ) {
+        return '';
+    }
+
+    /**
+     * Whether this gateway takes money online through a server-created
+     * order. When true, create_payment() must return the order's
+     * `data.order_id` plus top-level `amount` and `currency`, and checkout
+     * completion only accepts that order for the same cart and total.
+     * Offline gateways (bank transfer, pay on arrival) keep the default.
+     *
+     * @return bool
+     */
+    public function requires_payment_verification() {
+        return false;
+    }
+
+    /**
      * Resolve an ISO-4217 currency code for payment records. Prefers
      * WooCommerce's configured currency (the plugin already integrates
      * with it for symbol formatting), then maps the configured symbol,
      * then falls back to USD.
      *
-     * @param string $filter_name Gateway-specific filter applied to the fallback.
+     * The fallback goes through the gateway's own filter,
+     * `eshb_native_{gateway id}_currency` (e.g. eshb_native_cod_currency).
+     *
+     * @param string $filter_name Unused; kept so existing calls stay valid.
      * @return string
      */
     protected function resolve_currency_code( $filter_name = '' ) {
@@ -116,7 +144,7 @@ abstract class ESHB_Native_Abstract_Gateway {
             return $map[ $symbol ];
         }
 
-        return $filter_name ? apply_filters( $filter_name, 'USD' ) : 'USD';
+        return $this->id !== '' ? apply_filters( "eshb_native_{$this->id}_currency", 'USD' ) : 'USD';
     }
 
     /**

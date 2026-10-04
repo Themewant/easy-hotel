@@ -69,14 +69,21 @@ class ESHB_Admin_View {
         
     
         echo '</tbody></table>';
-        if($booking_status !== 'cancelled' && $total_paid < $total_price){
-            $add_new_post_url = admin_url( 'post-new.php?post_type=eshb_payment&booking=' . $booking_id );
-            $add_new_post_url_with_amount = admin_url( 'post-new.php?post_type=eshb_payment&booking=' . $booking_id . '&amount=' . $total_due);
-            echo '<br>
-        <a href="'. esc_url( $add_new_post_url ) .'" target="_blank" class="button button-primary">' . esc_html__( 'Add payment', 'easy-hotel' ) . '</a>
-        <a href="'. esc_url( $add_new_post_url_with_amount ) .'" target="_blank" class="button button-primary">' . esc_html__( 'Add Due payment', 'easy-hotel' ) . '</a>
-        </div>';
-        }
-        
+
+        /**
+         * Fires below the payment history table of a booking.
+         *
+         * @param int    $booking_id     Booking post ID.
+         * @param array  $totals         total_price, total_paid and total_due.
+         * @param string $booking_status Booking status.
+         */
+        do_action( 'eshb_after_admin_payment_history', $booking_id, array(
+            'total_price' => $total_price,
+            'total_paid'  => $total_paid,
+            'total_due'   => $total_due,
+        ), $booking_status );
+
+        echo '</div>';
+
     }
 }

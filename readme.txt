@@ -1,12 +1,12 @@
 === Easy Hotel - Powerful Hotel Booking ===
 Contributors: themewant
 Tags: hotel booking, booking system, room booking, woocommerce booking, hotel
-Requires at least: 6.0
-Tested up to: 7.0
+Requires at least: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 All-in-one hotel booking solution to manage reservations, rooms, pricing, and availability with ease.
 
@@ -110,8 +110,6 @@ Unlike other hotel booking plugins, it provides flexibility, an easy-to-use book
 
 **📌 Pro Extensions**
 * [EHB iCalendar Importer/Exporter](https://themewant.com/downloads/ehb-ical/) Easy Hotel iCal Plugin — a complete iCal booking solution for the Easy Hotel Plugin
-* [EHB Max/Min Nights](https://themewant.com/downloads/ehb-min-max/) Set minimum and maximum night stay conditions easily with the Easy Hotel
-* [EHB Week Booking](https://themewant.com/downloads/ehb-week/) Extend Easy Hotel Booking with week-based booking and conditional pricing functionality.
 * [EHB Single Day Booking](https://themewant.com/downloads/ehb-single-day/) Easy Hotel Single Day Bookings Plugin — manage single day bookings with flexible custom pricing.
 * [EHB DB](https://themewant.com/downloads/ehb-db/) With Easy Hotel DB Widgets, view booking requests from admin and export them as PDF or CSV
 * [EHB Review](https://themewant.com/downloads/ehb-review/) Easy Hotel Review plugin — an extension that lets users review their favorite accommodations
@@ -145,7 +143,7 @@ Looking for a professional hotel website? Our Premium Hotel Booking Theme is des
 
 
 * [CitySpot](https://themewant.com/downloads/cityspot-hotel-booking-wordpress-theme/)
-* [Almaris](https://1.envato.market/kOjGZx)
+* [Almaris](https://themeforest.net/item/almaris-hotel-booking-wordpress-theme/55353710)
 * [Moonlit](https://themeforest.net/item/moonlit-hotel-booking-wordpress-theme/57289887)
 * [Luxera](https://themewant.com/downloads/luxera-hotel-booking-wordpress-theme/)
 
@@ -263,6 +261,49 @@ Payment methods are managed via WooCommerce, which supports multiple gateways li
 
 
 == Changelog ==
+
+= 2.0.9 =
+
+### Added
+
+* Added BACS payment with multiple bank accounts and payment instructions.
+* Added admin booking status email notifications.
+* Added per-night or fixed-price charge modes for accommodations.
+* Added max quantity for per-guest extra services.
+* Added Elementor Room Grid pagination.
+* Added checkout field hooks and My Account booking details support.
+
+### Security
+
+* Restricted booking, payment, coupon, service, season and settings management to administrators.
+* Removed sensitive booking data from the REST API.
+* Secured checkout, guest details, Room Rack and account email changes.
+* Improved PayPal payment verification and room locking.
+* Improved input sanitization, escaping and validation.
+
+### Fixed
+
+* Added complete server-side validation for booking rules and booking requests.
+* Fixed multi-room WooCommerce order and booking linking.
+* Fixed Pay on Arrival, PayPal pending payments and coupon calculations.
+* Fixed blocked dates, mandatory services and service quantities.
+* Fixed accommodation pricing, seasonal rates and checkout totals.
+* Fixed check-in/check-out date picker and timezone issues.
+* Fixed multilingual booking flow and email language handling.
+* Fixed admin calendar customer names and accommodation 404 issues.
+* Fixed gallery, coupon form and color picker issues.
+
+### Improved
+
+* Improved availability performance with a new booking date index.
+* Optimized front-end and admin script loading.
+* Added per-accommodation filters for booking/search form labels.
+
+### Updated
+
+* Requires WordPress 6.6+ and tested up to WordPress 7.1.
+* Documented external services and third-party libraries in the readme.
+
 
 = 2.0.8 =
 
@@ -694,34 +735,83 @@ Added seasonal pricing and multi-room booking options. Please update to enjoy th
 
 == External Services ==
 
-This plugin makes use of the following third-party open-source libraries to provide enhanced functionality. None of these libraries collect or transmit personal data outside your WordPress installation.
+This plugin connects to the following third-party services. No data is sent to any of them unless the condition described for that service is met.
 
-Flatpickr
+**PayPal**
+Used to take online payments for bookings when the PayPal gateway is enabled in the native checkout.
+- When: only when a guest chooses PayPal on the checkout page and places a booking. The PayPal JavaScript SDK (https://www.paypal.com/sdk/js) is loaded on the checkout page, and the plugin calls the PayPal REST API (api-m.paypal.com, or api-m.sandbox.paypal.com in sandbox mode) to create and capture the order.
+- Data sent: your PayPal Client ID and Secret (to get an access token), the booking amount and currency, a booking description (accommodation title) and your site name. The guest enters their payment details directly with PayPal.
+- Terms of Service: https://www.paypal.com/legalhub/useragreement-full
+- Privacy Policy: https://www.paypal.com/myaccount/privacy/privacyPrn
+
+**YouTube**
+Used in two places:
+1. To show tutorial videos in the "Help & Support" tab of the Easy Hotel Settings page.
+2. To show an accommodation's video on the front end, when you set that accommodation's video source to "External" and enter a YouTube URL.
+- When: (1) only when an administrator opens the Easy Hotel Settings page in wp-admin; (2) on the front end, only on the single page of an accommodation that has an external YouTube video set. The video is embedded from youtube.com and plays automatically (muted). If no accommodation uses an external video, nothing is loaded from YouTube on the front end.
+- Data sent: the standard information a browser sends when loading an embedded YouTube video (such as IP address and browser details), plus the ID of the video being shown. On the front end this is sent by your site visitors' browsers.
+- Terms of Service: https://www.youtube.com/t/terms
+- Privacy Policy: https://policies.google.com/privacy
+
+**Google Fonts**
+The bundled options framework can load web fonts from Google Fonts.
+- When: only if a typography option with a Google font is configured. The plugin's default settings do not load any Google Fonts.
+- Data sent: the visitor's IP address and browser details, sent by the browser when it requests the font file from fonts.googleapis.com.
+- Terms of Service: https://developers.google.com/terms
+- Privacy Policy: https://policies.google.com/privacy
+
+**OpenStreetMap / Nominatim**
+The bundled options framework includes a map field that uses OpenStreetMap map tiles and the Nominatim address search.
+- When: only on an admin screen that contains a map field, when it is displayed or an address is searched. The plugin's default settings do not use a map field.
+- Data sent: the map area being viewed and any address you search for, plus your browser's IP address and details.
+- Tile Usage Policy: https://operations.osmfoundation.org/policies/tiles/
+- Nominatim Usage Policy: https://operations.osmfoundation.org/policies/nominatim/
+- Privacy Policy: https://osmfoundation.org/wiki/Privacy_Policy
+
+= Third-Party Libraries =
+
+This plugin bundles the following open-source libraries. They run locally and do not collect or transmit personal data outside your WordPress installation.
+
+Swiper 12.1.4 (License: MIT)
+Touch slider used for the accommodation sliders and galleries.
+Source: https://github.com/nolimits4web/swiper
+
+Date Range Picker 3.1 (License: MIT)
+Date range picker used for the check-in / check-out fields. It uses the moment.js library that ships with WordPress.
+Source: https://github.com/dangrossman/daterangepicker
+
+Font Awesome Free 7.2.0, 5.15.4 and 4.7.0 (License: Icons CC BY 4.0, Fonts SIL OFL 1.1, Code MIT)
+Icon fonts used on the front end (7.2.0) and in the admin options framework (5.15.4 and 4.7.0).
+Source: https://github.com/FortAwesome/Font-Awesome
+
+Leaflet 1.9.4 (License: BSD-2-Clause)
+Map library used by the options framework's map field.
+Source: https://github.com/Leaflet/Leaflet
+
+Web Font Loader 1.6.26 and 1.6.28 (License: Apache-2.0)
+Loads web fonts for the options framework's typography field.
+Source: https://github.com/typekit/webfontloader
+
+CodeMirror loadmode addon (License: MIT)
+Addon used by the options framework's code editor field to load syntax modes on demand.
+Source: https://github.com/codemirror/codemirror5
+
+Flatpickr 4.6.9 (License: MIT)
 Flatpickr is an open-source, lightweight JavaScript library for selecting dates and times. It provides a clean, accessible, and dependency-free interface for date and time inputs.
 Source: https://github.com/flatpickr/flatpickr
 
-jQuery Chosen AJAX Autocomplete Library
+jQuery Chosen AJAX Autocomplete Library (License: MIT)
 This library extends the functionality of HTML <select> fields by enabling AJAX-powered autocomplete and dynamic option loading. It is used to enhance the user experience when selecting from large datasets.
 Source: https://github.com/meltingice/ajax-chosen , https://github.com/michaelperrin/ajax-chosen
 
-Chosen Order
+Chosen Order 1.2.1 (License: MIT)
 Chosen Order enhances Chosen multiple-select dropdowns by preserving and managing the order of selected items. It ensures consistent data ordering when users interact with multi-select inputs.
 Source: https://github.com/tristanjahier/chosen-order
 
-jQuery Interdependencies
+jQuery Interdependencies (License: MIT)
 This JavaScript library allows for the creation of conditional form logic, enabling specific fields to be shown or hidden based on other input values. It is used to build dynamic, user-friendly form interactions.
 Source: https://github.com/miohtama/jquery-interdependencies
 
-jQuery serializeObject
+jQuery serializeObject 2.5.0 (License: BSD)
 This library extends jQuery by adding a serializeObject() method, allowing form data to be converted into structured JavaScript objects. It simplifies the process of handling complex form inputs.
-Source: https://github.com/hongymagic/jQuery.serializeObject
-
-
-## Privacy Policy 
-Easy Hotel Booking – Powerful Hotel Booking uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
-
-Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. 
-
-Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
-
-Learn more about how [Appsero collects and uses this data](https://appsero.com/privacy-policy/)
+Source: https://github.com/macek/jquery-serialize-object

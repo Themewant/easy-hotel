@@ -2459,3 +2459,12 @@ body.post-type-eshb_payment .input-error {
     padding: 22px 10px 18px 10px;
   }
 }
+.eshb-extension-note {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid #c3dafe;
+  border-left: 4px solid #72aee6;
+  border-radius: 4px;
+  background: #f0f6fc;
+  color: #1d2327;
+}

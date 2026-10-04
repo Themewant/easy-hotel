@@ -52,6 +52,21 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     /**
+     * A pay-on-arrival booking is confirmed but not paid, so it lands on
+     * `processing` — as WooCommerce's own COD gateway does — even with
+     * "Auto Approve Booking" on. Staff complete it once the guest has paid.
+     *
+     * @param string $default_status Status resolved from the global settings.
+     * @return string
+     */
+    public function get_completed_status( $default_status ) {
+        $status  = apply_filters( 'eshb_native_cod_booking_status', 'processing', $default_status );
+        $allowed = array_keys( ESHB_Helper::eshb_get_booking_statuses() );
+
+        return in_array( $status, $allowed, true ) ? $status : $default_status;
+    }
+
+    /**
      * No remote order to create for an offline gateway — succeed
      * immediately so the checkout flow can proceed to completion.
      */
@@ -60,39 +75,32 @@ class ESHB_Native_COD_Gateway extends ESHB_Native_Abstract_Gateway {
     }
 
     /**
-     * Nothing is captured online for COD, but we still record the order
-     * amount and currency so the payment entry reflects the real booking
-     * total. The amount is recomputed from the current reservation using
-     * the same coupon/email inputs the checkout handler uses, so it stays
-     * in lockstep with the booking total.
+     * Nothing is taken online for COD, so the payment record carries a zero
+     * amount: the booking keeps its full total as the due balance, staff see
+     * what to collect, and a refund can't hand back money that never came
+     * in. The amount owed is written to the payment's note instead (see
+     * get_payment_note()). Once the guest pays at the property, staff
+     * record that payment on the booking.
      */
     public function capture_payment( array $params ) {
-        $amount   = 0.0;
-        $currency = $this->get_currency_code();
-
-        if ( function_exists( 'eshb_native_checkout_get_items' ) && class_exists( 'ESHB_Native_Pricing' ) ) {
-            $items = eshb_native_checkout_get_items();
-            if ( ! empty( $items ) ) {
-                // Nonce is verified by ESHB_Native_Checkout before this
-                // gateway method runs; mirror the handler's inputs so the
-                // recalculated total matches the booking total exactly.
-                // phpcs:disable WordPress.Security.NonceVerification.Missing
-                $coupon = isset( $_POST['coupon'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon'] ) ) : '';
-                $email  = isset( $_POST['email'] )  ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-                // phpcs:enable WordPress.Security.NonceVerification.Missing
-
-                $pricing = ESHB_Native_Pricing::calculate_cart( $items, $coupon, $email );
-                $amount  = (float) ( $pricing['grandTotal'] ?? $pricing['totalPrice'] ?? 0 );
-            }
-        }
-
         return [
             'success'        => true,
             'transaction_id' => uniqid( 'COD-' ),
-            'amount'         => $amount,
-            'currency'       => $currency,
+            'amount'         => 0.0,
+            'currency'       => $this->get_currency_code(),
             'mode'           => 'live',
         ];
+    }
+
+    /**
+     * "€500 due on arrival" on the booking's payment record.
+     */
+    public function get_payment_note( $booking_total ) {
+        $core  = new ESHB_Core();
+        $price = html_entity_decode( wp_strip_all_tags( $core->eshb_price( (float) $booking_total ) ), ENT_QUOTES, 'UTF-8' );
+
+        /* translators: %s: amount the guest still owes, e.g. €500.00 */
+        return sprintf( __( '%s due on arrival', 'easy-hotel' ), $price );
     }
 
     /**

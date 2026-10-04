@@ -7,6 +7,15 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $eshb_user = wp_get_current_user();
+
+// Email change awaiting confirmation (see ESHB_Native_Account_Customer::request_email_change()).
+$eshb_pending       = get_user_meta( $eshb_user->ID, ESHB_Native_Account_Customer::META_PENDING_EMAIL, true );
+$eshb_pending_email = ( is_array( $eshb_pending ) && ! empty( $eshb_pending['email'] ) && (int) ( $eshb_pending['expires'] ?? 0 ) >= time() )
+    ? (string) $eshb_pending['email']
+    : '';
+
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only flag set by the confirmation redirect.
+$eshb_email_change = isset( $_GET['email-change'] ) ? sanitize_key( wp_unslash( $_GET['email-change'] ) ) : '';
 ?>
 <div class="eshb-account-panel">
     <div class="eshb-account-section-head">
@@ -32,6 +41,30 @@ $eshb_user = wp_get_current_user();
             <label for="eshbEmail"><?php esc_html_e( 'Email Address', 'easy-hotel' ); ?></label>
             <input type="email" id="eshbEmail" name="email" value="<?php echo esc_attr( $eshb_user->user_email ); ?>" required>
         </div>
+
+        <?php if ( 'changed' === $eshb_email_change ) : ?>
+            <div class="eshb-account-notice eshb-account-notice--success">
+                <?php esc_html_e( 'Your email address has been updated.', 'easy-hotel' ); ?>
+            </div>
+        <?php elseif ( 'taken' === $eshb_email_change ) : ?>
+            <div class="eshb-account-notice">
+                <?php esc_html_e( 'That email address is already in use, so your email was not changed.', 'easy-hotel' ); ?>
+            </div>
+        <?php elseif ( 'invalid' === $eshb_email_change ) : ?>
+            <div class="eshb-account-notice">
+                <?php esc_html_e( 'This confirmation link is invalid or has expired. Please request the change again.', 'easy-hotel' ); ?>
+            </div>
+        <?php elseif ( '' !== $eshb_pending_email ) : ?>
+            <div class="eshb-account-notice eshb-account-notice--info">
+                <?php
+                printf(
+                    /* translators: %s: email address awaiting confirmation */
+                    esc_html__( 'Waiting for confirmation of %s. Open the link we emailed to that address to finish the change.', 'easy-hotel' ),
+                    '<strong>' . esc_html( $eshb_pending_email ) . '</strong>'
+                );
+                ?>
+            </div>
+        <?php endif; ?>
 
         <p class="eshb-account-form-msg" data-eshb-profile-msg></p>
 

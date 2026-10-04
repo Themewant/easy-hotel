@@ -22,7 +22,7 @@ if ( ! empty( $block->parsed_block['attrs']['className'] ) ) {
     }
 }
 $posts = get_posts([
-    'post_type'      => 'eshb_accommodation',
+    'post_type'      => 'eshb_accomodation',
     'posts_per_page' => 1,
     'fields'         => 'ids',
 ]);
@@ -30,7 +30,10 @@ $posts = get_posts([
 $eshb_first_accommodation_id = $posts[0] ?? 0;
 $eshb_accomodation_id = !empty($eshb_attributes['accomodationId']) ? $eshb_attributes['accomodationId'] : $eshb_first_accommodation_id;
 
-if(is_single() ) {
+// Only an accommodation page speaks for itself. is_single() is true for any
+// single post — a blog post, a product — so the form used to bind itself to
+// whatever post it happened to sit on instead of the accommodation it was set to.
+if ( is_singular( 'eshb_accomodation' ) ) {
    $eshb_accomodation_id = get_the_ID();
 }
 

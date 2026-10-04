@@ -132,7 +132,8 @@ class ESHB_PMS_Rack {
      */
     public static function save_settings() {
 
-        if ( ! current_user_can( ESHB_PMS::capability() ) ) {
+        // Site-wide setting: administrators only, whatever the rack capability.
+        if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'You are not allowed to do that.', 'easy-hotel' ) );
         }
 

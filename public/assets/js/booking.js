@@ -471,7 +471,6 @@
     },
     clickTest: function (e) {
       e.preventDefault();
-      console.log("clicked");
     },
     updateServicesChecked: function () {
       $('.eshb-booking-form .service-item input[name="extra_services[]"]').each(function (index, element) {
@@ -733,9 +732,10 @@
           startDatePicker.setEndDate(newEndDate);
         }
 
-        if (availableDatePickerInput.length) {
-          let availableDatePicker =
-            availableDatePickerInput.data("daterangepicker");
+        let availableDatePicker = availableDatePickerInput.length
+          ? availableDatePickerInput.data("daterangepicker")
+          : null;
+        if (availableDatePicker) {
           availableDatePicker.setStartDate(newStartDate);
           availableDatePicker.setEndDate(newEndDate);
           availableDatePickerInput.trigger("click");
@@ -855,6 +855,40 @@
 
       return conflict;
     },
+    /**
+     * True when the picked stay runs across a day that is already held.
+     *
+     * Thin, defensive wrapper over hasBookedDatesInRange(): on the very first
+     * initialisation - before the AJAX answer arrives - `bookedDates` is still the
+     * empty string the caller defaults it to, and `checkedInOutDates` has no lists
+     * at all. Nothing is known to be taken yet, so nothing can be refused.
+     */
+    isRangeUnavailable: function (startDate, endDate, bookedDates, checkedInOutDates) {
+      if (!Array.isArray(bookedDates) || bookedDates.length === 0) return false;
+      if (!startDate || !endDate) return false;
+
+      return ESHBPUBLICBOOKING.hasBookedDatesInRange(
+        startDate,
+        endDate,
+        bookedDates,
+        checkedInOutDates || {}
+      );
+    },
+    /**
+     * Why a stay that crosses somebody else's booking was refused.
+     */
+    getUnavailableRangeMsg: function () {
+      let translations = eshb_ajax.translations;
+
+      if (typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin) {
+        translations = eshb_ajax.admin_translations;
+      }
+
+      return (
+        (translations && translations.unavailableRangeErrorMsg) ||
+        "Those dates are not available - the stay runs across a date that is already booked. Please choose another check-out date."
+      );
+    },
     getNextAvailableStartDate: function (startDate, endDate, bookedDates) {
       const rangeStart = moment(startDate, "YYYY-MM-DD");
       let rangeEnd = moment(endDate, "YYYY-MM-DD");
@@ -909,11 +943,16 @@
           ? $form.find(".date-err-msg")
           : $(".eshb-booking-form .date-err-msg");
         // Name every allowed day, not just the first — a rule can allow several.
-        $errEl.html(
-          eshb_ajax.checkInDayErrorMsg + " " + [].concat(allowedDays).join(", ")
-        );
+        let dayMsg =
+          eshb_ajax.checkInDayErrorMsg + " " + [].concat(allowedDays).join(", ");
+        $errEl.html(dayMsg);
         setTimeout(() => {
-          $errEl.html("");
+          // The same element carries the min/max nights and availability
+          // messages, and those are written AFTER this one on the very same
+          // pick. Blanking it unconditionally wiped them three seconds later,
+          // leaving an empty check-out with nothing explaining it. Only ever
+          // take back our own message.
+          if ($errEl.html() === dayMsg) $errEl.html("");
         }, 3000);
 
         // Update the input field manually
@@ -1083,6 +1122,36 @@
       $form.find('.eshb-form-submit-btn').prop("disabled", true);
     },
     /**
+     * Holds a too-short / too-long stay on screen exactly as it was picked.
+     *
+     * A "Minimum Nights" warning only means something next to the two dates it
+     * is comparing. Clearing the check-out (rejectNightsSelection) left the
+     * warning hanging over an empty "Add date" field, so it read as a complaint
+     * about the check-in on its own — a rule the guest had had no chance to
+     * break yet. Keep both dates visible instead and let the message explain
+     * which pair is wrong; the submit button stays disabled either way, and
+     * assertValidNightsBeforeSubmit is still the last line of defence.
+     */
+    holdNightsSelection: function (startDate, endDate, pickers, startDateInput, endDateInput, availableDatePickerInput, form) {
+      $(startDateInput).val(startDate);
+      $(endDateInput).val(endDate);
+      $(availableDatePickerInput).val(endDate);
+
+      // Anchor every picker on the range the guest is looking at, so reopening
+      // the calendar shows that same range rather than jumping elsewhere.
+      (pickers || []).forEach(function (picker) {
+        if (!picker) return;
+        picker.setStartDate(startDate);
+        picker.setEndDate(endDate);
+      });
+
+      ESHBPUBLICBOOKING.updateDateDisplay();
+
+      let $form = form ? $(form) : $('.eshb-booking-form');
+      $form.find('.eshb-form-loader').removeClass('is-active');
+      $form.find('.eshb-form-submit-btn').prop("disabled", true);
+    },
+    /**
      * Last line of defence before the reservation is sent. Returns false (and
      * shows the reason) when check-in/check-out are missing or break the required
      * nights rule, so the booking is never submitted with dates the guest did not
@@ -1176,6 +1245,42 @@
       blockedRanges = [],
       sessionMinNightsRules = []
     ) {
+      // Never rebuild the calendar out from under the guest.
+      //
+      // This runs twice for every booking form: once on page load with the
+      // defaults, and again when the accommodation's booked dates, holidays and
+      // night rules come back over AJAX. The second run calls .daterangepicker()
+      // again, and that DESTROYS the open calendar and replaces it with a fresh
+      // picker.
+      //
+      // On a fast machine the response lands before anyone has clicked. On a
+      // live site it does not: the guest opens the calendar, clicks a check-in,
+      // and mid-selection the calendar is torn down. The half-finished state
+      // goes with it — the replacement picker starts with a check-out date
+      // again, which is what makes daterangepicker read the NEXT click as a new
+      // START date. So the guest clicks what they mean to be their check-out and
+      // it lands in the check-in field instead, over and over, and the check-out
+      // can never be filled.
+      //
+      // Wait for the calendar to close, then rebuild with the data that arrived.
+      // Only the latest pending rebuild is kept, and the timeout lets the close
+      // finish (hide() restores a half-finished check-in) before it runs.
+      let eshbOpenPicker = $(startDateInput).data("daterangepicker");
+      if (eshbOpenPicker && eshbOpenPicker.isShowing) {
+        let eshbRebuildArgs = arguments;
+        $(startDateInput)
+          .off("hide.daterangepicker.eshbRebuild")
+          .one("hide.daterangepicker.eshbRebuild", function () {
+            setTimeout(function () {
+              ESHBPUBLICBOOKING.setEshbFormCalendar.apply(
+                ESHBPUBLICBOOKING,
+                eshbRebuildArgs
+              );
+            }, 0);
+          });
+        return;
+      }
+
       // Work on a copy. calendarDefaultsOps is one shared object, reused by
       // every form on the page and by every re-initialisation of this one, so
       // writing to it in place leaked one accommodation's settings into the
@@ -1208,13 +1313,33 @@
       // rules are evaluated here, on the picked dates, so the rule is enforced on the
       // first pick — the server's `min_nights` alone always describes the PREVIOUS
       // selection.
-      let effectiveMinNights = function (picker) {
+      // `startOverride` is the check-in as it will actually be submitted, after
+      // checkInDayErrors has had its say; picker.startDate still holds the raw
+      // day that was clicked, which can be a different one.
+      let effectiveMinNights = function (picker, startOverride) {
         if (!picker || !picker.startDate || !picker.endDate) return minNights;
-        return ESHBPUBLICBOOKING.resolveMinNights(picker.startDate, picker.endDate, minNights, sessionMinNightsRules);
+        return ESHBPUBLICBOOKING.resolveMinNights(startOverride || picker.startDate, picker.endDate, minNights, sessionMinNightsRules);
       };
 
       options.minDate = eshbSiteToday().add(startDateBuffer, "days");
-      options.endDate = eshbSiteToday().add(minNights + startDateBuffer, "days");
+
+      // The check-out the form is already showing wins. This used to be
+      // overwritten unconditionally with "today + the minimum stay", so the
+      // picker was handed a check-out EARLIER than the check-in it had just
+      // been given: opening the calendar highlighted a stray end date a couple
+      // of days back, the stay on screen was never drawn as a range, and the
+      // calendar and the form disagreed from the moment the page loaded.
+      // Fall back to the computed date only when the field has nothing usable.
+      let fieldStartMoment = moment(options.startDate, "YYYY-MM-DD", true);
+      let fieldEndMoment = moment(options.endDate, "YYYY-MM-DD", true);
+      let keepFieldEndDate =
+        fieldEndMoment.isValid() &&
+        !fieldEndMoment.isBefore(options.minDate, "day") &&
+        (!fieldStartMoment.isValid() ||
+          !fieldEndMoment.isBefore(fieldStartMoment, "day"));
+      if (!keepFieldEndDate) {
+        options.endDate = eshbSiteToday().add(minNights + startDateBuffer, "days");
+      }
 
       if (minNights > 1 && options.startDate !== options.endDate) {
         allowSingleDate = false;
@@ -1393,11 +1518,16 @@
           }
         }
 
-        // Add a custom class
-        if (ESHBPUBLICBOOKING.isDisallowedDates(date, allowedDays)) {
-          if (ESHBPUBLICBOOKING.isDisallowedDates(date) === true) {
-            return "disallowed-date"; // Add a class for styling
-          }
+        // Add a custom class. isDisallowedDates() reports "disallowed" for
+        // anything that is not in the allowed list, and an accommodation with no
+        // check-in-day rule has no list at all - which used to stamp EVERY day in
+        // the calendar with the disallowed class. Only ask when a rule exists.
+        if (
+          Array.isArray(allowedDays) &&
+          allowedDays.length > 0 &&
+          ESHBPUBLICBOOKING.isDisallowedDates(date, allowedDays)
+        ) {
+          return "disallowed-date"; // Add a class for styling
         }
         return false;
       };
@@ -1516,11 +1646,46 @@
               // second date. Clear the end input so it doesn't show a stale value.
               if (!picker.endDate) {
                 $(endDateInput).val("");
+                // A fresh check-in with no check-out yet is not something the
+                // nights rule can judge. Take down whatever the PREVIOUS pair
+                // was warned about, in both places a nights warning can appear,
+                // so neither is left standing over an empty check-out field.
+                (form ? $(form).find(".date-err-msg") : $(".date-err-msg").first())
+                  .html("");
+                if ($availabilityErr && $availabilityErr.length) {
+                  $availabilityErr.html("");
+                }
               }
               // reformat the Y-m-d values into the visible display fields
               ESHBPUBLICBOOKING.updateDateDisplay();
             }, 0);
           });
+
+        // The calendar is positioned against picker.element, which is ALWAYS the
+        // check-in input — so opening it from the check-out field dropped the
+        // calendar under the check-in field instead. Guests read that as the
+        // check-in calendar reopening and never realised their next click would
+        // land on the check-out. move() only reads element.offset()/outerHeight()/
+        // outerWidth(), so pointing it at the field that actually opened the
+        // calendar is enough, and the swap is undone immediately afterwards so
+        // every other use of picker.element is untouched.
+        if (!picker._eshbMovePatched) {
+          picker._eshbMovePatched = true;
+          let originalMove = picker.move;
+          picker.move = function () {
+            let anchorEl = this._eshbAnchorEl;
+            if (!anchorEl || !anchorEl.length) {
+              return originalMove.apply(this, arguments);
+            }
+            let realElement = this.element;
+            this.element = anchorEl;
+            try {
+              return originalMove.apply(this, arguments);
+            } finally {
+              this.element = realElement;
+            }
+          };
+        }
 
         // daterangepicker rolls its own state back to the PREVIOUS range when
         // the calendar closes on a half-finished selection (see hide() in
@@ -1538,6 +1703,7 @@
             let pickedStart = this.startDate ? this.startDate.clone() : null;
             let anchor = this._eshbEndModeAnchor;
             this._eshbEndModeAnchor = null;
+            this._eshbAnchorEl = null;
             originalHide.call(this, e);
             if (wasComplete || !pickedStart) return;
             // Opened from the check-out field and closed again without clicking
@@ -1587,6 +1753,24 @@
       eshbBindInstantStartMirror($(startDateInput), true);
       eshbBindInstantStartMirror($(availableDatePickerInput), false);
 
+      // No availability cap on the selectable span.
+      //
+      // An earlier version capped picker.maxSpan at the last day reachable
+      // without crossing a held date, so that a stay could not be drawn over
+      // somebody else's booking. It made EVERY later day unavailable the moment
+      // a check-in was chosen — a guest who then wanted a later check-in could
+      // not click one, and opening the check-out field did not bring those days
+      // back either, because the cap is recomputed on every draw. Availability is
+      // enforced on the pick instead (isRangeUnavailable in the apply handlers),
+      // so every free day stays clickable. A picker built by an earlier run of
+      // this initialiser may still carry the old cap, so clear it rather than
+      // trusting that it was never set.
+      let eshbClearAvailabilitySpan = function (picker) {
+        if (picker) picker.maxSpan = null;
+      };
+      eshbClearAvailabilitySpan($(startDateInput).data("daterangepicker"));
+      eshbClearAvailabilitySpan($(availableDatePickerInput).data("daterangepicker"));
+
       // The check-out field is a second door to the SAME picker. Opening it
       // keeps the check-in that is already there and puts the picker straight
       // into "now pick the check-out" state, so the guest's next click lands on
@@ -1600,12 +1784,21 @@
         let checkIn = $(startDateInput).val();
         if (mode !== "end" || !checkIn || picker.singleDatePicker) {
           picker._eshbEndModeAnchor = null;
+          picker._eshbAnchorEl = null;
           picker.show();
           return;
         }
 
+        // Drop the calendar under the check-out field, so it reads as the
+        // check-out calendar rather than the check-in one reopening.
+        picker._eshbAnchorEl = $(endDateInput);
+
         // show() clones endDate, so it has to still be a date at that point;
         // the "no check-out chosen yet" state is entered immediately after.
+        // Clear the availability cap first: setEndDate() clamps against maxSpan,
+        // and the value still on the picker belongs to the PREVIOUS check-in.
+        // updateCalendars() recomputes it for this one on the next draw.
+        picker.maxSpan = null;
         picker.setStartDate(checkIn);
         picker.setEndDate($(endDateInput).val() || checkIn);
         picker.show();
@@ -1642,8 +1835,11 @@
           // A non-null endDate is what makes clickDate read the next click as a
           // new start date.
           picker._eshbEndModeAnchor = null;
+          picker._eshbAnchorEl = null;
           picker.setEndDate(picker.startDate);
           picker.updateView();
+          // Back under the check-in field, where the guest is now looking.
+          picker.move();
         });
 
       // Event listener for the first date range picker
@@ -1651,12 +1847,21 @@
         $(this).closest('.eshb-booking-form').find('.eshb-form-loader').addClass('is-active');
         if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", true);
 
-        // validate min max nights
-        ESHBPUBLICBOOKING.minMaxErr(effectiveMinNights(picker), maxNights, picker, startDateInput, endDateInput, availableDatePickerInput, roomQuantityInput, accomodationId, form);
-
+        // The min/max nights check used to run HERE, before the two corrections
+        // below had happened. That made it fire on a bare check-in — a same-day
+        // range is 0 nights, so picking only a check-in was reported as breaking
+        // a "Minimum Nights" rule the guest had not had the chance to satisfy yet
+        // — and it read picker.startDate, which checkInDayErrors may still move,
+        // so the earliest-check-out date printed in the message belonged to a
+        // check-in that never reached the field. It now runs once the check-in is
+        // final and a real check-out exists (see below).
 
         let startDate = picker.startDate.format("YYYY-MM-DD");
         let endDate = picker.endDate.format("YYYY-MM-DD");
+
+        let $nightsErrEl = form
+          ? $(form).find(".date-err-msg")
+          : $(".date-err-msg").first();
 
         // Same-day click: user picked the same date for check-in AND check-out.
         // A 0-night stay is invalid, so DON'T auto-bump checkout to the next day.
@@ -1666,70 +1871,86 @@
           $(startDateInput).val(startDate);
           $(endDateInput).val("");
           $(availableDatePickerInput).val(startDate);
+          // Half a selection is not an error: the guest is still choosing.
+          $nightsErrEl.html('');
           ESHBPUBLICBOOKING.updateDateDisplay();
           $(this).closest('.eshb-booking-form').find('.eshb-form-loader').removeClass('is-active');
           if (accomodationId) $(form).find('.eshb-form-submit-btn').prop("disabled", false);
           return; // skip pricing/calendar update while checkout is empty
         }
 
-        // check seleceted day in allowedDays and show errors
-        selectedDay = picker.startDate.format("dddd").toLowerCase();
-        startDate = ESHBPUBLICBOOKING.checkInDayErrors(
-          allowedDays,
-          selectedDay,
-          options.startDate,
-          startDate,
-          form
-        );
+        // The allowed-check-in-days rule used to be applied HERE, and it can
+        // replace the check-in with a different day entirely. Every refusal
+        // below then wrote that replacement into the field, so a guest clicking
+        // a CHECK-OUT could watch their CHECK-IN move — the very complaint this
+        // whole picker keeps coming back to. It now runs only once the stay has
+        // survived every check (further down), so a refused pick always leaves
+        // the check-in exactly where the guest put it.
 
-        // set closest next checkout date as start date if start date is same as end date and booked
+        // A stay may not run across days somebody else already holds.
+        //
+        // This used to be "repaired" by moving the CHECK-IN forward to the first
+        // free day after the booked block (getNextAvailableStartDate +
+        // picker.setStartDate). A guest who had only clicked a CHECK-OUT then
+        // watched their check-in jump to a day they never touched — picking
+        // Oct 5 -> Oct 12 over a booking on Oct 7-8 silently turned the check-in
+        // into Oct 9.
+        //
+        // A later attempt restarted the stay on the day that was clicked, on the
+        // theory that a click past a booking means "I want to stay THEN". That is
+        // the same bug wearing a different hat: the guest clicks a CHECK-OUT and
+        // the CHECK-IN moves under them. The check-in is only ever changed by a
+        // click meant as a check-in. Refuse the pick instead: keep the check-in
+        // the guest chose, put the check-out back to "Add date" and say why.
         if (
-          startDate == endDate &&
-          ESHBPUBLICBOOKING.isDateBooked(startDate, bookedDates)
+          ESHBPUBLICBOOKING.isRangeUnavailable(
+            startDate,
+            endDate,
+            bookedDates,
+            checkedInOutDates
+          )
         ) {
-          let closestNextCheckoutDate =
-            ESHBPUBLICBOOKING.getNextAvailableStartDate(
-              startDate,
-              endDate,
-              bookedDates
-            );
-          if (closestNextCheckoutDate) {
-            startDate = closestNextCheckoutDate;
-            picker.setStartDate(startDate);
-          }
-        }
-
-        // set closest next checkout date as start date
-        if (Array.isArray(checkedInOutDates?.checked_out)) {
-          if (
-            ESHBPUBLICBOOKING.hasBookedDatesInRange(
-              startDate,
-              endDate,
-              bookedDates,
-              checkedInOutDates
-            )
-          ) {
-            let closestNextCheckoutDate =
-              ESHBPUBLICBOOKING.getNextAvailableStartDate(
-                startDate,
-                endDate,
-                bookedDates
-              );
-            if (closestNextCheckoutDate) {
-              startDate = closestNextCheckoutDate;
-              picker.setStartDate(startDate);
-            }
-          }
+          ESHBPUBLICBOOKING.rejectNightsSelection(
+            startDate,
+            [picker, $(availableDatePickerInput).data("daterangepicker")],
+            startDateInput,
+            endDateInput,
+            availableDatePickerInput,
+            form
+          );
+          $nightsErrEl.html(ESHBPUBLICBOOKING.getUnavailableRangeMsg());
+          return;
         }
 
         if (allowSingleDate != true) {
-          var diff = picker.endDate.diff(picker.startDate, "days"); // check the difference in days
+          // Measured on the check-in the guest actually has, which is also the
+          // one the warning names and the one that stays in the field if this
+          // pick is refused — nothing has been allowed to move it yet.
+          let appliedStart = picker.startDate.clone();
+          var diff = picker.endDate.diff(appliedStart, "days"); // check the difference in days
+          let appliedMinNights = effectiveMinNights(picker);
 
-          // Required nights not satisfied: reject the selection instead of
-          // silently moving the check-out date.
-          if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
-            ESHBPUBLICBOOKING.rejectNightsSelection(
+          // Required nights not satisfied. The check-out is NOT cleared: the
+          // warning compares the check-in with the check-out, so both have to
+          // stay on screen for it to mean anything. Nothing is auto-corrected
+          // either — the guest picks a different check-out and the warning goes.
+          if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, appliedMinNights, maxNights, allowSingleDate)) {
+            // Say so with the earliest check-out that WOULD work, counted from
+            // the check-in now sitting in the field.
+            $nightsErrEl.html(
+              ESHBPUBLICBOOKING.getNightsErrorMsg(
+                diff,
+                appliedMinNights,
+                maxNights,
+                typeof eshb_ajax.is_admin !== "undefined" && eshb_ajax.is_admin
+                  ? eshb_ajax.admin_translations
+                  : eshb_ajax.translations,
+                appliedStart
+              )
+            );
+            ESHBPUBLICBOOKING.holdNightsSelection(
               startDate,
+              endDate,
               [
                 picker,
                 $(availableDatePickerInput).data("daterangepicker"),
@@ -1741,7 +1962,24 @@
             );
             return;
           }
+
+          // Range is good — drop whatever a previous attempt left on screen.
+          $nightsErrEl.html('');
         }
+
+        // check seleceted day in allowedDays and show errors
+        //
+        // Last, deliberately: this is the only step allowed to replace the
+        // check-in, and by now the stay has passed every check, so the guest is
+        // not being handed a different check-in on a pick that failed anyway.
+        selectedDay = picker.startDate.format("dddd").toLowerCase();
+        startDate = ESHBPUBLICBOOKING.checkInDayErrors(
+          allowedDays,
+          selectedDay,
+          options.startDate,
+          startDate,
+          form
+        );
 
         $(startDateInput).val(startDate);
         $(endDateInput).val(endDate);
@@ -1777,15 +2015,36 @@
             let startDate = picker.startDate.format("YYYY-MM-DD");
             let endDate = picker.endDate.format("YYYY-MM-DD");
 
-            var diff = picker.endDate.diff(picker.startDate, "days");
-            let nightsErrMsg = ESHBPUBLICBOOKING.getNightsErrorMsg(diff, effectiveMinNights(picker), maxNights, null, picker.startDate);
+            // Measured on the check-in the guest actually has. checkInDayErrors
+            // (below) can still move a check-in that falls on a disallowed day,
+            // but it must not get to do that on a pick that is about to be
+            // refused — the guest clicked a CHECK-OUT, and a check-in shifting
+            // under them is the one thing this calendar must never do. Running
+            // the rule first also keeps the message and the field in agreement:
+            // both describe picker.startDate.
+            let appliedStart = picker.startDate.clone();
+            var diff = picker.endDate.diff(appliedStart, "days");
+            let appliedMinNights = effectiveMinNights(picker);
 
             $availabilityErr.html('');
-            if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, effectiveMinNights(picker), maxNights, allowSingleDate)) {
-              $availabilityErr.html(nightsErrMsg);
+            if (ESHBPUBLICBOOKING.isNightsOutOfRange(diff, appliedMinNights, maxNights, allowSingleDate)) {
+              $availabilityErr.html(
+                ESHBPUBLICBOOKING.getNightsErrorMsg(
+                  diff,
+                  appliedMinNights,
+                  maxNights,
+                  null,
+                  appliedStart
+                )
+              );
 
-              ESHBPUBLICBOOKING.rejectNightsSelection(
+              // Both dates stay on screen — this calendar writes into the very
+              // same check-in/check-out fields as the booking form, and blanking
+              // the check-out here left that form showing a nights warning with
+              // nothing to compare it against.
+              ESHBPUBLICBOOKING.holdNightsSelection(
                 startDate,
+                endDate,
                 [
                   picker,
                   $(startDateInput).data("daterangepicker"),
@@ -1793,15 +2052,42 @@
                 startDateInput,
                 endDateInput,
                 availableDatePickerInput,
-               
                 null
               );
 
               return;
             }
 
+            // Same rule as the booking form above: a stay that runs across days
+            // somebody else holds is refused, never "repaired" by moving the
+            // guest's check-in past the booked block.
+            if (
+              ESHBPUBLICBOOKING.isRangeUnavailable(
+                startDate,
+                endDate,
+                bookedDates,
+                checkedInOutDates
+              )
+            ) {
+              $availabilityErr.html(
+                ESHBPUBLICBOOKING.getUnavailableRangeMsg()
+              );
+              ESHBPUBLICBOOKING.rejectNightsSelection(
+                startDate,
+                [picker, $(startDateInput).data("daterangepicker")],
+                startDateInput,
+                endDateInput,
+                availableDatePickerInput,
+                null
+              );
+              return;
+            }
 
             // check seleceted day in allowedDays and show errors
+            //
+            // Last, for the same reason as in the booking form: replacing the
+            // check-in is only acceptable once the stay has actually been
+            // accepted, never as a side effect of a pick that was refused.
             selectedDay = picker.startDate.format("dddd").toLowerCase();
             startDate = ESHBPUBLICBOOKING.checkInDayErrors(
               allowedDays,
@@ -1810,47 +2096,6 @@
               startDate,
               form
             );
-
-            // set closest next checkout date as start date if start date is same as end date and booked
-            if (
-              startDate == endDate &&
-              ESHBPUBLICBOOKING.isDateBooked(startDate, bookedDates)
-            ) {
-              let closestNextCheckoutDate =
-                ESHBPUBLICBOOKING.getNextAvailableStartDate(
-                  startDate,
-                  endDate,
-                  bookedDates
-                );
-              if (closestNextCheckoutDate) {
-                startDate = closestNextCheckoutDate;
-                picker.setStartDate(startDate);
-              }
-            }
-
-            // set closest next checkout date as start date if start date is same as end date and booked
-            if (Array.isArray(checkedInOutDates?.checked_out)) {
-              if (
-                ESHBPUBLICBOOKING.hasBookedDatesInRange(
-                  startDate,
-                  endDate,
-                  bookedDates,
-                  checkedInOutDates
-                )
-              ) {
-                let closestNextCheckoutDate =
-                  ESHBPUBLICBOOKING.getNextAvailableStartDate(
-                    startDate,
-                    endDate,
-                    bookedDates
-                  );
-                if (closestNextCheckoutDate) {
-                  startDate = closestNextCheckoutDate;
-                  picker.setStartDate(startDate);
-                }
-              }
-            }
-
 
             $(availableDatePickerInput).val(startDate);
 

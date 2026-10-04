@@ -9,19 +9,15 @@ add_action( 'init', function(){
             $plugin_slug = 'easy-deposit';
             $plugin_url = 'https://themewant.com/downloads/'.$plugin_slug;
             ?>
-                <?php echo wp_kses_post(ESHB_Metabox_Settings::eshb_upgrade_message($plugin_name, $plugin_url, 'p')); ?>
-                <div class="eshb-deposit-requests-metaboxes-inner has-required-notice">
-                    <p><?php echo esc_html__( 'You can send deposit & due payment request to the customer.', 'easy-hotel' )?></p>
-                    <div class="eshb-deposit-requests-metabox-item">
-                        <button type="button" id="deposit-payment-request" class="button button-primary"><?php echo esc_html__( 'Send', 'easy-hotel' )?></button>
-                        <span><?php echo esc_html__( 'Deposit Request', 'easy-hotel' )?></span>
-                    </div>
-                    
-                    <div class="eshb-deposit-requests-metabox-item">
-                        <button type="button" id="due-payment-request" class="button button-secondary"><?php echo esc_html__( 'Send', 'easy-hotel' )?></button>
-                        <span><?php echo esc_html__( 'Due Payment Request', 'easy-hotel' )?></span>
-                    </div>
-                </div>
+                <p>
+                    <?php
+                    echo wp_kses_post( sprintf(
+                        /* translators: %s: add-on link */
+                        esc_html__( 'Deposit & due payment requests are available with the %s add-on.', 'easy-hotel' ),
+                        '<a href="' . esc_url( $plugin_url ) . '" target="_blank">' . esc_html( $plugin_name ) . '</a>'
+                    ) );
+                    ?>
+                </p>
             <?php
         }
 
@@ -649,14 +645,28 @@ add_action( 'init', function(){
             <?php
         }
 
-        $plugin_main_file = 'ehb-deposit/ehb-deposit.php';
-        $required_notice_class = 'has-required-notice';
+        // Without the EHB Deposit add-on only an info line is shown — no inactive controls.
+        $payment_request_fields = array(
+            array(
+                'type'     => 'callback',
+                'function' => 'eshb_deposit_requests_html_fallback',
+            ),
+        );
 
-        $metabox_callback = 'eshb_deposit_requests_html_fallback';
-        if (function_exists( 'eshb_deposit_requests_html' ) ) {
-            $metabox_callback = 'eshb_deposit_requests_html';
-            $required_notice_class = '';
-        };
+        if ( function_exists( 'eshb_deposit_requests_html' ) ) {
+            $payment_request_fields = array(
+                array(
+                    'id'      => 'enable-automatic-payment-request',
+                    'type'    => 'checkbox',
+                    'label'   => 'Enable automatic payment request for this booking.',
+                    'default' => false,
+                ),
+                array(
+                    'type'     => 'callback',
+                    'function' => 'eshb_deposit_requests_html',
+                ),
+            );
+        }
 
 
         // payment request metaboxes
@@ -685,20 +695,7 @@ add_action( 'init', function(){
         // Create a section
         ESHB::createSection( $prefix, array(
             'title'  => '',
-            'fields' => array(
-                array(
-                    'id'         => 'enable-automatic-payment-request',
-                    'type'       => 'checkbox',
-                    'label'   => 'Enable automatic payment request for this booking.',
-                    'default' => false, // or false,
-                    'class'   => $required_notice_class,
-                ),
-                array(
-                    'type'     => 'callback',
-                    'function' => $metabox_callback,
-                ),
-                
-            )
+            'fields' => $payment_request_fields,
         ) );
         
     }

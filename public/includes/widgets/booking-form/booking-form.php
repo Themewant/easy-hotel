@@ -848,18 +848,64 @@ class Eshb_Booking_Form_Widget extends \Elementor\Widget_Base {
 
     }
 
-    protected function render() {
-        $settings = $this->get_settings_for_display();       
-        $form_style = $settings['form_style'];
-        $accomodation_id = !empty($settings['accomodation_id']) ? $settings['accomodation_id'] : 0;
-        ESHB_Helper::eshb_set_accomodation_localize($accomodation_id);
-
-        if(!empty($accomodation_id)) {
-            echo do_shortcode( '[eshb_booking_form accomodation_id='.$accomodation_id.' style="'. $form_style .'"]' );
-        }else {
-            if(is_singular( 'eshb_accomodation' )){
-                echo do_shortcode( '[eshb_booking_form style="'. $form_style .'"]' );
-            }   
+    /**
+     * The accommodation the "Default" option stands for.
+     *
+     * "Default" used to mean "render nothing": the widget printed the form only
+     * when an accommodation was picked explicitly, or when it happened to sit on
+     * a single accommodation page. Everywhere else it vanished from the layout
+     * without a word, which reads as a broken widget rather than a setting. It
+     * now resolves the way the booking-form block already does - the
+     * accommodation whose page this is, otherwise the first published one.
+     *
+     * @return int Accommodation post id, or 0 when the site has none.
+     */
+    protected function eshb_default_accomodation_id() {
+        if ( is_singular( 'eshb_accomodation' ) ) {
+            return (int) get_the_ID();
         }
+
+        $eshb_accomodations = get_posts( array(
+            'post_type'        => 'eshb_accomodation',
+            'post_status'      => 'publish',
+            'posts_per_page'   => 1,
+            'fields'           => 'ids',
+            'orderby'          => 'date',
+            'order'            => 'ASC',
+            'suppress_filters' => false,
+        ) );
+
+        return ! empty( $eshb_accomodations ) ? (int) $eshb_accomodations[0] : 0;
+    }
+
+    protected function render() {
+        $settings   = $this->get_settings_for_display();
+        $form_style = ! empty( $settings['form_style'] ) ? $settings['form_style'] : 'style-one';
+
+        // "Default" (0) is not "no form" - it means "whichever accommodation this
+        // page is about, else the first published one".
+        $accomodation_id = ! empty( $settings['accomodation_id'] )
+            ? (int) $settings['accomodation_id']
+            : $this->eshb_default_accomodation_id();
+
+        ESHB_Helper::eshb_set_accomodation_localize( $accomodation_id );
+
+        if ( empty( $accomodation_id ) ) {
+            // Nothing on the site to book. Say so inside the editor, where it can
+            // be acted on, instead of leaving an unexplained hole in the layout.
+            // The widget is rendered inside the editor's preview iframe, where
+            // is_edit_mode() is false and is_preview_mode() is true - both are
+            // needed for the notice to actually reach the person editing.
+            $eshb_in_editor = class_exists( '\Elementor\Plugin' )
+                && ( \Elementor\Plugin::$instance->editor->is_edit_mode()
+                    || \Elementor\Plugin::$instance->preview->is_preview_mode() );
+
+            if ( $eshb_in_editor ) {
+                echo '<p class="eshb-widget-notice">' . esc_html__( 'No published accommodation found. Publish one, or choose an accommodation in the widget settings.', 'easy-hotel' ) . '</p>';
+            }
+            return;
+        }
+
+        echo do_shortcode( '[eshb_booking_form accomodation_id=' . absint( $accomodation_id ) . ' style="' . esc_attr( $form_style ) . '"]' );
     }
 }

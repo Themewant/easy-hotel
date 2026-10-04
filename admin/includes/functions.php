@@ -29,29 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     eshb_settings_fallback('EHB Reviews', $plugin_slug, 'https://themewant.com/downloads/ehb-review/', 'eshb-admin-notice-large');
   }
   
-  // advanced prcing settings fallback
-  function eshb_advanced_pricing_settings_fallback(){
-    $plugin_slug = 'ehb-advanced-pricing';
-    eshb_settings_fallback('EHB Advanced Pricing', $plugin_slug, 'https://themewant.com/downloads/ehb-advanced-pricing/', 'eshb-admin-notice-large');
-  }
   
-  // advanced prcing settings fallback
-  function eshb_advanced_pricing_settings_fallback_sm(){
-    $plugin_slug = 'ehb-advanced-pricing';
-    eshb_settings_fallback('EHB Advanced Pricing', $plugin_slug, 'https://themewant.com/downloads/ehb-advanced-pricing/', '');
-  }
-
-  function eshb_days_pricing_settings_fallback_sm(){
-    $plugin_slug = 'ehb-advanced-pricing';
-    eshb_settings_fallback('EHB Advanced Pricing', $plugin_slug, 'https://themewant.com/downloads/ehb-advanced-pricing/', '');
-  }
-  
-  
-  // manual booking settings fallback
-  function eshb_manual_booking_settings_fallback(){
-    $plugin_slug = 'ehb-manual-booking';
-    eshb_settings_fallback('EHB Manual Booking', $plugin_slug, 'https://themewant.com/downloads/ehb-manual-booking/', 'eshb-admin-notice-large');
-  }
   
   // manual booking settings fallback
   function eshb_deposit_settings_fallback(){

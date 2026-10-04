@@ -1263,46 +1263,52 @@ add_action( 'plugins_loaded', function(){
               <div class="eshb-playlist-sidebar">
                 <h3><?php echo esc_html__('Playlist', 'easy-hotel') ?></h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('NUb_lGXbhyU')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="NUb_lGXbhyU">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/intro.jpg' ) ?>" alt="Video 1 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Intro Video', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('m5wq7NE2rzw')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="m5wq7NE2rzw">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/setup-guide.jpg' ) ?>" alt="Video 2 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Setup Guide', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('HYKkw8SK-7U')">
-                      <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/seasonal-pricing' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
+                  <button class="eshb-playlist-item" type="button" data-video-id="HYKkw8SK-7U">
+                      <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/seasonal-pricing.jpg' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Seasonal Pricing', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('YbUmgyhSGP8')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="YbUmgyhSGP8">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/setup-coupon-code.jpg' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Setup Coupon Code', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('Kd72Tekpd8Q')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="Kd72Tekpd8Q">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/setup-extra-services.jpg' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Setup Extra Services', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('E8_RSyVLbjg')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="E8_RSyVLbjg">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/setup-ical.jpg' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Setup iCal', 'easy-hotel') ?></strong>
                   </button>
-                  <button class="eshb-playlist-item" type="button" onclick="loadEshbTutotialVideo('rowRYH4Y5lk')">
+                  <button class="eshb-playlist-item" type="button" data-video-id="rowRYH4Y5lk">
                       <img src="<?php echo esc_url( ESHB_PL_URL.'admin/assets/img/thumbnails/yt/setup-min-max.jpg' ) ?>" alt="Video 3 Thumbnail" style="width: 100%; display: block;">
                       <strong><?php echo esc_html__('Setup Max/Min Night', 'easy-hotel') ?></strong>
                   </button>
                 </div>
               </div>
             </div>
-            <script>
-              function loadEshbTutotialVideo(videoId) {
-                  document.querySelector('iframe').src = `https://www.youtube.com/embed/${videoId}?rel=0`;
-              }
-            </script>
           </div>
         </div>
       </div>
       <?php
+
+      // Printed in the footer: a handle enqueued during the page callback still goes out
+      // with the footer scripts.
+      wp_register_script( 'eshb-help-videos', false, array(), ESHB_VERSION, true );
+      wp_enqueue_script( 'eshb-help-videos' );
+      wp_add_inline_script( 'eshb-help-videos', "document.addEventListener('click', function (e) {
+        var item = e.target.closest('.eshb-playlist-item[data-video-id]');
+        var player = document.getElementById('eshb-playlist-player');
+        if (!item || !player) return;
+        player.src = 'https://www.youtube.com/embed/' + encodeURIComponent(item.getAttribute('data-video-id')) + '?rel=0';
+      });" );
 
   }
 

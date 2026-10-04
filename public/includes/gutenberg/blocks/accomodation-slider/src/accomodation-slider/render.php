@@ -10,7 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 // $attributes is supplied by WordPress to the block render callback.
 $eshb_attributes = $attributes ?? [];
 $eshb_is_related_post = $eshb_attributes['is_related_post'] ?? false;
-$eshb_style = $eshb_attributes['grid_style'] ?? '1';
+// Part of an include path below; only accept the styles the block offers.
+$eshb_style = ESHB_Helper::eshb_allowed_style( $eshb_attributes['grid_style'] ?? '1', [ '1', '2', '3' ], '1' );
 $eshb_sstyle = 'style'.$eshb_style;
 $per_page = $eshb_attributes['per_page'] ?? 10;
 $eshb_slides_per_view = $eshb_attributes['slidesPerView'] ?? 1;

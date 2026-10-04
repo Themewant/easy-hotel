@@ -106,11 +106,14 @@ function eshb_dynamic_css() {
 
 
 
-add_action( 'elementor/editor/after_enqueue_scripts', function() {
-    ?>
-    <style>
+add_action( 'elementor/editor/after_enqueue_styles', function() {
+    $icon_url = esc_url( ESHB_DIR_URL . 'public/assets/img/easy-hotel-icon.png' );
+
+    wp_register_style( 'eshb-elementor-editor', false, array(), ESHB_VERSION );
+    wp_enqueue_style( 'eshb-elementor-editor' );
+    wp_add_inline_style( 'eshb-elementor-editor', "
         .elementor-panel .easy-hotel-widget-icon {
-            background-image: url('<?php echo esc_url( ESHB_DIR_URL . 'public/assets/img/easy-hotel-icon.png' ); ?>');
+            background-image: url('{$icon_url}');
             background-size: cover;
             background-position: center;
             width: 20px;
@@ -119,9 +122,8 @@ add_action( 'elementor/editor/after_enqueue_scripts', function() {
         }
 
         .elementor-panel .easy-hotel-widget-icon:before {
-            content: "";
+            content: \"\";
             display: none;
         }
-    </style>
-    <?php
+    " );
 });

@@ -157,10 +157,14 @@ final class ESHB_PMS {
     /**
      * Capability required to operate the PMS screens.
      *
+     * The Room Rack lists every guest and lets you move bookings between
+     * units, so it needs the same level as the hotel's other admin screens
+     * (edit_posts let Contributors in).
+     *
      * @return string
      */
     public static function capability() {
-        return apply_filters( 'eshb_pms_capability', 'edit_posts' );
+        return apply_filters( 'eshb_pms_capability', 'manage_options' );
     }
 
     /**

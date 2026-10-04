@@ -28,9 +28,15 @@ class ESHB_Native_Account_Customer {
     /** Custom role assigned to checkout customers. */
     const ROLE = 'eshb_customer';
 
+    /** User meta holding an email change that awaits confirmation. */
+    const META_PENDING_EMAIL = '_eshb_pending_email';
+
     public function __construct() {
         // Ensure the customer role exists (for installs already activated).
         add_action( 'init', [ $this, 'register_role' ] );
+
+        // Apply a confirmed email change (link sent to the new address).
+        add_action( 'template_redirect', [ $this, 'maybe_confirm_email_change' ] );
 
         // Link / create the WP user right after a native-checkout booking
         // is persisted. Priority 5 so the user exists before other
@@ -264,6 +270,98 @@ class ESHB_Native_Account_Customer {
         $email    = is_array( $customer ) ? strtolower( (string) ( $customer['email'] ?? '' ) ) : '';
 
         return $email !== '' && $email === strtolower( $user->user_email );
+    }
+
+    /**
+     * Start an email change: store it as pending and mail a confirmation
+     * link to the new address. The account email only changes once that
+     * link is opened, because bookings are matched to accounts by email —
+     * an unverified change would hand over someone else's bookings.
+     *
+     * @param WP_User $user
+     * @param string  $new_email
+     * @return true|WP_Error
+     */
+    public function request_email_change( WP_User $user, $new_email ) {
+        $key = wp_generate_password( 32, false );
+
+        update_user_meta( $user->ID, self::META_PENDING_EMAIL, [
+            'email'   => $new_email,
+            'hash'    => wp_hash( $key ),
+            'expires' => time() + DAY_IN_SECONDS,
+        ] );
+
+        $account = ESHB_Native_Account::instance();
+        $link    = add_query_arg(
+            [
+                'eshb_confirm_email' => $key,
+                'uid'                => $user->ID,
+            ],
+            $account->get_account_url()
+        );
+
+        $site    = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+        /* translators: %s: site name */
+        $subject = sprintf( __( '[%s] Confirm your new email address', 'easy-hotel' ), $site );
+        $message = sprintf(
+            /* translators: 1: user display name, 2: new email address, 3: confirmation link */
+            __( "Hi %1\$s,\n\nA request was made to change the email address of your account to %2\$s.\n\nTo confirm this change, open the link below (valid for 24 hours):\n%3\$s\n\nIf you did not ask for this, you can ignore this email and your address will stay the same.", 'easy-hotel' ),
+            $user->display_name,
+            $new_email,
+            $link
+        );
+
+        if ( ! wp_mail( $new_email, $subject, $message ) ) {
+            delete_user_meta( $user->ID, self::META_PENDING_EMAIL );
+            return new WP_Error( 'eshb_email_not_sent', __( 'We could not send the confirmation email. Please try again later.', 'easy-hotel' ) );
+        }
+
+        return true;
+    }
+
+    /**
+     * Handle the confirmation link from request_email_change(). The secret
+     * key only ever went to the new mailbox, so opening the link proves
+     * that address belongs to the account holder.
+     */
+    public function maybe_confirm_email_change() {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- The emailed secret key is the authorization.
+        if ( empty( $_GET['eshb_confirm_email'] ) || empty( $_GET['uid'] ) ) {
+            return;
+        }
+        $key     = sanitize_text_field( wp_unslash( $_GET['eshb_confirm_email'] ) );
+        $user_id = absint( wp_unslash( $_GET['uid'] ) );
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+        $account = ESHB_Native_Account::instance();
+        $pending = get_user_meta( $user_id, self::META_PENDING_EMAIL, true );
+        $status  = 'invalid';
+
+        if (
+            is_array( $pending )
+            && ! empty( $pending['email'] )
+            && ! empty( $pending['hash'] )
+            && (int) ( $pending['expires'] ?? 0 ) >= time()
+            && hash_equals( (string) $pending['hash'], wp_hash( $key ) )
+        ) {
+            $existing = get_user_by( 'email', $pending['email'] );
+            if ( $existing && (int) $existing->ID !== $user_id ) {
+                $status = 'taken';
+            } else {
+                $result = wp_update_user( [
+                    'ID'         => $user_id,
+                    'user_email' => $pending['email'],
+                ] );
+                $status = is_wp_error( $result ) ? 'invalid' : 'changed';
+            }
+            delete_user_meta( $user_id, self::META_PENDING_EMAIL );
+        }
+
+        wp_safe_redirect( add_query_arg(
+            [ 'tab' => 'account', 'email-change' => $status ],
+            $account->get_account_url()
+        ) );
+        exit;
     }
 
     /**

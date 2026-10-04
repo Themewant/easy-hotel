@@ -12,7 +12,7 @@ if ( ! class_exists( 'ESHB_Field_code_editor' ) ) {
 
     public $version = '6.65.7';
 
-    public $cdn_url = ESHB_PL_PATH . 'admin/includes/framework/assets/js/';
+    public $cdn_url = ESHB_PL_URL . 'admin/includes/framework/assets/js';
 
     public function __construct( $field, $value = '', $unique = '', $where = '', $parent = '' ) {
       parent::__construct( $field, $value, $unique, $where, $parent );
@@ -25,7 +25,7 @@ if ( ! class_exists( 'ESHB_Field_code_editor' ) ) {
         'lineNumbers'   => true,
         'theme'         => 'default',
         'mode'          => 'htmlmixed',
-        'cdnURL'        => $this->cdn_url . $this->version,
+        'cdnURL'        => $this->cdn_url . '/' . $this->version,
       );
 
       $settings = ( ! empty( $this->field['settings'] ) ) ? $this->field['settings'] : array();

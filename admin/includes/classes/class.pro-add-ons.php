@@ -101,15 +101,6 @@ class ESHB_PRO_ADDONS {
                     'is_pro' => true
                 ),
                 array(
-                    'name' => 'EHB Week',
-                    'slug' => 'ehb-week/ehb-week.php',
-                    'external_url'  => 'https://themewant.com/downloads/ehb-week/',
-                    'demo_url'  => 'https://themewant.com/downloads/ehb-week/',
-                    'thumbnail' => ESHB_PL_URL.'admin/assets/img/thumbnails/addons/week.png',
-                    'desc' => 'Week reservation solution for WordPress. Whether you manage single day booking',
-                    'is_pro' => true
-                ),
-                array(
                     'name' => 'EHB Single Day',
                     'slug' => 'ehb-db/ehb-db.php',
                     'external_url'  => 'https://themewant.com/downloads/ehb-single-day/',
@@ -118,8 +109,8 @@ class ESHB_PRO_ADDONS {
                     'desc' => 'Single day booking solution. Manage single day booking with custom pricing',
                     'is_pro' => true
                 ),
-                // EHB Min Max is bundled with the core plugin now — see the
-                // "Booking Rules" settings tab — so it is no longer listed here.
+                // EHB Min Max and EHB Week are bundled with the core plugin now — see
+                // the "Booking Rules" settings tab — so they are no longer listed here.
                 array(
                     'name' => 'EHB Currency',
                     'slug' => 'ehb-currency/ehb-currency.php',

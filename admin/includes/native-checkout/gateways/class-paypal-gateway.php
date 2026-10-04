@@ -62,6 +62,10 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
         ] );
     }
 
+    public function requires_payment_verification() {
+        return true;
+    }
+
     private function get_currency_code() {
         // PayPal needs an ISO-4217 currency code. The WooCommerce /
         // symbol / USD cascade lives on the base class; only the
@@ -155,11 +159,16 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
             return [ 'success' => false, 'message' => $msg ];
         }
 
+        // `amount` / `currency` stay server-side: the checkout binds them to
+        // the cart and checks the capture against them. Only `data` reaches
+        // the browser.
         return [
-            'success' => true,
-            'data'    => [
+            'success'  => true,
+            'data'     => [
                 'order_id' => $body['id'],
             ],
+            'amount'   => $amount,
+            'currency' => $currency,
         ];
     }
 
@@ -203,11 +212,35 @@ class ESHB_Native_PayPal_Gateway extends ESHB_Native_Abstract_Gateway {
 
         $capture = $body['purchase_units'][0]['payments']['captures'][0] ?? [];
         $amount  = (float) ( $capture['amount']['value'] ?? 0 );
-        $currency = $capture['amount']['currency_code'] ?? $this->get_currency_code();
+        // No fallback to the configured currency: the checkout compares this
+        // with the order's currency, and a guessed value would always match.
+        $currency = (string) ( $capture['amount']['currency_code'] ?? '' );
         $txn_id  = $capture['id'] ?? $order_id;
+
+        // The order can be COMPLETED while the capture itself is not: PayPal
+        // holds eChecks, payments under review and currencies the merchant
+        // must accept manually as PENDING. Only a COMPLETED capture is money
+        // received. A PENDING one still becomes a booking (PayPal may settle
+        // it later, and the guest must not be charged for nothing), but it is
+        // recorded as unpaid and kept on hold. Anything else failed.
+        $capture_status = strtoupper( (string) ( $capture['status'] ?? '' ) );
+
+        if ( 'COMPLETED' !== $capture_status && 'PENDING' !== $capture_status ) {
+            return [
+                'success' => false,
+                'message' => sprintf(
+                    /* translators: %s: PayPal capture status, e.g. DECLINED */
+                    __( 'PayPal did not accept the payment (%s). No booking was made.', 'easy-hotel' ),
+                    $capture_status !== '' ? $capture_status : 'UNKNOWN'
+                ),
+                'raw'     => $body,
+            ];
+        }
 
         return [
             'success'        => true,
+            'pending'        => 'PENDING' === $capture_status,
+            'pending_reason' => (string) ( $capture['status_details']['reason'] ?? '' ),
             'transaction_id' => $txn_id,
             'amount'         => $amount,
             'currency'       => $currency,

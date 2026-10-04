@@ -78,10 +78,10 @@ class ESHB_Native_Booking_Handler {
             'booking_start_time'      => $reservation['start_time'] ?? '10:00',
             'booking_end_time'        => $reservation['end_time'] ?? '22:00',
             'dates'                   => $dates_label,
-            'room_quantity'           => (int) ( $reservation['room_quantity'] ?? 1 ),
-            'extra_bed_quantity'      => (int) ( $reservation['extra_bed_quantity'] ?? 0 ),
-            'adult_quantity'          => (int) ( $reservation['adult_quantity'] ?? 1 ),
-            'children_quantity'       => (int) ( $reservation['children_quantity'] ?? 0 ),
+            'room_quantity'           => max( 1, (int) ( $reservation['room_quantity'] ?? 1 ) ),
+            'extra_bed_quantity'      => max( 0, (int) ( $reservation['extra_bed_quantity'] ?? 0 ) ),
+            'adult_quantity'          => max( 1, (int) ( $reservation['adult_quantity'] ?? 1 ) ),
+            'children_quantity'       => max( 0, (int) ( $reservation['children_quantity'] ?? 0 ) ),
             'extra_services'          => $extra_services,
             'extra_services_html'     => $extra_services_html,
             'coupon_code'             => $pricing['couponCode'] ?? '',
@@ -295,10 +295,15 @@ class ESHB_Native_Booking_Handler {
     public static function record_payment( $booking_id, array $payment, array $customer ) {
         if ( ! $booking_id ) return false;
 
+        // Offline gateways (pay on arrival, bank transfer) record 0: nothing
+        // has been received yet, so the payment can't be "completed".
+        $amount        = (float) ( $payment['amount'] ?? 0 );
+        $payment_state = $amount > 0 ? 'completed' : 'pending';
+
         $payment_id = wp_insert_post( [
             'post_title'  => 'Payment for Booking #' . $booking_id,
             'post_type'   => 'eshb_payment',
-            'post_status' => 'completed',
+            'post_status' => $payment_state,
         ] );
 
         if ( is_wp_error( $payment_id ) || ! $payment_id ) return false;
@@ -312,10 +317,11 @@ class ESHB_Native_Booking_Handler {
             'transaction_id' => $transaction_id,
             'gateway'        => $payment['gateway'] ?? '',
             'gateway_mode'   => $payment['mode'] ?? 'live',
-            'amount'         => (float) ( $payment['amount'] ?? 0 ),
+            'amount'         => $amount,
             'fee'            => (float) ( $payment['fee'] ?? 0 ),
             'currency'       => $payment['currency'] ?? '',
             'payment_type'   => 'Full Payment',
+            'note'           => sanitize_text_field( (string) ( $payment['note'] ?? '' ) ),
         ];
 
         update_post_meta( $payment_id, 'eshb_payment_metaboxes', $payment_options );
@@ -329,10 +335,10 @@ class ESHB_Native_Booking_Handler {
             $payment_ids[] = $payment_id;
         }
         $meta['payment_ids']    = $payment_ids;
-        $meta['total_paid']     = (float) ( $payment['amount'] ?? 0 );
+        $meta['total_paid']     = $amount;
         $meta['transaction_id'] = $transaction_id;
         update_post_meta( $booking_id, 'eshb_booking_metaboxes', $meta );
-        update_post_meta( $booking_id, 'payment_status', 'completed' );
+        update_post_meta( $booking_id, 'payment_status', $payment_state );
 
         return $payment_id;
     }

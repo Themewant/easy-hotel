@@ -1,5 +1,16 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+// Rendered when the metabox is shown, so the strings are translated after init.
+function eshb_render_season_extension_note() {
+    printf(
+        '<p class="eshb-extension-note">%1$s <a href="%2$s">%3$s</a></p>',
+        esc_html__( 'Long-stay rates, rates by number of guests, weekday rules and a minimum stay per season are available with the Advanced Pricing extension.', 'easy-hotel' ),
+        esc_url( admin_url( 'edit.php?post_type=eshb_accomodation&page=edit.php%3Fpost_type%3Deshb_addons' ) ),
+        esc_html__( 'View extensions', 'easy-hotel' )
+    );
+}
+
 add_action( 'plugins_loaded', function(){
     if( class_exists( 'ESHB' ) ) {
 
@@ -34,24 +45,6 @@ add_action( 'plugins_loaded', function(){
                 'title' => 'Price',
             ),
             array(
-                'id'    => 'longstay_pricing_warning',
-                'type'  => 'callback',
-                'title' => 'Long Stay Pricing',
-                'function' => 'eshb_advanced_pricing_settings_fallback_sm',
-            ),
-            array(
-                'id'    => 'variable_pricing_warning',
-                'type'  => 'callback',
-                'title' => 'Variable Pricing',
-                'function' => 'eshb_advanced_pricing_settings_fallback_sm',
-            ),
-            array(
-                'id'    => 'days_pricing_warning',
-                'type'  => 'callback',
-                'title' => 'Days',
-                'function' => 'eshb_days_pricing_settings_fallback_sm',
-            ),
-            array(
                 'id'    => 'start_date',
                 'type'  => 'datetime',
                 'title' => 'Start Date',
@@ -81,6 +74,11 @@ add_action( 'plugins_loaded', function(){
                                     'post_type' => 'eshb_accomodation',
                                     'posts_per_page' => -1,
                                 ),
+            ),
+            array(
+                'id'       => 'season_extension_note',
+                'type'     => 'callback',
+                'function' => 'eshb_render_season_extension_note',
             ),
         );
 

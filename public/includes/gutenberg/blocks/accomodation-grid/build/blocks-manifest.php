@@ -26,7 +26,7 @@ return array(
 				'gradients' => true
 			)
 		),
-		'textdomain' => 'accomodation-grid',
+		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
 		'viewScript' => 'file:./view.js',
 		'render' => 'file:./render.php',

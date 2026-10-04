@@ -134,15 +134,31 @@ class ESHB_Native_Account_Ajax {
             $display = trim( $first . ' ' . $last );
         }
 
+        // The email is not changed here: bookings are matched to accounts by
+        // email, so a new address must be confirmed from its own inbox first.
+        $user          = wp_get_current_user();
+        $email_changed = strtolower( $email ) !== strtolower( $user->user_email );
+
         $result = wp_update_user( [
             'ID'           => $user_id,
             'first_name'   => $first,
             'last_name'    => $last,
             'display_name' => $display,
-            'user_email'   => $email,
         ] );
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( [ 'message' => $result->get_error_message() ] );
+        }
+
+        if ( $email_changed ) {
+            $sent = $this->customer->request_email_change( $user, $email );
+            if ( is_wp_error( $sent ) ) {
+                wp_send_json_error( [ 'message' => $sent->get_error_message() ] );
+            }
+            wp_send_json_success( [ 'message' => sprintf(
+                /* translators: %s: new email address */
+                __( 'Your details have been saved. We sent a confirmation link to %s — your email address will change once you open it.', 'easy-hotel' ),
+                $email
+            ) ] );
         }
 
         wp_send_json_success( [ 'message' => __( 'Your details have been saved.', 'easy-hotel' ) ] );

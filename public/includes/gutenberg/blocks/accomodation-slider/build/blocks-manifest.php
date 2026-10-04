@@ -26,7 +26,7 @@ return array(
 				'gradients' => true
 			)
 		),
-		'textdomain' => 'accomodation-slider',
+		'textdomain' => 'easy-hotel',
 		'editorScript' => 'file:./index.js',
 		'script' => 'file:./view.js',
 		'viewScript' => 'file:./view.js',

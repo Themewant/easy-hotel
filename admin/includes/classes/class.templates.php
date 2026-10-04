@@ -55,6 +55,9 @@ class ESHB_Templates {
                 }
             }
 
+            // The style is part of an include path; only accept known templates.
+            $template_style = ESHB_Helper::eshb_allowed_style( $template_style, [ 'style-one', 'style-two' ], 'style-one' );
+
             // Get the page ID from the plugin settings
             $page_id = $eshb_settings['archive-page'];
 

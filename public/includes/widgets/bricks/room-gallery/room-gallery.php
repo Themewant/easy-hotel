@@ -7,6 +7,8 @@ class Eshb_Room_Gallery_Widget extends \Bricks\Element {
 	public $name         = 'eshb-room-room-gallery'; // Make sure to prefix your elements
 	public $icon         = 'ti-header'; // Themify icon font class
 	public $tag          = 'div';
+	// Called by the Bricks builder after each re-render (see public/assets/js/swiper-init.js).
+	public $scripts      = [ 'eshbInitSwipers' ];
 
 
     /**
@@ -421,6 +423,11 @@ class Eshb_Room_Gallery_Widget extends \Bricks\Element {
     }
 
     
+    public function enqueue_scripts() {
+        // Swiper and the plugin styles, loaded only where this element is used.
+        eshb_enqueue_frontend_assets();
+    }
+
     public function render()
     {
         $settings = $this->settings;
@@ -459,39 +466,31 @@ class Eshb_Room_Gallery_Widget extends \Bricks\Element {
         $unique          = wp_rand(2012, 35120);
      
         if ($room_slider_autoplay == 'true') {
-            $room_slider_autoplay = 'autoplay: { ';
-            $room_slider_autoplay .= 'delay: ' . $interval;
-            if ($pauseOnHover == 'true') {
-                $room_slider_autoplay .= ', pauseOnMouseEnter: true';
-            } else {
-                $room_slider_autoplay .= ', pauseOnMouseEnter: false';
-            }
-            if ($pauseOnInter == 'true') {
-                $room_slider_autoplay .= ', disableOnInteraction: true';
-            } else {
-                $room_slider_autoplay .= ', disableOnInteraction: false';
-            }
-            $room_slider_autoplay .= ' }';
+            $room_slider_autoplay = array(
+                'delay'                => (int) $interval,
+                'pauseOnMouseEnter'    => $pauseOnHover == 'true',
+                'disableOnInteraction' => $pauseOnInter == 'true',
+            );
         } else {
-            $room_slider_autoplay = 'autoplay: false';
+            $room_slider_autoplay = false;
         }
 
-        $effect = $settings['rt_pslider_effect'];
+        $effect = $settings['rt_pslider_effect'] ?? '';
 
         if ($effect == 'fade') {
-            $seffect = "effect: 'fade', fadeEffect: { crossFade: true, },";
-        } elseif ($effect == 'cube') {
-            $seffect = "effect: 'cube',";
-        } elseif ($effect == 'flip') {
-            $seffect = "effect: 'flip',";
-        } elseif ($effect == 'coverflow') {
-            $seffect = "effect: 'coverflow',";
+            $seffect = array( 'effect' => 'fade', 'fadeEffect' => array( 'crossFade' => true ) );
         } elseif ($effect == 'creative') {
-            $seffect = "effect: 'creative', creativeEffect: { prev: { translate: [0, 0, -400], }, next: { translate: ['100%', 0, 0], }, },";
-        } elseif ($effect == 'cards') {
-            $seffect = "effect: 'cards',";
+            $seffect = array(
+                'effect'         => 'creative',
+                'creativeEffect' => array(
+                    'prev' => array( 'translate' => array( 0, 0, -400 ) ),
+                    'next' => array( 'translate' => array( '100%', 0, 0 ) ),
+                ),
+            );
+        } elseif ( in_array( $effect, array( 'cube', 'flip', 'coverflow', 'cards' ), true ) ) {
+            $seffect = array( 'effect' => $effect );
         } else {
-            $seffect = '';
+            $seffect = array();
         }
 
 
@@ -499,50 +498,50 @@ class Eshb_Room_Gallery_Widget extends \Bricks\Element {
 
         $accomodation_id = get_the_ID();
         ?>
-        <div <?php echo esc_attr($this->render_attributes('_root')) ?>
-            <?php echo esc_html($ESHB_View->eshb_get_gallery_html($accomodation_id, $unique, $thumbnail_size, $room_sliderDots, $room_sliderNav)); ?>
-        ?>
+        <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Bricks escapes each attribute value in render_attributes(). ?>
+        <div <?php echo $this->render_attributes('_root'); ?>>
+            <?php $ESHB_View->eshb_get_gallery_html($accomodation_id, $unique, $thumbnail_size, $room_sliderDots, $room_sliderNav); // Prints the gallery itself. ?>
         </div>
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                setTimeout(() => {
-                    var swiper<?php echo esc_attr($unique); ?><?php echo esc_attr($unique); ?> = new Swiper(".has-accomodation-gallery-<?php echo esc_attr($unique); ?>", {
-                    slidesPerView: 1,
-                    <?php echo esc_attr($seffect); ?>
-                    speed: <?php echo esc_attr($autoplaySpeed); ?>,
-                    slidesPerGroup: 1,
-                    loop: <?php echo esc_attr($infinite); ?>,
-                    <?php echo esc_attr($room_slider_autoplay); ?>,
-                    spaceBetween: <?php echo esc_attr($item_gap); ?>,
-                    centeredSlides: <?php echo esc_attr($centerMode); ?>,
-                    <?php
-                        if ($room_sliderNav == 'true') {
-                            echo 'navigation: { nextEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-next", prevEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-prev", },';
-                        }
-                    ?>
-                    <?php if ($room_sliderDots == 'true') { ?>
-                        pagination: {
-                            el: ".has-accomodation-gallery-<?php echo esc_attr($unique); ?> .swiper-pagination",
-                            clickable: true,
-                        },
-                    <?php } ?>
-                    breakpoints: {
-                        <?php
-                                echo (!empty($col_xs)) ?  '575: { slidesPerView: ' . esc_attr($col_xs) . ' },' : '';
-                                echo (!empty($col_sm)) ?  '767: { slidesPerView: ' . esc_attr($col_sm) . ' },' : '';
-                                echo (!empty($col_md)) ?  '991: { slidesPerView: ' . esc_attr($col_md) . ' },' : '';
-                                echo (!empty($col_lg)) ?  '1199: { slidesPerView: ' . esc_attr($col_lg) . ' },' : '';
-                                ?>
-                        1399: {
-                            slidesPerView: <?php echo esc_attr($col_xl); ?>,
-                            spaceBetween: <?php echo esc_attr($item_gap); ?>
-                        }
-                    }
-                });
-                }, 2000);
-                
-            });
-        </script>
         <?php
+        $gallery_selector = '.has-accomodation-gallery-' . $unique;
+
+        $breakpoints = array();
+        foreach ( array( 575 => $col_xs, 767 => $col_sm, 991 => $col_md, 1199 => $col_lg ) as $width => $cols ) {
+            if ( ! empty( $cols ) ) {
+                $breakpoints[ $width ] = array( 'slidesPerView' => (float) $cols );
+            }
+        }
+        $breakpoints[1399] = array(
+            'slidesPerView' => (float) $col_xl,
+            'spaceBetween'  => (int) $item_gap,
+        );
+
+        $options = array_merge(
+            array( 'slidesPerView' => 1 ),
+            $seffect,
+            array(
+                'speed'          => (int) $autoplaySpeed,
+                'slidesPerGroup' => 1,
+                'loop'           => $infinite === 'true',
+                'autoplay'       => $room_slider_autoplay,
+                'spaceBetween'   => (int) $item_gap,
+                'centeredSlides' => $centerMode === 'true',
+            )
+        );
+        if ( $room_sliderNav == 'true' ) {
+            $options['navigation'] = array(
+                'nextEl' => $gallery_selector . ' .swiper-button-next',
+                'prevEl' => $gallery_selector . ' .swiper-button-prev',
+            );
+        }
+        if ( $room_sliderDots == 'true' ) {
+            $options['pagination'] = array(
+                'el'        => $gallery_selector . ' .swiper-pagination',
+                'clickable' => true,
+            );
+        }
+        $options['breakpoints'] = $breakpoints;
+
+        eshb_print_swiper_config( $gallery_selector, $options );
     }
 }

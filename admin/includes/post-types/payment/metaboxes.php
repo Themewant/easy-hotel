@@ -88,11 +88,6 @@ if( class_exists( 'ESHB' ) ) {
     }
 
     $eshb_booking_id = '';
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-    if(!empty($_GET['booking'])) {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        $eshb_booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
-    }
 
     $eshb_saved_country = !empty($post_id) ? ESHB_Helper::get_current_payment_customer_metadata( $post_id, 'country' ) : ESHB_Helper::get_current_booking_customer_metadata( $eshb_booking_id, 'country' );
     $eshb_saved_state = !empty($post_id) ? ESHB_Helper::get_current_payment_customer_metadata( $post_id, 'state' ) : ESHB_Helper::get_current_booking_customer_metadata( $eshb_booking_id, 'state' );
@@ -100,20 +95,6 @@ if( class_exists( 'ESHB' ) ) {
     
     $eshb_saved_state_name = !empty(ESHB_Helper::eshb_get_wc_state_city_name($eshb_saved_country, $eshb_saved_state)) ? ESHB_Helper::eshb_get_wc_state_city_name($eshb_saved_country, $eshb_saved_state) : $eshb_saved_state;
     $eshb_saved_city_name = !empty(ESHB_Helper::eshb_get_wc_state_city_name($eshb_saved_country, $eshb_saved_city)) ? ESHB_Helper::eshb_get_wc_state_city_name($eshb_saved_country, $eshb_saved_city) : $eshb_saved_city;
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-    $eshb_default_payment_amount = !empty($_GET['amount']) ? sanitize_text_field( wp_unslash( $_GET['amount'] ) ) : 0;
-
-    $eshb_current_booking_customer_metadata = [];
-    // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-    if(!empty($_GET['booking'])){
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-        $eshb_booking_id = sanitize_text_field( wp_unslash( $_GET['booking'] ) );
-        $eshb_current_booking_customer_metadata = ESHB_Helper::get_current_booking_customer_metadata($eshb_booking_id, '', '');
-        $eshb_saved_state_name = $eshb_current_booking_customer_metadata['state'] ?? '';
-        $eshb_saved_city_name = $eshb_current_booking_customer_metadata['city'] ?? '';
-    }
-
-    
 
     // Set a unique slug-like ID
     $eshb_prefix = 'eshb_payment_metaboxes';
@@ -147,8 +128,6 @@ if( class_exists( 'ESHB' ) ) {
                 //'placeholder' => 'Enter booking id',
                 //'class'       => 'hidden-metabox'
                 'options'     => ESHB_Helper::eshb_get_booking_ids(),
-                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-                'default'     => !empty($_GET['booking']) ? sanitize_text_field( wp_unslash( $_GET['booking'] ) ) : '',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
                 'class'    => 'required-field',
@@ -192,7 +171,6 @@ if( class_exists( 'ESHB' ) ) {
                 'min'         => 1,
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
-                'default'     => $eshb_default_payment_amount,
                 'class'    => 'required-field',
             ),
             array(
@@ -257,7 +235,6 @@ if( class_exists( 'ESHB' ) ) {
                 'title'       => 'First Name',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['first_name'] ?? '',
                 'class'    => 'required-field',
             ),
             array(
@@ -266,7 +243,6 @@ if( class_exists( 'ESHB' ) ) {
                 'title'       => 'Last Name',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['last_name'] ?? '',
                 'class'    => 'required-field',
             ),
             array(
@@ -275,7 +251,6 @@ if( class_exists( 'ESHB' ) ) {
                 'title'       => 'Email',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['email'] ?? '',
                 'class'    => 'required-field',
             ),
             array(
@@ -284,7 +259,6 @@ if( class_exists( 'ESHB' ) ) {
                 'title'       => 'phone',
                 'validate' => 'eshb_validate_for_required', // Required validation
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['phone'] ?? '',
                 'class'    => 'required-field',
             ),
             array(
@@ -320,27 +294,23 @@ if( class_exists( 'ESHB' ) ) {
                 'id'          => 'city',
                 'type'        => 'text',
                 'title'       => 'City',
-                'default' => $eshb_current_booking_customer_metadata['city'] ?? '',
             ),
             array(
                 'id'          => 'address_1',
                 'type'        => 'text',
                 'title'       => 'Address line one',
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['address_1'] ?? '',
             ),
             array(
                 'id'          => 'address_2',
                 'type'        => 'text',
                 'title'       => 'Address line two',
-                'default' => $eshb_current_booking_customer_metadata['address_2'] ?? '',
             ),
             array(
                 'id'          => 'postcode',
                 'type'        => 'text',
                 'title'       => 'Postcode / ZIP',
                 'required' => true,
-                'default' => $eshb_current_booking_customer_metadata['postcode'] ?? '',
             ),
         )
     ) );

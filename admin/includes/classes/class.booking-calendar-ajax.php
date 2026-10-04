@@ -18,7 +18,15 @@ class ESHB_Booking_Calendar_Ajax {
     public function eshb_get_booking_data() {
 
         check_ajax_referer( ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action'), 'nonce' );
-  
+
+        // The nonce above is printed on every front-end page, so it proves
+        // nothing about who is asking. Only staff who may edit this booking
+        // get its guest details (name, email, phone, address, payments).
+        $requested_post_id = isset( $_REQUEST['post'] ) ? absint( wp_unslash( $_REQUEST['post'] ) ) : 0;
+        if ( ! $requested_post_id || ! current_user_can( 'edit_post', $requested_post_id ) ) {
+            wp_die( esc_html__( 'You do not have permission to view this booking.', 'easy-hotel' ), '', [ 'response' => 403 ] );
+        }
+
         if (isset($_REQUEST['post']) && get_post_type(sanitize_text_field(wp_unslash($_REQUEST['post']))) == 'eshb_booking') {
             $post_id = intval(sanitize_text_field(wp_unslash($_REQUEST['post'])));
            

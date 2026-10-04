@@ -52,8 +52,6 @@
             let sourceType = $(this).data('source-type');
             let bookingInfo = '';
 
-            console.log(bookingId);	
-           
             $.ajax({
                 url: eshb_ajax.ajaxurl,
                 type: 'POST',
@@ -63,7 +61,6 @@
                     nonce: eshb_ajax.nonce
                 },
                 success: function (response) {
-                    console.log(response);
                     if (response) {
                         
                         

@@ -45,6 +45,10 @@ function eshb_service_post_type_init() {
         'supports'           => array( 'title' ),
     );
  
+    // Back-office records: only hotel managers may edit them.
+    $args['capabilities'] = eshb_admin_post_type_capabilities( 'eshb_service' );
+    $args['map_meta_cap'] = true;
+
     register_post_type( 'eshb_service', $args );
 }
  

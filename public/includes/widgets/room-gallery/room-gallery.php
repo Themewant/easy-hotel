@@ -633,39 +633,31 @@ class Eshb_Room_Gallery_Widget  extends \Elementor\Widget_Base {
         $unique          = wp_rand(2012, 35120);
      
         if ($room_gallery_autoplay == 'true') {
-            $room_gallery_autoplay = 'autoplay: { ';
-            $room_gallery_autoplay .= 'delay: ' . $interval;
-            if ($pauseOnHover == 'true') {
-                $room_gallery_autoplay .= ', pauseOnMouseEnter: true';
-            } else {
-                $room_gallery_autoplay .= ', pauseOnMouseEnter: false';
-            }
-            if ($pauseOnInter == 'true') {
-                $room_gallery_autoplay .= ', disableOnInteraction: true';
-            } else {
-                $room_gallery_autoplay .= ', disableOnInteraction: false';
-            }
-            $room_gallery_autoplay .= ' }';
+            $room_gallery_autoplay = array(
+                'delay'                => (int) $interval,
+                'pauseOnMouseEnter'    => $pauseOnHover == 'true',
+                'disableOnInteraction' => $pauseOnInter == 'true',
+            );
         } else {
-            $room_gallery_autoplay = 'autoplay: false';
+            $room_gallery_autoplay = false;
         }
 
         $effect = $settings['room_gallery_effect'];
 
         if ($effect == 'fade') {
-            $seffect = "effect: 'fade', fadeEffect: { crossFade: true, },";
-        } elseif ($effect == 'cube') {
-            $seffect = "effect: 'cube',";
-        } elseif ($effect == 'flip') {
-            $seffect = "effect: 'flip',";
-        } elseif ($effect == 'coverflow') {
-            $seffect = "effect: 'coverflow',";
+            $seffect = array( 'effect' => 'fade', 'fadeEffect' => array( 'crossFade' => true ) );
         } elseif ($effect == 'creative') {
-            $seffect = "effect: 'creative', creativeEffect: { prev: { translate: [0, 0, -400], }, next: { translate: ['100%', 0, 0], }, },";
-        } elseif ($effect == 'cards') {
-            $seffect = "effect: 'cards',";
+            $seffect = array(
+                'effect'         => 'creative',
+                'creativeEffect' => array(
+                    'prev' => array( 'translate' => array( 0, 0, -400 ) ),
+                    'next' => array( 'translate' => array( '100%', 0, 0 ) ),
+                ),
+            );
+        } elseif ( in_array( $effect, array( 'cube', 'flip', 'coverflow', 'cards' ), true ) ) {
+            $seffect = array( 'effect' => $effect );
         } else {
-            $seffect = '';
+            $seffect = array();
         }
 
     
@@ -680,44 +672,45 @@ class Eshb_Room_Gallery_Widget  extends \Elementor\Widget_Base {
       
        
 
-        ?>
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                var swiper<?php echo esc_attr($unique); ?><?php echo esc_attr($unique); ?> = new Swiper(".has-accomodation-gallery-<?php echo esc_attr($unique); ?>", {
-                    slidesPerView: 1,
-                    <?php echo esc_attr($seffect); ?>
-                    speed: <?php echo esc_attr($autoplaySpeed); ?>,
-                    slidesPerGroup: 1,
-                    loop: <?php echo esc_attr($infinite); ?>,
-                    <?php echo esc_attr($room_gallery_autoplay); ?>,
-                    spaceBetween: <?php echo esc_attr($item_gap); ?>,
-                    centeredSlides: <?php echo esc_attr($centerMode); ?>,
-                    <?php
-                        if ($room_galleryNav == 'true') {
-                            echo 'navigation: { nextEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-next", prevEl: ".has-accomodation-gallery-' . esc_attr($unique) . ' .swiper-button-prev", },';
-                        }
-                    ?>
-                    <?php if ($room_galleryDots == 'true') { ?>
-                        pagination: {
-                            el: ".has-accomodation-gallery-<?php echo esc_attr($unique); ?> .swiper-pagination",
-                            clickable: true,
-                        },
-                    <?php } ?>
-                    breakpoints: {
-                        <?php
-                                echo (!empty($col_xs)) ?  '575: { slidesPerView: ' . esc_attr($col_xs) . ' },' : '';
-                                echo (!empty($col_sm)) ?  '767: { slidesPerView: ' . esc_attr($col_sm) . ' },' : '';
-                                echo (!empty($col_md)) ?  '991: { slidesPerView: ' . esc_attr($col_md) . ' },' : '';
-                                echo (!empty($col_lg)) ?  '1199: { slidesPerView: ' . esc_attr($col_lg) . ' },' : '';
-                                ?>
-                        1399: {
-                            slidesPerView: <?php echo esc_attr($col_xl); ?>,
-                            spaceBetween: <?php echo esc_attr($item_gap); ?>
-                        }
-                    }
-                });
-            });
-        </script>
-        <?php
+        $gallery_selector = '.has-accomodation-gallery-' . $unique;
+
+        $breakpoints = array();
+        foreach ( array( 575 => $col_xs, 767 => $col_sm, 991 => $col_md, 1199 => $col_lg ) as $width => $cols ) {
+            if ( ! empty( $cols ) ) {
+                $breakpoints[ $width ] = array( 'slidesPerView' => (float) $cols );
+            }
+        }
+        $breakpoints[1399] = array(
+            'slidesPerView' => (float) $col_xl,
+            'spaceBetween'  => (int) $item_gap,
+        );
+
+        $options = array_merge(
+            array( 'slidesPerView' => 1 ),
+            $seffect,
+            array(
+                'speed'          => (int) $autoplaySpeed,
+                'slidesPerGroup' => 1,
+                'loop'           => $infinite === 'true',
+                'autoplay'       => $room_gallery_autoplay,
+                'spaceBetween'   => (int) $item_gap,
+                'centeredSlides' => $centerMode === 'true',
+            )
+        );
+        if ( $room_galleryNav == 'true' ) {
+            $options['navigation'] = array(
+                'nextEl' => $gallery_selector . ' .swiper-button-next',
+                'prevEl' => $gallery_selector . ' .swiper-button-prev',
+            );
+        }
+        if ( $room_galleryDots == 'true' ) {
+            $options['pagination'] = array(
+                'el'        => $gallery_selector . ' .swiper-pagination',
+                'clickable' => true,
+            );
+        }
+        $options['breakpoints'] = $breakpoints;
+
+        eshb_print_swiper_config( $gallery_selector, $options );
     }
 }

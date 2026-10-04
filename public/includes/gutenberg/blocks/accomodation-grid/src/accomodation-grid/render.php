@@ -11,7 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 $eshb_attributes = $attributes ?? [];
 
 $eshb_room_columns = $eshb_attributes['room_columns'] ?? 3;
-$eshb_grid_style = $eshb_attributes['grid_style'] ?? 'default';
+// Part of an include path below; only accept the styles the block offers.
+$eshb_grid_style = ESHB_Helper::eshb_allowed_style( $eshb_attributes['grid_style'] ?? 'default', [ 'default', '1', '2', '3' ], 'default' );
 $eshb_grid_style = 'style'. $eshb_grid_style;
 $eshb_btn_text  = $eshb_attributes['btn_text'] ?? 'Book Now';
 $eshb_pricing_prefix = '';

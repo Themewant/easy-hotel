@@ -7,87 +7,54 @@ class ESHB_Admin_Booking {
         add_filter( 'eshb_eshb_booking_metaboxes_save', [$this, 'update_booking_metaboxes'], 10, 3 );
     }
 
+    /**
+     * WooCommerce order linked to a booking, or 0.
+     *
+     * A guest's checkout stores the link in the booking's own
+     * `eshb_booking_metaboxes['order_id']`; an order created for an
+     * admin-entered booking (EHB Manual Booking) is stored in
+     * `_order_post_created`. Only the second used to be read, so saving a
+     * checkout booking in the admin cleared its link, and the booking was
+     * then treated as having no order (EHB Manual Booking would create a
+     * second one).
+     *
+     * @param int        $booking_id
+     * @param array|null $metaboxes Booking meta to read first (e.g. the data being saved).
+     * @return int
+     */
+    public static function get_linked_order_id( $booking_id, $metaboxes = null ) {
+        if ( is_array( $metaboxes ) && ! empty( $metaboxes['order_id'] ) ) {
+            return absint( $metaboxes['order_id'] );
+        }
+
+        $stored = get_post_meta( $booking_id, 'eshb_booking_metaboxes', true );
+        if ( is_array( $stored ) && ! empty( $stored['order_id'] ) ) {
+            return absint( $stored['order_id'] );
+        }
+
+        return absint( get_post_meta( $booking_id, '_order_post_created', true ) );
+    }
+
     function update_booking_metaboxes ($data, $post_id, $obj) {
-        
+
         if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action') ) ) {
             $new_status = '';
         }else{
             $new_status = !empty($_POST['post_status']) ? sanitize_text_field( wp_unslash( $_POST['post_status'] ) ) : '';
         }
 
-        $order_id = get_post_meta($post_id, '_order_post_created', true);
-
         $eshb_booking_metaboxes = $data;
-        
-        $assigned_order_id = $eshb_booking_metaboxes['order_id'] ?? false;
 
         if(!empty($new_status)){
             $eshb_booking_metaboxes['booking_status'] = $new_status;
         }
-        $eshb_booking_metaboxes['order_id'] = $order_id;
+
+        // Keep the WooCommerce order link: the posted hidden field, else what
+        // is already stored. Never overwrite it with an empty value.
+        $order_id = self::get_linked_order_id( $post_id, $data );
+        $eshb_booking_metaboxes['order_id'] = $order_id ? $order_id : '';
 
         return $eshb_booking_metaboxes;
-    }
-
-    function create_woocommerce_order($product_id, $subtotal, $total_paid = 0, $address = '', $status = 'processing', $item_meta = []) {
-        // 1. Create the order
-        $order = wc_create_order();
-
-        // 2. Add products (product_id, quantity)
-        $item_id = $order->add_product( wc_get_product( $product_id ), 1 ); 
-
-        // 3. Calculate totals
-        $order->calculate_totals();
-
-        // 4. Set customer billing details
-        if ( ! empty($address) && is_array($address) ) {
-            $order->set_address( $address, 'billing' );
-        }
-
-        // 5. Set payment method
-        $order->set_payment_method( 'cod' ); 
-
-        // 6. Get the line item object
-        $item = $order->get_item( $item_id );
-
-        // 7. Set a custom line subtotal/total if needed
-        if ( $item && $item instanceof WC_Order_Item_Product ) {
-
-            // Set custom item totals (without tax)
-            $item->set_subtotal( $subtotal );
-            $item->set_total( $subtotal );
-
-            // --- Add/Update line item meta ---
-            // Pass associative array: ['_internal_note' => 'x', 'room_type' => 'Deluxe']
-            if ( ! empty( $item_meta ) && is_array( $item_meta ) ) {
-                foreach ( $item_meta as $key => $value ) {
-                    // update_meta_data prevents duplicate keys; use add_meta_data for duplicates
-                    $item->update_meta_data( $key, $value );
-                }
-            }
-
-            // Save the line item with meta and totals
-            $item->save();
-        }
-
-
-        // 8. Set the order total
-        $order->set_total( $total_paid );  // without tax
-
-        // 9. Add custom order meta (loop through meta_data array)
-        if ( ! empty($meta_data) && is_array($meta_data) ) {
-            foreach ($meta_data as $key => $value) {
-                $order->update_meta_data($key, $value);
-            }
-        }
-
-        // 10. (Optional) Set status
-        $order->update_status( $status, 'Order created programmatically.' );
-
-        // 11. Save order with meta
-        $order->save();
-
-        return $order->get_id(); // Returns the order ID
     }
 
     function update_woocommerce_order($order_id, $subtotal = '', $total_paid = '', $status = 'processing', $product_id = '', $address = '', $item_meta = []) {
@@ -210,7 +177,7 @@ class ESHB_Admin_Booking {
         }
 
         $processing = true;
-        $order_id = get_post_meta($booking_id, '_order_post_created', true);
+        $order_id = self::get_linked_order_id( $booking_id );
 
         $booking_status = $booking->post_status;
         
@@ -235,9 +202,12 @@ class ESHB_Admin_Booking {
         $room_quantity = !empty($eshb_booking_metaboxes['room_quantity']) ? $eshb_booking_metaboxes['room_quantity'] : 1;
         $extra_bed_quantity = !empty($eshb_booking_metaboxes['extra_bed_quantity']) ? $eshb_booking_metaboxes['extra_bed_quantity'] : 0;
         $adult_quantity = !empty($eshb_booking_metaboxes['adult_quantity']) ? $eshb_booking_metaboxes['adult_quantity'] : 1;
-        $children_quantity = !empty($eshb_booking_metaboxes['children_quantity']) ? $eshb_booking_metaboxes['children_quantity'] : 1;
-        $start_date = !empty($eshb_booking_metaboxes['start_date']) ? $eshb_booking_metaboxes['start_date'] : '';
-        $end_date = !empty($eshb_booking_metaboxes['start_date']) ? $eshb_booking_metaboxes['end_date'] : '';
+        $children_quantity = !empty($eshb_booking_metaboxes['children_quantity']) ? $eshb_booking_metaboxes['children_quantity'] : 0;
+        // The booking stores its dates as booking_start_date / booking_end_date;
+        // the old start_date / end_date keys don't exist and wrote empty dates
+        // onto the order once the order link stopped being lost.
+        $start_date = !empty($eshb_booking_metaboxes['booking_start_date']) ? $eshb_booking_metaboxes['booking_start_date'] : '';
+        $end_date = !empty($eshb_booking_metaboxes['booking_end_date']) ? $eshb_booking_metaboxes['booking_end_date'] : '';
         $dates = !empty($eshb_booking_metaboxes['dates']) ? $eshb_booking_metaboxes['dates'] : '';
         $details_html = !empty($eshb_booking_metaboxes['details_html']) ? $eshb_booking_metaboxes['details_html'] : '';
         $extra_services = !empty($eshb_booking_metaboxes['extra_services']) ? $eshb_booking_metaboxes['extra_services'] : '';
@@ -306,7 +276,27 @@ class ESHB_Admin_Booking {
                     }
 
 
-                    if ($booking_type == 'woocommerce' && class_exists( 'woocommerce' )) {
+                    /**
+                     * Whether saving a booking rewrites its WooCommerce order: the
+                     * first line item is replaced and the order total is set to the
+                     * booking's total paid.
+                     *
+                     * On by default only for orders created for an admin-entered
+                     * booking (EHB Manual Booking stores those in
+                     * `_order_post_created`), whose order is meant to follow the
+                     * booking. A guest's checkout order is never rewritten: it may
+                     * hold other rooms, and its total would become the amount paid
+                     * so far (0 for an unpaid bank transfer). Its status still
+                     * follows the booking through ESHB_Booking's status sync.
+                     *
+                     * @param bool $rewrite    Default: true for admin-created orders.
+                     * @param int  $order_id   Linked WooCommerce order.
+                     * @param int  $booking_id Booking being saved.
+                     */
+                    $admin_created_order = absint( get_post_meta( $booking_id, '_order_post_created', true ) ) === (int) $order_id;
+                    $rewrite_order = apply_filters( 'eshb_admin_booking_rewrite_woocommerce_order', $admin_created_order, $order_id, $booking_id );
+
+                    if ($rewrite_order && $booking_type == 'woocommerce' && class_exists( 'woocommerce' )) {
                         $product_id = get_post_meta($accomodation_id, '_woocommerce_product_id', true);
                         $this->update_woocommerce_order($order_id, $subtotal_price, $total_paid, $booking_status, $product_id, $address, $meta_data);
 
@@ -321,35 +311,25 @@ class ESHB_Admin_Booking {
                 return;
             }else{
 
-                if ($booking_type == 'woocommerce' && class_exists( 'woocommerce' )) {
+                /**
+                 * Fires when an admin saves a booking that has no order linked yet.
+                 *
+                 * @param int   $booking_id Booking post ID.
+                 * @param array $args       Prepared booking data.
+                 */
+                do_action( 'eshb_admin_booking_saved_without_order', $booking_id, array(
+                    'booking_type'    => $booking_type,
+                    'booking_status'  => $booking_status,
+                    'accomodation_id' => $accomodation_id,
+                    'thumbnail_id'    => $thumbnail_id,
+                    'address'         => $address,
+                    'subtotal_price'  => $subtotal_price,
+                    'new_due'         => $new_due,
+                    'meta_data'       => $meta_data,
+                ) );
 
-                    $product_id = ESHB_Helper::get_or_create_woocommerce_product($accomodation_id, $thumbnail_id);
-
-                    // assign product_id to booking post
-                    update_post_meta($booking_id, '_woocommerce_product_id', $product_id);
-
-                    // create a woocommerce order
-                    $order_id = $this->create_woocommerce_order($product_id, $subtotal_price, '', $address, $booking_status, $meta_data);
-                     
-
-                    // update due 
-                    if($new_due > 0) {
-                        update_post_meta($order_id, 'eshb_booking_due_amount', $new_due);
-                    }
-
-                    // assign accomodation_id to woocommerce product
-                    update_post_meta($product_id, '_accomodation_id', $accomodation_id);
-                    update_post_meta($order_id, '_booking_post_created', $booking_id);
-                    update_post_meta($booking_id, '_order_post_created', $order_id);
-
-                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public hook name kept for backward compatibility with existing integrations.
-                    do_action( 'after_created_manual_booking', ['booking_id' => $booking_id, 'order_id' => $order_id, 'due' => $new_due] );
-
-                  
-                    
-                    $processing = false; 
-                    return;
-                } 
+                $processing = false;
+                return;
             }
         }
     }

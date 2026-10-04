@@ -2,6 +2,23 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Helper {
 
+    /**
+     * Return $value only when it is one of $allowed, otherwise $default.
+     *
+     * Style values from block attributes, page-builder settings and the
+     * URL end up in include paths, so they must be matched against the
+     * known styles instead of only being sanitized (which keeps "../").
+     *
+     * @param mixed    $value   Requested style.
+     * @param string[] $allowed Known style values.
+     * @param string   $default Fallback style.
+     * @return string
+     */
+    public static function eshb_allowed_style( $value, array $allowed, $default ) {
+        $value = is_scalar( $value ) ? (string) $value : '';
+        return in_array( $value, $allowed, true ) ? $value : $default;
+    }
+
     public static function eshb_nonce_field( $action = 'eshb_action', $field = 'eshb_nonce', $echo = true ) {
         // Generate site-specific action using home_url()
         $nonce_action = sanitize_key( $action ) . '_' . md5( home_url() );
@@ -35,6 +52,25 @@ class ESHB_Helper {
     public static function generate_secure_nonce_action($action) {
         $nonce_action = $action . '_' . md5( home_url() );
         return $nonce_action;
+    }
+
+    /**
+     * All booking IDs created for a WooCommerce order. Orders placed before
+     * `_eshb_booking_ids` existed only have the single `_booking_post_created`
+     * link (the last booking of the order).
+     *
+     * @param int $order_id
+     * @return int[]
+     */
+    public static function eshb_get_order_booking_ids( $order_id ) {
+        $ids = get_post_meta( $order_id, '_eshb_booking_ids', true );
+        $ids = is_array( $ids ) ? array_map( 'intval', $ids ) : [];
+
+        // Always include the single link too, so a list that is still being
+        // back-filled (ESHB_WC_Booking_Repair) never drops it.
+        $ids[] = (int) get_post_meta( $order_id, '_booking_post_created', true );
+
+        return array_values( array_unique( array_filter( $ids ) ) );
     }
 
     public static function eshb_insert_booking($order_id, $booking_status, $cart_item_data) {
@@ -79,7 +115,14 @@ class ESHB_Helper {
             
             // Update Order Status
             $new_status = $booking_status;
+            // Single link kept as-is for add-ons that read it (Deposit, PDF
+            // Invoice, Mailchimp...); it ends up holding the last booking.
             update_post_meta($order_id, '_booking_post_created', $post_id);
+            // Every booking of the order, so order status changes reach all
+            // of them and not just the last one.
+            $order_booking_ids   = self::eshb_get_order_booking_ids( $order_id );
+            $order_booking_ids[] = (int) $post_id;
+            update_post_meta( $order_id, '_eshb_booking_ids', array_values( array_unique( array_map( 'intval', $order_booking_ids ) ) ) );
 
 
             do_action( 'eshb_after_booking_created', $post_id, $order_id );
@@ -1237,7 +1280,7 @@ class ESHB_Helper {
     }
 
     public static function eshb_capture_payment ($order_id){
-        
+
         if(!$order_id) return;
 
         $order = wc_get_order( $order_id );
@@ -1246,32 +1289,45 @@ class ESHB_Helper {
         $order_status = $order->get_status();
         $due = (float) ( get_post_meta( $order_id, 'eshb_booking_due_amount', true ) ?: 0 );
         $last_payment_type = get_post_meta( $order_id, 'last_payment_type', true );
-        
+
         if($due < 1 && $order_status == 'completed'){
 		    $last_payment_type = 'full_payment';
 		}
-        
-        if(!$last_payment_type) return;
-        
-        $booking_id = get_post_meta($order_id, '_booking_post_created', true);
-        if(!$booking_id) return;
-        
-        $payment_status = get_post_meta($booking_id, 'payment_status', true);
-       
-        $eshb_booking_metaboxes = get_post_meta($booking_id, 'eshb_booking_metaboxes', true);
-        $total_price = ESHB_Helper::get_total_price_from_order_meta($order);
-        $total_paid = !empty($eshb_booking_metaboxes['total_paid']) ? $eshb_booking_metaboxes['total_paid'] : 0;
 
-        if($payment_status == 'completed' && $total_paid > 0) {
+        if(!$last_payment_type) return;
+
+        // Every booking of the order. A multi-room order used to put the whole
+        // payment on its last booking and leave the others unpaid.
+        $booking_ids = self::eshb_get_order_booking_ids( $order_id );
+        if ( empty( $booking_ids ) ) return;
+
+        $bookings      = [];
+        $paid_so_far   = 0.0;
+        $all_completed = true;
+        foreach ( $booking_ids as $bid ) {
+            $meta = get_post_meta( $bid, 'eshb_booking_metaboxes', true );
+            if ( ! is_array( $meta ) ) continue;
+            $bookings[ $bid ] = $meta;
+            $paid_so_far     += (float) ( $meta['total_paid'] ?? 0 );
+            if ( get_post_meta( $bid, 'payment_status', true ) !== 'completed' ) {
+                $all_completed = false;
+            }
+        }
+        if ( empty( $bookings ) ) return;
+
+        $total_price = ESHB_Helper::get_total_price_from_order_meta($order);
+        $total_paid  = $paid_so_far;
+
+        if($all_completed && $total_paid > 0) {
             return;
         }
 
         if(in_array($last_payment_type, ['initial_deposit', 'remaining_payment']) && $total_paid >= $total_price) {
             return;
         };
-    
 
-        
+
+
         $gateway = $order->get_payment_method();
         $currency = $order->get_currency();
         $fee = 0;
@@ -1280,8 +1336,8 @@ class ESHB_Helper {
         $initial_deposit = get_post_meta( $order_id, 'initial_deposit', true );
         $payment_status = 'completed';
         $new_due = 0;
-        
-        
+
+
         if($last_payment_type == 'initial_deposit'){
             $amount = $initial_deposit;
             $payment_type = 'Initial Deposit';
@@ -1297,19 +1353,6 @@ class ESHB_Helper {
             $total_paid = $total_price;
             $payment_type = 'Full Payment';
         }
-
-        // create payment options
-        $payment_options = [
-            'booking_id' => $booking_id,
-            'transaction_id' => '',
-            'gateway' => $gateway,
-            'gateway_mode' => 'live',
-            'amount' => $amount,
-            'fee' => $fee,
-            'currency' => $currency,
-            'payment_type' => $payment_type,
-        ];
-
 
         $first_name = $order->get_billing_first_name();
         $last_name = $order->get_billing_last_name();
@@ -1336,19 +1379,54 @@ class ESHB_Helper {
             'postcode' => $postcode,
         ];
 
-        $post_title = 'Payment for Booking #' . $booking_id;
+        // Split the amounts over the bookings in proportion to each booking's
+        // own total (the order total is the sum of the same line-item totals).
+        // The last booking takes the rounding remainder so the parts add up.
+        // A single-booking order gets the whole amount, as before.
+        $weights      = self::eshb_order_booking_weights( $bookings );
+        $last_booking = array_key_last( $bookings );
+        $assigned     = [ 'amount' => 0.0, 'paid' => 0.0, 'due' => 0.0 ];
+        $payment_id   = 0;
 
-        // insert payment to eshb_payment posttype
-        $payment_id = wp_insert_post( 
-            [
-                'post_title' => $post_title,
-                'post_type' => 'eshb_payment',
-                'post_status' => $payment_status, 
-            ]
-        );
+        foreach ( $bookings as $booking_id => $eshb_booking_metaboxes ) {
+            $is_last = $booking_id === $last_booking;
+            $share   = [];
+            foreach ( [ 'amount' => (float) $amount, 'paid' => (float) $total_paid, 'due' => (float) $new_due ] as $key => $value ) {
+                $share[ $key ] = $is_last
+                    ? round( $value - $assigned[ $key ], 2 )
+                    : round( $value * $weights[ $booking_id ], 2 );
+                $assigned[ $key ] += $share[ $key ];
+            }
 
-        // update payment metadata if payment success
-        if($payment_id){
+            // create payment options
+            $payment_options = [
+                'booking_id' => $booking_id,
+                'transaction_id' => '',
+                'gateway' => $gateway,
+                'gateway_mode' => 'live',
+                'amount' => $share['amount'],
+                'fee' => $fee,
+                'currency' => $currency,
+                'payment_type' => $payment_type,
+            ];
+
+            $post_title = 'Payment for Booking #' . $booking_id;
+
+            // insert payment to eshb_payment posttype
+            $booking_payment_id = wp_insert_post(
+                [
+                    'post_title' => $post_title,
+                    'post_type' => 'eshb_payment',
+                    'post_status' => $payment_status,
+                ]
+            );
+
+            if ( ! $booking_payment_id || is_wp_error( $booking_payment_id ) ) {
+                continue;
+            }
+            $payment_id = $booking_payment_id;
+
+            // update payment metadata if payment success
             $transaction_id = 'TXN-' . str_pad( $payment_id, 8, '0', STR_PAD_LEFT );
             $payment_options['transaction_id'] = $transaction_id;
             update_post_meta($payment_id, 'eshb_payment_metaboxes', $payment_options);
@@ -1361,39 +1439,65 @@ class ESHB_Helper {
                 array_push($payment_ids, $payment_id);
             }
 
-           
             $eshb_booking_metaboxes['payment_ids'] = $payment_ids;
-            $eshb_booking_metaboxes['total_paid'] = $total_paid;
-            
-            
-            // update due meta 
+            $eshb_booking_metaboxes['total_paid'] = $share['paid'];
+
             if($last_payment_type == 'initial_deposit'){
-                $eshb_booking_metaboxes['due_amount'] = $new_due;
-                update_post_meta($order_id, 'eshb_booking_due_amount', $new_due);
-                update_post_meta($order_id, 'last_payment_type', $last_payment_type);
-            }elseif($last_payment_type == 'remaining_payment'){
-                delete_post_meta( $order_id, 'eshb_booking_due_amount');
-                delete_post_meta( $order_id, 'last_payment_type');
+                $eshb_booking_metaboxes['due_amount'] = $share['due'];
             }
-            
+
             if($new_due < 1 || !$new_due){
                 update_post_meta($booking_id, 'payment_status', 'completed');
             }
 
             // update booking
             update_post_meta($booking_id, 'eshb_booking_metaboxes', $eshb_booking_metaboxes);
-
-
-            // allow other plugins to hook after capture payment
-            do_action('eshb_after_capture_payment', $order_id);
-
-
-            // delete last payment type
-            delete_post_meta( $order_id, 'last_payment_type');
-            delete_post_meta($order_id, 'last_requested_payment_amount');
         }
+
+        if ( ! $payment_id ) {
+            return $payment_id;
+        }
+
+        // Order-level due / payment-type meta: once per order, as before.
+        if($last_payment_type == 'initial_deposit'){
+            update_post_meta($order_id, 'eshb_booking_due_amount', $new_due);
+            update_post_meta($order_id, 'last_payment_type', $last_payment_type);
+        }elseif($last_payment_type == 'remaining_payment'){
+            delete_post_meta( $order_id, 'eshb_booking_due_amount');
+            delete_post_meta( $order_id, 'last_payment_type');
+        }
+
+        // allow other plugins to hook after capture payment
+        do_action('eshb_after_capture_payment', $order_id);
+
+
+        // delete last payment type
+        delete_post_meta( $order_id, 'last_payment_type');
+        delete_post_meta($order_id, 'last_requested_payment_amount');
+
         return $payment_id;
 
+    }
+
+    /**
+     * Share of an order's money for each of its bookings, by booking total.
+     * Equal shares when no booking has a total.
+     *
+     * @param array $bookings booking id => eshb_booking_metaboxes
+     * @return float[] booking id => weight (summing to 1)
+     */
+    public static function eshb_order_booking_weights( array $bookings ) {
+        $totals = [];
+        foreach ( $bookings as $bid => $meta ) {
+            $totals[ $bid ] = max( 0.0, (float) ( $meta['total_price'] ?? 0 ) );
+        }
+
+        $sum     = array_sum( $totals );
+        $weights = [];
+        foreach ( $totals as $bid => $total ) {
+            $weights[ $bid ] = $sum > 0 ? $total / $sum : 1 / count( $totals );
+        }
+        return $weights;
     }
 
     public static function eshb_calculate_time_diff ($start_date, $end_date, $start_time, $end_time) {
@@ -1446,13 +1550,18 @@ class ESHB_Helper {
     
         $date_str = gmdate('Y-m-d', strtotime($date));
     
-        // Fetch all bookings
+        // Bookings that have not ended before this date. Meta is loaded in
+        // one query instead of one get_post_meta() query per booking.
         $bookings = get_posts([
             'post_type'      => 'eshb_booking',
             'posts_per_page' => -1,
-            'post_status'    => ['publish','completed','processing','deposit-payment','pending'],
+            'post_status'    => ['publish','completed','processing','on-hold','deposit-payment','pending'],
             'fields'         => 'ids',
+            'no_found_rows'  => true,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Indexed date key; replaces loading every booking.
+            'meta_query'     => ESHB_Booking_Index::ending_on_or_after_query( $date_str ),
         ]);
+        update_meta_cache( 'post', $bookings );
     
         $booked_slots = [];
         $slot_keys    = []; // Track unique slot keys
@@ -1593,8 +1702,18 @@ class ESHB_Helper {
             $end_date = !empty($_POST['end_date']) ? sanitize_text_field( wp_unslash($_POST['end_date']) ) : '';
         }
 
+        // Callers pass the queried object of any singular page; only an
+        // accommodation has these settings. A plain page (no such meta) gave
+        // get_post_meta() '' and indexing it was a fatal error on PHP 8.
+        if ( $accomodation_id && 'eshb_accomodation' !== get_post_type( $accomodation_id ) ) {
+            $accomodation_id = null;
+        }
+
         if($accomodation_id) {
             $eshb_accomodation_metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
+            if ( ! is_array( $eshb_accomodation_metaboxes ) ) {
+                $eshb_accomodation_metaboxes = [];
+            }
             $available_rooms = $eshb_booking->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
             $available_rooms = $available_rooms > 0 ? $available_rooms : 0;
             $eshb_accomodation_metaboxes['available_rooms'] = $available_rooms;
@@ -1617,10 +1736,11 @@ class ESHB_Helper {
             'maximumAdultAndChildrenCapacity' => __('Maximum Adult and Children Capacity', 'easy-hotel'),
             'maximumTimeSlot' => __('Allowed max time for this slot is', 'easy-hotel'),
             'minimumTimeSlot' => __('Allowed min time for this slot is', 'easy-hotel'),
-            'minNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Minimum', 'easy-hotel'),
-            'maxNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel'),
-            'minNightsErrorMsgAvCal' => __('Requried Minimum Nights:', 'easy-hotel'),
-            'maxNightsErrorMsgAvCal' => __('Requried Maximum Nights:', 'easy-hotel'),
+            'minNightsErrorMsg' => __('Ops! This Reservation has been failed. Required Minimum', 'easy-hotel'),
+            'maxNightsErrorMsg' => __('Ops! This Reservation has been failed. Required Maximum', 'easy-hotel'),
+            'minNightsErrorMsgAvCal' => __('Required Minimum Nights:', 'easy-hotel'),
+            'maxNightsErrorMsgAvCal' => __('Required Maximum Nights:', 'easy-hotel'),
+            'unavailableRangeErrorMsg' => __('Those dates are not available - the stay runs across a date that is already booked. Please choose another check-out date.', 'easy-hotel'),
         ];
 
         $eshb_translations = apply_filters( 'eshb_booking_action_messages', $eshb_translations, [$accomodation_id, $eshb_settings] );
@@ -1717,47 +1837,12 @@ class ESHB_Helper {
      * @return array List of ['start_date','end_date','days','min_nights'].
      */
     public static function get_eshb_session_min_nights_rules($accomodation_id) {
+        /**
+         * Season "Minimum Nights" rules come from an extension; none by default.
+         */
+        $rules = apply_filters( 'eshb_session_min_nights_rules', array(), $accomodation_id );
 
-        $all_week = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-
-        $query = new WP_Query( array(
-            'post_type'      => 'eshb_session',
-            'post_status'    => 'publish',
-            'posts_per_page' => -1,
-        ) );
-
-        $rules = [];
-
-        if ($query->have_posts()) {
-            while ($query->have_posts()) {
-                $query->the_post();
-                $post_id   = get_the_ID();
-                $metaboxes = maybe_unserialize(get_post_meta($post_id, 'eshb_session_metaboxes', true));
-
-                if (empty($metaboxes['start_date']) || empty($metaboxes['end_date'])) continue;
-
-                $min_nights = !empty($metaboxes['min_nights']) ? (int) $metaboxes['min_nights'] : 0;
-                if ($min_nights < 1) continue;
-
-                $accomodation_ids = $metaboxes['accomodation_ids'] ?? [];
-                if (empty($accomodation_ids) || !in_array($accomodation_id, $accomodation_ids)) continue;
-
-                $session_days = !empty($metaboxes['days']) ? $metaboxes['days'] : $all_week;
-                if (in_array('all', (array) $session_days)) {
-                    $session_days = $all_week;
-                }
-
-                $rules[] = [
-                    'start_date' => $metaboxes['start_date'],
-                    'end_date'   => $metaboxes['end_date'],
-                    'days'       => array_values( (array) $session_days ),
-                    'min_nights' => $min_nights,
-                ];
-            }
-            wp_reset_postdata();
-        }
-
-        return $rules;
+        return is_array( $rules ) ? $rules : array();
     }
 
     /**

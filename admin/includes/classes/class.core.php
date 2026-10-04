@@ -20,8 +20,6 @@ class ESHB_Core {
     public function __construct() {}
 
     public function eshb_send_html_email($to, $subject, $message, $from_name = 'reactheme.com/easyhotel', $from_email = 'rubel.reacthemes@gmail.com') {
-        
-        require_once( trailingslashit( ABSPATH ) .'wp-load.php' );
 
         if (!function_exists('wp_mail')) {
             return false;
@@ -134,9 +132,6 @@ class ESHB_Core {
                     'end_date'           => $metaboxes['end_date'],
                     'price'              => $metaboxes['session_price'] ?? $regular_price,
                     'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
-                    'longstay_pricing'   => $metaboxes['longstay_pricing'] ?? [],
-                    'variable_pricing'   => $metaboxes['variable_pricing'] ?? [],
-                    'days'               => $metaboxes['days'] ?? [],
                 ];
             }
             wp_reset_postdata();
@@ -153,11 +148,6 @@ class ESHB_Core {
 
         $total_nights = iterator_count($period);
 
-        // Initialize flags
-        $longstay_applied = false;
-        $variable_applied = false;
-        $session_price_applied = false;
-        
         foreach ($period as $day) {
             $current_date = $day->format('Y-m-d');
             $current_day_name = strtolower($day->format('l'));
@@ -170,57 +160,56 @@ class ESHB_Core {
                 if (!empty($session['accomodation_ids']) && !in_array($accomodation_id, $session['accomodation_ids'])) {
                     continue;
                 }
-                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                if(is_array($session['days']) && in_array('all', $session['days'])){
-                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                }
-                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
-                 
-                    // 1. Longstay Pricing
-                    if (!empty($session['longstay_pricing']) && $total_nights >= 1) {
-                        // reverse the longstay_pricing array
-                        $session['longstay_pricing'] = array_reverse($session['longstay_pricing']);
-                        foreach ($session['longstay_pricing'] as $ls) {
-                            if (!empty($ls['night']) && $total_nights >= $ls['night']) {
-                                $longstay_applied = true;
-                                break 2; // early return since found
-                            }
-                        }
-                    }
 
-                    // 2. Variable Pricing
-                    if (!empty($session['variable_pricing'])) {
-                        foreach ($session['variable_pricing'] as $vp) {
-                            $vp_adult = $vp['adult_quantity'] ?? 0;
-                            $vp_children = $vp['children_quantity'] ?? 0;
-                            if ($vp_adult == $adult && $vp_children == $children) {
-                                $variable_applied = true;
-                                break 2;
-                            }
-                        }
-                    }
+                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && $this->eshb_session_applies_on_day($session, $current_day_name)) {
 
-                    // 3. Session Price (basic price)
-                    if (!empty($session['price']) && $session['price'] != $regular_price) {
-                        $session_price_applied = true;
-                        break 2;
+                    $has_special_price = !empty($session['price']) && $session['price'] != $regular_price;
+
+                    /**
+                     * Whether this season changes the price of the stay.
+                     *
+                     * @param bool  $has_special_price Season price differs from the regular price.
+                     * @param array $session           Season data (id, start_date, end_date, price, accomodation_ids).
+                     * @param array $context           accomodation_id, date, total_nights, adult, children.
+                     */
+                    $has_special_price = apply_filters( 'eshb_session_has_special_price', $has_special_price, $session, array(
+                        'accomodation_id' => $accomodation_id,
+                        'date'            => $current_date,
+                        'total_nights'    => $total_nights,
+                        'adult'           => $adult,
+                        'children'        => $children,
+                    ) );
+
+                    if ($has_special_price) {
+                        return true;
                     }
                 }
             }
         }
 
-        if ($longstay_applied || $variable_applied || $session_price_applied) {
-            return true;
-        }
-
         return false;
+    }
+
+    /**
+     * Whether a season covers the given weekday. Seasons apply on every day
+     * unless an extension narrows them down.
+     */
+    public function eshb_session_applies_on_day( $session, $day_name ) {
+        return (bool) apply_filters( 'eshb_session_applies_on_day', true, $session, $day_name );
     }
 
     public function get_eshb_price_by_session($accomodation_id, $start_date, $end_date, $night = '', $adult = '', $children = '') {
     
         $metaboxes = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
         $regular_price = !empty($metaboxes['regular_price']) ? $metaboxes['regular_price'] : 0;
-       
+
+        // A night outside every season costs what it costs without seasons:
+        // that weekday's day-wise price, else the sale price, else the
+        // regular price — not always the regular price.
+        $accomodation_day_wise = ( is_array( $metaboxes ) && ! empty( $metaboxes['day_wise_price'][0] ) && is_array( $metaboxes['day_wise_price'][0] ) )
+            ? $metaboxes['day_wise_price'][0]
+            : [];
+        $non_season_night_price = (float) $this->get_eshb_price( $start_date, $end_date, $accomodation_id, false, $night, $adult, $children );
 
         // Get all sessions
         $qargs = array(
@@ -246,9 +235,6 @@ class ESHB_Core {
                     'end_date'           => $metaboxes['end_date'],
                     'price'              => $metaboxes['session_price'] ?? $regular_price,
                     'accomodation_ids'   => $metaboxes['accomodation_ids'] ?? [],
-                    'longstay_pricing'   => $metaboxes['longstay_pricing'] ?? [],
-                    'variable_pricing'   => $metaboxes['variable_pricing'] ?? [],
-                    'days'               => $metaboxes['days'] ?? [],
                 ];
             }
             wp_reset_postdata();
@@ -270,7 +256,9 @@ class ESHB_Core {
         foreach ($period as $day) {
             $current_date = $day->format('Y-m-d');
             $current_day_name = strtolower($day->format('l'));
-            $matched_price = $regular_price;
+            $matched_price = ! empty( $accomodation_day_wise[ $current_day_name ] )
+                ? (float) $accomodation_day_wise[ $current_day_name ]
+                : $non_season_night_price;
 
             foreach ($sessions as $session) {
 
@@ -283,49 +271,22 @@ class ESHB_Core {
                     continue;
                 }
 
-                $session_days = !empty($session['days']) ? $session['days'] : ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                if(in_array('all', $session_days)){
-                    $session_days = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                }
+                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && $this->eshb_session_applies_on_day($session, $current_day_name)) {
 
-                if ($current_date >= $session['start_date'] && $current_date <= $session['end_date'] && in_array($current_day_name, $session_days)) {
-         
-                    // 1. Longstay Pricing (highest priority)
-                    $longstay_applied = false;
-                    
-                    
-                    if (!empty($session['longstay_pricing']) && $total_nights >= 1) {
-                        $session['longstay_pricing'] = array_reverse($session['longstay_pricing']);
-                        foreach ($session['longstay_pricing'] as $ls) {
-                            if (!empty($ls['night']) && $total_nights >= $ls['night']) {
-                                $matched_price = floatval($ls['price']);
-                                $longstay_applied = true;
-                                break;
-                            }
-                        }
-                  
-                    }
-
-                    if ($longstay_applied) break;
-
-                    // 2. Variable Pricing
-                    $variable_applied = false;
-                    if (!empty($session['variable_pricing'])) {
-                        foreach ($session['variable_pricing'] as $vp) {
-                            $vp_adult = $vp['adult_quantity'] ?? 0;
-                            $vp_children = $vp['children_quantity'] ?? 0;
-                            if ($vp_adult == $adult && $vp_children == $children) {
-                                $matched_price = floatval($vp['price']);
-                                $variable_applied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if ($variable_applied) break;
-
-                    // 3. Session price
-                    $matched_price = floatval($session['price']);
+                    /**
+                     * Nightly rate a season charges for one night of the stay.
+                     *
+                     * @param float $price   Season price.
+                     * @param array $session Season data (id, start_date, end_date, price, accomodation_ids).
+                     * @param array $context accomodation_id, date, total_nights, adult, children.
+                     */
+                    $matched_price = floatval( apply_filters( 'eshb_session_night_price', floatval($session['price']), $session, array(
+                        'accomodation_id' => $accomodation_id,
+                        'date'            => $current_date,
+                        'total_nights'    => $total_nights,
+                        'adult'           => $adult,
+                        'children'        => $children,
+                    ) ) );
                     break;
                 }
             }
@@ -593,9 +554,6 @@ class ESHB_Core {
                 'end_date'         => $metaboxes['end_date'],
                 'price'            => isset( $metaboxes['session_price'] ) ? $metaboxes['session_price'] : '',
                 'accomodation_ids' => isset( $metaboxes['accomodation_ids'] ) ? $metaboxes['accomodation_ids'] : array(),
-                'longstay_pricing' => isset( $metaboxes['longstay_pricing'] ) ? $metaboxes['longstay_pricing'] : array(),
-                'variable_pricing' => isset( $metaboxes['variable_pricing'] ) ? $metaboxes['variable_pricing'] : array(),
-                'days'             => isset( $metaboxes['days'] ) ? $metaboxes['days'] : array(),
             );
         }
 
@@ -663,8 +621,7 @@ class ESHB_Core {
 
         // Seasons. One that has already ended can never be booked again, so
         // only today's and the upcoming ones are worth comparing.
-        $today            = ESHB_Helper::eshb_today();
-        $include_longstay = apply_filters( 'eshb_min_price_include_longstay', false, $accomodation_id );
+        $today = ESHB_Helper::eshb_today();
 
         foreach ( $this->get_eshb_all_sessions() as $session ) {
 
@@ -676,24 +633,8 @@ class ESHB_Core {
                 $candidates[] = $session['price'];
             }
 
-            if ( ! empty( $session['variable_pricing'] ) && is_array( $session['variable_pricing'] ) ) {
-                foreach ( $session['variable_pricing'] as $vp ) {
-                    if ( ! empty( $vp['price'] ) && floatval( $vp['price'] ) > 0 ) {
-                        $candidates[] = $vp['price'];
-                    }
-                }
-            }
-
-            // Long stay rates only unlock past a minimum number of nights, so
-            // they are not reachable at the single night "From" implies. Opt in
-            // through the filter for hotels that want them counted anyway.
-            if ( $include_longstay && ! empty( $session['longstay_pricing'] ) && is_array( $session['longstay_pricing'] ) ) {
-                foreach ( $session['longstay_pricing'] as $ls ) {
-                    if ( ! empty( $ls['price'] ) && floatval( $ls['price'] ) > 0 ) {
-                        $candidates[] = $ls['price'];
-                    }
-                }
-            }
+            // Extensions add the other rates a season can charge.
+            $candidates = (array) apply_filters( 'eshb_min_price_session_candidates', $candidates, $session, $accomodation_id );
         }
 
         $min_price = 0;

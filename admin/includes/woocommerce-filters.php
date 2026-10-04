@@ -132,7 +132,10 @@ function eshb_remove_related_products_with_accommodation_id($related_posts, $pro
 
 // Remove default WooCommerce coupon form and render a custom inline coupon field
 // inside the order review (no nested <form> — uses a plain button + JS AJAX)
-add_action( 'init', function() {
+// On `wp`, not `init`: this file is included on `init` priority 11, after an
+// `init` priority 10 callback could still run, so the removal never happened
+// and checkout showed both coupon forms.
+add_action( 'wp', function() {
     remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
 } );
 add_action( 'woocommerce_review_order_before_payment', function() {

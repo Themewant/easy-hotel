@@ -163,6 +163,10 @@ if ( ! class_exists( 'ESHB_Options' ) ) {
 
     public function ajax_save() {
 
+      if ( ! current_user_can( $this->args['menu_capability'] ) ) {
+        wp_send_json_error( array( 'error' => esc_html__( 'You do not have permission to save these settings.', 'easy-hotel' ) ) );
+      }
+
       $result = $this->set_options( true );
 
       if ( ! $result ) {

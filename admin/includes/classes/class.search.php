@@ -151,15 +151,21 @@ class ESHB_Search {
             }
         }
 
-        // Find all bookings for this accommodation
+        // Bookings that end on/after yesterday. Not the posted start_date: the
+        // calendar also shows (and must disable) dates before the selection,
+        // while past dates are never offered.
         $bookings_args = [
             'post_type'      => 'eshb_booking',
             'posts_per_page' => -1,
             'post_status'    => ['publish', 'deposit-payment', 'pending', 'processing', 'on-hold', 'completed'],
             'fields' => 'ids',
+            'no_found_rows'  => true,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Indexed date key; replaces loading every booking.
+            'meta_query'     => ESHB_Booking_Index::ending_on_or_after_query( wp_date( 'Y-m-d', strtotime( '-1 day' ) ) ),
         ];
     
         $bookings = new WP_Query($bookings_args);
+        update_meta_cache( 'post', $bookings->posts );
         $checked_in_out_dates = [];
     
         if ($bookings->have_posts()) {
@@ -451,9 +457,14 @@ class ESHB_Search {
                     'posts_per_page' => -1,
                     'post_status'    => ['publish', 'deposit-payment', 'pending', 'processing', 'on-hold', 'completed'],
                     'fields' => 'ids',
+                    'no_found_rows'  => true,
+                    // Only bookings that have not ended before the searched range.
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Indexed date key; replaces loading every booking.
+                    'meta_query'     => ESHB_Booking_Index::ending_on_or_after_query( $start_date ),
                 );
     
                 $bookings = new WP_Query($bookings_args);
+                update_meta_cache( 'post', $bookings->posts );
                 $accommodation_bookings = array(); // [accommodation_id => total_booked_rooms]
                 $booked_accomodation_ids = array();
     

@@ -16,6 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class ESHB_Native_Checkout {
 
+    /** Booking meta holding the secret that unlocks its thank-you page. */
+    const THANKYOU_KEY_META = '_eshb_thankyou_key';
+
     private static $instance = null;
 
     public static function instance() {
@@ -99,6 +102,28 @@ class ESHB_Native_Checkout {
 
         if ( get_post_type( $reservation['accomodation_id'] ) !== 'eshb_accomodation' ) {
             wp_send_json_error( [ 'error' => [ 'code' => 'invalid_accomodation', 'message' => __( 'Invalid accommodation.', 'easy-hotel' ) ] ] );
+        }
+
+        // 0 / negative rooms or adults would price the stay at 0 or below and,
+        // once stored, subtract from the booked-room count.
+        $quantities = ESHB_Booking::eshb_read_booking_quantities();
+        if ( is_wp_error( $quantities ) ) {
+            wp_send_json_error( [ 'error' => [ 'code' => $quantities->get_error_code(), 'message' => $quantities->get_error_message() ] ] );
+        }
+        $reservation = array_merge( $reservation, $quantities );
+
+        $valid_dates = ESHB_Booking::eshb_validate_booking_dates( $reservation['start_date'], $reservation['end_date'] );
+        if ( is_wp_error( $valid_dates ) ) {
+            wp_send_json_error( [ 'error' => [ 'code' => $valid_dates->get_error_code(), 'message' => $valid_dates->get_error_message() ] ] );
+        }
+
+        // Same booking rules as the WooCommerce flow: time slot, booked dates,
+        // holidays, check-in day, min/max nights and capacity. This handler
+        // answers before ESHB_Booking::eshb_add_to_cart_reservation runs, so
+        // without this none of them were enforced.
+        $rule_error = ESHB_Booking::instance()->eshb_validate_booking_rules( $reservation );
+        if ( $rule_error ) {
+            wp_send_json_error( $rule_error );
         }
 
         $availability_error = $this->validate_availability( $reservation );
@@ -243,6 +268,95 @@ class ESHB_Native_Checkout {
             }
         }
         return $count;
+    }
+
+    /**
+     * Payment note for a capture the gateway is still holding, e.g.
+     * "PayPal payment pending (ECHECK): €500.00 not received yet".
+     */
+    private function pending_payment_note( $gateway, $booking_total, $reason = '' ) {
+        $core   = new ESHB_Core();
+        $price  = html_entity_decode( wp_strip_all_tags( $core->eshb_price( (float) $booking_total ) ), ENT_QUOTES, 'UTF-8' );
+        $reason = sanitize_text_field( (string) $reason );
+
+        return sprintf(
+            /* translators: 1: gateway name, e.g. PayPal, 2: pending reason in brackets or empty, 3: amount, e.g. €500.00 */
+            __( '%1$s payment pending%2$s: %3$s not received yet', 'easy-hotel' ),
+            $gateway->get_title(),
+            $reason !== '' ? ' (' . $reason . ')' : '',
+            $price
+        );
+    }
+
+    /**
+     * Lock every accommodation in the cart for the rest of this request, so
+     * the availability check, payment capture and booking insert can't
+     * interleave with another checkout of the same accommodation. Waits up
+     * to ~5 seconds for a lock; a lock older than 2 minutes is a dead
+     * request and is taken over. Locks are released on shutdown, which also
+     * runs after wp_send_json_* and fatal errors.
+     *
+     * INSERT IGNORE on the unique option_name is atomic, unlike add_option()
+     * which reads first and then upserts.
+     *
+     * @return bool False when a lock could not be acquired.
+     */
+    private function lock_cart_accommodations( array $items ) {
+        global $wpdb;
+
+        $accom_ids = [];
+        foreach ( $items as $item ) {
+            $id = (int) ( $item['accomodation_id'] ?? 0 );
+            if ( $id ) $accom_ids[ $id ] = $id;
+        }
+        sort( $accom_ids ); // Fixed order, so two carts can't deadlock each other.
+
+        $acquired = [];
+        foreach ( $accom_ids as $accom_id ) {
+            $name   = 'eshb_native_booking_lock_' . $accom_id;
+            $locked = false;
+
+            for ( $attempt = 0; $attempt < 20; $attempt++ ) {
+                $now = time();
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Atomic lock; must bypass the options cache.
+                $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off')", $name, $now ) );
+                if ( 1 === (int) $wpdb->rows_affected ) {
+                    $locked = true;
+                    break;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Atomic takeover of a stale lock.
+                $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value < %d", $now, $name, $now - 2 * MINUTE_IN_SECONDS ) );
+                if ( 1 === (int) $wpdb->rows_affected ) {
+                    $locked = true;
+                    break;
+                }
+
+                usleep( 250000 );
+            }
+
+            if ( ! $locked ) {
+                $this->release_accommodation_locks( $acquired );
+                return false;
+            }
+            $acquired[] = $name;
+        }
+
+        if ( $acquired ) {
+            register_shutdown_function( [ $this, 'release_accommodation_locks' ], $acquired );
+        }
+        return true;
+    }
+
+    /**
+     * @param string[] $names Lock option names taken by lock_cart_accommodations().
+     */
+    public function release_accommodation_locks( array $names ) {
+        global $wpdb;
+        foreach ( $names as $name ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Lock row written with a direct query above.
+            $wpdb->delete( $wpdb->options, [ 'option_name' => $name ] );
+        }
     }
 
     private function collect_reservation_from_request() {
@@ -454,15 +568,41 @@ class ESHB_Native_Checkout {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $booking_id_param = isset( $_GET['booking'] ) ? absint( $_GET['booking'] ) : 0;
         if ( $booking_id_param && get_post_type( $booking_id_param ) === 'eshb_booking' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $thankyou_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '';
+
+            // Only the guest who just checked out (holding the key from the
+            // redirect), the account that owns the booking, or staff may see it.
+            if ( ! $this->can_view_thankyou( $booking_id_param, $thankyou_key ) ) {
+                ?>
+                <div class="eshb-native-checkout eshb-native-checkout--empty">
+                    <div class="eshb-container">
+                        <div class="eshb-card">
+                            <h2><?php esc_html_e( 'Booking not found', 'easy-hotel' ); ?></h2>
+                            <p><?php esc_html_e( 'Please use the link from your confirmation, or log in to your account to view your bookings.', 'easy-hotel' ); ?></p>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                return ob_get_clean();
+            }
+
             $reservation_view = [];
             $items_view       = [];
             $pricing          = [];
             $gateways         = [];
             // Sibling bookings created in the same multi-accommodation
-            // checkout, so the thank-you page can list them all.
+            // checkout, so the thank-you page can list them all. Each one is
+            // checked the same way, so a foreign group id reveals nothing.
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             $group_id        = isset( $_GET['group'] ) ? sanitize_text_field( wp_unslash( $_GET['group'] ) ) : '';
             $group_booking_ids = $group_id ? $this->get_group_booking_ids( $group_id ) : [ $booking_id_param ];
+            $group_booking_ids = array_values( array_filter( $group_booking_ids, function ( $id ) use ( $thankyou_key ) {
+                return $this->can_view_thankyou( $id, $thankyou_key );
+            } ) );
+            if ( empty( $group_booking_ids ) ) {
+                $group_booking_ids = [ $booking_id_param ];
+            }
             $template = ESHB_PL_PATH . 'admin/includes/native-checkout/templates/checkout-page.php';
             if ( file_exists( $template ) ) {
                 include $template;
@@ -487,26 +627,26 @@ class ESHB_Native_Checkout {
                     </div>
                 </div>
             </div>
-            <script>
+            <?php
             // Self-healing fallback: if the booking-form submit stored
             // a reservation token in sessionStorage but a CDN / security
             // plugin / canonical redirect dropped it from the URL,
             // reload once with the token appended so the server can
             // find the reservation.
-            (function () {
+            wp_register_script( 'eshb-native-checkout-recover', false, [], ESHB_VERSION, true );
+            wp_enqueue_script( 'eshb-native-checkout-recover' );
+            wp_add_inline_script( 'eshb-native-checkout-recover', '(function (param) {
                 try {
-                    var token = sessionStorage.getItem('eshb_native_checkout_token');
+                    var token = sessionStorage.getItem("eshb_native_checkout_token");
                     if (!token) return;
-                    if (sessionStorage.getItem('eshb_native_checkout_recovered') === token) return;
+                    if (sessionStorage.getItem("eshb_native_checkout_recovered") === token) return;
                     var url = new URL(window.location.href);
-                    if (url.searchParams.get('<?php echo esc_js( $token_param ); ?>') === token) return;
-                    url.searchParams.set('<?php echo esc_js( $token_param ); ?>', token);
-                    sessionStorage.setItem('eshb_native_checkout_recovered', token);
+                    if (url.searchParams.get(param) === token) return;
+                    url.searchParams.set(param, token);
+                    sessionStorage.setItem("eshb_native_checkout_recovered", token);
                     window.location.replace(url.toString());
                 } catch (e) { /* ignore */ }
-            })();
-            </script>
-            <?php
+            })(' . wp_json_encode( $token_param ) . ');' );
             return ob_get_clean();
         }
 
@@ -600,6 +740,35 @@ class ESHB_Native_Checkout {
             ],
         ] );
         return is_array( $q ) ? array_map( 'intval', $q ) : [];
+    }
+
+    /**
+     * Whether the current visitor may see a booking on the thank-you page:
+     * they hold the key from the checkout redirect, own the booking through
+     * their account, or can edit it from the admin.
+     *
+     * @param int    $booking_id
+     * @param string $key Key from the URL ('' when absent).
+     * @return bool
+     */
+    private function can_view_thankyou( $booking_id, $key ) {
+        $booking_id = (int) $booking_id;
+        if ( ! $booking_id || get_post_type( $booking_id ) !== 'eshb_booking' ) {
+            return false;
+        }
+
+        $stored = (string) get_post_meta( $booking_id, self::THANKYOU_KEY_META, true );
+        if ( $stored !== '' && $key !== '' && hash_equals( $stored, $key ) ) {
+            return true;
+        }
+
+        if ( current_user_can( 'edit_post', $booking_id ) ) {
+            return true;
+        }
+
+        return class_exists( 'ESHB_Native_Account' )
+            && ESHB_Native_Account::instance()->customer instanceof ESHB_Native_Account_Customer
+            && ESHB_Native_Account::instance()->customer->user_owns_booking( $booking_id );
     }
 
     /**
@@ -780,6 +949,13 @@ class ESHB_Native_Checkout {
             wp_send_json_error( [ 'message' => __( 'Selected payment method is not available.', 'easy-hotel' ) ] );
         }
 
+        // Rooms may have been booked by someone else since they were added to
+        // the cart; stop before a payment is even started.
+        $availability_error = ESHB_Booking::instance()->eshb_validate_cart_availability( $items );
+        if ( $availability_error !== '' ) {
+            wp_send_json_error( [ 'message' => $availability_error ] );
+        }
+
         $pricing = ESHB_Native_Pricing::calculate_cart( $items, $coupon, $customer['email'] ?? '' );
 
         // Block payment creation if the coupon was rejected by the
@@ -797,6 +973,21 @@ class ESHB_Native_Checkout {
 
         if ( empty( $result['success'] ) ) {
             wp_send_json_error( [ 'message' => $result['message'] ?? __( 'Could not initiate payment.', 'easy-hotel' ) ] );
+        }
+
+        // Remember which order this cart is paying with, and for how much,
+        // so completion can refuse any other order or a changed total.
+        if ( $gateway->requires_payment_verification() ) {
+            $order_id = (string) ( $result['data']['order_id'] ?? '' );
+            $bound    = $order_id !== '' && eshb_native_checkout_set_pending_payment( [
+                'gateway'  => $gateway->get_id(),
+                'order_id' => $order_id,
+                'amount'   => $result['amount'] ?? ( $pricing['grandTotal'] ?? 0 ),
+                'currency' => $result['currency'] ?? '',
+            ] );
+            if ( ! $bound ) {
+                wp_send_json_error( [ 'message' => __( 'Could not initiate payment.', 'easy-hotel' ) ] );
+            }
         }
 
         wp_send_json_success( $result['data'] ?? [] );
@@ -822,7 +1013,7 @@ class ESHB_Native_Checkout {
             wp_send_json_error( [ 'message' => __( 'Selected payment method is not available.', 'easy-hotel' ) ] );
         }
 
-        // 1. Capture / verify payment for the whole cart. Nonce is verified
+        // 1. Collect the gateway's approval data (e.g. PayPal order id). Nonce is verified
         // at the top of this method; the loop sanitizes each value, so the
         // outer raw $_POST access is safe.
         $gateway_params = [];
@@ -834,13 +1025,81 @@ class ESHB_Native_Checkout {
             }
         }
 
+        // 2. Re-calculate cart pricing server-side; never trust client total.
+        //    Done before capturing so a changed total is refused before any
+        //    money moves.
+        $pricing = ESHB_Native_Pricing::calculate_cart( $items, $coupon, $customer['email'] ?? '' );
+
+        // Online gateways: accept only the order created for this cart, for
+        // this total, and only once.
+        $pending      = null;
+        $payment_lock = '';
+        if ( $gateway->requires_payment_verification() ) {
+            $pending  = eshb_native_checkout_get_pending_payment();
+            $order_id = (string) ( $gateway_params['order_id'] ?? '' );
+
+            if ( ! $pending || $pending['gateway'] !== $gateway->get_id() || $order_id === '' || ! hash_equals( $pending['order_id'], $order_id ) ) {
+                wp_send_json_error( [ 'message' => __( 'This payment does not belong to your reservation. Please try again.', 'easy-hotel' ) ] );
+            }
+
+            $expected_amount = number_format( (float) ( $pricing['grandTotal'] ?? 0 ), 2, '.', '' );
+            if ( $expected_amount !== $pending['amount'] ) {
+                // Cart, extras or coupon changed after the order was created.
+                // Nothing has been captured yet, so start the payment over.
+                eshb_native_checkout_set_pending_payment( [] );
+                wp_send_json_error( [ 'message' => __( 'Your booking total changed after the payment was started. Please pay again.', 'easy-hotel' ) ] );
+            }
+
+            // add_option() is atomic on the unique option_name, so two
+            // concurrent requests with the same order can't both continue.
+            // A lock left by a request that died is taken over after a while.
+            $payment_lock = 'eshb_native_payment_lock_' . md5( $gateway->get_id() . '|' . $order_id );
+            if ( ! add_option( $payment_lock, time(), '', false ) ) {
+                $locked_at = (int) get_option( $payment_lock, 0 );
+                if ( ( time() - $locked_at ) < 5 * MINUTE_IN_SECONDS ) {
+                    wp_send_json_error( [ 'message' => __( 'This payment is already being processed. Please wait a moment.', 'easy-hotel' ) ] );
+                }
+                update_option( $payment_lock, time(), false );
+            }
+        }
+
+        // 2a. Final availability check before any money moves. The rooms are
+        //     locked until this request ends, so a guest checking out the same
+        //     accommodation at the same moment waits and then sees the booking
+        //     created here.
+        if ( ! $this->lock_cart_accommodations( $items ) ) {
+            if ( $payment_lock ) delete_option( $payment_lock );
+            wp_send_json_error( [ 'message' => __( 'Another guest is completing a booking for this accommodation. Please try again in a moment.', 'easy-hotel' ) ] );
+        }
+
+        $availability_error = ESHB_Booking::instance()->eshb_validate_cart_availability( $items );
+        if ( $availability_error !== '' ) {
+            if ( $payment_lock ) delete_option( $payment_lock );
+            wp_send_json_error( [ 'message' => $availability_error ] );
+        }
+
         $capture = $gateway->capture_payment( $gateway_params );
         if ( empty( $capture['success'] ) ) {
+            if ( $payment_lock ) delete_option( $payment_lock );
             wp_send_json_error( [ 'message' => $capture['message'] ?? __( 'Payment could not be confirmed.', 'easy-hotel' ) ] );
         }
 
-        // 2. Re-calculate cart pricing server-side; never trust client total.
-        $pricing = ESHB_Native_Pricing::calculate_cart( $items, $coupon, $customer['email'] ?? '' );
+        // 2b. Capture succeeded; for online gateways check it matches the order.
+
+        if ( $pending ) {
+            $captured_amount   = number_format( (float) ( $capture['amount'] ?? 0 ), 2, '.', '' );
+            $captured_currency = strtoupper( (string) ( $capture['currency'] ?? '' ) );
+
+            if ( $captured_amount !== $pending['amount'] || $captured_currency !== $pending['currency'] ) {
+                // Money moved but not the amount this cart costs: create no
+                // booking, and keep the lock so the order can't be retried.
+                wp_send_json_error( [ 'message' => sprintf(
+                    /* translators: %s: payment transaction ID */
+                    __( 'Your payment could not be verified, so no booking was made. Please contact us with transaction ID %s.', 'easy-hotel' ),
+                    $capture['transaction_id'] ?? $order_id
+                ) ] );
+            }
+        }
 
         // 3. Insert one linked booking per accommodation.
         $customer['gateway'] = $gateway->get_id();
@@ -850,13 +1109,20 @@ class ESHB_Native_Checkout {
         $totals      = ! empty( $group['totals'] ) ? $group['totals'] : [];
 
         if ( empty( $booking_ids ) ) {
+            // The cart and its order binding are still there, so a retry
+            // re-runs the (idempotent) capture and creates the bookings.
+            if ( $payment_lock ) delete_option( $payment_lock );
             wp_send_json_error( [ 'message' => __( 'Booking could not be created. Please contact us.', 'easy-hotel' ) ] );
         }
 
         // 4. Record one payment per booking, splitting the captured amount in
         //    proportion to each booking total (last booking takes the
         //    rounding remainder so the parts sum to the captured amount).
-        $captured_amount = (float) ( $capture['amount'] ?? ( $pricing['grandTotal'] ?? 0 ) );
+        // A capture the gateway reports as pending (e.g. PayPal eCheck or
+        // payment review) has not brought any money in yet: record 0 and say
+        // why on the payment, the same way offline gateways do.
+        $payment_pending = ! empty( $capture['pending'] );
+        $captured_amount = $payment_pending ? 0.0 : (float) ( $capture['amount'] ?? ( $pricing['grandTotal'] ?? 0 ) );
         $grand_total     = (float) ( $pricing['grandTotal'] ?? 0 );
         $assigned        = 0.0;
         $last_booking    = end( $booking_ids );
@@ -878,6 +1144,9 @@ class ESHB_Native_Checkout {
                 'currency'       => $capture['currency'] ?? '',
                 'mode'           => $capture['mode'] ?? 'live',
                 'fee'            => 0,
+                'note'           => $payment_pending
+                    ? $this->pending_payment_note( $gateway, $booking_total, $capture['pending_reason'] ?? '' )
+                    : $gateway->get_payment_note( $booking_total ),
             ];
             ESHB_Native_Booking_Handler::record_payment( $bid, $payment_meta, $customer );
         }
@@ -894,6 +1163,11 @@ class ESHB_Native_Checkout {
         // Offline gateways that wait for funds (bank transfer) keep the
         // booking on hold instead of moving it straight to processing.
         $new_status    = $gateway->get_completed_status( $new_status );
+        // An online payment the gateway is still holding keeps the booking on
+        // hold until staff see it settle.
+        if ( $payment_pending ) {
+            $new_status = 'on-hold';
+        }
         $announce = [];
         foreach ( $booking_ids as $bid ) {
             $completed_status = apply_filters(
@@ -961,6 +1235,12 @@ class ESHB_Native_Checkout {
         }
         eshb_native_checkout_clear_reservation();
 
+        // The cart (and its order binding) is gone, so the order can't be
+        // completed again; the lock has done its job.
+        if ( $payment_lock ) {
+            delete_option( $payment_lock );
+        }
+
         // Stash the group's booking ids so the thank-you page can list them
         // all without depending on a meta_query (which can miss on some
         // object-cache / status configurations). Falls back to the meta
@@ -983,8 +1263,15 @@ class ESHB_Native_Checkout {
                 : '';
         }
 
+        // Random key that unlocks the thank-you page for these bookings;
+        // without it, ?booking=<id> could be enumerated to read any booking.
+        $thankyou_key = wp_generate_password( 24, false );
+        foreach ( $booking_ids as $bid ) {
+            update_post_meta( $bid, self::THANKYOU_KEY_META, $thankyou_key );
+        }
+
         $redirect = add_query_arg(
-            [ 'booking' => $first_booking, 'group' => $group_id ],
+            [ 'booking' => $first_booking, 'group' => $group_id, 'key' => $thankyou_key ],
             eshb_native_checkout_url( $thankyou_lang )
         );
 

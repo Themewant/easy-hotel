@@ -45,6 +45,12 @@ function eshb_coupon_post_type_init() {
         'supports'           => array( 'title', 'custom-fields' ),
     );
  
+    // Back-office records: only hotel managers may edit them.
+    $args['capabilities'] = eshb_admin_post_type_capabilities( 'eshb_coupon' );
+    $args['map_meta_cap'] = true;
+    // Holds customer / payment data: keep it off the front end and the REST API.
+    $args = array_merge( $args, eshb_private_post_type_args() );
+
     register_post_type( 'eshb_coupon', $args );
 }
  

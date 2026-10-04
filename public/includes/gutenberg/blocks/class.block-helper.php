@@ -82,14 +82,29 @@ class ESHB_Block_Helper {
 			}
 		}
 
-		if ( ! empty( $css ) ) {
-			//if ( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS values are sanitized via wp_strip_all_tags() during generation
-				echo '<style>' . $css . '</style>';
-			//} else {
-			//	wp_add_inline_style( $handle, $css );
-			//}
+		if ( empty( $css ) ) {
+			return;
 		}
+
+		// The selector carries the blockId attribute, so drop "<" to keep anything
+		// from closing the <style> element early.
+		$css = str_replace( '<', '', $css );
+
+		// The editor preview is rendered over REST, where enqueued styles never reach
+		// the page, so the CSS has to travel with the block markup there.
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			printf( '<style>%s</style>', $css ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS: values run through wp_strip_all_tags() and "<" is stripped above.
+			return;
+		}
+
+		// A handle of its own rather than $handle: blocks in a classic theme render after
+		// wp_head, when the main stylesheet is already printed and inline CSS added to it
+		// would be lost. Enqueued this late, this one goes out with the footer styles.
+		if ( ! wp_style_is( 'eshb-block-styles', 'registered' ) ) {
+			wp_register_style( 'eshb-block-styles', false, array(), ESHB_VERSION );
+		}
+		wp_enqueue_style( 'eshb-block-styles' );
+		wp_add_inline_style( 'eshb-block-styles', $css );
 	}
 
 	public static function box_shadow_to_css($shadow) {

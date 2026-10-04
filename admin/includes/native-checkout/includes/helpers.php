@@ -321,6 +321,47 @@ if ( ! function_exists( 'eshb_native_checkout_clear_reservation' ) ) {
     }
 }
 
+if ( ! function_exists( 'eshb_native_checkout_set_pending_payment' ) ) {
+    /**
+     * Bind a server-created payment order (e.g. a PayPal order) to the
+     * current cart, together with the amount and currency it was created
+     * for. Checkout completion only accepts that exact order, so an order
+     * paid for one cart can't be replayed against another.
+     *
+     * Pass an empty array to drop the binding.
+     */
+    function eshb_native_checkout_set_pending_payment( array $payment ) {
+        $cart = eshb_native_checkout_get_cart();
+        if ( ! is_array( $cart ) ) return false;
+
+        if ( empty( $payment ) ) {
+            unset( $cart['_payment'] );
+        } else {
+            $cart['_payment'] = [
+                'gateway'  => (string) ( $payment['gateway'] ?? '' ),
+                'order_id' => (string) ( $payment['order_id'] ?? '' ),
+                'amount'   => number_format( (float) ( $payment['amount'] ?? 0 ), 2, '.', '' ),
+                'currency' => strtoupper( (string) ( $payment['currency'] ?? '' ) ),
+            ];
+        }
+
+        return (bool) eshb_native_checkout_save_cart( $cart );
+    }
+}
+
+if ( ! function_exists( 'eshb_native_checkout_get_pending_payment' ) ) {
+    /**
+     * Payment order bound to the current cart, or null when none.
+     */
+    function eshb_native_checkout_get_pending_payment() {
+        $cart = eshb_native_checkout_get_cart();
+        if ( ! is_array( $cart ) || empty( $cart['_payment'] ) || ! is_array( $cart['_payment'] ) ) {
+            return null;
+        }
+        return $cart['_payment'];
+    }
+}
+
 if ( ! function_exists( 'eshb_native_checkout_cleanup_stale_reservations' ) ) {
     /**
      * Sweep abandoned reservations from wp_options. Triggered by an

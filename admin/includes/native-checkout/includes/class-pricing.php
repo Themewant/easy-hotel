@@ -89,6 +89,7 @@ class ESHB_Native_Pricing {
         $coupon_first_error = '';
         $coupon_code_out    = '';
         $coupon_id_out      = 0;
+        $coupon_items       = []; // item key => evaluate_coupon() result, for valid items
 
         foreach ( $items as $item_key => $reservation ) {
             if ( ! is_array( $reservation ) ) continue;
@@ -98,6 +99,7 @@ class ESHB_Native_Pricing {
 
             // Per-accommodation coupon evaluation.
             $item_discount = 0.0;
+            $c             = [];
             if ( $coupon_code !== '' ) {
                 $c = self::evaluate_coupon( $coupon_code, $p, $accom_id, $customer_email );
                 if ( ! empty( $c['valid'] ) ) {
@@ -121,6 +123,38 @@ class ESHB_Native_Pricing {
             $cart_regular_total += (float) ( $p['regularTotalPrice'] ?? ( $p['totalPrice'] ?? 0 ) );
 
             $item_views[ $item_key ] = $p;
+            if ( ! empty( $c['valid'] ) ) {
+                $coupon_items[ $item_key ] = $c;
+            }
+        }
+
+        // A fixed-amount coupon is one discount for the whole cart, not one
+        // per accommodation: €50 off a 3-room cart used to take €150 off.
+        // Spread it over the items it applies to, in proportion to their
+        // price, with the last one taking the rounding remainder.
+        $first_coupon = $coupon_items ? reset( $coupon_items ) : null;
+        if ( $first_coupon && 'percent' !== ( $first_coupon['type'] ?? 'fixed' ) ) {
+            $eligible_total = 0.0;
+            foreach ( array_keys( $coupon_items ) as $key ) {
+                $eligible_total += (float) ( $item_views[ $key ]['totalPrice'] ?? 0 );
+            }
+
+            $cart_discount = round( min( (float) $first_coupon['amount'], $eligible_total ), 2 );
+            $assigned      = 0.0;
+            $last_key      = array_key_last( $coupon_items );
+            $total_discount = 0.0;
+
+            foreach ( array_keys( $coupon_items ) as $key ) {
+                $item_total = (float) ( $item_views[ $key ]['totalPrice'] ?? 0 );
+                $share      = $key === $last_key
+                    ? round( $cart_discount - $assigned, 2 )
+                    : ( $eligible_total > 0 ? round( $cart_discount * $item_total / $eligible_total, 2 ) : 0.0 );
+                $assigned += $share;
+
+                $item_views[ $key ]['couponDiscount']     = $share;
+                $item_views[ $key ]['couponDiscountHtml'] = $core->eshb_price( $share );
+                $total_discount += $share;
+            }
         }
 
         $cart_after_coupon = max( 0, $cart_subtotal - $total_discount );
@@ -186,7 +220,7 @@ class ESHB_Native_Pricing {
         $end_date          = sanitize_text_field( $reservation['end_date'] ?? '' );
         $room_quantity     = max( 1, (int) ( $reservation['room_quantity'] ?? 1 ) );
         $extra_bed_qty     = max( 0, (int) ( $reservation['extra_bed_quantity'] ?? 0 ) );
-        $adult_qty         = max( 0, (int) ( $reservation['adult_quantity'] ?? 1 ) );
+        $adult_qty         = max( 1, (int) ( $reservation['adult_quantity'] ?? 1 ) );
         $children_qty      = max( 0, (int) ( $reservation['children_quantity'] ?? 0 ) );
         $start_time        = sanitize_text_field( $reservation['start_time'] ?? '' );
         $end_time          = sanitize_text_field( $reservation['end_time'] ?? '' );
@@ -412,6 +446,8 @@ class ESHB_Native_Pricing {
         $discount = round( min( $discount, $base ), 2 );
 
         $result['coupon_id'] = $matched_coupon_id;
+        $result['type']      = $type;
+        $result['amount']    = $amount;
 
         $result['code']     = $code;
         $result['discount'] = $discount;

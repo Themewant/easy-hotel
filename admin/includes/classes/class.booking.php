@@ -203,15 +203,20 @@ class ESHB_Booking {
 		$accomodation_metas = get_post_meta($accomodation_id, 'eshb_accomodation_metaboxes', true);
 		$allowed_total_rooms = isset($accomodation_metas['total_rooms']) ? intval($accomodation_metas['total_rooms']) : 0;
 	
-		// Find all bookings for this accommodation
+		// Bookings that end on/after the first date we care about (yesterday
+		// when no range is given: the calendar never offers past dates).
 		$bookings_args = [
 			'post_type'      => 'eshb_booking',
 			'posts_per_page' => -1,
 			'post_status'    => ['publish', 'deposit-payment', 'pending', 'processing', 'on-hold', 'completed'],
 			'fields' => 'ids',
+			'no_found_rows'  => true,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Indexed date key; replaces loading every booking.
+			'meta_query'     => ESHB_Booking_Index::ending_on_or_after_query( ! empty( $start_date ) ? $start_date : wp_date( 'Y-m-d', strtotime( '-1 day' ) ) ),
 		];
 	
 		$bookings = new WP_Query($bookings_args);
+		update_meta_cache( 'post', $bookings->posts );
 	
 		if ($bookings->have_posts()) {
 			while ($bookings->have_posts()) {
@@ -480,7 +485,11 @@ class ESHB_Booking {
 		if(isset($_POST['accomodationId']) && !empty($_POST['accomodationId'])){
 			
 			$hotel_core = new ESHB_Core();
-			$customer = !empty($_POST['customerInfo']) ? map_deep( sanitize_text_field( wp_unslash($_POST['customerInfo'])), 'sanitize_text_field' ) : [];
+			// customerInfo is an array: sanitize each field (sanitize_text_field() on the
+			// whole array returned '' and every request lost the customer's details).
+			$customer = ( ! empty( $_POST['customerInfo'] ) && is_array( $_POST['customerInfo'] ) )
+				? map_deep( wp_unslash( $_POST['customerInfo'] ), 'sanitize_text_field' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized per field by map_deep().
+				: [];
 			$accomodation_id = isset( $_POST['accomodationId'] ) ? (int) sanitize_text_field( wp_unslash($_POST['accomodationId']) ) : '';
 			$today_date = esc_html(gmdate('Y-m-d')); // Get today's date
 			$date = new DateTime($today_date); // Create a DateTime object from today's date
@@ -488,6 +497,10 @@ class ESHB_Booking {
 			$tomorrow = $date->format('Y-m-d'); // Get the new date in 'Y-m-d' format
 			$start_date = isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash($_POST['startDate']) ) : $today_date;
 			$end_date = isset( $_POST['endDate'] ) ? sanitize_text_field( wp_unslash($_POST['endDate']) ) : $tomorrow;
+			$valid_dates = self::eshb_validate_booking_dates( $start_date, $end_date );
+			if ( is_wp_error( $valid_dates ) ) {
+				self::eshb_send_request_error( $valid_dates );
+			}
 			$start_time = isset( $_POST['startTime'] ) ? sanitize_text_field( wp_unslash($_POST['startTime']) ) : '';
 			$end_time = isset( $_POST['endTime'] ) ? sanitize_text_field( wp_unslash($_POST['endTime']) ) : '';
 			$start_day_name = $start_date ? strtolower(gmdate('l', strtotime($start_date))) : '';
@@ -552,28 +565,33 @@ class ESHB_Booking {
 
 			}
 
-			// check rooms capacity
-			if(isset($_POST['roomQuantity']) && !empty($_POST['roomQuantity'])){
-				$roomQuantity = isset( $_POST['roomQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['roomQuantity'] ) ) : 1;
-				
-				$availableRoom = $this->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
-
-				if($roomQuantity > $availableRoom){
-					$error = array(
-						'code'    => 'room_capacity_not_enough',
-						'message' => sprintf(
-							/* translators: %s: number of available rooms */
-							esc_html__( 'Selected room is not available. Available room: %s', 'easy-hotel' ),
-							esc_html( $availableRoom )
-						),
-					);
-
-					wp_send_json_error([
-						'error' => $error,
-					]);
-				}
-				
+			// check rooms capacity (always, with the validated quantity)
+			$request_quantities = self::eshb_read_booking_quantities();
+			if ( is_wp_error( $request_quantities ) ) {
+				self::eshb_send_request_error( $request_quantities );
 			}
+			$roomQuantity = $request_quantities['room_quantity'];
+
+			$availableRoom = $this->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
+			if ( is_wp_error( $availableRoom ) ) {
+				wp_send_json_error( [ 'error' => [ 'code' => $availableRoom->get_error_code(), 'message' => esc_html( $availableRoom->get_error_message() ) ] ] );
+			}
+
+			if($roomQuantity > $availableRoom){
+				$error = array(
+					'code'    => 'room_capacity_not_enough',
+					'message' => sprintf(
+						/* translators: %s: number of available rooms */
+						esc_html__( 'Selected room is not available. Available room: %s', 'easy-hotel' ),
+						esc_html( $availableRoom )
+					),
+				);
+
+				wp_send_json_error([
+					'error' => $error,
+				]);
+			}
+			
 
 
 			// Validate check-in day
@@ -581,8 +599,8 @@ class ESHB_Booking {
 				$error = array(
 					'code'    => 'check_in_day_error',
 					'message' => sprintf(
-						/* translators: %s: allowed check-in day */
-						esc_html__( '%1$s %1$s', 'easy-hotel' ),
+						/* translators: 1: check-in day error message, 2: allowed check-in day(s) */
+						esc_html__( '%1$s %2$s', 'easy-hotel' ),
 						esc_html( $string_check_in_day_error_msg ),
 						esc_html( $allowed_check_in_day )
 					),
@@ -597,10 +615,14 @@ class ESHB_Booking {
 			$end = new DateTime($end_date);
 			$interval = $start->diff($end);
 			$days_count = $interval->days;
-			$room_quantity = isset( $_POST['roomQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['roomQuantity'] ) ) : 1;
-			$extra_bed_quantity = isset( $_POST['extraBedQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['extraBedQuantity'] ) ) : 0;
-			$adult_quantity = isset( $_POST['adultQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['adultQuantity'] ) ) : 1;
-			$children_quantity = isset( $_POST['childrenQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['childrenQuantity'] ) ) : 0;
+			$quantities = self::eshb_read_booking_quantities();
+			if ( is_wp_error( $quantities ) ) {
+				self::eshb_send_request_error( $quantities );
+			}
+			$room_quantity      = $quantities['room_quantity'];
+			$extra_bed_quantity = $quantities['extra_bed_quantity'];
+			$adult_quantity     = $quantities['adult_quantity'];
+			$children_quantity  = $quantities['children_quantity'];
 			$total_guest_quantity = $adult_quantity + $children_quantity;
 
 			$selected_services = [];
@@ -616,7 +638,7 @@ class ESHB_Booking {
 			}
 
 
-			if(!empty($allowed_check_in_day) && $allowed_check_in_day != 'all'){
+			if ( self::eshb_counts_stay_as_one_unit( $allowed_check_in_day ) ) {
 				$days_count = 1;
 			}
 
@@ -750,10 +772,10 @@ class ESHB_Booking {
 
 				$accomodation_title = get_the_title($accomodation_id);
 
-				$customer_name = $customer['name'];
-				$customer_email = $customer['email'];
-				$customer_phone = $customer['phone'];
-				$customer_message = $customer['message'];
+				$customer_name = $customer['name'] ?? '';
+				$customer_email = sanitize_email( $customer['email'] ?? '' );
+				$customer_phone = $customer['phone'] ?? '';
+				$customer_message = $customer['message'] ?? '';
 
 				$admin_email = get_option('admin_email');
 				$recipent_email = $eshb_settings['recipent_email'];
@@ -767,9 +789,9 @@ class ESHB_Booking {
 				$message .= '<h2>Great news!</h2><p>You have a new booking request.</p>';
 				$message .= '<h3>Customer  Details</h3>';
 				$message .= '<table style="text-align:left;">';
-				$message .= '<tr><th>Name: ' . $customer_name . '</th></tr>';
-				$message .= '<tr><th>Email: ' . $customer_email . '</th></tr>';
-				$message .= '<tr><th>Phone: ' . $customer_phone . '</th></tr>';
+				$message .= '<tr><th>Name: ' . esc_html( $customer_name ) . '</th></tr>';
+				$message .= '<tr><th>Email: ' . esc_html( $customer_email ) . '</th></tr>';
+				$message .= '<tr><th>Phone: ' . esc_html( $customer_phone ) . '</th></tr>';
 				$message .= '</table>';
 				$message .= '<h3>Booking  Details</h3>';
 				$message .= '<table style="text-align:left;">';
@@ -787,7 +809,7 @@ class ESHB_Booking {
 				}
 
 				$message .= '</table>';
-				$message .= '<h5>Message:</h5><p>'.$customer_message.'</p>';
+				$message .= '<h5>Message:</h5><p>' . esc_html( $customer_message ) . '</p>';
 				$message .= '</div>';
 
 				// Prepare the data array to store in post meta
@@ -918,24 +940,19 @@ class ESHB_Booking {
 		$redirect_added = false;
 
 		foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
-			if (empty($cart_item['total_price']) || $cart_item['total_price'] <= 0) {
+			if ( ! isset( $cart_item['total_price'] ) ) {
+				continue;
+			}
+			// Hotel items always carry their own price; never fall back to the
+			// shared product's _price, and drop an item whose price is invalid.
+			if ( ! is_numeric( $cart_item['total_price'] ) || (float) $cart_item['total_price'] < 0 ) {
+				$cart->remove_cart_item( $cart_item_key );
 				continue;
 			}
 			if (isset($cart_item['data']) && is_object($cart_item['data'])) {
-				$cart_item['data']->set_price($cart_item['total_price']);
+				$cart_item['data']->set_price( (float) $cart_item['total_price'] );
 			}
 		}
-	}
-
-	private function add_currency_redirect() {
-		static $redirect_added = false;
-		if ($redirect_added) {
-			return;
-		}
-		add_action('wp_footer', function() {
-			echo '<script>if(typeof window.eshb_currency_redirect==="undefined"){window.eshb_currency_redirect=true;window.location.href="' . esc_url(get_permalink(get_the_ID())) . '";}</script>';
-		});
-		$redirect_added = true;
 	}
 
 	public function save_custom_meta_to_order($item, $cart_item_key, $values, $order) {
@@ -1107,7 +1124,8 @@ class ESHB_Booking {
 			$extra_services = $item->get_meta('Extra Services IDs');
 			$extra_services_html = $item->get_meta('Extra Services');
 			$base_price = $item->get_meta('Base Price');
-			$extra_services_charge = $item->get_meta('Extra Service Price');
+			// Saved on the line item as 'Extra Services Charge' (see save_custom_meta_to_order).
+			$extra_services_charge = $item->get_meta('Extra Services Charge');
 			$extra_bed_price = $item->get_meta('Extra Bed Price');
 			$total_without_discount = $item->get_meta('Subtotal Price');
 			$total_price = $item->get_meta('Total Price');
@@ -1116,8 +1134,10 @@ class ESHB_Booking {
 			$cart_item_data = [
 				'booking_status' => $booking_status,
 				'order_id' => $order_id,
+				'order_item_id' => $item_id,
 				'booking_accomodation_id' => $accomodation_id,
-				'subtotal_price' => $order->get_subtotal(),
+				// This room's own subtotal; the order subtotal covers every room of the order.
+				'subtotal_price' => $total_without_discount !== '' ? $total_without_discount : $order->get_subtotal(),
 				'total_price' => $total_price,
 				'total_paid' => 0,
 				'base_price' => $base_price,
@@ -1285,9 +1305,321 @@ class ESHB_Booking {
 		return $formatted_meta;
 	}
 
+	/**
+	 * Read room / guest quantities from a booking request and reject values
+	 * no booking form can produce. A 0 or negative room or adult count used
+	 * to price the booking at 0 or below (and, in the WooCommerce flow, wrote
+	 * that price onto the shared cart product).
+	 *
+	 * The nonce is verified by every caller before this runs.
+	 *
+	 * @return array|WP_Error room_quantity, extra_bed_quantity, adult_quantity, children_quantity.
+	 */
+	public static function eshb_read_booking_quantities() {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$read = static function ( $key, $default ) {
+			return isset( $_POST[ $key ] ) && '' !== $_POST[ $key ]
+				? (int) sanitize_text_field( wp_unslash( $_POST[ $key ] ) )
+				: $default;
+		};
+
+		$quantities = [
+			'room_quantity'      => $read( 'roomQuantity', 1 ),
+			'extra_bed_quantity' => $read( 'extraBedQuantity', 0 ),
+			'adult_quantity'     => $read( 'adultQuantity', 1 ),
+			'children_quantity'  => $read( 'childrenQuantity', 0 ),
+		];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		if (
+			$quantities['room_quantity'] < 1 ||
+			$quantities['adult_quantity'] < 1 ||
+			$quantities['extra_bed_quantity'] < 0 ||
+			$quantities['children_quantity'] < 0
+		) {
+			return new WP_Error( 'invalid_quantity', esc_html__( 'Please select at least 1 room and 1 adult.', 'easy-hotel' ) );
+		}
+
+		return $quantities;
+	}
+
+	/**
+	 * Reject booking dates no booking form can produce. A check-out before
+	 * check-in used to pass every check (min nights used the absolute diff,
+	 * the price loop and booked-date ranges came out empty) and price at 0.
+	 *
+	 * - both dates must be real Y-m-d dates (the form always sends that);
+	 * - check-out may equal check-in (same-day / hourly) but not be earlier;
+	 * - check-in may not be in the past (site timezone). Staff are exempt so
+	 *   back-office bookings can still be recorded after the fact.
+	 *
+	 * @return true|WP_Error
+	 */
+	public static function eshb_validate_booking_dates( $start_date, $end_date ) {
+		$start_date = (string) $start_date;
+		$end_date   = (string) $end_date;
+
+		$start = DateTime::createFromFormat( '!Y-m-d', $start_date );
+		$end   = DateTime::createFromFormat( '!Y-m-d', $end_date );
+
+		if ( ! $start || ! $end || $start->format( 'Y-m-d' ) !== $start_date || $end->format( 'Y-m-d' ) !== $end_date ) {
+			return new WP_Error( 'invalid_date', esc_html__( 'Please select valid check-in and check-out dates.', 'easy-hotel' ) );
+		}
+
+		if ( $end < $start ) {
+			return new WP_Error( 'invalid_date_range', esc_html__( 'Check-out date cannot be earlier than check-in date.', 'easy-hotel' ) );
+		}
+
+		if ( $start_date < current_time( 'Y-m-d' ) && ! current_user_can( 'edit_posts' ) ) {
+			return new WP_Error( 'past_date', esc_html__( 'Check-in date cannot be in the past.', 'easy-hotel' ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Booking rules every checkout must enforce on the server: time slot,
+	 * already-booked dates, holidays, allowed check-in day, minimum stay by
+	 * season, min / max nights and adult / children / extra-bed capacity.
+	 * Shared by the WooCommerce add-to-cart flow and Native Checkout, which
+	 * used to skip all of them, so a hand-made request could book holidays,
+	 * a 1-night stay against a 7-night minimum or 50 adults in a 2-person room.
+	 *
+	 * Room count and cart holds are checked by each flow itself.
+	 *
+	 * @param array $r accomodation_id, start_date, end_date, start_time, end_time,
+	 *                 room_quantity, adult_quantity, children_quantity, extra_bed_quantity.
+	 * @param bool  $is_valid_time Set to true when the request is a valid hourly slot.
+	 * @return array|null wp_send_json_error() payload ({ error: { code, message }, ... }), or null when every rule passes.
+	 */
+	public function eshb_validate_booking_rules( array $r, &$is_valid_time = false ) {
+		$accomodation_id    = (int) ( $r['accomodation_id'] ?? 0 );
+		$start_date         = (string) ( $r['start_date'] ?? '' );
+		$end_date           = (string) ( $r['end_date'] ?? '' );
+		$start_time         = (string) ( $r['start_time'] ?? '' );
+		$end_time           = (string) ( $r['end_time'] ?? '' );
+		$room_quantity      = max( 1, (int) ( $r['room_quantity'] ?? 1 ) );
+		$adult_quantity     = max( 1, (int) ( $r['adult_quantity'] ?? 1 ) );
+		$children_quantity  = max( 0, (int) ( $r['children_quantity'] ?? 0 ) );
+		$extra_bed_quantity = max( 0, (int) ( $r['extra_bed_quantity'] ?? 0 ) );
+
+		$accomodation_metaboxes = get_post_meta( $accomodation_id, 'eshb_accomodation_metaboxes', true );
+		$eshb_settings          = get_option( 'eshb_settings', [] );
+		$start_day_name         = $start_date ? strtolower( gmdate( 'l', strtotime( $start_date ) ) ) : '';
+		$days_count             = ( new DateTime( $start_date ) )->diff( new DateTime( $end_date ) )->days;
+
+		$string_already_booked_msg = ! empty( $eshb_settings['string_already_booked_msg'] ) ? $eshb_settings['string_already_booked_msg'] : 'Ops! The date range is already booked:';
+		$string_time_error_msg     = ! empty( $eshb_settings['string_time_error_msg'] ) ? $eshb_settings['string_time_error_msg'] : 'Selected time slot is not available!';
+
+		$eshb_week_settings = apply_filters( 'eshb_week_settings', [
+			'string_check_in_day_error_msg'     => 'Only allowed check in day is',
+			'eshb_booking_allowed_check_in_day' => 'all',
+		] );
+		$allowed_check_in_day          = apply_filters( 'eshb_booking_allowed_check_in_day', 'all', $accomodation_id, $accomodation_metaboxes );
+		$string_check_in_day_error_msg = ! empty( $eshb_week_settings['string_check_in_day_error_msg'] ) ? $eshb_week_settings['string_check_in_day_error_msg'] : 'Only allowed check in day is : ';
+
+		$min_max_settings = apply_filters( 'eshb_min_max_settings', [
+			'required_min_nights'          => '',
+			'required_max_nights'          => '',
+			'is_global_source_for_min_max' => true,
+		], $accomodation_id, $accomodation_metaboxes );
+		$required_min_nights = $start_date !== $end_date && isset( $min_max_settings['required_min_nights'] ) ? $min_max_settings['required_min_nights'] : '';
+		$required_max_nights = $start_date !== $end_date && isset( $min_max_settings['required_max_nights'] ) ? $min_max_settings['required_max_nights'] : '';
+		$string_required_minimum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A minimum stay of', 'easy-hotel' );
+		$string_required_maximum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A maximum stay of', 'easy-hotel' );
+		$pricing_periodicity       = apply_filters( 'eshb_pricing_periodicity', false, $accomodation_id, $accomodation_metaboxes );
+		$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session( $accomodation_id, $start_date, $end_date );
+
+		// Hourly slot
+		$is_valid_time   = false;
+		$available_times = ESHB_Helper::get_available_times_by_date( $accomodation_id, $start_date );
+		if ( $pricing_periodicity == 'per_hour' && ( ! empty( $accomodation_metaboxes['single_day_price'] ) || ! empty( $accomodation_metaboxes['single_day_sale_price'] ) ) && ! empty( $available_times ) ) {
+			$available_slots = isset( $available_times['available_slots'] ) ? $available_times['available_slots'] : [];
+			foreach ( $available_slots as $slot ) {
+				if ( $start_time >= $slot[0] && $end_time <= $slot[1] ) {
+					$is_valid_time = true;
+					break;
+				}
+			}
+			if ( ! $is_valid_time ) {
+				return [ 'error' => [ 'code' => 'invalid_time', 'message' => esc_html( $string_time_error_msg ) ] ];
+			}
+		}
+
+		// Dates already fully booked
+		$actual_booked_dates = $this->get_actual_booked_dates_in_date_ranges( $accomodation_id, $start_date, $end_date );
+		if ( ! empty( $actual_booked_dates ) ) {
+			return [
+				'error'        => [
+					'code'    => 'already_booked',
+					'message' => sprintf(
+						/* translators: 1: already booked message text, 2: list of booked dates */
+						esc_html__( '%1$s %2$s', 'easy-hotel' ),
+						esc_html( $string_already_booked_msg ),
+						''
+					),
+				],
+				'booked_dates' => implode( ', ', $actual_booked_dates ),
+			];
+		}
+
+		// Holidays
+		$holiday_dates = $this->get_holiday_dates_in_date_ranges( $accomodation_id, $start_date, $end_date );
+		if ( ! empty( $holiday_dates ) ) {
+			return [
+				'error'         => [ 'code' => 'holiday_dates', 'message' => esc_html__( 'Selected date range is not available. These dates are in holidays.', 'easy-hotel' ) ],
+				'holiday_dates' => implode( ', ', $holiday_dates ),
+			];
+		}
+
+		// Allowed check-in day(s): a comma separated list of day names.
+		if ( $allowed_check_in_day != 'all' && $start_day_name != '' && ! empty( $allowed_check_in_day ) && strpos( $allowed_check_in_day, $start_day_name ) === false ) {
+			return [
+				'error' => [
+					'code'    => 'check_in_day_error',
+					'message' => sprintf(
+						/* translators: 1: check-in day error message, 2: allowed check-in day(s) */
+						esc_html__( '%1$s %2$s', 'easy-hotel' ),
+						esc_html( $string_check_in_day_error_msg ),
+						esc_html( $allowed_check_in_day )
+					),
+				],
+			];
+		}
+
+		// EHB Week add-on: a check-in-day stay counts as one unit, as in pricing.
+		if ( self::eshb_counts_stay_as_one_unit( $allowed_check_in_day ) ) {
+			$days_count = 1;
+		}
+
+		// Minimum stay by season
+		if ( class_exists( 'ESHB_ADVANCED_PRICING' ) && ! empty( $min_stay_night_by_session ) && $days_count < $min_stay_night_by_session ) {
+			return [
+				'error' => [
+					'code'    => 'min_stay_night_by_session',
+					'message' => sprintf(
+						/* translators: 1: minimum nights message text, 2: required minimum nights */
+						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
+						esc_html( $string_required_minimum_nights_msg ),
+						esc_html( $min_stay_night_by_session )
+					),
+				],
+			];
+		}
+
+		// Min / max nights
+		if ( ! empty( $required_min_nights ) && $days_count < $required_min_nights ) {
+			return [
+				'error' => [
+					'code'    => 'required_min_nights',
+					'message' => sprintf(
+						/* translators: 1: minimum nights message text, 2: required minimum nights */
+						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
+						esc_html( $string_required_minimum_nights_msg ),
+						esc_html( $required_min_nights )
+					),
+				],
+			];
+		}
+		if ( ! empty( $required_max_nights ) && $days_count > $required_max_nights ) {
+			return [
+				'error' => [
+					'code'    => 'required_max_nights',
+					'message' => sprintf(
+						/* translators: 1: maximum nights message text, 2: required maximum nights */
+						esc_html__( '%1$s %2$s nights allowed!', 'easy-hotel' ),
+						esc_html( $string_required_maximum_nights_msg ),
+						esc_html( $required_max_nights )
+					),
+				],
+			];
+		}
+
+		// Adult / children / extra-bed capacity
+		$adult_capacity     = ! empty( $accomodation_metaboxes['adult_capacity'] ) ? $accomodation_metaboxes['adult_capacity'] : 0;
+		$children_capacity  = ! empty( $accomodation_metaboxes['children_capacity'] ) ? $accomodation_metaboxes['children_capacity'] : 0;
+		$total_capacity     = ! empty( $accomodation_metaboxes['total_capacity'] ) ? $accomodation_metaboxes['total_capacity'] : 0;
+		$extra_bed_capacity = ! empty( $accomodation_metaboxes['total_extra_beds'] ) ? $accomodation_metaboxes['total_extra_beds'] : 0;
+
+		// multiply total capacity by per rooms
+		$total_capacity = $total_capacity * $room_quantity;
+
+		if ( ! empty( $total_capacity ) ) {
+			if ( $adult_capacity < 1 && $children_capacity > 0 ) {
+				$adult_capacity = $total_capacity - $children_quantity;
+			} elseif ( $adult_capacity < 1 && $children_capacity < 1 ) {
+				$adult_capacity = $total_capacity;
+			}
+
+			if ( $children_capacity < 1 && $adult_capacity > 0 ) {
+				$children_capacity = $total_capacity - $adult_quantity;
+			} elseif ( $children_capacity < 1 && $adult_capacity < 1 ) {
+				$children_capacity = $total_capacity;
+			}
+		}
+
+		// multiply capacity by per rooms
+		$adult_capacity     = $adult_capacity * $room_quantity;
+		$children_capacity  = $children_capacity * $room_quantity;
+		$extra_bed_capacity = $extra_bed_capacity * $room_quantity;
+
+		if ( ! empty( $adult_capacity ) && $adult_quantity > 0 && $adult_capacity < $adult_quantity ) {
+			return [ 'error' => [ 'code' => 'adult_capacity_not_enough', 'message' => esc_html__( 'Maximum Adult Capacity', 'easy-hotel' ) . ' ' . $adult_capacity ] ];
+		}
+
+		if ( ! empty( $children_capacity ) && $children_quantity > 0 && $children_capacity < $children_quantity ) {
+			return [ 'error' => [ 'code' => 'children_capacity_not_enough', 'message' => esc_html__( 'Maximum Children Capacity', 'easy-hotel' ) . ' ' . $children_capacity ] ];
+		}
+
+		if ( $extra_bed_quantity > 0 && $extra_bed_capacity < $extra_bed_quantity ) {
+			return [ 'error' => [ 'code' => 'extra_bed_capacity_not_enough', 'message' => esc_html__( 'Maximum Extra Bed Capacity', 'easy-hotel' ) . ' ' . $extra_bed_capacity ] ];
+		}
+
+		return null;
+	}
+
+	/**
+	 * Whether a stay is counted as one unit instead of its real nights.
+	 *
+	 * Only the standalone EHB Week add-on prices a check-in-day stay as a
+	 * single (weekly) unit. The bundled Booking Rules module also supplies a
+	 * check-in day, but there it is just a restriction; counting its stays
+	 * as 1 night charged extra beds and per-night services for one night,
+	 * and failed every minimum-nights rule.
+	 *
+	 * @param string $allowed_check_in_day Value of the eshb_booking_allowed_check_in_day filter.
+	 * @return bool
+	 */
+	public static function eshb_counts_stay_as_one_unit( $allowed_check_in_day ) {
+		if ( empty( $allowed_check_in_day ) || 'all' === $allowed_check_in_day ) {
+			return false;
+		}
+		// Booking Rules hands the check-in day over to the Week add-on when it is active.
+		return ! class_exists( 'ESHB_Booking_Rules' ) || ! ESHB_Booking_Rules::owns_check_in_day();
+	}
+
+	/**
+	 * Send the JSON error for a rejected quantity or date in the shape the
+	 * booking form expects ({ error: { code, message } }).
+	 */
+	private static function eshb_send_request_error( WP_Error $error ) {
+		wp_send_json_error( [
+			'error' => [
+				'code'    => $error->get_error_code(),
+				'message' => $error->get_error_message(),
+			],
+		] );
+	}
+
 	public function calculate_booking_pricing($accomodation_id, $start_date, $end_date, $room_quantity, $extra_bed_quantity, $adult_quantity, $children_quantity, $selected_services, $currency_converter = false, $start_time = '', $end_time = '') {
 		if (empty($accomodation_id)) return;
-	
+
+		// Never price below 1 room / 1 adult, whoever the caller is.
+		$room_quantity      = max( 1, (int) $room_quantity );
+		$adult_quantity     = max( 1, (int) $adult_quantity );
+		$extra_bed_quantity = max( 0, (int) $extra_bed_quantity );
+		$children_quantity  = max( 0, (int) $children_quantity );
+
 		$accomodation_id = (int) $accomodation_id;
 		$total_guest_quantity = (int) $adult_quantity + (int) $children_quantity;
 		$start = new DateTime($start_date);
@@ -1302,8 +1634,8 @@ class ESHB_Booking {
 		$allowed_check_in_day = apply_filters( 'eshb_booking_allowed_check_in_day', 'all', $accomodation_id, $metaboxes );
 		$single_day_price = 0;
 	
-		// Handle week-based or same-day bookings
-		if (!empty($allowed_check_in_day) && $allowed_check_in_day !== 'all') {
+		// Week-based (EHB Week add-on) or same-day bookings count as one unit.
+		if ( self::eshb_counts_stay_as_one_unit( $allowed_check_in_day ) ) {
 			$days_count = 1;
 		}
 		
@@ -1331,7 +1663,7 @@ class ESHB_Booking {
 		$regular_base_price = $hotel_core->get_eshb_day_wise_price($start_date, $end_date, $accomodation_id, true, $days_count, $adult_quantity, $children_quantity);
 	
 		// Pricing logic
-		$bed_price = (int) ($metaboxes['extra_bed_price'] ?? 0);
+		$bed_price = (float) ($metaboxes['extra_bed_price'] ?? 0); // 12.50, not 12
 		$pricing_type = $metaboxes['pricing_type'] ?? 'room_wise';
 	
 		
@@ -1506,6 +1838,10 @@ class ESHB_Booking {
 			$tomorrow = $date->format('Y-m-d'); // Get the new date in 'Y-m-d' format
 			$start_date = isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash($_POST['startDate']) ) : $today_date;
 			$end_date = isset( $_POST['endDate'] ) ? sanitize_text_field( wp_unslash($_POST['endDate']) ) : $tomorrow;
+			$valid_dates = self::eshb_validate_booking_dates( $start_date, $end_date );
+			if ( is_wp_error( $valid_dates ) ) {
+				self::eshb_send_request_error( $valid_dates );
+			}
 			$start_day_name = $start_date ? strtolower(gmdate('l', strtotime($start_date))) : '';
 			$start_time = isset( $_POST['startTime'] ) ? sanitize_text_field( wp_unslash($_POST['startTime']) ) : '';
 			$end_time = isset( $_POST['endTime'] ) ? sanitize_text_field( wp_unslash($_POST['endTime']) ) : '';
@@ -1516,10 +1852,14 @@ class ESHB_Booking {
 			$interval = $start->diff($end);
 			$days_count = $interval->days;
 
-			$room_quantity = isset( $_POST['roomQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['roomQuantity'] ) ) : 1;
-			$extra_bed_quantity = isset( $_POST['extraBedQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['extraBedQuantity'] ) ) : 0;
-			$adult_quantity = isset( $_POST['adultQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['adultQuantity'] ) ) : 1;
-			$children_quantity = isset( $_POST['childrenQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['childrenQuantity'] ) ) : 0;
+			$quantities = self::eshb_read_booking_quantities();
+			if ( is_wp_error( $quantities ) ) {
+				self::eshb_send_request_error( $quantities );
+			}
+			$room_quantity      = $quantities['room_quantity'];
+			$extra_bed_quantity = $quantities['extra_bed_quantity'];
+			$adult_quantity     = $quantities['adult_quantity'];
+			$children_quantity  = $quantities['children_quantity'];
 			$total_guest_quantity = $adult_quantity + $children_quantity;
 
 			$selected_services = [];
@@ -1538,36 +1878,12 @@ class ESHB_Booking {
 			$booking_type = isset($eshb_settings['booking-type']) && !empty($eshb_settings['booking-type']) ? $eshb_settings['booking-type'] : 'woocommerce';
 			$string_booking_success_msg = isset($eshb_settings['string_book_success_msg']) && !empty($eshb_settings['string_booking_success_msg']) ? $eshb_settings['string_booking_success_msg'] : 'Reservation Successfully added to your cart.';
 			$string_booking_failed_msg = isset($eshb_settings['string_booking_failed_msg']) && !empty($eshb_settings['string_booking_failed_msg']) ? $eshb_settings['string_booking_failed_msg'] : 'Ops! This Reservation has been failed.';
-			$string_already_booked_msg = isset($eshb_settings['string_already_booked_msg']) && !empty($eshb_settings['string_already_booked_msg']) ? $eshb_settings['string_already_booked_msg'] : 'Ops! The date range is already booked:';
-			$string_minimum_week_nights_msg = isset($eshb_settings['string_minimum_week_nights_msg']) && !empty($eshb_settings['string_minimum_week_nights_msg']) ? $eshb_settings['string_minimum_week_nights_msg'] : 'Please select more than 1 night!';
-			$string_time_error_msg = isset($eshb_settings['string_time_error_msg']) && !empty($eshb_settings['string_time_error_msg']) ? $eshb_settings['string_time_error_msg'] : 'Selected time slot is not available!';
 			$room_visibility = in_array('rooms', $eshb_settings['booking-form-fields']) ? true : false;
 			$adult_visibility = in_array('adults', $eshb_settings['booking-form-fields']) ? true : false;
 			$childrens_visibility = in_array('childrens', $eshb_settings['booking-form-fields']) ? true : false;
 			$extra_beds_visibility = in_array('extra_beds', $eshb_settings['booking-form-fields']) ? true : false;
 
-			$eshb_week_settings = [
-				'string_check_in_day_error_msg' => 'Only allowed check in day is',
-				'eshb_booking_allowed_check_in_day' => 'all',
-			];
-			$eshb_week_settings = apply_filters( 'eshb_week_settings', $eshb_week_settings );
 			$allowed_check_in_day = apply_filters( 'eshb_booking_allowed_check_in_day', 'all', $accomodation_id, $accomodation_metaboxes );
-			$string_check_in_day_error_msg = !empty($eshb_week_settings['string_check_in_day_error_msg']) ? $eshb_week_settings['string_check_in_day_error_msg'] : 'Only allowed check in day is : ';
-
-			// Min Max Booking Configurations
-			$min_max_settings = [
-				'required_min_nights' => '',
-				'required_max_nights' => '',
-				'is_global_source_for_min_max' => true,
-			];
-			$min_max_settings = apply_filters( 'eshb_min_max_settings', $min_max_settings, $accomodation_id, $accomodation_metaboxes );
-			$required_min_nights = $start_date !== $end_date && isset($min_max_settings['required_min_nights']) ? $min_max_settings['required_min_nights'] : '';
-			$required_max_nights = $start_date !== $end_date && isset($min_max_settings['required_max_nights']) ? $min_max_settings['required_max_nights'] : '';
-			$string_required_minimum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A minimum stay of', 'easy-hotel' );
-			$string_required_maximum_nights_msg = esc_html__( 'Oops! Your reservation couldn\'t be completed. A maximum stay of', 'easy-hotel' );
-			$pricing_periodicity = apply_filters( 'eshb_pricing_periodicity', false, $accomodation_id, $accomodation_metaboxes );
-			
-			$min_stay_night_by_session = ESHB_Helper::get_eshb_min_stay_night_by_session($accomodation_id, $start_date, $end_date);
 
 			// Validate booking type
 			if ( $booking_type == 'woocommerce' && ! class_exists( 'WooCommerce' ) ) {
@@ -1593,61 +1909,22 @@ class ESHB_Booking {
 			}
 
 
-			$available_times = ESHB_Helper::get_available_times_by_date($accomodation_id, $start_date);
+			// Booking rules shared with Native Checkout (time slot, booked dates,
+			// holidays, check-in day, min/max nights, capacity).
 			$is_valid_time = false;
-			
-			if($pricing_periodicity == 'per_hour' && (!empty($accomodation_metaboxes['single_day_price']) || !empty($accomodation_metaboxes['single_day_sale_price'])) && !empty($available_times)){
-				$available_slots = isset($available_times['available_slots']) ? $available_times['available_slots'] : [];
-
-				if(count($available_slots) > 0) {
-					foreach ($available_slots as $slot) {
-						if ($start_time >= $slot[0] && $end_time <= $slot[1]) {
-							$is_valid_time = true;
-							break;
-						}
-					}
-				}else{
-					$is_valid_time = false;
-				}
-
-				if(!$is_valid_time){
-					$error = array('code' => 'invalid_time', 'message' => esc_html($string_time_error_msg));
-					wp_send_json_error([
-						'error' => $error,
-					]);
-				}
-			}
-
-			$actual_booked_dates = $this->get_actual_booked_dates_in_date_ranges($accomodation_id, $start_date, $end_date);
-			$booked_dates_str = '';
-			if(!empty($actual_booked_dates)){
-
-				$error_message = sprintf(
-					/* translators: 1: already booked message text, 2: list of booked dates */
-					esc_html__( '%1$s %2$s', 'easy-hotel' ),
-					esc_html( $string_already_booked_msg ),
-					$booked_dates_str
-				);
-
-				$error = array(
-					'code'    => 'already_booked',
-					'message' => $error_message,
-				);
-				wp_send_json_error([
-					'error' => $error,
-					'booked_dates' => implode(', ', $actual_booked_dates),
-				]);
-
-			}
-
-			$holiday_dates = $this->get_holiday_dates_in_date_ranges($accomodation_id, $start_date, $end_date);
-
-			if(!empty($holiday_dates)){
-				$error = array('code' => 'holiday_dates', 'message' => esc_html__('Selected date range is not available. These dates are in holidays.', 'easy-hotel'));
-				wp_send_json_error([
-					'error' => $error,
-					'holiday_dates' => implode(', ', $holiday_dates),
-				]);
+			$rule_error = $this->eshb_validate_booking_rules( [
+				'accomodation_id'    => $accomodation_id,
+				'start_date'         => $start_date,
+				'end_date'           => $end_date,
+				'start_time'         => $start_time,
+				'end_time'           => $end_time,
+				'room_quantity'      => $room_quantity,
+				'adult_quantity'     => $adult_quantity,
+				'children_quantity'  => $children_quantity,
+				'extra_bed_quantity' => $extra_bed_quantity,
+			], $is_valid_time );
+			if ( $rule_error ) {
+				wp_send_json_error( $rule_error );
 			}
 
 			// Check cart blocking (temporary holds by other users)
@@ -1658,10 +1935,13 @@ class ESHB_Booking {
 			}
 
 			// check rooms capacity
-			if(!$is_valid_time && isset($_POST['roomQuantity']) && !empty($_POST['roomQuantity'])){
-				$roomQuantity = isset( $_POST['roomQuantity'] ) ? (int) sanitize_text_field( wp_unslash($_POST['roomQuantity'] ) ) : 1;
-				
+			if(!$is_valid_time){
+				$roomQuantity = $room_quantity; // validated above
+
 				$availableRoom = $this->get_available_room_count_by_date_range($accomodation_id, $start_date, $end_date);
+				if ( is_wp_error( $availableRoom ) ) {
+					wp_send_json_error( [ 'error' => [ 'code' => $availableRoom->get_error_code(), 'message' => esc_html( $availableRoom->get_error_message() ) ] ] );
+				}
 
 				if($roomQuantity > $availableRoom){
 					$error = array(
@@ -1679,126 +1959,9 @@ class ESHB_Booking {
 			}
 
 
-			// Validate check-in day
-			// Same check as the other booking path above: a rule can now allow several
-			// days, so the comparison is a lookup in the comma separated list rather than
-			// an equality test — which was also the wrong way round here, rejecting the
-			// allowed day and letting every other one through.
-			if($allowed_check_in_day != 'all' && $start_day_name != '' && !empty($allowed_check_in_day) && strpos($allowed_check_in_day, $start_day_name) === false) {
-				$error = array(
-					'code'    => 'check_in_day_error',
-					'message' => sprintf(
-						/* translators: %s: allowed check-in day */
-						esc_html__( '%1$s %1$s', 'easy-hotel' ),
-						esc_html( $string_check_in_day_error_msg ),
-						esc_html( $allowed_check_in_day )
-					),
-				);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-
-
-
-			if(!empty($allowed_check_in_day) && $allowed_check_in_day != 'all'){
+			// Cart line shows an EHB Week stay as one unit, as pricing does.
+			if ( self::eshb_counts_stay_as_one_unit( $allowed_check_in_day ) ) {
 				$days_count = 1;
-			}
-
-			// validate min stay night by session
-			if(class_exists('ESHB_ADVANCED_PRICING') && !empty($min_stay_night_by_session) && $days_count < $min_stay_night_by_session){
-				$error = array(
-					'code'    => 'min_stay_night_by_session',
-					'message' => sprintf(
-						/* translators: 1: minimum nights message text, 2: required minimum nights */
-						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
-						esc_html( $string_required_minimum_nights_msg ),
-						esc_html( $min_stay_night_by_session )
-					),
-				);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-			
-			if(!empty($required_min_nights) && $days_count < $required_min_nights){
-				$error = array(
-					'code'    => 'required_min_nights',
-					'message' => sprintf(
-						/* translators: 1: minimum nights message text, 2: required minimum nights */
-						esc_html__( '%1$s %2$s nights!', 'easy-hotel' ),
-						esc_html( $string_required_minimum_nights_msg ),
-						esc_html( $required_min_nights )
-					),
-				);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-			if(!empty($required_max_nights) && $days_count > $required_max_nights){
-				$error = array(
-					'code'    => 'required_max_nights',
-					'message' => sprintf(
-						/* translators: 1: maximum nights message text, 2: required maximum nights */
-						esc_html__( '%1$s %2$s nights allowed!', 'easy-hotel' ),
-						esc_html( $string_required_maximum_nights_msg ),
-						esc_html( $required_max_nights )
-					),
-				);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-
-			
-			
-			// validate capacities
-			$adult_capacity = !empty($accomodation_metaboxes['adult_capacity']) ? $accomodation_metaboxes['adult_capacity'] : 0;
-			$children_capacity = !empty($accomodation_metaboxes['children_capacity']) ? $accomodation_metaboxes['children_capacity'] : 0;
-			$total_capacity = !empty($accomodation_metaboxes['total_capacity']) ? $accomodation_metaboxes['total_capacity'] : 0;
-			$extra_bed_capacity = !empty($accomodation_metaboxes['total_extra_beds']) ? $accomodation_metaboxes['total_extra_beds'] : 0;
-			
-			// multiply total capacity by per rooms
-			$total_capacity = $total_capacity * $room_quantity;
-
-			if(!empty($total_capacity)){
-				if($adult_capacity < 1 && $children_capacity > 0){
-					$adult_capacity = $total_capacity - $children_quantity;
-				}elseif($adult_capacity < 1 && $children_capacity < 1){
-					$adult_capacity = $total_capacity;
-				}
-
-				if($children_capacity < 1 && $adult_capacity > 0){
-					$children_capacity = $total_capacity - $adult_quantity;
-				}elseif($children_capacity < 1 && $adult_capacity < 1){
-					$children_capacity = $total_capacity;
-				}
-			}
-
-			// multiply capacity by per rooms
-			$adult_capacity = $adult_capacity * $room_quantity;
-			$children_capacity = $children_capacity * $room_quantity;
-			$extra_bed_capacity = $extra_bed_capacity * $room_quantity;
-
-			if(!empty($adult_capacity) && $adult_quantity > 0 && $adult_capacity < $adult_quantity){
-				$error = array('code' => 'adult_capacity_not_enough', 'message' => esc_html__('Maximum Adult Capacity', 'easy-hotel') . ' ' . $adult_capacity);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-
-			if(!empty($children_capacity) && $children_quantity > 0 && $children_capacity < $children_quantity){
-				$error = array('code' => 'children_capacity_not_enough', 'message' => esc_html__('Maximum Children Capacity', 'easy-hotel') . ' ' . $children_capacity);
-				wp_send_json_error([
-					'error' => $error,
-				]);
-			}
-			
-			if($extra_bed_quantity > 0 && $extra_bed_capacity < $extra_bed_quantity){
-				$error = array('code' => 'extra_bed_capacity_not_enough', 'message' => esc_html__('Maximum Extra Bed Capacity', 'easy-hotel') . ' ' . $extra_bed_capacity );
-				wp_send_json_error([
-					'error' => $error,
-				]);
 			}
 
 			
@@ -1810,6 +1973,17 @@ class ESHB_Booking {
 			$extra_bed_price= $pricing['extraBedPrice'];
 			$subtotal_price = $pricing['subtotalPrice'];
 			$total_price = $pricing['totalPrice'];
+
+			// A negative price must never reach the cart or the product's _price.
+			if ( ! is_numeric( $subtotal_price ) || ! is_numeric( $total_price ) || (float) $subtotal_price < 0 || (float) $total_price < 0 ) {
+				wp_send_json_error( [
+					'error' => [
+						'code'    => 'invalid_price',
+						'message' => esc_html( $string_booking_failed_msg ),
+					],
+				] );
+			}
+
 			$discount = $pricing['discount'];
 			$currency_symbol = $pricing['currencySymbol'];
 			$quantity = 1;
@@ -2007,10 +2181,14 @@ class ESHB_Booking {
 			$start_time = sanitize_text_field(wp_unslash($_POST['startTime'] ?? ''));
 			$end_time = sanitize_text_field(wp_unslash($_POST['endTime'] ?? ''));
 	
-			$room_quantity     = (int) sanitize_text_field(wp_unslash($_POST['roomQuantity'] ?? 1));
-			$extra_bed_quantity = (int) sanitize_text_field(wp_unslash($_POST['extraBedQuantity'] ?? 0));
-			$adult_quantity     = (int) sanitize_text_field(wp_unslash($_POST['adultQuantity'] ?? 1));
-			$children_quantity  = (int) sanitize_text_field(wp_unslash($_POST['childrenQuantity'] ?? 0));
+			$quantities = self::eshb_read_booking_quantities();
+			if ( is_wp_error( $quantities ) ) {
+				self::eshb_send_request_error( $quantities );
+			}
+			$room_quantity      = $quantities['room_quantity'];
+			$extra_bed_quantity = $quantities['extra_bed_quantity'];
+			$adult_quantity     = $quantities['adult_quantity'];
+			$children_quantity  = $quantities['children_quantity'];
 			$selected_services = [];
 			if(isset($_POST['selectedServices']) && !empty($_POST['selectedServices'])){
 
@@ -2135,10 +2313,17 @@ class ESHB_Booking {
 			'post_type'      => 'eshb_booking',
 			'posts_per_page' => -1,
 			//'post_status'    => 'publish',
-			'post_status'    => ['publish', 'completed', 'processing', 'deposit-payment', 'pending'],
+			// on-hold must count: native checkout and offline WooCommerce
+			// gateways (bank transfer, cheque) leave bookings on-hold.
+			'post_status'    => ['publish', 'completed', 'processing', 'on-hold', 'deposit-payment', 'pending'],
 			'fields' => 'ids',
+			'no_found_rows'  => true,
+			// Only bookings that have not ended before the range starts.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Indexed date key; replaces loading every booking.
+			'meta_query'     => ESHB_Booking_Index::ending_on_or_after_query( $start_date_obj->format( 'Y-m-d' ) ),
 		];
 		$bookings = new WP_Query($bookings_args);
+		update_meta_cache( 'post', $bookings->posts );
 
 		if ($bookings->have_posts()) {
 			while ($bookings->have_posts()) {
@@ -2448,10 +2633,11 @@ class ESHB_Booking {
 		// Retrieve the order object
 		$order = wc_get_order($order_id);
 	
-		// Get the booking post ID from order meta
-		$booking_post_id = get_post_meta($order_id, '_booking_post_created', true); // Adjusted to your meta key
-	
-		if ($booking_post_id) {
+		// Every booking of the order: a multi-room order used to sync only
+		// its last booking, so cancelling it left the other rooms blocked.
+		$booking_post_ids = ESHB_Helper::eshb_get_order_booking_ids( $order_id );
+
+		if ( ! empty( $booking_post_ids ) ) {
 
 			if ( 'processing' === $new_status && $order ) {
 				$eshb_settings = get_option( 'eshb_settings', [] );
@@ -2469,24 +2655,26 @@ class ESHB_Booking {
 				}
 			}
 
-			// update booking status
-            $updated_booking = array(
-                'ID'           => $booking_post_id,
-                'post_status'  => $new_status,
-            );
+			foreach ( $booking_post_ids as $booking_post_id ) {
+				// update booking status
+				$updated_booking = array(
+					'ID'           => $booking_post_id,
+					'post_status'  => $new_status,
+				);
 
-            wp_update_post( $updated_booking );
+				wp_update_post( $updated_booking );
 
-			// Get the existing meta for the custom post
-			$booking_meta = get_post_meta($booking_post_id, 'eshb_booking_metaboxes', true);
-	
-			// Ensure the meta is an array before modifying it
-			if (is_array($booking_meta)) {
-				// Update the `booking_status` field
-				$booking_meta['booking_status'] = $new_status;
-	
-				// Save the updated meta back to the post
-				update_post_meta($booking_post_id, 'eshb_booking_metaboxes', $booking_meta);
+				// Get the existing meta for the custom post
+				$booking_meta = get_post_meta($booking_post_id, 'eshb_booking_metaboxes', true);
+
+				// Ensure the meta is an array before modifying it
+				if (is_array($booking_meta)) {
+					// Update the `booking_status` field
+					$booking_meta['booking_status'] = $new_status;
+
+					// Save the updated meta back to the post
+					update_post_meta($booking_post_id, 'eshb_booking_metaboxes', $booking_meta);
+				}
 			}
 		}
 	}
@@ -2830,6 +3018,105 @@ class ESHB_Booking {
 	}
 
 	/**
+	 * Re-check real availability for a whole cart right before payment.
+	 * Availability is otherwise only checked at add-to-cart, so two guests
+	 * holding the same last room could both pay. Rooms the same cart asks
+	 * for on overlapping dates are added up. Cart holds are ignored here:
+	 * only confirmed bookings count at this point.
+	 *
+	 * @param array $items Each with accomodation_id, start_date, end_date,
+	 *                     room_quantity and optional start_time / end_time.
+	 * @return string Error message, or '' when every item is still available.
+	 */
+	public function eshb_validate_cart_availability( array $items ) {
+		$items = array_values( array_filter( $items, function ( $item ) {
+			return is_array( $item ) && ! empty( $item['accomodation_id'] ) && ! empty( $item['start_date'] ) && ! empty( $item['end_date'] );
+		} ) );
+
+		foreach ( $items as $item ) {
+			$accom_id   = (int) $item['accomodation_id'];
+			$start_date = (string) $item['start_date'];
+			$end_date   = (string) $item['end_date'];
+
+			// Malformed or reversed dates are refused here too. A stay that
+			// became "past" while in the cart (e.g. paid just after midnight)
+			// is still allowed.
+			$valid_dates = self::eshb_validate_booking_dates( $start_date, $end_date );
+			if ( is_wp_error( $valid_dates ) && 'past_date' !== $valid_dates->get_error_code() ) {
+				return $valid_dates->get_error_message();
+			}
+
+			try {
+				$available = $this->get_available_room_count_by_date_range(
+					$accom_id,
+					$start_date,
+					$end_date,
+					$item['start_time'] ?? '',
+					$item['end_time'] ?? ''
+				);
+			} catch ( Exception $e ) {
+				$available = new WP_Error( 'invalid_date_range', $e->getMessage() );
+			}
+
+			if ( is_wp_error( $available ) ) {
+				return esc_html__( 'One of the selected dates is invalid. Please update your reservation.', 'easy-hotel' );
+			}
+
+			// Rooms this cart needs from the accommodation on overlapping dates.
+			// Same-day (hourly) stays have start === end, so they are compared
+			// inclusively; night stays use the half-open check-out rule.
+			$needed = 0;
+			foreach ( $items as $other ) {
+				if ( (int) $other['accomodation_id'] !== $accom_id ) continue;
+				$o_start = (string) $other['start_date'];
+				$o_end   = (string) $other['end_date'];
+				$overlap = ( $start_date === $end_date || $o_start === $o_end )
+					? ( $start_date <= $o_end && $o_start <= $end_date )
+					: $this->eshb_dates_overlap( $start_date, $end_date, $o_start, $o_end );
+				if ( $overlap ) {
+					$needed += max( 1, (int) ( $other['room_quantity'] ?? 1 ) );
+				}
+			}
+
+			if ( $needed > (int) $available ) {
+				return sprintf(
+					/* translators: 1: accommodation title, 2: start date, 3: end date, 4: rooms still available */
+					esc_html__( '%1$s is no longer available for %2$s - %3$s (available rooms: %4$s). Please update your reservation.', 'easy-hotel' ),
+					esc_html( get_the_title( $accom_id ) ),
+					esc_html( ESHB_Helper::eshb_format_date( $start_date ) ),
+					esc_html( ESHB_Helper::eshb_format_date( $end_date ) ),
+					esc_html( max( 0, (int) $available ) )
+				);
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * WooCommerce: refuse checkout when a hotel item in the cart was booked by
+	 * someone else in the meantime. woocommerce_check_cart_items runs during
+	 * classic checkout validation and Store API (block checkout) cart
+	 * validation, before the order is created or payment is taken.
+	 */
+	public function eshb_check_woocommerce_cart_availability() {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
+
+		$items = [];
+		foreach ( WC()->cart->get_cart() as $cart_item ) {
+			if ( ! empty( $cart_item['accomodation_id'] ) ) {
+				$items[] = $cart_item;
+			}
+		}
+		if ( empty( $items ) ) return;
+
+		$error = $this->eshb_validate_cart_availability( $items );
+		if ( $error !== '' ) {
+			wc_add_notice( $error, 'error' );
+		}
+	}
+
+	/**
 	 * Release the current visitor's hold for an accommodation (on
 	 * completed booking or expired/abandoned native reservation).
 	 */
@@ -3073,3 +3360,6 @@ ESHB_Booking::instance();
 
 // Registered once on the singleton (constructor runs multiple times due to `new ESHB_Booking()` calls elsewhere)
 add_filter( 'woocommerce_checkout_cart_item_quantity', [ ESHB_Booking::instance(), 'eshb_checkout_order_review_qty_input' ], 10, 3 );
+
+// Last availability check before a WooCommerce order is placed (once, on the singleton).
+add_action( 'woocommerce_check_cart_items', [ ESHB_Booking::instance(), 'eshb_check_woocommerce_cart_availability' ] );

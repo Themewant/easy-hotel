@@ -1029,42 +1029,35 @@ class Eshb_Room_Slider_Widget  extends \Elementor\Widget_Base {
         $unique          = wp_rand(2012, 35120);
      
         if ($room_slider_autoplay == 'true') {
-            $room_slider_autoplay = 'autoplay: { ';
-            $room_slider_autoplay .= 'delay: ' . $interval;
-            if ($pauseOnHover == 'true') {
-                $room_slider_autoplay .= ', pauseOnMouseEnter: true';
-            } else {
-                $room_slider_autoplay .= ', pauseOnMouseEnter: false';
-            }
-            if ($pauseOnInter == 'true') {
-                $room_slider_autoplay .= ', disableOnInteraction: true';
-            } else {
-                $room_slider_autoplay .= ', disableOnInteraction: false';
-            }
-            $room_slider_autoplay .= ' }';
+            $room_slider_autoplay = array(
+                'delay'                => (int) $interval,
+                'pauseOnMouseEnter'    => $pauseOnHover == 'true',
+                'disableOnInteraction' => $pauseOnInter == 'true',
+            );
         } else {
-            $room_slider_autoplay = 'autoplay: false';
+            $room_slider_autoplay = false;
         }
 
         $effect = $settings['rt_pslider_effect'];
 
         if ($effect == 'fade') {
-            $seffect = "effect: 'fade', fadeEffect: { crossFade: true, },";
-        } elseif ($effect == 'cube') {
-            $seffect = "effect: 'cube',";
-        } elseif ($effect == 'flip') {
-            $seffect = "effect: 'flip',";
-        } elseif ($effect == 'coverflow') {
-            $seffect = "effect: 'coverflow',";
+            $seffect = array( 'effect' => 'fade', 'fadeEffect' => array( 'crossFade' => true ) );
         } elseif ($effect == 'creative') {
-            $seffect = "effect: 'creative', creativeEffect: { prev: { translate: [0, 0, -400], }, next: { translate: ['100%', 0, 0], }, },";
-        } elseif ($effect == 'cards') {
-            $seffect = "effect: 'cards',";
+            $seffect = array(
+                'effect'         => 'creative',
+                'creativeEffect' => array(
+                    'prev' => array( 'translate' => array( 0, 0, -400 ) ),
+                    'next' => array( 'translate' => array( '100%', 0, 0 ) ),
+                ),
+            );
+        } elseif ( in_array( $effect, array( 'cube', 'flip', 'coverflow', 'cards' ), true ) ) {
+            $seffect = array( 'effect' => $effect );
         } else {
-            $seffect = '';
+            $seffect = array();
         }
      
-        $sstyle = $settings['rt_room_slider_style'];
+        // Part of an include path below; only accept the styles the control offers.
+        $sstyle = ESHB_Helper::eshb_allowed_style( $settings['rt_room_slider_style'] ?? 'style1', [ 'style1', 'style2', 'style3', 'style4' ], 'style1' );
 
         $eshb_settings = get_option('eshb_settings');
         $string_night = isset($eshb_settings['string_night']) && !empty($eshb_settings['string_night']) ? $eshb_settings['string_night'] : 'night';
@@ -1154,41 +1147,34 @@ class Eshb_Room_Slider_Widget  extends \Elementor\Widget_Base {
 
 
         
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                var swiper<?php echo esc_attr($unique); ?><?php echo esc_attr($unique); ?> = new Swiper(".rt_room_slider-<?php echo esc_attr($unique); ?>", {
-                    slidesPerView: 1,
-                    <?php echo esc_attr($seffect); ?>
-                    speed: <?php echo esc_attr($autoplaySpeed); ?>,
-                    slidesPerGroup: 1,
-                    loop: <?php echo esc_attr($infinite); ?>,
-                    <?php echo esc_attr($room_slider_autoplay); ?>,
-                    spaceBetween: <?php echo esc_attr($item_gap); ?>,
-                    // pagination: {
-                    //     el: ".swiper-pagination",
-                    //     clickable: true,
-                    //     type: "fraction",
-                    // },
-                    centeredSlides: <?php echo esc_attr($centerMode); ?>,
-                    navigation: {
-                        nextEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($unique); ?> .swiper-button-next",
-                        prevEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($unique); ?> .swiper-button-prev",
-                    },
-                    breakpoints: {
-                        <?php
-                                echo (!empty($col_xs)) ?  '575: { slidesPerView: ' . esc_attr($col_xs) . ' },' : '';
-                                echo (!empty($col_sm)) ?  '767: { slidesPerView: ' . esc_attr($col_sm) . ' },' : '';
-                                echo (!empty($col_md)) ?  '991: { slidesPerView: ' . esc_attr($col_md) . ' },' : '';
-                                echo (!empty($col_lg)) ?  '1199: { slidesPerView: ' . esc_attr($col_lg) . ' },' : '';
-                                ?>
-                        1399: {
-                            slidesPerView: <?php echo esc_attr($col_xl); ?>,
-                            spaceBetween: <?php echo esc_attr($item_gap); ?>
-                        }
-                    }
-                });
-            });
-        </script>
-<?php
+        <?php
+        $breakpoints = array();
+        foreach ( array( 575 => $col_xs, 767 => $col_sm, 991 => $col_md, 1199 => $col_lg ) as $width => $cols ) {
+            if ( ! empty( $cols ) ) {
+                $breakpoints[ $width ] = array( 'slidesPerView' => (float) $cols );
+            }
+        }
+        $breakpoints[1399] = array(
+            'slidesPerView' => (float) $col_xl,
+            'spaceBetween'  => (int) $item_gap,
+        );
+
+        eshb_print_swiper_config( '.rt_room_slider-' . $unique, array_merge(
+            array( 'slidesPerView' => 1 ),
+            $seffect,
+            array(
+                'speed'          => (int) $autoplaySpeed,
+                'slidesPerGroup' => 1,
+                'loop'           => $infinite === 'true',
+                'autoplay'       => $room_slider_autoplay,
+                'spaceBetween'   => (int) $item_gap,
+                'centeredSlides' => $centerMode === 'true',
+                'navigation'     => array(
+                    'nextEl' => '.rt_room_slider-btn-wrapper-' . $unique . ' .swiper-button-next',
+                    'prevEl' => '.rt_room_slider-btn-wrapper-' . $unique . ' .swiper-button-prev',
+                ),
+                'breakpoints'    => $breakpoints,
+            )
+        ) );
     }
 }

@@ -1,0 +1,32 @@
+/* Rows stay in the form but out of sight until opened for editing. The open one
+   goes back to "table", the framework's own value — the title/fieldset columns
+   inside are percentage widths that need that cell context to line up. */
+.eshb-rule-repeater .csf-repeater-wrapper > .csf-repeater-item { display: none; }
+.eshb-rule-repeater .csf-repeater-wrapper > .csf-repeater-item.eshb-editing { display: table; }
+.eshb-rule-repeater .csf-repeater-helper { display: none; }
+.eshb-rule-repeater .csf-repeater-wrapper { margin: 0; }
+.eshb-rule-table { margin-bottom: 12px; }
+.eshb-rule-table table { border-collapse: collapse; width: 100%; max-width: 760px; background: #fff; border: 1px solid #dcdcde; }
+.eshb-rule-table th,
+.eshb-rule-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #dcdcde; vertical-align: middle; }
+.eshb-rule-table th { font-weight: 600; background: #f6f7f7; }
+.eshb-rule-table tbody tr:last-child td { border-bottom: 0; }
+.eshb-rule-table tr.eshb-rule-open td { background: #f0f6fc; }
+.eshb-rule-table .eshb-rule-actions { width: 80px; white-space: nowrap; text-align: right; }
+.eshb-rule-table .eshb-rule-icon { cursor: pointer; padding: 6px 7px; margin-left: 2px; border: 0; border-radius: 3px; background: transparent; color: #8c8f94; font-size: 14px; line-height: 1; }
+.eshb-rule-table .eshb-rule-icon:hover { background: #f0f0f1; }
+.eshb-rule-table .eshb-rule-edit:hover { color: #2271b1; }
+.eshb-rule-table .eshb-rule-delete:hover { color: #b32d2e; }
+.eshb-rule-table .eshb-rule-icon:focus { outline: 2px solid #2271b1; outline-offset: -1px; }
+.eshb-rule-table tr.eshb-rule-open .eshb-rule-edit { color: #2271b1; }
+.eshb-rule-table .eshb-rule-unset { color: #b32d2e; font-style: italic; }
+.eshb-rule-table .eshb-rule-empty { margin: 0 0 4px; }
+.eshb-rule-conflicts { max-width: 760px; }
+.eshb-rule-conflicts .notice { margin: 0 0 12px; }
+.eshb-rule-conflicts ul { margin: 0 0 10px 22px; list-style: disc; }
+.eshb-choices-clear { display: inline-block; margin-top: 8px; font-size: 12px; text-decoration: none; }
+/* Help marker, moved inline after the field title by moveHelp(). */
+.eshb-rule-help { cursor: help; display: inline-block; padding: 0 0 0 5px; font-size: 13px; color: #8c8f94; }
+.eshb-rule-help:hover { color: #2271b1; }
+.eshb-rule-help .csf-help-text { display: none; }
+.eshb-rule-tip { position: absolute; z-index: 100100; max-width: 340px; padding: 10px 12px; border-radius: 3px; background: #1d2327; color: #f0f0f1; font-size: 12px; line-height: 1.6; box-shadow: 0 2px 8px rgba( 0, 0, 0, .25 ); }

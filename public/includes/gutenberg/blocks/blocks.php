@@ -24,12 +24,12 @@ add_action( 'enqueue_block_assets', 'eshb_enqueue_block_styles' );
 add_action( 'enqueue_block_editor_assets', 'eshb_enqueue_block_styles' );
 function eshb_enqueue_block_styles() {
 
-    // if swier not existing
-	if (!wp_style_is('swiper', 'enqueued')) {
-		wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), ESHB_VERSION, 'all' );
-	}
-	if (!wp_script_is('eshb-swiper', 'enqueued')) {
-		wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.0.3',false );
+    // enqueue_block_assets also fires on every front-end page; there the
+    // slider/gallery blocks pull Swiper in as a dependency only when they
+    // render. The editor previews them, so it gets Swiper up front.
+	if ( is_admin() ) {
+		wp_enqueue_style( 'swiper' );
+		wp_enqueue_script( 'eshb-swiper' );
 	}
 
     // register plugin style if not exist
@@ -43,6 +43,26 @@ function eshb_enqueue_block_styles() {
 	//}
 
     
+}
+
+/**
+ * Add script dependencies to a block's front-end scripts. The build's
+ * *.asset.php only lists @wordpress packages, not Swiper/jQuery.
+ *
+ * @param WP_Block_Type|false $block_type Result of register_block_type().
+ * @param string[]            $deps       Script handles.
+ */
+function eshb_block_scripts_add_dependency( $block_type, array $deps ) {
+	if ( ! $block_type instanceof WP_Block_Type ) {
+		return;
+	}
+	$scripts = wp_scripts();
+	$handles = array_merge( (array) $block_type->view_script_handles, (array) $block_type->script_handles );
+	foreach ( array_unique( $handles ) as $handle ) {
+		if ( isset( $scripts->registered[ $handle ] ) ) {
+			$scripts->registered[ $handle ]->deps = array_values( array_unique( array_merge( $scripts->registered[ $handle ]->deps, $deps ) ) );
+		}
+	}
 }
 
 // include blocks

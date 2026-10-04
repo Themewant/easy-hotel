@@ -52,6 +52,28 @@ if ( ! function_exists( 'eshb_get_icons' ) ) {
 
 /**
  *
+ * Backup permission check
+ *
+ * Export/import/reset read or write the option named in the request, so
+ * restrict them to administrators and to the plugin's own options panel.
+ *
+ */
+if ( ! function_exists( 'eshb_backup_is_allowed' ) ) {
+  function eshb_backup_is_allowed( $unique ) {
+
+    if ( ! current_user_can( 'manage_options' ) ) {
+      return false;
+    }
+
+    $allowed = apply_filters( 'eshb_backup_allowed_options', array( 'eshb_settings' ) );
+
+    return in_array( $unique, (array) $allowed, true );
+
+  }
+}
+
+/**
+ *
  * Export
  *
  * @since 1.0.0
@@ -68,7 +90,7 @@ if ( ! function_exists( 'eshb_export' ) ) {
       die( esc_html__( 'Error: Invalid nonce verification.', 'easy-hotel' ) );
     }
 
-    if ( empty( $unique ) ) {
+    if ( empty( $unique ) || ! eshb_backup_is_allowed( $unique ) ) {
       die( esc_html__( 'Error: Invalid key.', 'easy-hotel' ) );
     }
 
@@ -122,11 +144,11 @@ if ( ! function_exists( 'eshb_import_ajax' ) ) {
       wp_send_json_error( array( 'error' => esc_html__( 'Error: Invalid nonce verification.', 'easy-hotel' ) ) );
     }
 
-    if ( empty( $unique ) ) {
+    if ( empty( $unique ) || ! eshb_backup_is_allowed( $unique ) ) {
       wp_send_json_error( array( 'error' => esc_html__( 'Error: Invalid key.', 'easy-hotel' ) ) );
     }
 
-    if ( empty( $data ) || ! is_array( $data ) ) {
+    if ( empty( $data )|| ! is_array( $data ) ) {
       wp_send_json_error( array( 'error' => esc_html__( 'Error: The response is not a valid JSON response.', 'easy-hotel' ) ) );
     }
 
@@ -155,6 +177,10 @@ if ( ! function_exists( 'eshb_reset_ajax' ) ) {
 
     if ( ! wp_verify_nonce( $nonce, 'eshb_backup_nonce' ) ) {
       wp_send_json_error( array( 'error' => esc_html__( 'Error: Invalid nonce verification.', 'easy-hotel' ) ) );
+    }
+
+    if ( empty( $unique ) || ! eshb_backup_is_allowed( $unique ) ) {
+      wp_send_json_error( array( 'error' => esc_html__( 'Error: Invalid key.', 'easy-hotel' ) ) );
     }
 
     // Success

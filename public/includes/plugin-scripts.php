@@ -1,34 +1,235 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
-add_action('wp_enqueue_scripts', 'eshb_wp_enqueue_scripts', 999);
-function eshb_wp_enqueue_scripts (){
+/*
+ * Front-end assets.
+ *
+ * Styles load on every front-end page, as before, so the plugin's markup is
+ * always styled wherever a theme or builder prints it.
+ *
+ * Scripts are registered on every request (cheap), but only enqueued where
+ * the plugin actually outputs something:
+ *  - up front, on pages we can recognise (accommodation pages, plugin pages,
+ *    content with our shortcodes/blocks/page-builder widgets, cart/checkout);
+ *  - otherwise the moment one of our shortcodes, blocks or widgets renders
+ *    (scripts are all in the footer, so enqueuing during render still works).
+ *
+ * Sites that print plugin markup some other way (e.g. a custom theme header)
+ * can load everything everywhere again with:
+ *     add_filter( 'eshb_load_frontend_assets', '__return_true' );
+ */
+// This file is included from ESHB_MAIN::includes() on `init` priority 11, so
+// an `init` priority 5 callback added here would never run (WordPress does
+// not go back to a priority it has passed). Register right away instead;
+// keep the hook for the case where the file is loaded before `init`.
+if ( did_action( 'init' ) ) {
+    eshb_register_frontend_assets();
+} else {
+    add_action( 'init', 'eshb_register_frontend_assets', 5 );
+}
+add_action( 'wp_enqueue_scripts', 'eshb_wp_enqueue_scripts', 999 );
+add_filter( 'do_shortcode_tag', 'eshb_enqueue_assets_for_shortcode', 10, 2 );
+add_filter( 'render_block', 'eshb_enqueue_assets_for_block', 10, 2 );
+add_action( 'elementor/frontend/widget/before_render', 'eshb_enqueue_assets_for_elementor_widget' );
+
+function eshb_register_frontend_assets() {
 
     $css_version = filemtime( ESHB_PL_PATH . 'public/assets/css/public.css' );
-   
-    wp_enqueue_style( 'dashicons' );
-    wp_enqueue_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), $css_version );
-    wp_enqueue_style( 'eshb-style', ESHB_PL_URL . 'public/assets/css/public.css', array(), $css_version );
+
+    wp_register_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), $css_version );
+    wp_register_style( 'eshb-style', ESHB_PL_URL . 'public/assets/css/public.css', array(), $css_version );
     // Show a formatted, translated date on top of the machine (Y-m-d) date input.
     // The machine input stays in normal flow (so the calendar opens exactly as before);
     // only its text is hidden. The display overlay is click-through (pointer-events:none).
     wp_add_inline_style( 'eshb-style', '.eshb-date-field{position:relative;display:block;width:100%}.eshb-date-field .eshb-date-machine{color:transparent;-webkit-text-fill-color:transparent;caret-color:transparent}.eshb-date-field .eshb-date-machine::selection{background:transparent}.eshb-date-field .eshb-date-display{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;pointer-events:none;background:transparent;border-color:transparent;box-shadow:none}.daterangepicker td.active.start-date{pointer-events:none;cursor:not-allowed}' );
-    wp_enqueue_style( 'eshb-fontawesome-style', ESHB_PL_URL . 'public/assets/css/fontawesome.all.min.css', array(), '7.2.0', 'all' );
-    wp_enqueue_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), $css_version, 'all' );
+    wp_register_style( 'eshb-fontawesome-style', ESHB_PL_URL . 'public/assets/css/fontawesome.all.min.css', array(), '7.2.0', 'all' );
+    wp_register_style( 'swiper', ESHB_PL_URL . 'public/assets/css/swiper-bundle.min.css', array(), '12.1.4', 'all' );
+    wp_register_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'3.1',true );
+    // In the footer: nothing calls Swiper before the page has loaded.
+    wp_register_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(), '12.1.4', true );
+    wp_register_script( 'eshb-swiper-init', ESHB_PL_URL . 'public/assets/js/swiper-init.js', array( 'eshb-swiper' ), ESHB_VERSION, true );
+    wp_register_script( 'eshb-public-script', ESHB_PL_URL . 'public/assets/js/public.js', array(), ESHB_VERSION, true );
+    wp_register_script( 'eshb-booking-script', ESHB_PL_URL . 'public/assets/js/booking.js', array(), ESHB_VERSION, true );
+}
+
+function eshb_wp_enqueue_scripts() {
+    eshb_enqueue_frontend_styles();
+
+    if ( eshb_page_needs_frontend_assets() ) {
+        eshb_enqueue_frontend_assets();
+    }
+}
+
+/**
+ * Whether the current page is known to show plugin output.
+ *
+ * @return bool
+ */
+function eshb_page_needs_frontend_assets() {
+
+    $force = apply_filters( 'eshb_load_frontend_assets', null );
+    if ( null !== $force ) {
+        return (bool) $force;
+    }
+
+    // Page-builder editors render widgets live.
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    if ( isset( $_GET['elementor-preview'] ) || ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) ) {
+        return true;
+    }
+
+    if ( is_singular( 'eshb_accomodation' ) || is_post_type_archive( 'eshb_accomodation' ) || is_tax( get_object_taxonomies( 'eshb_accomodation' ) ) ) {
+        return true;
+    }
+
+    // WooCommerce cart / checkout: booking items and the reservation hold notice.
+    if ( ( function_exists( 'is_cart' ) && is_cart() ) || ( function_exists( 'is_checkout' ) && is_checkout() ) ) {
+        return true;
+    }
+
+    if ( ! is_singular() ) {
+        return eshb_elementor_locations_use_plugin();
+    }
+
+    $post_id = get_queried_object_id();
+
+    // Archive / search-result / account pages chosen in the settings (or a translation of them).
+    $settings = get_option( 'eshb_settings', array() );
+    $pages    = array_filter( array_map( 'absint', array(
+        $settings['archive-page'] ?? 0,
+        $settings['search-result-page'] ?? 0,
+        $settings['account-page'] ?? 0,
+    ) ) );
+    if ( $pages && in_array( (int) ESHB_Helper::get_main_post_id_for_translated( $post_id ), $pages, true ) ) {
+        return true;
+    }
+
+    if ( eshb_content_uses_plugin( $post_id ) ) {
+        return true;
+    }
+
+    return eshb_elementor_locations_use_plugin();
+}
+
+/**
+ * Whether a post's content, Elementor data or Bricks data contains one of
+ * our shortcodes, blocks or widgets (all are prefixed "eshb" / "easy-hotel/").
+ *
+ * @param int $post_id
+ * @return bool
+ */
+function eshb_content_uses_plugin( $post_id ) {
+    $content = (string) get_post_field( 'post_content', $post_id );
+    if ( false !== strpos( $content, '[eshb_' ) || false !== strpos( $content, '<!-- wp:easy-hotel/' ) ) {
+        return true;
+    }
+
+    $elementor = get_post_meta( $post_id, '_elementor_data', true );
+    if ( is_string( $elementor ) && false !== strpos( $elementor, '"widgetType":"eshb' ) ) {
+        return true;
+    }
+
+    foreach ( array( '_bricks_page_content_2', '_bricks_page_header_2', '_bricks_page_footer_2' ) as $bricks_key ) {
+        $bricks = get_post_meta( $post_id, $bricks_key, true );
+        if ( ! empty( $bricks ) && false !== strpos( maybe_serialize( $bricks ), 'eshb' ) ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Elementor Pro theme-builder header/footer holding one of our widgets
+ * (e.g. a search form in the site header).
+ *
+ * @return bool
+ */
+function eshb_elementor_locations_use_plugin() {
+    if ( ! class_exists( '\ElementorPro\Modules\ThemeBuilder\Module' ) ) {
+        return false;
+    }
+    try {
+        $conditions = \ElementorPro\Modules\ThemeBuilder\Module::instance()->get_conditions_manager();
+        foreach ( array( 'header', 'footer' ) as $location ) {
+            foreach ( (array) $conditions->get_documents_for_location( $location ) as $document_id => $document ) {
+                if ( eshb_content_uses_plugin( (int) $document_id ) ) {
+                    return true;
+                }
+            }
+        }
+    } catch ( \Throwable $e ) {
+        return false;
+    }
+    return false;
+}
+
+function eshb_enqueue_assets_for_shortcode( $output, $tag ) {
+    if ( 0 === strpos( (string) $tag, 'eshb_' ) ) {
+        eshb_enqueue_frontend_assets();
+    }
+    return $output;
+}
+
+function eshb_enqueue_assets_for_block( $block_content, $block ) {
+    if ( ! empty( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'easy-hotel/' ) ) {
+        eshb_enqueue_frontend_assets();
+    }
+    return $block_content;
+}
+
+function eshb_enqueue_assets_for_elementor_widget( $widget ) {
+    if ( is_object( $widget ) && method_exists( $widget, 'get_name' ) && 0 === strpos( (string) $widget->get_name(), 'eshb' ) ) {
+        eshb_enqueue_frontend_assets();
+    }
+}
+
+/**
+ * Front-end styles, on every front-end page.
+ */
+function eshb_enqueue_frontend_styles() {
+    if ( is_admin() ) {
+        return;
+    }
+    wp_enqueue_style( 'dashicons' );
+    wp_enqueue_style( 'eshb-daterangepicker-style' );
+    wp_enqueue_style( 'eshb-style' );
+    wp_enqueue_style( 'eshb-fontawesome-style' );
+    wp_enqueue_style( 'swiper' );
+}
+
+/**
+ * Enqueue the front-end assets and their script data. Safe to call more
+ * than once and from inside a render callback.
+ */
+function eshb_enqueue_frontend_assets() {
+    static $done = false;
+    if ( $done || is_admin() ) {
+        return;
+    }
+    $done = true;
+
+    if ( ! wp_script_is( 'eshb-booking-script', 'registered' ) ) {
+        eshb_register_frontend_assets();
+    }
+
+    eshb_enqueue_frontend_styles();
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'moment' );
-    wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'3.1',true );
-    wp_enqueue_script( 'eshb-swiper', ESHB_PL_URL . 'public/assets/js/swiper-bundle.min.js', array(),'12.1.4',false );
-    wp_enqueue_script( 'eshb-public-script', ESHB_PL_URL . 'public/assets/js/public.js', array(), ESHB_VERSION, true );
-    wp_enqueue_script( 'eshb-booking-script', ESHB_PL_URL . 'public/assets/js/booking.js', array(), ESHB_VERSION, true );
-  
-    
+    wp_enqueue_script( 'eshb-date-range-picker-js' );
+    wp_enqueue_script( 'eshb-swiper' );
+    wp_enqueue_script( 'eshb-swiper-init' );
+    wp_enqueue_script( 'eshb-public-script' );
+    wp_enqueue_script( 'eshb-booking-script' );
+
      // Get WordPress current locale
      $locale = get_locale();
      $eshb_settings = get_option('eshb_settings');
      $apply_text_default = isset($eshb_settings['string_apply']) && !empty($eshb_settings['string_apply']) ? $eshb_settings['string_apply'] : '';
      $cancel_text_default = isset($eshb_settings['string_cancel']) && !empty($eshb_settings['string_cancel']) ? $eshb_settings['string_cancel'] : '';
-    
-    ESHB_Helper::eshb_set_accomodation_localize();
+
+    // The page's own accommodation (not whichever post a widget loop is on
+    // when this runs during rendering).
+    ESHB_Helper::eshb_set_accomodation_localize( is_singular() ? get_queried_object_id() : null );
 
     // Cart blocking notice config for JS injection
     $eshb_notice_msg = ! empty( $eshb_settings['cart-blocking-notice-msg'] )
@@ -105,3 +306,21 @@ function eshb_wp_enqueue_scripts (){
 
 
 
+/**
+ * Hand a slider's Swiper options to public/assets/js/swiper-init.js through a hidden
+ * data attribute, so widgets do not need an inline <script> of their own.
+ *
+ * @param string $selector CSS selector of the .swiper element to start.
+ * @param array  $options  Swiper options.
+ */
+function eshb_print_swiper_config( $selector, $options ) {
+    if ( ! wp_script_is( 'eshb-swiper-init', 'registered' ) ) {
+        eshb_register_frontend_assets();
+    }
+    wp_enqueue_script( 'eshb-swiper-init' );
+
+    printf(
+        '<div class="eshb-swiper-config" hidden data-eshb-swiper="%s"></div>',
+        esc_attr( wp_json_encode( array( 'selector' => $selector, 'options' => $options ) ) )
+    );
+}

@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 add_action( 'plugins_loaded', function(){
     if( class_exists( 'ESHB' ) ) {
-        $variable_pricing_warning_message = '<a href="' . admin_url( 'edit.php?post_type=eshb_session' ) . '" target="_blank">Add Variable Pricing</a>';
+        $variable_pricing_warning_message = '<a href="' . admin_url( 'edit.php?post_type=eshb_session' ) . '" target="_blank">Add Seasonal Pricing</a>';
         $add_new_service_message = '<a href="' . admin_url( 'edit.php?post_type=eshb_service' ) . '" target="_blank">Add New Service</a>';
 
         // Set a unique slug-like ID

@@ -147,45 +147,34 @@ if($eshb_best_wp->have_posts() && $eshb_best_wp->found_posts > 1){
 
     </div>
 
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-            var swiper<?php echo esc_attr($eshb_unique); ?> = new Swiper(".rt_room_slider-<?php echo esc_attr($eshb_unique); ?>", {
-                slidesPerView: 3,
-                speed: <?php echo esc_attr($eshb_autoplay_speed); ?>,
-                slidesPerGroup: 1,
-                loop: <?php echo esc_attr($eshb_infinite); ?>,
-                spaceBetween: <?php echo esc_attr($eshb_item_gap); ?>,
-                centeredSlides: <?php echo esc_attr($eshb_center_mode); ?>,
-                navigation: {
-                    nextEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($eshb_unique); ?> .swiper-button-next",
-                    prevEl: ".rt_room_slider-btn-wrapper-<?php echo esc_attr($eshb_unique); ?> .swiper-button-prev",
-                },
-                breakpoints: {
-                    0: {
-                        slidesPerView: 1,
-                    },
-                    375: {
-                        slidesPerView: 1,
-                    },
-                    480: {
-                        slidesPerView: 1,
-                    },
-                    575: {
-                        slidesPerView: 1,
-                    },
-                    <?php
-                            echo (!empty($eshb_col_xs)) ?  '575: { slidesPerView: ' . esc_attr($eshb_col_xs) . ' },' : '';
-                            echo (!empty($eshb_col_sm)) ?  '767: { slidesPerView: ' . esc_attr($eshb_col_sm) . ' },' : '';
-                            echo (!empty($eshb_col_md)) ?  '991: { slidesPerView: ' . esc_attr($eshb_col_md) . ' },' : '';
-                            echo (!empty($eshb_col_lg)) ?  '1199: { slidesPerView: ' . esc_attr($eshb_col_lg) . ' },' : '';
-                            ?>
-                    1399: {
-                        slidesPerView: 3,
-                        spaceBetween: <?php echo esc_attr($eshb_item_gap); ?>
-                    }
-                }
-            });
-        });
-    </script>
     <?php
+    $eshb_breakpoints = array(
+        0   => array( 'slidesPerView' => 1 ),
+        375 => array( 'slidesPerView' => 1 ),
+        480 => array( 'slidesPerView' => 1 ),
+        575 => array( 'slidesPerView' => 1 ),
+    );
+    foreach ( array( 575 => $eshb_col_xs, 767 => $eshb_col_sm, 991 => $eshb_col_md, 1199 => $eshb_col_lg ) as $eshb_width => $eshb_cols ) {
+        if ( ! empty( $eshb_cols ) ) {
+            $eshb_breakpoints[ $eshb_width ] = array( 'slidesPerView' => (float) $eshb_cols );
+        }
+    }
+    $eshb_breakpoints[1399] = array(
+        'slidesPerView' => 3,
+        'spaceBetween'  => (int) $eshb_item_gap,
+    );
+
+    eshb_print_swiper_config( '.rt_room_slider-' . $eshb_unique, array(
+        'slidesPerView'  => 3,
+        'speed'          => (int) $eshb_autoplay_speed,
+        'slidesPerGroup' => 1,
+        'loop'           => 'true' === $eshb_infinite,
+        'spaceBetween'   => (int) $eshb_item_gap,
+        'centeredSlides' => 'true' === $eshb_center_mode,
+        'navigation'     => array(
+            'nextEl' => '.rt_room_slider-btn-wrapper-' . $eshb_unique . ' .swiper-button-next',
+            'prevEl' => '.rt_room_slider-btn-wrapper-' . $eshb_unique . ' .swiper-button-prev',
+        ),
+        'breakpoints'    => $eshb_breakpoints,
+    ) );
 }

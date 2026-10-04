@@ -721,7 +721,8 @@ class Eshb_Room_Grid_Widget extends \Elementor\Widget_Base {
 
 		$room_columns = $settings['room_columns'];
 		$cat = $this->eshb_get_selected_categories( $settings );
-		$grid_style = 'style'.$settings['room_grid_style'];
+		// Part of an include path below; only accept the styles the control offers.
+		$grid_style = 'style' . ESHB_Helper::eshb_allowed_style( $settings['room_grid_style'] ?? '1', [ 'default', '1', '2', '3' ], '1' );
 		$btn_text = $settings['btn_text'];
 		$pricing_prefix = isset($settings['pricing_prefix']) ? $settings['pricing_prefix'] : '';
 		$thumbnail_size = isset($settings['thumbnail_size']) ? $settings['thumbnail_size'] : 'eshb_thumbnail';

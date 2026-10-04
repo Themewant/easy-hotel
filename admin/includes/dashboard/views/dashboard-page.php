@@ -31,7 +31,6 @@ $eshb_stat_cards = array(
 $eshb_quick_actions = array(
 	array( __( 'Add New Room', 'easy-hotel' ), 'admin-home', $links['addRoom'], 'blue' ),
 	array( __( 'View All Bookings', 'easy-hotel' ), 'list-view', $links['bookings'], 'green' ),
-	array( __( 'Create Manual Booking', 'easy-hotel' ), 'plus-alt', $links['addBooking'], 'purple' ),
 	array( __( 'Manage Availability', 'easy-hotel' ), 'calendar-alt', $links['availability'], 'orange' ),
 	array( __( 'Create Coupon', 'easy-hotel' ), 'tickets-alt', $links['coupons'], 'red' ),
 );
@@ -44,6 +43,14 @@ $eshb_quick_actions = array(
 if ( class_exists( 'ESHB_PMS_Rack' ) ) {
 	$eshb_quick_actions[] = array( __( 'Open Room Rack', 'easy-hotel' ), 'grid-view', $links['rack'], 'teal' );
 }
+
+/**
+ * Filters the dashboard quick action buttons.
+ *
+ * @param array $eshb_quick_actions Rows of label, dashicon, url, accent class.
+ * @param array $links              Dashboard admin URLs.
+ */
+$eshb_quick_actions = apply_filters( 'eshb_dashboard_quick_actions', $eshb_quick_actions, $links );
 
 /**
  * The two movement panels. Same shell, different data key and date column, so

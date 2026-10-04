@@ -2,9 +2,49 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
 
 add_action('admin_enqueue_scripts', 'eshb_admin_enqueue_scripts');
-function eshb_admin_enqueue_scripts (){
+
+/**
+ * Whether the current admin screen belongs to the plugin (or an add-on):
+ * its post types, or pages under its menu / with an eshb-, ehb- or
+ * easy-hotel slug. Elsewhere the booking scripts were dead weight.
+ *
+ * Filter `eshb_load_admin_assets` to load them on another screen.
+ *
+ * @param string $hook Admin page hook suffix.
+ * @return bool
+ */
+function eshb_is_plugin_admin_screen( $hook ) {
+    $is_plugin_screen = false;
+
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+    if ( $screen && 0 === strpos( (string) $screen->post_type, 'eshb_' ) ) {
+        $is_plugin_screen = true;
+    }
+
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only screen check.
+    $page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+    if ( $page && preg_match( '/^(eshb|ehb|easy-hotel|easy_hotel)/', $page ) ) {
+        $is_plugin_screen = true;
+    }
+
+    if ( false !== strpos( (string) $hook, 'eshb' ) || false !== strpos( (string) $hook, 'easy-hotel' ) ) {
+        $is_plugin_screen = true;
+    }
+
+    return (bool) apply_filters( 'eshb_load_admin_assets', $is_plugin_screen, $hook );
+}
+
+function eshb_admin_enqueue_scripts ( $hook = '' ){
+    // Admin styles: every admin screen, as before. This hook only runs in
+    // wp-admin, so none of it reaches the front end.
     wp_enqueue_style( 'eshb-daterangepicker-style', ESHB_PL_URL . 'public/assets/css/date-range-picker.css', array(), ESHB_VERSION );
     wp_enqueue_style( 'eshb-admin-style', ESHB_PL_URL . 'admin/assets/css/admin.min.css', array(), ESHB_VERSION);
+
+    // Admin scripts: only on the plugin's own screens.
+    if ( ! eshb_is_plugin_admin_screen( $hook ) ) {
+        return;
+    }
+
     wp_enqueue_script('moment');
     wp_enqueue_script( 'eshb-date-range-picker-js', ESHB_PL_URL . 'public/assets/js/date-range-picker.js', array('jquery'),'3.1',true );
     wp_enqueue_script( 'eshb-admin-script', ESHB_PL_URL . 'admin/assets/js/admin.js', array('jquery'), ESHB_VERSION, true );
@@ -14,16 +54,17 @@ function eshb_admin_enqueue_scripts (){
         'calendar_start_date_buffer' => 0,
     ];
     $min_max_settings = apply_filters( 'eshb_min_max_global_settings_localize', $min_max_settings_global);
-    $calendar_start_date_buffer = !empty($eshb_min_max_settings['calendar_start_date_buffer']) ? $eshb_min_max_settings['calendar_start_date_buffer'] : 0;
+    $calendar_start_date_buffer = !empty($min_max_settings['calendar_start_date_buffer']) ? $min_max_settings['calendar_start_date_buffer'] : 0;
   
     $eshb_admin_translations = [
         'billingEmailErr' => __('Billing email not found!', 'easy-hotel'),       
         'maximumTimeSlot' => __('Allowed max time for this slot is', 'easy-hotel'),
         'minimumTimeSlot' => __('Allowed min time for this slot is', 'easy-hotel'), 
-        'minNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Minimum', 'easy-hotel'),
-        'maxNightsErrorMsg' => __('Ops! This Reservation has been failed. Requried Maximum', 'easy-hotel'),
-        'minNightsErrorMsgAvCal' => __('Requried Minimum Nights:', 'easy-hotel'),
-        'maxNightsErrorMsgAvCal' => __('Requried Maximum Nights:', 'easy-hotel'),
+        'minNightsErrorMsg' => __('Ops! This Reservation has been failed. Required Minimum', 'easy-hotel'),
+        'maxNightsErrorMsg' => __('Ops! This Reservation has been failed. Required Maximum', 'easy-hotel'),
+        'minNightsErrorMsgAvCal' => __('Required Minimum Nights:', 'easy-hotel'),
+        'maxNightsErrorMsgAvCal' => __('Required Maximum Nights:', 'easy-hotel'),
+        'unavailableRangeErrorMsg' => __('Those dates are not available - the stay runs across a date that is already booked. Please choose another check-out date.', 'easy-hotel'),
     ];
 
     $nonce_action = ESHB_Helper::generate_secure_nonce_action('eshb_global_nonce_action');

@@ -6,7 +6,9 @@
  * Author:      Themewant
  * Author URI:  http://themewant.com/
  * Version:     2.0.9
- * License:     GPL2
+ * Requires at least: 6.6
+ * Requires PHP: 7.4
+ * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: easy-hotel
  * Domain Path: /languages
@@ -34,26 +36,8 @@
     include 'pms/pms.php';
 
     register_activation_hook(__FILE__, 'eshb_create_easy_hotel_pages');
+    register_activation_hook(__FILE__, 'eshb_schedule_rewrite_flush');
+    register_deactivation_hook(__FILE__, 'eshb_clear_rewrite_rules_on_deactivation');
     add_action( 'plugins_loaded', function(){
             ESHB_MAIN::instance();
     }, 12 );
-
-    /**
-     * Initialize the plugin tracker
-     *
-     * @return void
-     */
-    function eshb_appsero_init_tracker() {
-
-        if ( ! class_exists( 'Appsero\Client' ) ) {
-            include ESHB_PL_PATH . 'admin/includes/opt-in/Client.php';
-        }
-
-        $client = new Appsero\Client( 'aad425e0-9ec8-4de0-a3cf-011a98a4fb39', 'Easy Hotel Booking – Powerful Hotel Booking', __FILE__ );
-
-        // Active insights
-        $client->insights()->init();
-
-    }
-
-    add_action( 'plugins_loaded', 'eshb_appsero_init_tracker' );

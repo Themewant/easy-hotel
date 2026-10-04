@@ -2,14 +2,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ESHB_Metabox_Settings {
 
-    protected $title_actions = array();
     protected $screen;
 
     public function __construct() {
         add_action( 'add_meta_boxes', [$this, 'customize_meta_boxes'], 20 );
         add_action( 'init', [$this, 'register_booking_post_statuses'], 5 );
-        add_action( 'admin_footer', [$this, 'title_actions_script'] );
-        add_action( 'admin_head-edit.php', [$this, 'disable_new_booking']);
+        add_action( 'admin_notices', [$this, 'render_list_screen_note'] );
     }
     
     function register_booking_post_statuses(){
@@ -40,16 +38,9 @@ class ESHB_Metabox_Settings {
 
         remove_meta_box( 'submitdiv', ['eshb_booking'], 'side' ); // Custom Fields meta box
         add_meta_box( 'submitdiv', __( 'Update Booking', 'easy-hotel' ), [$this, 'render_submit_meta_box_booking'], 'eshb_booking', 'side', 'default' );
-        
-        $plugin_name = 'EHB Manual Booking';
-        $plugin_slug = 'ehb-manual-booking';
-        $plugin_url = 'https://themewant.com/downloads/'.$plugin_slug;
-        $plugin_main_file = $plugin_slug . '/' . $plugin_slug . '.php';
 
-        if (! is_plugin_active( $plugin_main_file ) ) {
-            remove_meta_box( 'submitdiv', ['eshb_payment'], 'side' ); // Custom Fields meta box
-            add_meta_box( 'submitdiv', __( 'Update Payment', 'easy-hotel' ), [$this, 'render_submit_meta_box_payment'], 'eshb_payment', 'side', 'default' );
-        }
+        remove_meta_box( 'submitdiv', ['eshb_payment'], 'side' );
+        add_meta_box( 'submitdiv', __( 'Update Payment', 'easy-hotel' ), [$this, 'render_submit_meta_box_payment'], 'eshb_payment', 'side', 'default' );
     }
 
     public function render_submit_meta_box_booking( $post, $metabox ) {
@@ -112,67 +103,69 @@ class ESHB_Metabox_Settings {
 		<?php
 	}
     
-    public function disable_new_booking(){
+    // Save box for payments recorded by the checkout. Lets the admin change
+    // the status of an existing payment.
+    public function render_submit_meta_box_payment( $post, $metabox ) {
+		$postStatus = get_post_status( $post->ID );
+        $statuses   = ESHB_Helper::eshb_get_payment_statuses();
+		$post_date  = ESHB_Helper::eshb_format_datetime( $post->post_date, 'F j, Y g:i a' );
+
+		$default_status = in_array( $postStatus, array( 'new', 'auto-draft' ), true ) ? 'completed' : $postStatus;
+		?>
+		<div class="submitbox" id="submitpost">
+			<div id="minor-publishing">
+				<div id="minor-publishing-actions">
+				</div>
+				<div id="misc-publishing-actions">
+					<div class="misc-pub-section">
+						<label for="eshb_post_status"><?php echo esc_html__( 'Status:', 'easy-hotel' )?></label>
+						<select name="post_status" id="eshb_post_status">
+							<?php foreach ( $statuses as $statusName => $statusDetails ) { ?>
+								<option value="<?php echo esc_attr( $statusName ); ?>" <?php selected( $statusName, $default_status ); ?>>
+									<?php echo esc_html( $statusDetails ) ; ?>
+								</option>
+							<?php } ?>
+						</select>
+					</div>
+					<div class="misc-pub-section">
+						<span><?php esc_html_e( 'Created on:', 'easy-hotel' ); ?></span>
+						<strong><?php echo esc_html($post_date) ; ?></strong>
+					</div>
+				</div>
+			</div>
+			<div id="major-publishing-actions">
+				<div id="delete-action">
+					<?php
+					if ( current_user_can( 'delete_post', $post->ID ) ) {
+						if ( ! EMPTY_TRASH_DAYS ) {
+							$delete_text = __( 'Delete Permanently', 'easy-hotel' );
+						} else {
+							$delete_text = __( 'Move to Trash', 'easy-hotel' );
+						}
+						?>
+						<a class="submitdelete deletion" href="<?php echo esc_url( get_delete_post_link( $post->ID ) ); ?>"><?php echo esc_html( $delete_text ); ?></a>
+					<?php } ?>
+				</div>
+				<div id="publishing-action">
+					<span class="spinner"></span>
+					<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Update Payment', 'easy-hotel' ); ?>" />
+					<input name="save" type="submit" class="button button-primary button-large" id="publish" accesskey="p" value="<?php esc_attr_e( 'Update Payment', 'easy-hotel' ); ?>" />
+				</div>
+				<div class="clear"></div>
+			</div>
+			<p class="eshb-error-message eshb-text-danger"><?php echo esc_html__( 'Full up all required field!', 'easy-hotel' )?></p>
+		</div>
+		<?php
+	}
+
+    // Hook point on the Bookings / Payments list screens for extensions.
+    public function render_list_screen_note() {
         $screen = get_current_screen();
-        if ( $screen && in_array($screen->post_type, ['eshb_booking', 'eshb_payment']) ) {
-            $plugin_name = 'EHB Manual Booking';
-            $plugin_slug = 'ehb-manual-booking';
-            $plugin_url = 'https://themewant.com/downloads/'.$plugin_slug;
-            $plugin_main_file = $plugin_slug . '/' . $plugin_slug . '.php';
-
-            if (! is_plugin_active( $plugin_main_file ) ) {
-                remove_submenu_page( 'edit.php?post_type=eshb_booking', 'post-new.php?post_type=eshb_booking' );
-                // Remove the "Add New" button on top of the list table
-                if(in_array($screen->post_type, ['eshb_booking'])){
-                    $this->modify_title_actions( __( 'New Booking', 'easy-hotel' ), '#', array( 'class' => 'button-disabled', 'after' => $this->eshb_upgrade_message($plugin_name, $plugin_url) ) );
-                }else{  
-                    $this->modify_title_actions( __( 'New Payment', 'easy-hotel' ), '#', array( 'class' => 'button-disabled', 'after' => $this->eshb_upgrade_message($plugin_name, $plugin_url) ) );
-                }
-            }
-        }
-    }
-
-    public function render_submit_meta_box_payment ($post, $metabox){
-        $plugin_name = 'EHB Manual Booking';
-        $plugin_slug = 'ehb-manual-booking';
-        $plugin_url = 'https://themewant.com/downloads/'.$plugin_slug;
-        echo wp_kses_post($this->eshb_upgrade_message($plugin_name, $plugin_url, 'div'));
-    }
-
-	public function modify_title_actions( $label, $url, $options = array() ) {
-        $this->title_actions[] = array(
-            'label' => $label,
-            'class' => 'eshb-page-title-action button ' . ( $options['class'] ?? '' ),
-            'url'   => $url,
-            'after' => ! empty( $options['after'] ) ? ' ' . $options['after'] : '',
-        );
-    }
-
-	public function title_actions_script() {
-        if ( empty( $this->title_actions ) ) {
+        if ( ! $screen || 'edit' !== $screen->base || ! in_array( $screen->post_type, array( 'eshb_booking', 'eshb_payment' ), true ) ) {
             return;
         }
 
-        $actions = array_map( function( $action ) {
-            $html  = '<a href="' . esc_url( $action['url'] ) . '"';
-            $html .= ' class="' . esc_attr( $action['class'] ) . '">';
-            $html .= esc_html( $action['label'] ) . '</a>';
-            $html .= ! empty( $action['after'] ) ? wp_kses_post( $action['after'] ) : '';
-            return $html;
-        }, $this->title_actions );
-
-        ?>
-        <script type="text/javascript">
-            jQuery( function( $ ) {
-                var actions = <?php echo wp_json_encode( $actions ); ?>;
-                var $heading = $( '#wpbody-content > .wrap > .wp-heading-inline' );
-                $('.page-title-action').remove();
-                if ( $heading.length ) {
-                    $heading.after( actions.join('') );
-                }
-            });
-        </script>
-        <?php
+        do_action( 'eshb_admin_list_screen_note', $screen->post_type );
     }
 
     public static function eshb_upgrade_message( $plugin_name, $plugin_url, $wrapper = 'span', $wrapperClass = 'eshb-admin-notice eshb-admin-notice-small' ) {
@@ -198,27 +191,6 @@ class ESHB_Metabox_Settings {
     }
 }
 new ESHB_Metabox_Settings();
-
-add_action( 'admin_footer-post.php', 'eshb_add_all_custom_statuses_to_dropdown' );
-add_action( 'admin_footer-post-new.php', 'eshb_add_all_custom_statuses_to_dropdown' );
-
-function eshb_add_all_custom_statuses_to_dropdown() {
-    global $post;
-    if ( $post->post_type !== 'eshb_booking'|| $post->post_type !== 'eshb_payment' ) return;
-
-    $statuses = ESHB_Helper::eshb_get_booking_statuses();
-
-    ?>
-    <script>
-    jQuery(document).ready(function($){
-        <?php foreach ( $statuses as $slug => $label ) : ?>
-            var selected = '<?php echo esc_js( $post->post_status ); ?>' === '<?php echo esc_js( $slug ); ?>' ? 'selected="selected"' : '';
-            $('#post_status').append('<option value="<?php echo esc_js( $slug ); ?>" ' + selected + '><?php echo esc_js( $label ); ?></option>');
-        <?php endforeach; ?>
-    });
-    </script>
-    <?php
-}
 
 
 // add custom order status
